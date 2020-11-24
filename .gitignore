@@ -4,3 +4,4 @@ _*.*
 /src/KryptonAnalysis/bin/
 /src/KryptonAnalysis/obj/
 /UnitTests/
+/ConsoleTest/

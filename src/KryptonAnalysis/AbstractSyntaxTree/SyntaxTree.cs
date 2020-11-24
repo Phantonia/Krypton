@@ -1,13 +1,17 @@
-﻿using System.Collections;
+﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Krypton.Analysis.AbstractSyntaxTree
 {
     public sealed class SyntaxTree : IEnumerable<Node>
     {
-        private SyntaxTree() { }
+        public SyntaxTree()
+        {
+            Root = new ScriptNode();
+        }
 
-        public Node Root { get; } = null!; // TODO: change
+        public Node Root { get; }
 
         public IEnumerator<Node> GetEnumerator()
         {

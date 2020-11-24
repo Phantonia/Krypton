@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Krypton.Analysis.AbstractSyntaxTree
+namespace Krypton.Analysis.AbstractSyntaxTree.Nodes
 {
     public abstract class Node : IEnumerable<Node>
     {
