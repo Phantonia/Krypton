@@ -1,3 +1,6 @@
-/.vs
+/.vs/
 Krypton.sln
 _*.*
+/src/KryptonAnalysis/bin/
+/src/KryptonAnalysis/obj/
+/UnitTests/
