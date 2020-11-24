@@ -1,10 +1,10 @@
-# 2. Lexical structure
+# 2 Lexical structure
 
-## Case
+## 2.1 Case
 
 Scripts are entirely case sensitive. That means, that an identifier `Something` and an identifier `something` (note the different casing of the "S") do not mean the same thing and can coexist. Casing also affects keywords. For example, the keyword `Var` is used for declaring a variable and due to being a *reserved keyword*, it cannot be used as and identifier, while `var` is a valid identifier.
 
-## Whitespace
+## 2.2 Whitespace
 
 For the most part, scripts are whitespace insensitive. That means, that no whitespace affects the meaning of a script. For example, code can have any number of blank lines, and can be indented with any number of tabs or spaces.
 
@@ -46,13 +46,13 @@ VarxAsString;
 
 The first one declares a variable of datatype `String` whereas the second one is a compile time error because a single identifier can never be used as a whole *statement*.
 
-## Comments
+## 2.3 Comments
 
 A comment is a portion of code that is ignored after lexical analysis.
 
 There are three kinds of comments:
 
-### Single line comments
+### 2.3.1 Single line comments
 
 A single line comment is opened using three dot characters `.` and does not have to be closed as it is considered closed at the end of the line.
 
@@ -60,7 +60,7 @@ A single line comment is opened using three dot characters `.` and does not have
 Out "Hello world!"; ... this is a comment
 ```
 
-### Strict multiline comment
+### 2.3.2 Strict multiline comment
 
 A strict multiline comment is opened using three greater than characters `>` and closed using three less than characters `<`. Because of this syntax, it is possible for a strict multiline comment to span multiple lines. However, there is no requirement for that.
 
@@ -84,7 +84,7 @@ That is because there are two starting lexemes but only one ending lexeme. To pr
 
 It is discouraged to use this kind of comment with a text editor that doesn't support correct syntax highlighting for this kind of comment.
 
-###  Weak multiline comment
+###  2.3.3 Weak multiline comment
 
 A weak multiline comment works like a strict multiline comment with the exception of the balancing rule, which does not apply to weak multiline comments. Thus, this comment is properly closed:
 
@@ -106,7 +106,7 @@ And this one isn't:
 >>> Comment <<
 ```
 
-## Identifiers
+## 2.4 Identifiers
 
 Identifiers are strings of characters that obey the following rules:
 
@@ -118,11 +118,11 @@ Identifiers are strings of characters that obey the following rules:
 These are examples of valid identifiers: `PascalCase`, `camelCase`, `snake_case`, `SCREAMING_SNAKE_CASE`
 These are examples of invalid identifiers: `3D`, `$abc`, `_`
 
-## Reserved keywords
+## 2.5 Reserved keywords
 
 Reserved keywords are strings of letters with a special meaning in the language. A full list of reserved keywords can be found in the file "ReservedKeywords.csv".
 
-## String literals
+## 2.6 String literals
 
 A **string** is a string of characters. A string literal is a hardcoded string in the script itself. It starts and ends with a double quotation mark character `"`. It is a compile time error to start a string literal but not end it on the same line.
 
@@ -134,11 +134,11 @@ An example for a valid string literal: `"This is a string!"`
 
 An example for an invalid string literal: `"This is not a string`
 
-## Character literals
+## 2.7 Character literals
 
 While a string represents several characters one after each other, a **char** is only a single character. A char literal is started and ended by a single quotation mark character `'`. As with a string literal, a char literal must be terminated on the line it was started. Additionally, it is a compile time error for a script to contain a character literal with more than one character. The literal has to be a single character or an escape sequence.
 
-## Escape sequences
+## 2.8 Escape sequences
 
 Some characters cannot be represented in a string or char literal. One common example would be a new line. To be able to include one in the string literal, an escape sequence can be used. It is a backslash followed by a special character potentially followed by the Unicode representation of a character.
 
@@ -162,11 +162,11 @@ The last three represent any Unicode character. `[n]` is replaced with the numbe
 
 It is a compile time error for a string to contain an unescaped backslash without an escape sequence following.
 
-## Number literals
+## 2.9 Number literals
 
 There are three types of number literals.
 
-### Integer literals
+### 2.9.1 Integer literals
 
 An integer literal represents a whole number. It obeys the following rules:
 
@@ -196,7 +196,7 @@ These are examples of invalid integer literals:
 
 Invalid in this case does not necessarily mean "Compile time error". The last example for example is split into two lexemes: the integer literal `0` and the identifier `_b11010101`.
 
-### Real literals
+### 2.9.2 Real literals
 
 A real literal represents a real number. It obeys the following rules:
 
@@ -218,7 +218,7 @@ These are examples of invalid real literals, that are also analyzed as something
 3.141.59
 ```
 
-### Imaginary literals
+### 2.9.3 Imaginary literals
 
 Imaginary literals are any integer or real literals, if they are immediately followed by an `i`.
 
@@ -226,7 +226,7 @@ For example, `4i` is an imaginary literal.
 
 To get the number i itself, the imaginary literal `1i` has to be used.
 
-## Syntax characters
+## 2.10 Syntax characters
 
 Syntax characters are the punctuation of the language and operators like `+`. They are always analyzed greedily. For example, take this snippet of code:
 
