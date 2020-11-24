@@ -2,11 +2,12 @@
 using Krypton.Analysis.AbstractSyntaxTree.Nodes;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements;
+using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical;
+using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.Keywords;
 using Krypton.Analysis.Lexical.Lexemes.SyntaxCharacters;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
-using System;
 using System.Diagnostics;
 
 namespace Krypton.Analysis.Grammatical
@@ -34,7 +35,7 @@ namespace Krypton.Analysis.Grammatical
             };
         }
 
-        public SyntaxTree ParseWholeScript()
+        public SyntaxTree? ParseWholeScript()
         {
             Node? nextNode = ParseNextNode();
 
@@ -51,10 +52,17 @@ namespace Krypton.Analysis.Grammatical
                 nextNode = ParseNextNode();
             }
 
-            return new SyntaxTree(scriptNode);
+            if (Lexemes[index] is EndOfFileLexeme)
+            {
+                return new SyntaxTree(scriptNode);
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        private OutStatementNode ParseOutStatement()
+        private OutStatementNode? ParseOutStatement()
         {
             int lineNumberOutKeyword = Lexemes[index].LineNumber;
 
@@ -67,10 +75,19 @@ namespace Krypton.Analysis.Grammatical
 
             index++;
 
-            Debug.Assert(Lexemes[index] is SemicolonLexeme);
+            if (Lexemes[index] is not SemicolonLexeme)
+            {
+                ErrorProvider.ReportMissingSemicolonError(Lexemes[index].Content, Lexemes[index].LineNumber);
+
+                if (Lexemes[index] is EndOfFileLexeme)
+                {
+                    index--;
+                }
+
+                return null;
+            }
 
             index++;
-
             return new OutStatementNode(lineNumberOutKeyword, new StringLiteralExpressionNode(sll.Content, sll.LineNumber));
         }
     }

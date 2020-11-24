@@ -8,5 +8,10 @@
         {
             Error?.Invoke(new ErrorEventArgs(errorCode, errorMessage, lineNumber));
         }
+
+        public static void ReportMissingSemicolonError(string gotInstead, int lineNumber)
+        {
+            ReportError(ErrorCode.ExpectedSemicolon, $"A semicolon to end the statement was expected. Instead there is \"{gotInstead}\"!", lineNumber);
+        }
     }
 }

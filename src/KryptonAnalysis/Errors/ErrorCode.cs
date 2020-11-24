@@ -9,5 +9,8 @@
         UnclosedStringLiteral = 2,
         UnclosedCharLiteral = 3,
         UnknownEscapeSequence = 4,
+
+        // Grammatical errors
+        ExpectedSemicolon = 101,
     }
 }
