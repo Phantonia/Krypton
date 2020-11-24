@@ -53,7 +53,7 @@ namespace Krypton.Analysis.Lexical
                 ']' => LexSpecificLexeme<SquareBracketClosingLexeme>(),
                 '{' => LexSpecificLexeme<BraceOpeningLexeme>(),
                 '}' => LexSpecificLexeme<BraceClosingLexeme>(),
-                '<' => LexSpecificLexeme<AngleBracketOpeningLexeme>(),
+                '<' => LexSpecificLexeme<LessThanLexeme>(),
                 '>' => LexGreaterThanOrMultilineComment(),
                 '=' => LexSyntaxCharacterWithPossibleEquals<EqualsLexeme, DoubleEqualsLexeme>(),
 
@@ -283,7 +283,7 @@ namespace Krypton.Analysis.Lexical
             }
             else
             {
-                return new AngleBracketClosingLexeme(lineNumber);
+                return new GreaterThanLexeme(lineNumber);
             }
         }
 
