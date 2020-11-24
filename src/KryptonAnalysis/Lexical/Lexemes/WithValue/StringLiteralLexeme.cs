@@ -1,5 +1,4 @@
-﻿using Krypton.Analysis.Lexical.Lexemes;
-using System;
+﻿using System;
 
 namespace Krypton.Analysis.Lexical.Lexemes.WithValue
 {

@@ -18,6 +18,7 @@ namespace Krypton.Analysis.Lexical
             AddKeyword<NotKeywordLexeme>(builder, "Not");
             AddKeyword<OrKeywordLexeme>(builder, "Or");
             AddKeyword<VarKeywordLexeme>(builder, "Var");
+            AddKeyword<OutKeywordLexeme>(builder, "Out");
             builder.Add("True", lineNumber => new BooleanLiteralLexeme(true, lineNumber));
             builder.Add("False", lineNumber => new BooleanLiteralLexeme(false, lineNumber));
             ReservedKeywords = builder.ToImmutable();

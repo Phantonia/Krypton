@@ -6,4 +6,11 @@
 
         public override string Content => "Var";
     }
+
+    public sealed class OutKeywordLexeme : KeywordLexeme
+    {
+        public OutKeywordLexeme(int lineNumber) : base(lineNumber) { }
+
+        public override string Content => "Out";
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes
 {
@@ -14,6 +15,8 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes
         public int LineNumber { get; }
 
         public abstract Node Clone();
+
+        public abstract void GenerateCode(StringBuilder stringBuilder);
 
         protected virtual IEnumerable<Node> GetBranches()
         {
