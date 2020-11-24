@@ -1,6 +1,6 @@
-# Krypton compilation
+# 1. Compilation
 
-The process of taking a single Krypton script file (a file whose content obeys the syntactical and semantical rules of the Krypton specification and normally but not necessarily the file extension `.krpt`) and outputting code in a different language with exactly the same semantics as the ones describe in the Krypton script is called **compilation**. Normally, a Krypton file is compiled to Javascript. The exact semantics of this translation is described in the section <u>Javascript output</u>.
+The process of taking a single Krypton script file (a file whose content obeys the syntactical and semantical rules of the Krypton specification and normally but not necessarily have the file extension `.krpt`) and outputting code in a different language with exactly the same semantics as the ones describe in the Krypton script is called **compilation**. Normally, a Krypton file is compiled to Javascript. The exact semantics of this translation are described in the section <u>Javascript output</u>.
 
 Compilation happens in four mainly but not necessarily distinct steps:
 
@@ -15,13 +15,13 @@ The input to the compiler is plain text. To make sense of it, it first needs to 
 
 ## Grammatical analysis
 
-After having a list of all lexemes of the script, the compiler attempts to build an **Abstract Syntax Tree**. It concretely describes the grammar of the script.
+After having a list of all lexemes of the script, the compiler attempts to build an **Abstract Syntax Tree**, which concretely describes the grammar of the script.
 
 ## Semantical analysis
 
 "Semantical analysis" describes the process of making sense of the structure of the source file. Examples of tasks done in this step are:
 
-- **Identifier binding**, so finding out what *entity* the *identifier* refer to
+- **Identifier binding**, so finding out what *entity* an *identifier* refers to
 - **Datatype checking**, so checking whether an *expression* is only doing *operations* on *values* of *datatypes* that support these operations, and checking whether a value that is said to be of a datatype actually is of that datatype
 
 ## Code generation
