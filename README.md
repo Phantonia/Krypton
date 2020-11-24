@@ -35,5 +35,5 @@ Else
 }
 ```
 
-
+Keep in mind, that almost nothing about Krypton's syntax is set in stone yet. This is a prototype!
 
