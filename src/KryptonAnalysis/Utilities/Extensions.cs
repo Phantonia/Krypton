@@ -10,11 +10,28 @@ namespace Krypton.Analysis.Utilities
             return str.Length > index ? str[index] : (char?)null;
         }
 
-        public static bool IsHex(this char chr)
+        public static bool IsHex(this char chr, out bool? isUpper)
         {
-            return (chr >= '0' & chr <= '9')
-                 | (chr >= 'a' & chr <= 'f')
-                 | (chr >= 'A' & chr <= 'F');
+            if (chr >= '0' & chr <= '9')
+            {
+                isUpper = null;
+                return true;
+            }
+
+            if (chr >= 'a' & chr <= 'f')
+            {
+                isUpper = false;
+                return true;
+            }
+
+            if (chr >= 'A' & chr <= 'F')
+            {
+                isUpper = true;
+                return true;
+            }
+
+            isUpper = null;
+            return false;
         }
 
         public static bool IsBinary(this char chr)

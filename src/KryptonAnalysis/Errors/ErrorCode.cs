@@ -9,6 +9,7 @@
         UnclosedStringLiteral = 2,
         UnclosedCharLiteral = 3,
         UnknownEscapeSequence = 4,
+        HexLiteralWithMixedCase = 5,
 
         // Grammatical errors
         ExpectedSemicolon = 101,

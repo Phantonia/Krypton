@@ -100,10 +100,11 @@ Both kinds of comments ignore the starting and ending lexemes of the other kind.
 >>> Strict >> something <<<
 ```
 
-And this one isn't:
+And these comments aren't:
 
 ```
 >>> Comment <<
+>> Comment <<<
 ```
 
 ## 2.4 Identifiers
@@ -201,7 +202,7 @@ Invalid in this case does not necessarily mean "Compile time error". The last ex
 A real literal represents a real number. It obeys the following rules:
 
 - It consists only of digits 0 to 9, except:
-- It has to contain exactly one dot character `.` to represent the decimal point. If it lacks it, it is not a real but an integer literal
+- It has to contain exactly one dot character `.` to represent the decimal point. If it lacks it, it is not a real but an integer literal. The dot may not be the first or last character.
 - It may also have the underscores as described under Integer literals. However, these underscores are not allow directly before or directly after the decimal point.
 
 These are examples of valid real literals:
@@ -216,6 +217,8 @@ These are examples of invalid real literals, that are also analyzed as something
 ```
 3_.14159
 3.141.59
+3.
+.5
 ```
 
 ### 2.9.3 Imaginary literals
@@ -234,5 +237,5 @@ Syntax characters are the punctuation of the language and operators like `+`. Th
 x += 5;
 ```
 
-The `+=` is not analyzed as `+` and `=`. So a general rule of lexical analysis in Krypton is, that the lexer always tries to form the longest possible lexeme.
+The `+=` is not analyzed as `+` and `=` but as the whole lexeme `+=`. A general rule of lexical analysis in Krypton is, that the lexer always tries to form the longest possible lexeme.
 
