@@ -41,17 +41,17 @@
    5. Scope
    6. Variable expressions
 5. Datatypes
-   1. Datatype expressions
+   1. Usage of datatypes
    2. Datatypes of literals
    3. Default values
+      1. Nullable types
    4. Built-in datatypes
       1. Number types
       2. The `Char` type
       3. The `String` type
       4. The `Bool` type
    5. Array types
-   6. Nullable types
-   7. Type inference
+   6. Type inference
 6. Statements
 7. Control flow statements
    1. `Block`
