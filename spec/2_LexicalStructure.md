@@ -60,7 +60,17 @@ A single line comment is opened using three dot characters `.` and does not have
 Out "Hello world!"; ... this is a comment
 ```
 
-### 2.3.2 Strict multiline comment
+###  2.3.2 Weak multiline comment
+
+A weak multiline comment works like a strict multiline comment with the exception of the balancing rule, which does not apply to weak multiline comments. Thus, this comment is properly closed:
+
+```
+>> This is a comment >> It is closed there: <<
+```
+
+As you can see, weak multiline comments only use two greater/less than signs.
+
+### 2.3.3 Strict multiline comment
 
 A strict multiline comment is opened using three greater than characters `>` and closed using three less than characters `<`. Because of this syntax, it is possible for a strict multiline comment to span multiple lines. However, there is no requirement for that.
 
@@ -83,16 +93,6 @@ That is because there are two starting lexemes but only one ending lexeme. To pr
 ```
 
 It is discouraged to use this kind of comment with a text editor that doesn't support correct syntax highlighting for this kind of comment.
-
-###  2.3.3 Weak multiline comment
-
-A weak multiline comment works like a strict multiline comment with the exception of the balancing rule, which does not apply to weak multiline comments. Thus, this comment is properly closed:
-
-```
->> This is a comment >> It is closed there: <<
-```
-
-As you can see, weak multiline comments only use two greater/less than signs.
 
 Both kinds of comments ignore the starting and ending lexemes of the other kind. That means, that this strict multiline comment is closed:
 
