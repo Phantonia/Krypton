@@ -39,6 +39,7 @@ namespace Krypton.Analysis.Lexical
 
         public Lexeme? NextLexeme()
         {
+            char? tmp = Code.TryGet(index);
             return Code.TryGet(index) switch
             {
                 null => null,
@@ -434,7 +435,11 @@ namespace Krypton.Analysis.Lexical
 
             while (true)
             {
-                if (index == Code.Length || (!Code[index].IsLetterOrUnderscore() | char.IsDigit(Code[index])))
+                bool temp = char.IsDigit(Code[index]);
+                char tmp = Code[index];
+                if (index == Code.Length
+                    || (!Code[index].IsLetterOrUnderscore()
+                        && !char.IsDigit(Code[index])))
                 {
                     identifier = Code[startIndex..index];
                     break;
@@ -462,6 +467,8 @@ namespace Krypton.Analysis.Lexical
 
             if (char.IsWhiteSpace(currentChar))
             {
+                index++;
+
                 for (; index < Code.Length; index++)
                 {
                     if (!char.IsWhiteSpace(Code[index]))
@@ -531,7 +538,8 @@ namespace Krypton.Analysis.Lexical
                     index++;
                     return new StringLiteralLexeme(Code[startIndex..endIndex], lineNumber);
                 }
-                else if (Code[index] == '\\')
+                else if (EscapeSequences.EscapeCharacters.ContainsKey(Code[index])
+                      || EscapeSequences.UnicodeSpecifiers.Contains(Code[index]))
                 {
                     escaped = !escaped;
                 }

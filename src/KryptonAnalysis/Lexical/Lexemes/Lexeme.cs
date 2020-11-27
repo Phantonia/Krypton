@@ -1,7 +1,9 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Diagnostics;
+using System.Runtime.Serialization;
 
 namespace Krypton.Analysis.Lexical.Lexemes
 {
+    [DebuggerDisplay("{DebuggerDisplay()}")]
     public abstract class Lexeme
     {
         protected Lexeme(int lineNumber)
@@ -16,6 +18,8 @@ namespace Krypton.Analysis.Lexical.Lexemes
         protected virtual void Construct() { }
 
         protected virtual void Construct(string value) { }
+
+        private string DebuggerDisplay() => $"{GetType().Name}: {Content}";
 
         public static TLexeme New<TLexeme>(int lineNumber)
             where TLexeme : LexemeWithoutValue

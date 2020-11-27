@@ -29,7 +29,8 @@ namespace Krypton.Analysis.Lexical
         private static void AddKeyword<TLexeme>(ImmutableDictionary<string, Func<int, Lexeme>>.Builder builder, string keyword)
             where TLexeme : KeywordLexeme
         {
-            builder.Add(keyword, lineNumber => Lexeme.New<TLexeme>(lineNumber));
+            builder.Add(keyword, Lexeme.New<TLexeme>);
+            //builder.Add(keyword, lineNumber => Lexeme.New<TLexeme>(lineNumber));
         }
     }
 }

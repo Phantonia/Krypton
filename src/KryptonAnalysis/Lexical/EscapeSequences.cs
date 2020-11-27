@@ -22,6 +22,13 @@ namespace Krypton.Analysis.Lexical
 
         public static ImmutableDictionary<char, char> EscapeCharacters { get; }
 
+        public static ImmutableArray<char> UnicodeSpecifiers { get; } = new[]
+        {
+            'b',
+            'd',
+            'x'
+        }.ToImmutableArray();
+
         public static bool TryParse(string input, out char output)
         {
             if (input.Length == 1)
