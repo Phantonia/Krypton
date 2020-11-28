@@ -174,7 +174,7 @@ An integer literal represents a whole number. It obeys the following rules:
 - It consists only of digits 0 to 9, except:
 - If the first character is a `0`, then the second character can be a `b` or `x`. This means, that the integer literal is in base 2 (`b` for binary) or 16 (`x` for hexadecimal).
 - If the integer literal is in base 16, it also allows the letters a through f. Casing doesn't matter, however it is a compile time error if the casing is not consistent (that means that lowercase and uppercase letters are mixed).
-- No matter the base, an integer literal can contain underscore characters `_`. If it is a binary or hexadecimal integer literal, these underscores are only permitted after the `b` or `x`. These underscores are ignored after lexical analysis and only aid the readability of large numbers.
+- No matter the base, an integer literal can contain underscore characters `_`. If it is a binary or hexadecimal integer literal, these underscores are only permitted after the `b` or `x`. More than one underscore is allowed after each other, and trailing underscores are permitted. These underscores are ignored after lexical analysis and only aid the readability of large numbers.
 
 These are examples of valid integer literals:
 
@@ -195,7 +195,7 @@ These are examples of invalid integer literals:
 0_b11010101
 ```
 
-Invalid in this case does not necessarily mean "Compile time error". The last example for example is split into two lexemes: the integer literal `0` and the identifier `_b11010101`.
+Invalid in this case does not necessarily mean that a compile time error is reported. The last example for example is split into two lexemes: the integer literal `0` and the identifier `_b11010101`.
 
 ### 2.9.2 Real literals
 
