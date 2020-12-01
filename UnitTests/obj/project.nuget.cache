@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "7+NBOemvgSDtMhW1o2WdTpolsfDgBNZCZBayGAXkZHy3BIlP1dlM5470M7xmJIeE5MWDPsOLU4f6cqrW+0qmlg==",
+  "dgSpecHash": "WbaQOD9ssIJg1qDTDSwmf1QIfF0f62VgLFTT3tYWnsrDD5ufkvKp1GqODNIORBS4MID1v4+wA9TOi3Sbm7AV+g==",
   "success": true,
-  "projectFilePath": "E:\\Documents\\Projects\\Software\\Krypton\\KryptonV5\\unitTests\\UnitTests.csproj",
+  "projectFilePath": "E:\\Documents\\Projects\\Software\\Krypton\\KryptonV5\\UnitTests\\UnitTests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Antonia\\.nuget\\packages\\microsoft.codecoverage\\16.5.0\\microsoft.codecoverage.16.5.0.nupkg.sha512",
     "C:\\Users\\Antonia\\.nuget\\packages\\microsoft.csharp\\4.0.1\\microsoft.csharp.4.0.1.nupkg.sha512",
