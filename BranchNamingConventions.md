@@ -37,7 +37,7 @@ Something like "AddFunctions" or "BindIdentifiers".
 
 - `AnlLxNewArrowLexeme`
 - `AnlGrParseFunctionCalls`
-- `AnlSeFixBindingIdentifiersBug`
+- `AnlSmFixBindingIdentifiersBug`
 - `GdgAddIndentation`
 - `CmpAddMiniSwitch`
 - `JtmModifiedRealType`
