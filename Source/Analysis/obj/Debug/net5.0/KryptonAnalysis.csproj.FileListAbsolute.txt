@@ -1,0 +1,12 @@
+E:\Documents\Projects\Software\Krypton\KryptonV5\src\KryptonAnalysis\bin\Debug\net5.0\KryptonAnalysis.deps.json
+E:\Documents\Projects\Software\Krypton\KryptonV5\src\KryptonAnalysis\bin\Debug\net5.0\KryptonAnalysis.dll
+E:\Documents\Projects\Software\Krypton\KryptonV5\src\KryptonAnalysis\bin\Debug\net5.0\ref\KryptonAnalysis.dll
+E:\Documents\Projects\Software\Krypton\KryptonV5\src\KryptonAnalysis\bin\Debug\net5.0\KryptonAnalysis.pdb
+E:\Documents\Projects\Software\Krypton\KryptonV5\src\KryptonAnalysis\obj\Debug\net5.0\KryptonAnalysis.csprojAssemblyReference.cache
+E:\Documents\Projects\Software\Krypton\KryptonV5\src\KryptonAnalysis\obj\Debug\net5.0\KryptonAnalysis.GeneratedMSBuildEditorConfig.editorconfig
+E:\Documents\Projects\Software\Krypton\KryptonV5\src\KryptonAnalysis\obj\Debug\net5.0\KryptonAnalysis.AssemblyInfoInputs.cache
+E:\Documents\Projects\Software\Krypton\KryptonV5\src\KryptonAnalysis\obj\Debug\net5.0\KryptonAnalysis.AssemblyInfo.cs
+E:\Documents\Projects\Software\Krypton\KryptonV5\src\KryptonAnalysis\obj\Debug\net5.0\KryptonAnalysis.csproj.CoreCompileInputs.cache
+E:\Documents\Projects\Software\Krypton\KryptonV5\src\KryptonAnalysis\obj\Debug\net5.0\KryptonAnalysis.dll
+E:\Documents\Projects\Software\Krypton\KryptonV5\src\KryptonAnalysis\obj\Debug\net5.0\ref\KryptonAnalysis.dll
+E:\Documents\Projects\Software\Krypton\KryptonV5\src\KryptonAnalysis\obj\Debug\net5.0\KryptonAnalysis.pdb

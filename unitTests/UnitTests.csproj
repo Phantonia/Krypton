@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\KryptonAnalysis\KryptonAnalysis.csproj" />
+    <ProjectReference Include="..\src\analysis\Krypton.Analysis.csproj" />
   </ItemGroup>
 
 </Project>
