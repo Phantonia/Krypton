@@ -1,12 +1,20 @@
 ﻿using System;
+using System.IO;
 
 namespace Krypton.Compiler
 {
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            if (args.Length >= 1 && File.Exists(args[0]))
+            {
+                Console.WriteLine($"Compiling file {args[0]}");
+            }
+            else
+            {
+                Console.WriteLine("Please paste the link to the file to compile.");
+            }
         }
     }
 }

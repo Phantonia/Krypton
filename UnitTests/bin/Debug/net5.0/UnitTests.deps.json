@@ -8,7 +8,9 @@
     ".NETCoreApp,Version=v5.0": {
       "UnitTests/1.0.0": {
         "dependencies": {
-          "KryptonAnalysis": "1.0.0",
+          "Krypton.Analysis": "1.0.0",
+          "Krypton.CodeGeneration": "1.0.0",
+          "Krypton.Compiler": "1.0.0",
           "Microsoft.NET.Test.Sdk": "16.5.0",
           "NUnit": "3.12.0",
           "NUnit3TestAdapter": "3.16.1"
@@ -866,9 +868,19 @@
           }
         }
       },
-      "KryptonAnalysis/1.0.0": {
+      "Krypton.Analysis/1.0.0": {
         "runtime": {
-          "KryptonAnalysis.dll": {}
+          "Krypton.Analysis.dll": {}
+        }
+      },
+      "Krypton.CodeGeneration/1.0.0": {
+        "runtime": {
+          "Krypton.CodeGeneration.dll": {}
+        }
+      },
+      "Krypton.Compiler/1.0.0": {
+        "runtime": {
+          "Krypton.Compiler.dll": {}
         }
       }
     }
@@ -1320,7 +1332,17 @@
       "path": "system.xml.xpath.xmldocument/4.3.0",
       "hashPath": "system.xml.xpath.xmldocument.4.3.0.nupkg.sha512"
     },
-    "KryptonAnalysis/1.0.0": {
+    "Krypton.Analysis/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Krypton.CodeGeneration/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Krypton.Compiler/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

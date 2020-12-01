@@ -1248,7 +1248,11 @@
       },
       "Krypton.Compiler/1.0.0": {
         "type": "project",
-        "framework": ".NETCoreApp,Version=v3.1",
+        "framework": ".NETCoreApp,Version=v5.0",
+        "dependencies": {
+          "Krypton.Analysis": "1.0.0",
+          "Krypton.CodeGeneration": "1.0.0"
+        },
         "compile": {
           "bin/placeholder/Krypton.Compiler.dll": {}
         },

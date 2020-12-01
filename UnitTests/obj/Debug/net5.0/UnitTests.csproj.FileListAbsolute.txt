@@ -87,8 +87,6 @@ E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\bin\Debug\net5.0\zh-H
 E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\bin\Debug\net5.0\zh-Hant\Microsoft.TestPlatform.CommunicationUtilities.resources.dll
 E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\bin\Debug\net5.0\zh-Hant\Microsoft.TestPlatform.CrossPlatEngine.resources.dll
 E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\bin\Debug\net5.0\zh-Hant\Microsoft.VisualStudio.TestPlatform.Common.resources.dll
-E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\bin\Debug\net5.0\KryptonAnalysis.dll
-E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\bin\Debug\net5.0\KryptonAnalysis.pdb
 E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\obj\Debug\net5.0\UnitTests.csprojAssemblyReference.cache
 E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\obj\Debug\net5.0\UnitTests.GeneratedMSBuildEditorConfig.editorconfig
 E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\obj\Debug\net5.0\UnitTests.AssemblyInfoInputs.cache
@@ -99,3 +97,10 @@ E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\obj\Debug\net5.0\Unit
 E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\obj\Debug\net5.0\ref\UnitTests.dll
 E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\obj\Debug\net5.0\UnitTests.pdb
 E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\obj\Debug\net5.0\UnitTests.genruntimeconfig.cache
+E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\bin\Debug\net5.0\Krypton.Compiler.exe
+E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\bin\Debug\net5.0\Krypton.Analysis.dll
+E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\bin\Debug\net5.0\Krypton.CodeGeneration.dll
+E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\bin\Debug\net5.0\Krypton.Compiler.dll
+E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\bin\Debug\net5.0\Krypton.Analysis.pdb
+E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\bin\Debug\net5.0\Krypton.CodeGeneration.pdb
+E:\Documents\Projects\Software\Krypton\KryptonV5\UnitTests\bin\Debug\net5.0\Krypton.Compiler.pdb
