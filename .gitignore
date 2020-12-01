@@ -1,6 +1,6 @@
 /.vs/
 Krypton.sln
 _*.*
-*/bin/
-*/obj/
+Source/**/bin/
+Source/**/obj/
 *.odt\#
