@@ -14,4 +14,10 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Source\Analysis\Krypton.Analysis.csproj" />
+    <ProjectReference Include="..\Source\CodeGeneration\Krypton.CodeGeneration.csproj" />
+    <ProjectReference Include="..\Source\Compiler\Krypton.Compiler.csproj" />
+  </ItemGroup>
+
 </Project>
