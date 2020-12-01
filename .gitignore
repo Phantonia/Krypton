@@ -3,6 +3,4 @@ Krypton.sln
 _*.*
 /src/KryptonAnalysis/bin/
 /src/KryptonAnalysis/obj/
-/UnitTests/
-/ConsoleTest/
 *.odt\#
