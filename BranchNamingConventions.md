@@ -20,14 +20,15 @@ A prefix to specify the project the new feature is done on.
 - CodeGeneration: `Cdg`
 - Compiler: `Cmp`
 - JsCompilationTemplate: `Jtm`
+- Specification: `Spc`
 
 ## Part
 
 The part of the project that is modified.
 
-| Analysis                                                     | CodeGeneration               | Compiler                  | JsCompilationTemplate        |
-| ------------------------------------------------------------ | ---------------------------- | ------------------------- | ---------------------------- |
-| Lexical analysis: `Lx`<br />Grammatical analysis: `Gr`<br />Semantical analysis: `Sm` | This part has to be omitted. | This part has to omitted. | This part has to be omitted. |
+| Analysis                                                     | CodeGeneration               | Compiler                  | JsCompilationTemplate        | Specification                |
+| ------------------------------------------------------------ | ---------------------------- | ------------------------- | ---------------------------- | ---------------------------- |
+| Lexical analysis: `Lx`<br />Grammatical analysis: `Gr`<br />Semantical analysis: `Sm` | This part has to be omitted. | This part has to omitted. | This part has to be omitted. | This part has to be omitted. |
 
 ## Describe feature
 
