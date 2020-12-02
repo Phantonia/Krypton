@@ -31,5 +31,27 @@ The identifier has to be a legal identifier and type has to be a legal datatype.
 
 Parameters are available in the body of the function as variables of the specified type.
 
-## 8.3 The `Return` statement
+## 8.3 The return type
 
+The `As` clause specifies the value that is going to be returned by the function and is going to be the value in an expression if the function call is used as an argument.
+
+It can be omitted. In that case, the function doesn't return anything. A call to such a function may only be used as a statement but not as an expression.
+
+## 8.4 The `Return` statement
+
+The `Return` statement directly terminates execution of the function and returns the variable that the function call expression has.
+
+Its syntax is:
+
+```
+Return value; ... Returns a value
+Return;       ... Returns no value
+```
+
+If a return type is specified, `Return` with value has to be used. In that case, the type of the value has to match the return type.
+
+If no return is type is specified, only `Return` without value is permitted.
+
+## 8.5 Scope
+
+The function body is a new scope. See <u>4.5 Scope</u>.
