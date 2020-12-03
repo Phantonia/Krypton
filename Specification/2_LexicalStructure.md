@@ -2,7 +2,7 @@
 
 ## 2.1 Case
 
-Scripts are entirely case sensitive. That means, that an identifier `Something` and an identifier `something` (note the different casing of the "S") do not mean the same thing and can coexist. Casing also affects keywords. For example, the keyword `Var` is used for declaring a variable and due to being a *reserved keyword*, it cannot be used as and identifier, while `var` is a valid identifier.
+Scripts are entirely case sensitive. That means, that an identifier `Something` and an identifier `something` (note the different casing of the "S") do not mean the same thing and can coexist. Casing also affects keywords. For example, the keyword `Var` is used for declaring a variable and due to being a reserved keyword, it cannot be used as and identifier, while `var` is a valid identifier.
 
 ## 2.2 Whitespace
 
@@ -10,21 +10,21 @@ For the most part, scripts are whitespace insensitive. That means, that no white
 
 For example, all three of these scripts are legal and mean the same thing:
 
-```vb
+```
 Out "What's your name?";
 Var name = Input();
 If name.Length > 10
 {
-        Out "Oh, you have a long name!";
+	Out "Oh, you have a long name!";
 }
 Out "Hello " + name;
 ```
 
-```vb
+```
 Out"What's your name?";Var name=Input();If name.Length>10{Out"Oh, you have a long name!";}Out"Hello "+name;
 ```
 
-```vb
+```
 Out "What's your name?";
 	Var name = Input();
 		If name.Length > 10
@@ -39,7 +39,7 @@ Out "Hello " + name;
 
 The only situation in which a whitespace character changes the meaning of a program is between two identifiers, two reserved keywords or one identifier and one keyword. Consider the following situation:
 
-```vb
+```
 Var x As String;
 VarxAsString;
 ```
@@ -56,11 +56,13 @@ There are three kinds of comments:
 
 A single line comment is opened using three dot characters `.` and does not have to be closed as it is considered closed at the end of the line.
 
-```vb
+```
 Out "Hello world!"; ... this is a comment
 ```
 
 ###  2.3.2 Weak multiline comment
+
+A weak multiline comment is opened using two consecutive greater than characters `>` and closed using two consecutive less than characters `<`. Because of this syntax, it is possible for a weak multiline comment to span multiple lines. However, there is no requirement for that.
 
 A weak multiline comment works like a strict multiline comment with the exception of the balancing rule, which does not apply to weak multiline comments. Thus, this comment is properly closed:
 
@@ -72,18 +74,18 @@ As you can see, weak multiline comments only use two greater/less than signs.
 
 ### 2.3.3 Strict multiline comment
 
-A strict multiline comment is opened using three greater than characters `>` and closed using three less than characters `<`. Because of this syntax, it is possible for a strict multiline comment to span multiple lines. However, there is no requirement for that.
+A strict multiline comment works like a weak multiline comment, except that it uses three consecutive characters for the starting and the ending lexeme.
 
-```vb
+```
 Out "Hello world!"; >>> This is a comment <<<
 >>> This is also a comment
 It is not closed on the same line <<<
 ```
 
-An additional rule applies. The number of starting lexemes `>>>` has to equal the number of ending lexemes `<<<`. This means, that the following comment is not closed, for example:
+An additional rule applies. The number of starting lexemes `>>>` has to equal the number of ending lexemes `<<<`. That means, that the following comment is not closed, for example:
 
 ```
->>> This is comment >> It is not closed there: <<<
+>>> This is comment >>> It is not closed there: <<<
 ```
 
 That is because there are two starting lexemes but only one ending lexeme. To properly close this comment, the code has to look like this:

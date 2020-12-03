@@ -64,12 +64,10 @@
 8. Functions
    1. Identifier
    2. Parameters
-      1. Pass by value
-      2. Pass by reference
-      3. Out parameters
-      4. Let parameters
-   3. Return value
-      1. Datatype
-      2. Return statement
-9. 
+   3. The return type
+   4. The `Return` statement
+   5. Scope
+9. Top level code
+   1. Scope
+10. Errors
 
