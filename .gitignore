@@ -3,4 +3,6 @@ Krypton.sln
 _*.*
 Source/**/bin/
 Source/**/obj/
+UnitTests/**/bin/
+UnitTests/**/obj/
 *.odt\#
