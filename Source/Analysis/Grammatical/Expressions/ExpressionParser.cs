@@ -26,11 +26,6 @@ namespace Krypton.Analysis.Grammatical.Expressions
         {
             throw new NotImplementedException();
         }
-
-        protected ExpressionNode ParseSingleLexeme(Lexeme lexeme)
-        {
-
-        }
     }
 
     internal sealed class OperandExpressionParser : ExpressionParser
