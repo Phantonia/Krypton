@@ -1,4 +1,5 @@
 ﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
+using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations;
 using Krypton.Analysis.Grammatical.Expressions;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
@@ -67,6 +68,190 @@ namespace UnitTests
             Assert.IsNotNull(root);
             Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(root);
             Assert.AreEqual(6, ((IntegerLiteralExpressionNode)root!).Value);
+        }
+
+        [Test]
+        public void ChainResolutionTest()
+        {
+            BinaryOperationChainNode chain = new(1); // Arbitrary line number
+            chain.AddOperand(new IntegerLiteralExpressionNode(4, 1));
+            chain.AddOperator(new PlusLexeme(1));
+            chain.AddOperand(new IntegerLiteralExpressionNode(4, 1));
+            chain.AddOperator(new AsteriskLexeme(1));
+            chain.AddOperand(new IntegerLiteralExpressionNode(4, 1));
+            // 4 + 4 * 4 = 20
+
+            ExpressionNode node =  chain.Resolve();
+
+            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(node);
+
+            BinaryOperationExpressionNode boen = (node as BinaryOperationExpressionNode)!;
+
+            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(boen.Left);
+            Assert.IsAssignableFrom<MultiplicationBinaryOperationExpressionNode>(boen.Right);
+        }
+
+        [Test]
+        public void OperationTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("3 + 4").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(root);
+
+            var aboen = (AdditionBinaryOperationExpressionNode)root!;
+
+            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(aboen.Left);
+            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(aboen.Right);
+
+            long left = ((IntegerLiteralExpressionNode)aboen.Left).Value;
+            long right = ((IntegerLiteralExpressionNode)aboen.Right).Value;
+
+            Assert.AreEqual(3, left);
+            Assert.AreEqual(4, right);
+        }
+
+        [Test]
+        public void OperationWithBracketsTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("(3 + 4)").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(root);
+
+            var aboen = (AdditionBinaryOperationExpressionNode)root!;
+
+            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(aboen.Left);
+            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(aboen.Right);
+
+            long left = ((IntegerLiteralExpressionNode)aboen.Left).Value;
+            long right = ((IntegerLiteralExpressionNode)aboen.Right).Value;
+
+            Assert.AreEqual(3, left);
+            Assert.AreEqual(4, right);
+        }
+
+        [Test]
+        public void OperationWithIndividualBracketsTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("(3) + (4)").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(root);
+
+            var aboen = (AdditionBinaryOperationExpressionNode)root!;
+
+            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(aboen.Left);
+            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(aboen.Right);
+
+            long left = ((IntegerLiteralExpressionNode)aboen.Left).Value;
+            long right = ((IntegerLiteralExpressionNode)aboen.Right).Value;
+
+            Assert.AreEqual(3, left);
+            Assert.AreEqual(4, right);
+        }
+
+        [Test]
+        public void LongerOperationTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("3 + 4 * 5").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(root);
+
+            var aboen = (AdditionBinaryOperationExpressionNode)root!;
+
+            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(aboen.Left);
+            Assert.IsAssignableFrom<MultiplicationBinaryOperationExpressionNode>(aboen.Right);
+
+            long left = ((IntegerLiteralExpressionNode)aboen.Left).Value;
+            Assert.AreEqual(3, left);
+        }
+
+        [Test]
+        public void LongerOperationWithBracketsTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("(3 + 4 * 5)").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(root);
+
+            var aboen = (AdditionBinaryOperationExpressionNode)root!;
+
+            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(aboen.Left);
+            Assert.IsAssignableFrom<MultiplicationBinaryOperationExpressionNode>(aboen.Right);
+
+            long left = ((IntegerLiteralExpressionNode)aboen.Left).Value;
+            Assert.AreEqual(3, left);
+        }
+
+        [Test]
+        public void OperationWithNestedOperationsTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("(3 + 4) * 5").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<MultiplicationBinaryOperationExpressionNode>(root);
+
+            var mboen = (MultiplicationBinaryOperationExpressionNode)root!;
+
+            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(mboen.Left);
+            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(mboen.Right);
+
+            long right = ((IntegerLiteralExpressionNode)mboen.Right).Value;
+            Assert.AreEqual(5, right);
+
+            var aboen = (AdditionBinaryOperationExpressionNode)mboen.Left;
+
+            long left = ((IntegerLiteralExpressionNode)aboen.Left).Value;
+            right = ((IntegerLiteralExpressionNode)aboen.Right).Value;
+
+            Assert.AreEqual(3, left);
+            Assert.AreEqual(4, right);
+        }
+
+        [Test]
+        public void OperationWithSubExpressionsOnBothSidesTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("(3 + 4) / (5 - 6)").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<RealDivisionBinaryOperationExpressionNode>(root);
+
+            var mboen = (RealDivisionBinaryOperationExpressionNode)root!;
+
+            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(mboen.Left);
+            Assert.IsAssignableFrom<SubtractionBinaryOperationExpressionNode>(mboen.Right);
+        }
+
+        [Test]
+        public void IntegerDivisionOperationTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("(3 + 4) Div (5 - 6)").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<IntegerDivisionBinaryOperationExpressionNode>(root);
+
+            var mboen = (BinaryOperationExpressionNode)root!;
+
+            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(mboen.Left);
+            Assert.IsAssignableFrom<SubtractionBinaryOperationExpressionNode>(mboen.Right);
         }
     }
 }

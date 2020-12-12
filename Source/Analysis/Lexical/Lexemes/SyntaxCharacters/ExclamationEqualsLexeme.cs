@@ -2,12 +2,12 @@
 
 namespace Krypton.Analysis.Lexical.Lexemes.SyntaxCharacters
 {
-    public sealed class ExclamationEqualsLexeme : OperatorLexeme
+    public sealed class ExclamationEqualsLexeme : SyntaxCharacterLexeme, IOperatorLexeme
     {
         public ExclamationEqualsLexeme(int lineNumber) : base(lineNumber) { }
 
         public override string Content => "!=";
 
-        public override OperatorPrecedenceGroup PrecedenceGroup => OperatorPrecedenceGroup.Equality;
+        public OperatorPrecedenceGroup PrecedenceGroup => OperatorPrecedenceGroup.Equality;
     }
 }

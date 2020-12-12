@@ -14,11 +14,7 @@
         BitwiseXor,
         BitwiseAnd,
         Additive,
-        RationalDivision,
-        IntegerDivision,
-        RealDivision,
-        Modulo,
-        Multiplication,
+        Multiplicative,
         Exponantiation,
         BitwiseNotAndNegation
     }
