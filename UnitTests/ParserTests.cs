@@ -56,5 +56,17 @@ namespace UnitTests
             ExpressionNode? root = new ExpressionParser(lexemes).ParseNextExpression(ref index);
             Assert.IsNull(root);
         }
+
+        [Test]
+        public void SeveralNestedParensTest()
+        {
+            LexemeCollection lexemes = new Lexer("((6))").LexAll();
+
+            int index = 0;
+            ExpressionNode? root = new ExpressionParser(lexemes).ParseNextExpression(ref index);
+            Assert.IsNotNull(root);
+            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(root);
+            Assert.AreEqual(6, ((IntegerLiteralExpressionNode)root!).Value);
+        }
     }
 }
