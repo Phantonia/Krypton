@@ -13,5 +13,6 @@
 
         // Grammatical errors
         ExpectedSemicolon = 101,
+        ExpectedClosingParenthesis = 102,
     }
 }
