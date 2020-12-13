@@ -230,9 +230,9 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<RealDivisionBinaryOperationExpressionNode>(root);
+            Assert.IsAssignableFrom<RationalDivisionBinaryOperationExpressionNode>(root);
 
-            var mboen = (RealDivisionBinaryOperationExpressionNode)root!;
+            var mboen = (RationalDivisionBinaryOperationExpressionNode)root!;
 
             Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(mboen.Left);
             Assert.IsAssignableFrom<SubtractionBinaryOperationExpressionNode>(mboen.Right);
@@ -278,6 +278,36 @@ namespace UnitTests
             Assert.IsAssignableFrom<BitwiseOrBinaryOperationExpressionNode>(root);
 
             Assert.AreEqual(index, 8);
+        }
+
+        [Test]
+        public void LogicalOperatorsTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("True And False Or False").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<LogicalOrBinaryOperationExpressionNode>(root);
+
+            BinaryOperationExpressionNode orOperation = (BinaryOperationExpressionNode)root!;
+
+            Assert.IsAssignableFrom<BooleanLiteralExpressionNode>(orOperation.Right);
+            Assert.IsAssignableFrom<LogicalAndBinaryOperationExpressionNode>(orOperation.Left);
+        }
+
+        [Test]
+        public void StringTest()
+        {
+            int index = 0;
+
+            LexemeCollection lexemes = new Lexer(@"""x""").LexAll();
+
+            ExpressionParser parser = new(lexemes);
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<StringLiteralExpressionNode>(root);
         }
     }
 }

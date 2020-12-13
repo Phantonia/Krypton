@@ -435,7 +435,7 @@ namespace Krypton.Analysis.Lexical
 
             string identifier;
 
-            while (true)
+            for (; index < Code.Length; index++)
             {
                 bool temp = char.IsDigit(Code[index]);
                 char tmp = Code[index];
@@ -444,12 +444,13 @@ namespace Krypton.Analysis.Lexical
                         && !char.IsDigit(Code[index])))
                 {
                     identifier = Code[startIndex..index];
-                    break;
+                    goto LeftForLoop;
                 }
-
-                index++;
             }
 
+            identifier = Code[startIndex..];
+
+            LeftForLoop:
             if (identifier == "_")
             {
                 return new UnderscoreLexeme(lineNumber);
@@ -540,8 +541,7 @@ namespace Krypton.Analysis.Lexical
                     index++;
                     return new StringLiteralLexeme(Code[startIndex..endIndex], lineNumber);
                 }
-                else if (EscapeSequences.EscapeCharacters.ContainsKey(Code[index])
-                      || EscapeSequences.UnicodeSpecifiers.Contains(Code[index]))
+                else if (Code[index] == '\\')
                 {
                     escaped = !escaped;
                 }
