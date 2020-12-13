@@ -14,11 +14,14 @@ namespace Krypton.Analysis.Lexical
             AddKeyword<AndKeywordLexeme>(builder, "And");
             AddKeyword<AsKeywordLexeme>(builder, "As");
             AddKeyword<DivKeywordLexeme>(builder, "Div");
+            AddKeyword<LeftKeywordLexeme>(builder, "Left");
             AddKeyword<ModKeywordLexeme>(builder, "Mod");
             AddKeyword<NotKeywordLexeme>(builder, "Not");
             AddKeyword<OrKeywordLexeme>(builder, "Or");
+            AddKeyword<RightKeywordLexeme>(builder, "Right");
             AddKeyword<VarKeywordLexeme>(builder, "Var");
             AddKeyword<OutKeywordLexeme>(builder, "Out");
+            AddKeyword<XorKeywordLexeme>(builder, "Xor");
             builder.Add("True", lineNumber => new BooleanLiteralLexeme(true, lineNumber));
             builder.Add("False", lineNumber => new BooleanLiteralLexeme(false, lineNumber));
             ReservedKeywords = builder.ToImmutable();
@@ -30,7 +33,6 @@ namespace Krypton.Analysis.Lexical
             where TLexeme : KeywordLexeme
         {
             builder.Add(keyword, Lexeme.New<TLexeme>);
-            //builder.Add(keyword, lineNumber => Lexeme.New<TLexeme>(lineNumber));
         }
     }
 }

@@ -19,6 +19,13 @@ namespace Krypton.Analysis.Grammatical.Expressions
 
         public ExpressionNode? ParseNextExpression(ref int index)
         {
+            ExpressionNode? root = ParseNextExpressionInternal(ref index);
+            index++;
+            return root;
+        }
+
+        private ExpressionNode? ParseNextExpressionInternal(ref int index)
+        {
             ExpressionNode? root = ParseSubExpression(ref index);
 
             if (root == null)
@@ -93,10 +100,10 @@ namespace Krypton.Analysis.Grammatical.Expressions
                     return new ImaginaryLiteralExpressionNode(imll.Value, imll.LineNumber);
                 case RealLiteralLexeme rll:
                     return new RealLiteralExpressionNode(rll.Value, rll.LineNumber);
-                case ParenthesisOpeningLexeme pol:
+                case ParenthesisOpeningLexeme:
                     {
                         index++;
-                        ExpressionNode? root = ParseNextExpression(ref index);
+                        ExpressionNode? root = ParseNextExpressionInternal(ref index);
 
                         index++;
 

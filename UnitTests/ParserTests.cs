@@ -253,5 +253,31 @@ namespace UnitTests
             Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(mboen.Left);
             Assert.IsAssignableFrom<SubtractionBinaryOperationExpressionNode>(mboen.Right);
         }
+
+        [Test]
+        public void BitwiseOperatorsPrecedenceTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("3 & 4 + 5").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<BitwiseAndBinaryOperationExpressionNode>(root);
+        }
+
+        [Test]
+        public void RangeTest()
+        {
+            int index = 3;
+            
+            //                                       0   1 2 3 4 5 6 7 8
+            ExpressionParser parser = new(new Lexer("Var x = 5 | 8 + 9;").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<BitwiseOrBinaryOperationExpressionNode>(root);
+
+            Assert.AreEqual(index, 8);
+        }
     }
 }

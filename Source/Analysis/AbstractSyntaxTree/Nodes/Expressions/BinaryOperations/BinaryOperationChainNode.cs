@@ -91,9 +91,15 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations
                 ModKeywordLexeme => new ModuloBinaryOperationExpressionNode(left, right, line),
                 PlusLexeme => new AdditionBinaryOperationExpressionNode(left, right, line),
                 MinusLexeme => new SubtractionBinaryOperationExpressionNode(left, right, line),
+                AmpersandLexeme => new BitwiseAndBinaryOperationExpressionNode(left, right, line),
+                PipeLexeme => new BitwiseOrBinaryOperationExpressionNode(left, right, line),
+                CaretLexeme => new BitwiseXOrBinaryOperationExpressionNode(left, right, line),
+                LeftKeywordLexeme => new BitwiseLeftShiftBinaryOperationExpressionNode(left, right, line),
+                RightKeywordLexeme => new BitwiseRightShiftBinaryOperationExpressionNode(left, right, line),
                 DoubleEqualsLexeme => new EqualityBinaryOperationExpressionNode(left, right, line),
                 ExclamationEqualsLexeme => new UnequalityBinaryOperationExpressionNode(left, right, line),
                 AndKeywordLexeme => new LogicalAndBinaryOperationExpressionNode(left, right, line),
+                XorKeywordLexeme => new LogicalXOrBinaryOperationExpressionNode(left, right, line),
                 OrKeywordLexeme => new LogicalOrBinaryOperationExpressionNode(left, right, line),
                 _ => OnFailure()
             };

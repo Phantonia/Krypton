@@ -39,7 +39,6 @@ namespace Krypton.Analysis.Lexical
 
         public Lexeme? NextLexeme()
         {
-            char? tmp = Code.TryGet(index);
             return Code.TryGet(index) switch
             {
                 null => null,
@@ -63,6 +62,9 @@ namespace Krypton.Analysis.Lexical
                 '*' => LexAsteriskOrDoubleAsteriskOrAsteriskEqualsOrDoubleAsteriskEquals(),
                 '/' => LexSyntaxCharacterWithPossibleEquals<ForeSlashLexeme, ForeSlashEqualsLexeme>(),
                 '\\' => LexSpecificLexeme<BackSlashLexeme>(),
+                '&' => LexSpecificLexeme<AmpersandLexeme>(),
+                '|' => LexSpecificLexeme<PipeLexeme>(),
+                '^' => LexSpecificLexeme<CaretLexeme>(),
 
                 '"' => LexStringLiteralLexeme(),
                 '\'' => LexCharLiteralLexeme(),
