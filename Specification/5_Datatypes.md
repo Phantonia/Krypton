@@ -6,14 +6,14 @@
 
 Every kind of literal has a built-in datatype associated with it. For a list of built-in datatypes, see <u>5.4 Built-in datatypes</u>.
 
-| Kind of literal   | Datatype  | Example         |
-| ----------------- | --------- | --------------- |
-| Integer literal   | `Int`     | `42`            |
-| Real literal      | `Real`    | `3.14159265`    |
-| Imaginary literal | `Complex` | `4i`            |
-| Character literal | `Char`    | `'a'`           |
-| String literal    | `String`  | `"Hello world"` |
-| Boolean literal   | `Bool`    | `True`, `False` |
+| Kind of literal   | Datatype   | Example         |
+| ----------------- | ---------- | --------------- |
+| Integer literal   | `Int`      | `42`            |
+| Rational literal  | `Rational` | `3.14159265`    |
+| Imaginary literal | `Complex`  | `4i`            |
+| Character literal | `Char`     | `'a'`           |
+| String literal    | `String`   | `"Hello world"` |
+| Boolean literal   | `Bool`     | `True`, `False` |
 
 ## 5.3 Default values
 
@@ -23,14 +23,14 @@ The default value of a type can be used in a typed context using the `Default` k
 
 The following list lists the default values for built-in datatypes:
 
-| Datatype  | Default value |
-| --------- | ------------- |
-| `Int`     | `0`           |
-| `Real`    | `0.0`         |
-| `Complex` | `0 + 0i`      |
-| `Char`    | `'\0'`        |
-| `String`  | `""`          |
-| `Bool`    | `False`       |
+| Datatype   | Default value |
+| ---------- | ------------- |
+| `Int`      | `0`           |
+| `Rational` | `0.0` / `0/1` |
+| `Complex`  | `0 + 0i`      |
+| `Char`     | `'\0'`        |
+| `String`   | `""`          |
+| `Bool`     | `False`       |
 
 ### 5.3.1 Nullable types
 

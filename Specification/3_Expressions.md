@@ -4,7 +4,6 @@ Expressions compute values at runtime. They can be used in the following context
 
 - As initializers of variables
 - As arguments of functions
-- As the argument of an `Out` statement
 - As the argument of a `Return` statement
 - As subexpressions, so as operands to other kinds of expressions
 - etc.

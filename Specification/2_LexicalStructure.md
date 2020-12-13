@@ -10,36 +10,36 @@ For the most part, scripts are whitespace insensitive. That means, that no white
 
 For example, all three of these scripts are legal and mean the same thing:
 
-```vb
-Out "What's your name?";
+```
+Output("What's your name?");
 Var name = Input();
 If name.Length > 10
 {
-        Out "Oh, you have a long name!";
+        Output("Oh, you have a long name!");
 }
-Out "Hello " + name;
+Output("Hello " + name);
 ```
 
-```vb
-Out"What's your name?";Var name=Input();If name.Length>10{Out"Oh, you have a long name!";}Out"Hello "+name;
+```
+Output("What's your name?");Var name=Input();If name.Length>10{Output("Oh, you have a long name!");}Output("Hello "+name);
 ```
 
-```vb
-Out "What's your name?";
+```
+Output("What's your name?");
 	Var name = Input();
 		If name.Length > 10
 			{
-        		Out "Oh, you have a long name!";
+        		Output("Oh, you have a long name!");
 					}
     
     
     
-Out "Hello " + name;
+Output("Hello " + name);
 ```
 
 The only situation in which a whitespace character changes the meaning of a program is between two identifiers, two reserved keywords or one identifier and one keyword. Consider the following situation:
 
-```vb
+```
 Var x As String;
 VarxAsString;
 ```
@@ -56,8 +56,8 @@ There are three kinds of comments:
 
 A single line comment is opened using three dot characters `.` and does not have to be closed as it is considered closed at the end of the line.
 
-```vb
-Out "Hello world!"; ... this is a comment
+```
+Output("Hello world!"); ... this is a comment
 ```
 
 ###  2.3.2 Weak multiline comment
@@ -74,8 +74,8 @@ As you can see, weak multiline comments only use two greater/less than signs.
 
 A strict multiline comment is opened using three greater than characters `>` and closed using three less than characters `<`. Because of this syntax, it is possible for a strict multiline comment to span multiple lines. However, there is no requirement for that.
 
-```vb
-Out "Hello world!"; >>> This is a comment <<<
+```
+Output("Hello world!"); >>> This is a comment <<<
 >>> This is also a comment
 It is not closed on the same line <<<
 ```
@@ -197,22 +197,22 @@ These are examples of invalid integer literals:
 
 Invalid in this case does not necessarily mean that a compile time error is reported. The last example for example is split into two lexemes: the integer literal `0` and the identifier `_b11010101`.
 
-### 2.9.2 Real literals
+### 2.9.2 Rational literals
 
-A real literal represents a real number. It obeys the following rules:
+A rational literal represents a rational number. It obeys the following rules:
 
 - It consists only of digits 0 to 9, except:
-- It has to contain exactly one dot character `.` to represent the decimal point. If it lacks it, it is not a real but an integer literal. The dot may not be the first or last character.
+- It has to contain exactly one dot character `.` to represent the decimal point. If it lacks it, it is not a rational but an integer literal. The dot may not be the first or last character.
 - It may also have the underscores as described under Integer literals. However, these underscores are not allow directly before or directly after the decimal point.
 
-These are examples of valid real literals:
+These are examples of valid rational literals:
 
 ```
 3.14159265
 3.141_592_65
 ```
 
-These are examples of invalid real literals, that are also analyzed as something other than a real literal:
+These are examples of invalid rational literals, that are also analyzed as something other than a rational literal:
 
 ```
 3_.14159
@@ -223,7 +223,7 @@ These are examples of invalid real literals, that are also analyzed as something
 
 ### 2.9.3 Imaginary literals
 
-Imaginary literals are any integer or real literals, if they are immediately followed by an `i`.
+Imaginary literals are any integer or rational literals, if they are immediately followed by a lowercase  `i`.
 
 For example, `4i` is an imaginary literal.
 
@@ -233,7 +233,7 @@ To get the number i itself, the imaginary literal `1i` has to be used.
 
 Syntax characters are the punctuation of the language and operators like `+`. They are always analyzed greedily. For example, take this snippet of code:
 
-```vb
+```
 x += 5;
 ```
 
