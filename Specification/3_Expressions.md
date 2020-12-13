@@ -39,7 +39,7 @@ Binary operators take two subexpressions as their left and right operands and re
 
 The following binary operators exist:
 
-`x + y`, `x - y`, `x * y`, `x / y`, `x Div y`, `x Over y`, `x Mod y`, `x ** y`, `x & y`, `x ^ y`, `x | y`, `x == y`, `x != y`, `x > y`, `x < y`, `x >= y`, `x <= y`, `x And y`, `x Or y`, `x Xor y`
+`x + y`, `x - y`, `x * y`, `x / y`, `x Div y`, `x Mod y`, `x ** y`, `x & y`, `x ^ y`, `x | y`, `x == y`, `x != y`, `x > y`, `x < y`, `x >= y`, `x <= y`, `x And y`, `x Or y`, `x Xor y`
 
 ### 3.3.3 Operator precedence
 
@@ -47,20 +47,20 @@ Operator precedence decides the ambiguity of a case like this: `x + y * z`. Eval
 
 This is a full table of precedence:
 
-| Precedence | Name of group          | Concrete operators                                 |
-| ---------- | ---------------------- | -------------------------------------------------- |
-| 11         | Unary number operators | `-x`, `~x`                                         |
-| 10         | Exponentiation         | `x ** y`                                           |
-| 9          | Multiplicative         | `x * y`, `x / y`, `x Div y`, `x Mod y`, `x Over y` |
-| 8          | Additive               | `x + y`, `x - y`                                   |
-| 7          | Bitwise                | `x & y`, `x ^ y`, `x | y`                          |
-| 6          | Shift                  | `x Right y`, `x Left y`                            |
-| 5          | Comparison             | `x < y`, `x <= y`, `x >= y`, `x > y`               |
-| 4          | Equality               | `x == y`, `x != y`                                 |
-| 3          | Logical Not            | `Not x`                                            |
-| 2          | Logical And            | `x And y`                                          |
-| 1          | Logical XOr            | `x Xor y`                                          |
-| 0          | Logical Or             | `x Or y`                                           |
+| Precedence | Name of group          | Concrete operators                     |
+| ---------- | ---------------------- | -------------------------------------- |
+| 11         | Unary number operators | `-x`, `~x`                             |
+| 10         | Exponentiation         | `x ** y`                               |
+| 9          | Multiplicative         | `x * y`, `x / y`, `x Div y`, `x Mod y` |
+| 8          | Additive               | `x + y`, `x - y`                       |
+| 7          | Bitwise                | `x & y`, `x ^ y`, `x | y`              |
+| 6          | Shift                  | `x Right y`, `x Left y`                |
+| 5          | Comparison             | `x < y`, `x <= y`, `x >= y`, `x > y`   |
+| 4          | Equality               | `x == y`, `x != y`                     |
+| 3          | Logical Not            | `Not x`                                |
+| 2          | Logical And            | `x And y`                              |
+| 1          | Logical XOr            | `x Xor y`                              |
+| 0          | Logical Or             | `x Or y`                               |
 
 ### 3.3.4 Short circuiting
 
