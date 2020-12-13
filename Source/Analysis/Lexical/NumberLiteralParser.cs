@@ -167,9 +167,9 @@ namespace Krypton.Analysis.Lexical
             }
         }
 
-        public static double ParseReal(string input)
+        public static double ParseRational(string input)
         {
-            if (TryParseReal(input, out double output))
+            if (TryParseRational(input, out double output))
             {
                 return output;
             }
@@ -179,7 +179,7 @@ namespace Krypton.Analysis.Lexical
             }
         }
 
-        public static bool TryParseReal(string input, out double output)
+        public static bool TryParseRational(string input, out double output)
         {
             checked
             {

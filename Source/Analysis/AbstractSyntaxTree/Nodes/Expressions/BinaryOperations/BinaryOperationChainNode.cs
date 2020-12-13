@@ -87,7 +87,7 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations
                 DoubleAsteriskLexeme => new ExponentiationBinaryOperationExpressionNode(left, right, line),
                 AsteriskLexeme => new MultiplicationBinaryOperationExpressionNode(left, right, line),
                 DivKeywordLexeme => new IntegerDivisionBinaryOperationExpressionNode(left, right, line),
-                ForeSlashLexeme => new RealDivisionBinaryOperationExpressionNode(left, right, line),
+                ForeSlashLexeme => new RationalDivisionBinaryOperationExpressionNode(left, right, line),
                 ModKeywordLexeme => new ModuloBinaryOperationExpressionNode(left, right, line),
                 PlusLexeme => new AdditionBinaryOperationExpressionNode(left, right, line),
                 MinusLexeme => new SubtractionBinaryOperationExpressionNode(left, right, line),

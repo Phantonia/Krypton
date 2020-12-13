@@ -98,8 +98,8 @@ namespace Krypton.Analysis.Grammatical.Expressions
                     return new CharLiteralExpressionNode(cll.Value, cll.LineNumber);
                 case ImaginaryLiteralLexeme imll:
                     return new ImaginaryLiteralExpressionNode(imll.Value, imll.LineNumber);
-                case RealLiteralLexeme rll:
-                    return new RealLiteralExpressionNode(rll.Value, rll.LineNumber);
+                case RationalLiteralLexeme rll:
+                    return new RationalLiteralExpressionNode(rll.Value, rll.LineNumber);
                 case ParenthesisOpeningLexeme:
                     {
                         index++;

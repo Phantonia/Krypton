@@ -154,7 +154,7 @@ namespace Krypton.Analysis.Lexical
             return new InvalidLexeme(Code[startIndex..], ErrorCode.UnclosedCharLiteral, lineNumber);
         }
 
-        private Lexeme LexDecimalIntegerOrReal()
+        private Lexeme LexDecimalIntegerOrRational()
         {
             int startIndex = index;
             bool alreadyHadDecimalPoint = false;
@@ -180,7 +180,7 @@ namespace Krypton.Analysis.Lexical
                         }
                         else
                         {
-                            return new RealLiteralLexeme(Code[startIndex..index], lineNumber);
+                            return new RationalLiteralLexeme(Code[startIndex..index], lineNumber);
                         }
                     }
                     else
@@ -191,7 +191,7 @@ namespace Krypton.Analysis.Lexical
                         }
                         else
                         {
-                            return new RealLiteralLexeme(Code[startIndex..index], lineNumber);
+                            return new RationalLiteralLexeme(Code[startIndex..index], lineNumber);
                         }
                     }
                 }
@@ -211,7 +211,7 @@ namespace Krypton.Analysis.Lexical
 
                     if (alreadyHadDecimalPoint)
                     {
-                        return new RealLiteralLexeme(Code[startIndex..index], lineNumber);
+                        return new RationalLiteralLexeme(Code[startIndex..index], lineNumber);
                     }
                     else
                     {
@@ -222,7 +222,7 @@ namespace Krypton.Analysis.Lexical
 
             if (alreadyHadDecimalPoint)
             {
-                return new RealLiteralLexeme(Code[startIndex..], lineNumber);
+                return new RationalLiteralLexeme(Code[startIndex..], lineNumber);
             }
             else
             {
@@ -498,12 +498,12 @@ namespace Krypton.Analysis.Lexical
                             index++;
                             return LexBinaryInteger();
                         default:
-                            return LexDecimalIntegerOrReal();
+                            return LexDecimalIntegerOrRational();
                     }
                 }
                 else
                 {
-                    return LexDecimalIntegerOrReal();
+                    return LexDecimalIntegerOrRational();
                 }
             }
             else if (currentChar.IsLetterOrUnderscore())
