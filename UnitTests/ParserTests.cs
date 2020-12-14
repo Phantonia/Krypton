@@ -1,12 +1,14 @@
 ﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals;
+using Krypton.Analysis.Errors;
 using Krypton.Analysis.Grammatical;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.SyntaxCharacters;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using NUnit.Framework;
+using System.Linq.Expressions;
 
 namespace UnitTests
 {
@@ -309,6 +311,86 @@ namespace UnitTests
 
             Assert.NotNull(root);
             Assert.IsAssignableFrom<StringLiteralExpressionNode>(root);
+        }
+
+        [Test]
+        public void IdentifierTest()
+        {
+            int index = 0;
+
+            ExpressionParser parser = new(new Lexer("x * 4").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<MultiplicationBinaryOperationExpressionNode>(root);
+
+            BinaryOperationExpressionNode op = (BinaryOperationExpressionNode)root!;
+
+            Assert.IsAssignableFrom<IdentifierExpressionNode>(op.Left);
+
+            IdentifierExpressionNode id = (IdentifierExpressionNode)op.Left;
+
+            Assert.AreEqual("x", id.SimpleIdentifier);
+        }
+
+        [Test]
+        public void MoreComplexIdentifierTest()
+        {
+            int index = 0;
+
+            ExpressionParser parser = new(new Lexer("x * y & (z - 1)").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<BitwiseAndBinaryOperationExpressionNode>(root);
+
+            BinaryOperationExpressionNode op = (BinaryOperationExpressionNode)root!;
+            Assert.IsAssignableFrom<MultiplicationBinaryOperationExpressionNode>(op.Left);
+
+            BinaryOperationExpressionNode op2 = (BinaryOperationExpressionNode)op.Left;
+            Assert.DoesNotThrow(() =>
+            {
+                Assert.AreEqual("x", ((IdentifierExpressionNode)op2.Left).SimpleIdentifier);
+            });
+
+            Assert.IsAssignableFrom<SubtractionBinaryOperationExpressionNode>(op.Right);
+        }
+
+        [Test]
+        public void BracketedIdentifierTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("(hello)").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<IdentifierExpressionNode>(root);
+        }
+
+        [Test]
+        public void ErrorIdentifierTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("(hello +").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.IsNull(root);
+        }
+
+        [Test]
+        public void ErrorTest()
+        {
+            ErrorProvider.Error += e =>
+            {
+                Assert.AreEqual(1, e.LineNumber);
+                Assert.AreEqual(ErrorCode.ExpectedClosingParenthesis, e.ErrorCode);
+            };
+
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("(4;").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.IsNull(root);
         }
     }
 }

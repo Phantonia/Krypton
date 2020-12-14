@@ -6,6 +6,7 @@ using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.SyntaxCharacters;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
+using Krypton.Analysis.Utilities;
 
 namespace Krypton.Analysis.Grammatical
 {
@@ -101,6 +102,8 @@ namespace Krypton.Analysis.Grammatical
                     return new ImaginaryLiteralExpressionNode(imll.Value, imll.LineNumber);
                 case RationalLiteralLexeme rll:
                     return new RationalLiteralExpressionNode(rll.Value, rll.LineNumber);
+                case IdentifierLexeme idll:
+                    return new IdentifierExpressionNode(idll.Content, idll.LineNumber);
                 case ParenthesisOpeningLexeme:
                     {
                         index++;
@@ -108,9 +111,11 @@ namespace Krypton.Analysis.Grammatical
 
                         index++;
 
-                        if (Lexemes[index] is not ParenthesisClosingLexeme)
+                        Lexeme? nextLexeme = Lexemes.TryGet(index);
+
+                        if (nextLexeme is not ParenthesisClosingLexeme)
                         {
-                            ErrorProvider.ReportMissingClosingParenthesis(Lexemes[index].Content, Lexemes[index].LineNumber);
+                            ErrorProvider.ReportMissingClosingParenthesis(nextLexeme?.Content ?? "", nextLexeme?.LineNumber ?? Lexemes[index - 1].LineNumber);
                             return null;
                         }
                         return root;

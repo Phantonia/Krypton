@@ -1,10 +1,18 @@
-﻿namespace Krypton.Analysis.Utilities
+﻿using System.Collections.Generic;
+
+namespace Krypton.Analysis.Utilities
 {
     public static class Extensions
     {
         public static char? TryGet(this string str, int index)
         {
             return str.Length > index ? str[index] : (char?)null;
+        }
+
+        public static T? TryGet<T>(this IList<T> list, int index)
+            where T : class
+        {
+            return list.Count > index ? list[index] : null;
         }
 
         public static bool IsHex(this char chr, out bool? isUpper)
