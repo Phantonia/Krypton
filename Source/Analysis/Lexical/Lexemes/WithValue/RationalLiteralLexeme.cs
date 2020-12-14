@@ -1,12 +1,10 @@
-﻿using Krypton.Analysis.Lexical.Lexemes;
-using System.Diagnostics;
-using System.Globalization;
+﻿using System.Diagnostics;
 
 namespace Krypton.Analysis.Lexical.Lexemes.WithValue
 {
-    public sealed class RealLiteralLexeme : Lexeme
+    public sealed class RationalLiteralLexeme : Lexeme
     {
-        public RealLiteralLexeme(string value, int lineNumber) : base(lineNumber)
+        public RationalLiteralLexeme(string value, int lineNumber) : base(lineNumber)
         {
             Init(value);
         }
@@ -22,8 +20,8 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
 
         private void Init(string value)
         {
-            Debug.Assert(NumberLiteralParser.TryParseReal(value, out _));
-            Value = NumberLiteralParser.ParseReal(value);
+            Debug.Assert(NumberLiteralParser.TryParseRational(value, out _));
+            Value = NumberLiteralParser.ParseRational(value);
         }
     }
 }

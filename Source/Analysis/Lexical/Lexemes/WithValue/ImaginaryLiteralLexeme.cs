@@ -21,7 +21,7 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
         private void Init(string value)
         {
             Debug.Assert(value[^1] == 'i');
-            Value = NumberLiteralParser.ParseReal(value[..^1]);
+            Value = NumberLiteralParser.ParseRational(value[..^1]);
         }
     }
 }

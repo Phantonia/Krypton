@@ -2,12 +2,12 @@
 
 namespace Krypton.Analysis.Lexical.Lexemes.SyntaxCharacters
 {
-    public sealed class AsteriskLexeme : OperatorLexeme
+    public sealed class AsteriskLexeme : SyntaxCharacterLexeme, IOperatorLexeme
     {
         public AsteriskLexeme(int lineNumber) : base(lineNumber) { }
 
         public override string Content => "*";
 
-        public override OperatorPrecedenceGroup PrecedenceGroup => OperatorPrecedenceGroup.Multiplication;
+        public OperatorPrecedenceGroup PrecedenceGroup => OperatorPrecedenceGroup.Multiplicative;
     }
 }

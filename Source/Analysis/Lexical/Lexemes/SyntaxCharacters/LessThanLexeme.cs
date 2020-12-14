@@ -2,12 +2,12 @@
 
 namespace Krypton.Analysis.Lexical.Lexemes.SyntaxCharacters
 {
-    public sealed class LessThanLexeme : OperatorLexeme
+    public sealed class LessThanLexeme : SyntaxCharacterLexeme, IOperatorLexeme
     {
         public LessThanLexeme(int lineNumber) : base(lineNumber) { }
 
         public override string Content => "<";
 
-        public override OperatorPrecedenceGroup PrecedenceGroup => OperatorPrecedenceGroup.Comparison;
+        public OperatorPrecedenceGroup PrecedenceGroup => OperatorPrecedenceGroup.Comparison;
     }
 }

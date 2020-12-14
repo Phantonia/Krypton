@@ -39,7 +39,6 @@ namespace Krypton.Analysis.Lexical
 
         public Lexeme? NextLexeme()
         {
-            char? tmp = Code.TryGet(index);
             return Code.TryGet(index) switch
             {
                 null => null,
@@ -63,6 +62,9 @@ namespace Krypton.Analysis.Lexical
                 '*' => LexAsteriskOrDoubleAsteriskOrAsteriskEqualsOrDoubleAsteriskEquals(),
                 '/' => LexSyntaxCharacterWithPossibleEquals<ForeSlashLexeme, ForeSlashEqualsLexeme>(),
                 '\\' => LexSpecificLexeme<BackSlashLexeme>(),
+                '&' => LexSpecificLexeme<AmpersandLexeme>(),
+                '|' => LexSpecificLexeme<PipeLexeme>(),
+                '^' => LexSpecificLexeme<CaretLexeme>(),
 
                 '"' => LexStringLiteralLexeme(),
                 '\'' => LexCharLiteralLexeme(),
@@ -152,7 +154,7 @@ namespace Krypton.Analysis.Lexical
             return new InvalidLexeme(Code[startIndex..], ErrorCode.UnclosedCharLiteral, lineNumber);
         }
 
-        private Lexeme LexDecimalIntegerOrReal()
+        private Lexeme LexDecimalIntegerOrRational()
         {
             int startIndex = index;
             bool alreadyHadDecimalPoint = false;
@@ -178,7 +180,7 @@ namespace Krypton.Analysis.Lexical
                         }
                         else
                         {
-                            return new RealLiteralLexeme(Code[startIndex..index], lineNumber);
+                            return new RationalLiteralLexeme(Code[startIndex..index], lineNumber);
                         }
                     }
                     else
@@ -189,7 +191,7 @@ namespace Krypton.Analysis.Lexical
                         }
                         else
                         {
-                            return new RealLiteralLexeme(Code[startIndex..index], lineNumber);
+                            return new RationalLiteralLexeme(Code[startIndex..index], lineNumber);
                         }
                     }
                 }
@@ -209,7 +211,7 @@ namespace Krypton.Analysis.Lexical
 
                     if (alreadyHadDecimalPoint)
                     {
-                        return new RealLiteralLexeme(Code[startIndex..index], lineNumber);
+                        return new RationalLiteralLexeme(Code[startIndex..index], lineNumber);
                     }
                     else
                     {
@@ -220,7 +222,7 @@ namespace Krypton.Analysis.Lexical
 
             if (alreadyHadDecimalPoint)
             {
-                return new RealLiteralLexeme(Code[startIndex..], lineNumber);
+                return new RationalLiteralLexeme(Code[startIndex..], lineNumber);
             }
             else
             {
@@ -433,7 +435,7 @@ namespace Krypton.Analysis.Lexical
 
             string identifier;
 
-            while (true)
+            for (; index < Code.Length; index++)
             {
                 bool temp = char.IsDigit(Code[index]);
                 char tmp = Code[index];
@@ -442,12 +444,13 @@ namespace Krypton.Analysis.Lexical
                         && !char.IsDigit(Code[index])))
                 {
                     identifier = Code[startIndex..index];
-                    break;
+                    goto LeftForLoop;
                 }
-
-                index++;
             }
 
+            identifier = Code[startIndex..];
+
+            LeftForLoop:
             if (identifier == "_")
             {
                 return new UnderscoreLexeme(lineNumber);
@@ -496,12 +499,12 @@ namespace Krypton.Analysis.Lexical
                             index++;
                             return LexBinaryInteger();
                         default:
-                            return LexDecimalIntegerOrReal();
+                            return LexDecimalIntegerOrRational();
                     }
                 }
                 else
                 {
-                    return LexDecimalIntegerOrReal();
+                    return LexDecimalIntegerOrRational();
                 }
             }
             else if (currentChar.IsLetterOrUnderscore())
@@ -538,8 +541,7 @@ namespace Krypton.Analysis.Lexical
                     index++;
                     return new StringLiteralLexeme(Code[startIndex..endIndex], lineNumber);
                 }
-                else if (EscapeSequences.EscapeCharacters.ContainsKey(Code[index])
-                      || EscapeSequences.UnicodeSpecifiers.Contains(Code[index]))
+                else if (Code[index] == '\\')
                 {
                     escaped = !escaped;
                 }

@@ -1,4 +1,6 @@
-﻿namespace Krypton.Analysis.Errors
+﻿using Krypton.Analysis.Lexical.Lexemes;
+
+namespace Krypton.Analysis.Errors
 {
     public static class ErrorProvider
     {
@@ -9,9 +11,19 @@
             Error?.Invoke(new ErrorEventArgs(errorCode, errorMessage, lineNumber));
         }
 
+        public static void ReportMissingClosingParenthesis(string gotInstead, int lineNumber)
+        {
+            ReportError(ErrorCode.ExpectedClosingParenthesis, $"A closing parenthesis was expected. Instead there is \"{gotInstead}\"!", lineNumber);
+        }
+
         public static void ReportMissingSemicolonError(string gotInstead, int lineNumber)
         {
             ReportError(ErrorCode.ExpectedSemicolon, $"A semicolon to end the statement was expected. Instead there is \"{gotInstead}\"!", lineNumber);
+        }
+
+        public static void ReportUnexpectedExpressionTerm(Lexeme lexeme)
+        {
+            ReportError(ErrorCode.UnexpectedExpressionTerm, $"Unexpected expression term {lexeme.Content}", lexeme.LineNumber);
         }
     }
 }
