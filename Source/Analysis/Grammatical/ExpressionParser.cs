@@ -7,6 +7,7 @@ using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.SyntaxCharacters;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using Krypton.Analysis.Utilities;
+using System.Collections.Generic;
 
 namespace Krypton.Analysis.Grammatical
 {
@@ -35,12 +36,17 @@ namespace Krypton.Analysis.Grammatical
                 return null;
             }
 
+            CheckForLexemeAfterSubExpression:
             switch (Lexemes[index + 1])
             {
                 case IOperatorLexeme opl:
                     index++;
                     ParseOperationChain(opl, ref root, ref index);
                     break;
+                case ParenthesisOpeningLexeme:
+                    index++;
+                    ParseFunctionCall(ref root, ref index);
+                    goto CheckForLexemeAfterSubExpression;
             }
 
             if (root is BinaryOperationChainNode chain)
@@ -49,6 +55,58 @@ namespace Krypton.Analysis.Grammatical
             }
 
             return root;
+        }
+
+        private void ParseFunctionCall(ref ExpressionNode? root, ref int index)
+        {
+            if (root == null)
+            {
+                return;
+            }
+
+            int lineNumber = Lexemes[index].LineNumber;
+
+            index++;
+
+            if (Lexemes.TryGet(index) is ParenthesisClosingLexeme)
+            {
+                root = new FunctionCallExpressionNode(root, lineNumber);
+                return;
+            }
+
+            List<ExpressionNode> arguments = new();
+
+            while (true)
+            {
+                ExpressionNode? nextExpression = ParseNextExpressionInternal(ref index);
+
+                if (nextExpression == null)
+                {
+                    root = null;
+                    return;
+                }
+
+                arguments.Add(nextExpression);
+
+                index++;
+
+                switch (Lexemes.TryGet(index))
+                {
+                    case CommaLexeme:
+                        break;
+                    case ParenthesisClosingLexeme:
+                        root = new FunctionCallExpressionNode(root, arguments, lineNumber);
+                        return;
+                    case { }:
+                        ErrorProvider.ReportMissingCommaOrParenthesis(Lexemes[index].Content, Lexemes[index].LineNumber);
+                        break;
+                    case null:
+                        ErrorProvider.ReportMissingCommaOrParenthesis("", Lexemes[index - 1].LineNumber);
+                        break;
+                }
+
+                index++;
+            }
         }
 
         private void ParseOperationChain(IOperatorLexeme opLexeme, ref ExpressionNode? root, ref int index)

@@ -8,7 +8,6 @@ using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.SyntaxCharacters;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using NUnit.Framework;
-using System.Linq.Expressions;
 
 namespace UnitTests
 {
@@ -380,17 +379,143 @@ namespace UnitTests
         [Test]
         public void ErrorTest()
         {
-            ErrorProvider.Error += e =>
+            ErrorEventHandler handler = e =>
             {
                 Assert.AreEqual(1, e.LineNumber);
                 Assert.AreEqual(ErrorCode.ExpectedClosingParenthesis, e.ErrorCode);
             };
+
+            ErrorProvider.Error += handler;
 
             int index = 0;
             ExpressionParser parser = new(new Lexer("(4;").LexAll());
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.IsNull(root);
+
+            ErrorProvider.Error -= handler;
+        }
+
+        [Test]
+        public void FunctionCallTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("Output()").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<FunctionCallExpressionNode>(root);
+
+            FunctionCallExpressionNode call = (FunctionCallExpressionNode)root!;
+
+            Assert.IsAssignableFrom<IdentifierExpressionNode>(call.FunctionExpression);
+            Assert.IsNull(call.Arguments);
+        }
+
+        [Test]
+        public void FunctionCallWithOneArgumentTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("Output(4)").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<FunctionCallExpressionNode>(root);
+
+            FunctionCallExpressionNode call = (FunctionCallExpressionNode)root!;
+
+            Assert.IsAssignableFrom<IdentifierExpressionNode>(call.FunctionExpression);
+            Assert.NotNull(call.Arguments);
+            Assert.AreEqual(1, call.Arguments!.Count);
+            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(call.Arguments[0]);
+        }
+
+        [Test]
+        public void FunctionCallWithTwoArgumentsTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer(@"Output(4, ""xyz"")").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<FunctionCallExpressionNode>(root);
+
+            FunctionCallExpressionNode call = (FunctionCallExpressionNode)root!;
+
+            Assert.IsAssignableFrom<IdentifierExpressionNode>(call.FunctionExpression);
+            Assert.NotNull(call.Arguments);
+            Assert.AreEqual(2, call.Arguments!.Count);
+            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(call.Arguments[0]);
+            Assert.IsAssignableFrom<StringLiteralExpressionNode>(call.Arguments[1]);
+        }
+
+        [Test]
+        public void FunctionCallWithErrorTest()
+        {
+            ErrorEventHandler handler = e =>
+            {
+                Assert.AreEqual(ErrorCode.UnexpectedExpressionTerm, e.ErrorCode);
+                Assert.AreEqual(1, e.LineNumber);
+            };
+
+            ErrorProvider.Error += handler;
+
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("Output(4, )").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.IsNull(root);
+
+            ErrorProvider.Error -= handler;
+        }
+
+        [Test]
+        public void FunctionCallWithNestedExpressionAsArgumentTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("Output(4 + 5 * 6)").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<FunctionCallExpressionNode>(root);
+
+            FunctionCallExpressionNode call = (FunctionCallExpressionNode)root!;
+
+            Assert.IsAssignableFrom<IdentifierExpressionNode>(call.FunctionExpression);
+            Assert.NotNull(call.Arguments);
+            Assert.AreEqual(1, call.Arguments!.Count);
+            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(call.Arguments[0]);
+        }
+
+
+        [Test]
+        public void NestedFunctionCallTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("Output(4) + 8").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(root);
+
+            BinaryOperationExpressionNode op = (BinaryOperationExpressionNode)root!;
+
+            Assert.IsAssignableFrom<FunctionCallExpressionNode>(op.Left);
+        }
+
+        [Test]
+        public void ChainedFunctionCallsTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("Output(4)(True)").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsAssignableFrom<FunctionCallExpressionNode>(root);
+
+            FunctionCallExpressionNode call = (FunctionCallExpressionNode)root!;
+
+            Assert.IsAssignableFrom<FunctionCallExpressionNode>(call.FunctionExpression);
         }
     }
 }

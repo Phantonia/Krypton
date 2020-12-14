@@ -25,5 +25,10 @@ namespace Krypton.Analysis.Errors
         {
             ReportError(ErrorCode.UnexpectedExpressionTerm, $"Unexpected expression term {lexeme.Content}", lexeme.LineNumber);
         }
+
+        public static void ReportMissingCommaOrParenthesis(string gotInstead, int lineNumber)
+        {
+            ReportError(ErrorCode.ExpectedCommaOrClosingParenthesis, $"A comma or a closing parenthesis was expected. Instead there is \"{gotInstead}\"!", lineNumber);
+        }
     }
 }
