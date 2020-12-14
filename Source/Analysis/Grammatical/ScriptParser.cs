@@ -1,6 +1,7 @@
 ﻿using Krypton.Analysis.AbstractSyntaxTree;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
+using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements;
 using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical;

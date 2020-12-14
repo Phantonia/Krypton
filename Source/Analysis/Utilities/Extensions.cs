@@ -1,7 +1,4 @@
-﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes;
-using System.Text;
-
-namespace Krypton.Analysis.Utilities
+﻿namespace Krypton.Analysis.Utilities
 {
     public static class Extensions
     {

@@ -1,6 +1,7 @@
 ﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations;
-using Krypton.Analysis.Grammatical.Expressions;
+using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals;
+using Krypton.Analysis.Grammatical;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.SyntaxCharacters;

@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
+namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals
 {
     public sealed class IntegerLiteralExpressionNode : LiteralExpressionNode
     {

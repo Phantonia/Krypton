@@ -1,4 +1,4 @@
-﻿namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
+﻿namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals
 {
     public abstract class LiteralExpressionNode : ExpressionNode
     {

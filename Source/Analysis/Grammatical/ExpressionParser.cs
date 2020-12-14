@@ -1,12 +1,13 @@
 ﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations;
+using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals;
 using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.SyntaxCharacters;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 
-namespace Krypton.Analysis.Grammatical.Expressions
+namespace Krypton.Analysis.Grammatical
 {
     public sealed class ExpressionParser
     {
