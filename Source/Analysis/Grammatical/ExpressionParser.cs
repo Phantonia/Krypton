@@ -55,13 +55,14 @@ namespace Krypton.Analysis.Grammatical
                     case IOperatorLexeme opl:
                         index++;
                         ParseOperationChain(opl, ref root, ref index);
-                        break;
+                        return;
                     case ParenthesisOpeningLexeme:
                         index++;
                         ParseFunctionCall(ref root, ref index);
                         continue;
+                    default:
+                        return;
                 }
-                return;
             }
         }
 
