@@ -1,15 +1,16 @@
-﻿using System.Text;
+﻿using Krypton.Analysis.Lexical;
+using System.Text;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals
 {
     public sealed class ImaginaryLiteralExpressionNode : LiteralExpressionNode
     {
-        public ImaginaryLiteralExpressionNode(double value, int lineNumber) : base(lineNumber)
+        public ImaginaryLiteralExpressionNode(RationalLiteralValue value, int lineNumber) : base(lineNumber)
         {
             Value = value;
         }
 
-        public double Value { get; }
+        public RationalLiteralValue Value { get; }
 
         public override ImaginaryLiteralExpressionNode Clone()
         {
@@ -18,7 +19,7 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals
 
         public override void GenerateCode(StringBuilder stringBuilder)
         {
-            stringBuilder.Append(Value);
+            stringBuilder.Append(Value.ToString());
         }
     }
 }

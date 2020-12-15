@@ -11,7 +11,7 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
 
         public override string Content => Value.ToString();
 
-        public double Value { get; private set; }
+        public RationalLiteralValue Value { get; private set; }
 
         protected override void Construct(string value)
         {
