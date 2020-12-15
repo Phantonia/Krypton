@@ -167,9 +167,9 @@ namespace Krypton.Analysis.Lexical
             }
         }
 
-        public static double ParseRational(string input)
+        public static RationalLiteralValue ParseRational(string input)
         {
-            if (TryParseRational(input, out double output))
+            if (TryParseRational(input, out RationalLiteralValue output))
             {
                 return output;
             }
@@ -179,14 +179,13 @@ namespace Krypton.Analysis.Lexical
             }
         }
 
-        public static bool TryParseRational(string input, out double output)
+        public static bool TryParseRational(string input, out RationalLiteralValue output)
         {
             checked
             {
-                int count = 0;
-                long numberAfterPoint = 0;
-                int afterPointLength = 0;
-                long result = 0;
+                uint count = 0;
+                long numerator = 0;
+                uint? power = null;
 
                 for (int i = input.Length - 1; i >= 0; i--)
                 {
@@ -197,10 +196,7 @@ namespace Krypton.Analysis.Lexical
 
                     if (input[i] == '.')
                     {
-                        numberAfterPoint = result;
-                        result = 0;
-                        afterPointLength = count;
-                        count = 0;
+                        power = count;
                         continue;
                     }
 
@@ -210,19 +206,24 @@ namespace Krypton.Analysis.Lexical
                         return false;
                     }
 
-                    long subResult = unchecked((long)Math.Pow(10, count) * (input[i] - '0') + result);
-                    if (subResult < 0)
+                    long subNumerator = unchecked((long)Math.Pow(10, count) * (input[i] - '0') + numerator);
+                    if (subNumerator < 0)
                     {
                         output = default;
                         return false;
                     }
 
-                    result = subResult;
+                    numerator = subNumerator;
                     count++;
                 }
 
-                double decimalPart = Math.Pow(10, -afterPointLength) * numberAfterPoint;
-                output = result + decimalPart;
+                if (power == null)
+                {
+                    output = default;
+                    return false;
+                }
+
+                output = new RationalLiteralValue(numerator, power.Value);
                 return true;
             }
         }
