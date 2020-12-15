@@ -36,18 +36,7 @@ namespace Krypton.Analysis.Grammatical
                 return null;
             }
 
-            CheckForLexemeAfterSubExpression:
-            switch (Lexemes[index + 1])
-            {
-                case IOperatorLexeme opl:
-                    index++;
-                    ParseOperationChain(opl, ref root, ref index);
-                    break;
-                case ParenthesisOpeningLexeme:
-                    index++;
-                    ParseFunctionCall(ref root, ref index);
-                    goto CheckForLexemeAfterSubExpression;
-            }
+            ParseAfterSubExpression(ref root, ref index);
 
             if (root is BinaryOperationChainNode chain)
             {
@@ -55,6 +44,25 @@ namespace Krypton.Analysis.Grammatical
             }
 
             return root;
+        }
+
+        private void ParseAfterSubExpression(ref ExpressionNode? root, ref int index)
+        {
+            while (true)
+            {
+                switch (Lexemes[index + 1])
+                {
+                    case IOperatorLexeme opl:
+                        index++;
+                        ParseOperationChain(opl, ref root, ref index);
+                        break;
+                    case ParenthesisOpeningLexeme:
+                        index++;
+                        ParseFunctionCall(ref root, ref index);
+                        continue;
+                }
+                return;
+            }
         }
 
         private void ParseFunctionCall(ref ExpressionNode? root, ref int index)
