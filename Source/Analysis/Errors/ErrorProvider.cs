@@ -30,5 +30,15 @@ namespace Krypton.Analysis.Errors
         {
             ReportError(ErrorCode.ExpectedCommaOrClosingParenthesis, $"A comma or a closing parenthesis was expected. Instead there is \"{gotInstead}\"!", lineNumber);
         }
+
+        public static void ReportMissingIdentifier(string gotInstead, int lineNumber)
+        {
+            ReportError(ErrorCode.ExpectedIdentifier, $"An identifier was expected. Instead there is \"{gotInstead}\"!", lineNumber);
+        }
+
+        public static void ReportMissingEqualsOrSemicolon(string gotInstead, int lineNumber)
+        {
+            ReportError(ErrorCode.ExpectedEqualsOrSemicolon, $"An equals or a semicolon is expected. Instead there is \"{gotInstead}\"!", lineNumber);
+        }
     }
 }

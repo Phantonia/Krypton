@@ -1,22 +1,22 @@
 ﻿using System.Text;
 
-namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
+namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Types
 {
-    public sealed class IdentifierExpressionNode : ExpressionNode
+    public sealed class IdentifierTypeNode : TypeNode
     {
-        public IdentifierExpressionNode(string identifier, int lineNumber) : base(lineNumber)
+        public IdentifierTypeNode(string identifier, int lineNumber) : base(lineNumber)
         {
             Identifier = new IdentifierNode(identifier, lineNumber);
         }
 
-        private IdentifierExpressionNode(IdentifierNode identifier, int lineNumber) : base(lineNumber)
+        private IdentifierTypeNode(IdentifierNode identifier, int lineNumber) : base(lineNumber)
         {
             Identifier = identifier;
         }
 
         public IdentifierNode Identifier { get; }
 
-        public override IdentifierExpressionNode Clone()
+        public override IdentifierTypeNode Clone()
         {
             return new(Identifier.Clone(), LineNumber);
         }

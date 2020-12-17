@@ -329,7 +329,7 @@ namespace UnitTests
 
             IdentifierExpressionNode id = (IdentifierExpressionNode)op.Left;
 
-            Assert.AreEqual("x", id.SimpleIdentifier);
+            Assert.AreEqual("x", id.Identifier.Identifier);
         }
 
         [Test]
@@ -349,7 +349,7 @@ namespace UnitTests
             BinaryOperationExpressionNode op2 = (BinaryOperationExpressionNode)op.Left;
             Assert.DoesNotThrow(() =>
             {
-                Assert.AreEqual("x", ((IdentifierExpressionNode)op2.Left).SimpleIdentifier);
+                Assert.AreEqual("x", ((IdentifierExpressionNode)op2.Left).Identifier.Identifier);
             });
 
             Assert.IsAssignableFrom<SubtractionBinaryOperationExpressionNode>(op.Right);

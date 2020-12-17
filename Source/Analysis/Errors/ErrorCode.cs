@@ -16,5 +16,7 @@
         ExpectedClosingParenthesis = 102,
         UnexpectedExpressionTerm = 103,
         ExpectedCommaOrClosingParenthesis = 104,
+        ExpectedIdentifier = 105,
+        ExpectedEqualsOrSemicolon = 106,
     }
 }
