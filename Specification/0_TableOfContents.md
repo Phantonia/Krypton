@@ -19,7 +19,7 @@
    8. Escape sequences
    9. Number literals
       1. Integer literals
-      2. Real literals
+      2. Rational literals
       3. Imaginary literals
    10. Syntax characters
 3. Expressions

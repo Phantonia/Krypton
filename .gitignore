@@ -5,4 +5,5 @@ Source/**/bin/
 Source/**/obj/
 UnitTests/**/bin/
 UnitTests/**/obj/
+Source/JsCompilationTemplate/node_modules/
 *.odt\#
