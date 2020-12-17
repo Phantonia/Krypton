@@ -1,6 +1,6 @@
 # 1 Compilation
 
-The process of taking a single Krypton script file (a file whose content obeys the syntactical and semantical rules of the Krypton specification and normally but not necessarily have the file extension `.krpt`) and outputting code in a different language with exactly the same semantics as the ones describe in the Krypton script is called **compilation**. Normally, a Krypton file is compiled to Javascript. The exact semantics of this translation are described in the section <u>Javascript output</u>.
+The process of taking a single Krypton script file (a file whose content obeys the syntactical and semantical rules of the Krypton specification and normally but not necessarily have the file extension `.krpt`) and outputting code in a different language with exactly the same semantics as the ones describe in the Krypton script is called **compilation**. The exact code that is going to be generated is not guaranteed to be the same for the same Krypton code and an implementation. However, the semantics as described in this specification are guaranteed.
 
 Compilation happens in four mainly but not necessarily distinct steps:
 

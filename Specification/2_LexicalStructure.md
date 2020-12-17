@@ -72,9 +72,11 @@ A weak multiline comment works like a strict multiline comment with the exceptio
 
 As you can see, weak multiline comments only use two greater/less than signs.
 
+It is legal for a weak multiline comment to not be closed at all. In that case the whole rest of the code will be ignored.
+
 ### 2.3.3 Strict multiline comment
 
-A strict multiline comment works like a weak multiline comment, except that it uses three consecutive characters for the starting and the ending lexeme.
+A strict multiline comment works like a weak multiline comment, except that it uses three consecutive greater than characters for the starting and the ending lexeme.
 
 ```
 Out "Hello world!"; >>> This is a comment <<<
@@ -109,6 +111,8 @@ And these comments aren't:
 >> Comment <<<
 ```
 
+It is legal for a strict multiline comment to not be closed at all. In that case the whole rest of the code will be ignored.
+
 ## 2.4 Identifiers
 
 Identifiers are strings of characters that obey the following rules:
@@ -116,10 +120,10 @@ Identifiers are strings of characters that obey the following rules:
 - The first character is a letter or an underscore
 - The second to last character are all letters, underscores and/or numbers
 - The identifier as a whole does not equal a reserved keyword (case sensitive)
-- The identifier is not a single underscore
+- The identifier as a whole is not a single underscore
 
-These are examples of valid identifiers: `PascalCase`, `camelCase`, `snake_case`, `SCREAMING_SNAKE_CASE`
-These are examples of invalid identifiers: `3D`, `$abc`, `_`
+These are examples of valid identifiers: `PascalCase`, `camelCase`, `snake_case`, `SCREAMING_SNAKE_CASE`, `___` (these are three consecutive underscores)
+These are examples of invalid identifiers: `3D`, `$abc`, `_` (this a single underscore)
 
 ## 2.5 Reserved keywords
 
@@ -127,9 +131,11 @@ Reserved keywords are strings of letters with a special meaning in the language.
 
 ## 2.6 String literals
 
-A **string** is a string of characters. A string literal is a hardcoded string in the script itself. It starts and ends with a double quotation mark character `"`. It is a compile time error to start a string literal but not end it on the same line.
+A **string** is a string of characters.
 
-The backslash character `\` however can stop the string literal from ending. If the user intended to add a quotation mark to their string literal, they can escape it by prepending it with the backslash. A backslash itself also has to be escaped if the intention is to add one to the string literal.
+A string literal is a hardcoded string in the script itself. It starts and ends with a double quotation mark character `"`. It is the compile time error 002 to start a string literal but not end it on the same line.
+
+The backslash character `\` however can stop the string literal from ending. If a quotation mark is prepended by backslash character, it will not close the string literal but instead exist in the string literal itself as a character. A backslash does not escape another character if itself is prepended by an unescaped backslash character.
 
 Unescaped quotation marks and backslashes do not appear in the final string.
 
@@ -163,7 +169,7 @@ Some characters cannot be represented in a string or char literal. One common ex
 
 The last three represent any Unicode character. `[n]` is replaced with the number of the character in the base defined by the character `x`, `d` or `b`. The number is then followed by a semicolon.
 
-It is a compile time error for a string to contain an unescaped backslash without an escape sequence following.
+It is the compile time error 004 for a string to contain an unescaped backslash without an escape sequence following.
 
 ## 2.9 Number literals
 
