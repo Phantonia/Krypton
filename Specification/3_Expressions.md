@@ -3,17 +3,16 @@
 Expressions compute values at runtime. They can be used in the following contexts:
 
 - As initializers of variables
-- As arguments of functions
-- As the argument of an `Out` statement
-- As the argument of a `Return` statement
+- As arguments of function call
+- As a return value
 - As subexpressions, so as operands to other kinds of expressions
 - etc.
 
-The following types of expressions exist:
+The following kinds of expressions exist:
 
 ## 3.1 Constants
 
-Constants are literals or declared constants. They yield the value of the constant and have the *datatype* that the kind of literal is associated with. More information in <u>5 Datatypes</u>.
+Constants are literals or declared constants. They yield the value of the constant and have the datatype that the kind of literal is associated with. More information in <u>5 Datatypes</u>.
 
 ## 3.2 Variable access
 
@@ -64,10 +63,32 @@ This is a full table of precedence:
 
 ### 3.3.4 Short circuiting
 
-The Logical `And` and `Or` operators are short circuiting. That means that the right operand is only evaluated in case the left operand did not evaluate in a way that determines the result of the operation no matter the right operand.
+The Logical `And` and `Or` operators are short circuiting. This means that the right operand is not evaluated, if it cannot change the result of the operation.
 
-In case of the `And` operator, the right operand is only evaluated, if the left operand returned `true`. If it is `false`, the whole operation returns `false` without evaluating the right operand. If it is `true`, the whole operation returns the result of the right operand.
+In case of the `And` operator, the right operand is only evaluated, if the left operand returned `True`. If it is `False`, the whole operation returns `False` without evaluating the right operand. If it is `True`, the whole operation returns the result of the right operand.
 
-In case of the `Or` operator, the right operand is only evaluated, if the left operand returned `false`. If it is `true`, the whole operation returns `true` without evaluating the right operand. If it is `false`, the whole operation returns the result of the right operand.
+In case of the `Or` operator, the right operand is only evaluated, if the left operand returned `False`. If it is `True`, the whole operation returns `True` without evaluating the right operand. If it is `False`, the whole operation returns the result of the right operand.
 
-## 3.4 Function calls
+## 3.4 Function call expressions
+
+An identifier may be followed by a comma separated list of expression enclosed in `( )`. This list may be empty.
+
+The function (see <u>8 Function</u>) associated with this identifier (see <u>10 Identifier binding</u>) is executed when this expression is evaluated. It yields the return value of this function.
+
+## 3.x Expressions with and without type
+
+If an expression has a type, it can be assigned to a variable declared without `As` clause. If the variable has an `As` clause, the expression has to implicitly convertible to that type.
+
+If an expression does not have a type, it cannot be assigned to a variable declared without `As`. The expression has to be implicitly convertible to the type specified by that `As` clause.
+
+The following table specifies which expression have a type and which do not:
+
+| Expression kind        | Has a type | Type or conversion rule                                      |
+| ---------------------- | ---------- | ------------------------------------------------------------ |
+| Literal                | Yes        | Type specified by ???                                        |
+| Variable access        | Yes        | Type the variable is declared with                           |
+| Operation              | Yes        | Type specified by the Framework Documentation                |
+| Function call          | Yes        | Type specified by the function declaration's `As` clause     |
+| `Default(T)` for any T | Yes        | T                                                            |
+| `Default`              | No         | Convertible to any type, equivalent to `Default(T)` where T is the target type |
+

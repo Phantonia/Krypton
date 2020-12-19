@@ -181,8 +181,8 @@ An integer literal represents a whole number. It obeys the following rules:
 
 - It consists only of digits 0 to 9, except:
 - If the first character is a `0`, then the second character can be a `b` or `x`. This means, that the integer literal is in base 2 (`b` for binary) or 16 (`x` for hexadecimal).
-- If the integer literal is in base 16, it also allows the letters a through f. Casing doesn't matter, however it is a compile time error if the casing is not consistent (that means that lowercase and uppercase letters are mixed).
-- No matter the base, an integer literal can contain underscore characters `_`. If it is a binary or hexadecimal integer literal, these underscores are only permitted after the `b` or `x`. More than one underscore is allowed after each other, and trailing underscores are permitted. These underscores are ignored after lexical analysis and only aid the readability of large numbers.
+- If the integer literal is in base 16, it also allows the letters a through f. Both lower- and uppercase are allowed, however it is the compile time error 005 if the casing is not consistent (that means that lowercase and uppercase letters are mixed).
+- No matter the base, an integer literal can contain underscore characters `_`. If it is a binary or hexadecimal integer literal, these underscores are only permitted after the `b` or `x`. More than one underscore is allowed after each other, and trailing underscores are permitted. Integer literals with underscores are exactly equal to the corresponding integer literal without.
 
 These are examples of valid integer literals:
 
@@ -205,13 +205,13 @@ These are examples of invalid integer literals:
 
 Invalid in this case does not necessarily mean that a compile time error is reported. The last example for example is split into two lexemes: the integer literal `0` and the identifier `_b11010101`.
 
-### 2.9.2 Real literals
+### 2.9.2 Rational literals
 
-A real literal represents a real number. It obeys the following rules:
+A rational literal represents a real number. It obeys the following rules:
 
 - It consists only of digits 0 to 9, except:
-- It has to contain exactly one dot character `.` to represent the decimal point. If it lacks it, it is not a real but an integer literal. The dot may not be the first or last character.
-- It may also have the underscores as described under Integer literals. However, these underscores are not allow directly before or directly after the decimal point.
+- It has to contain exactly one dot character `.` to represent the decimal point. If it lacks it, it is not a rational but an integer literal. The dot may not be the first or last character.
+- It may also have the underscores as described under <u>2.9.1 Integer literals</u>. However, these underscores are not allow directly before or directly after the decimal point.
 
 These are examples of valid real literals:
 
@@ -231,15 +231,15 @@ These are examples of invalid real literals, that are also analyzed as something
 
 ### 2.9.3 Imaginary literals
 
-Imaginary literals are any integer or real literals, if they are immediately followed by an `i`.
+Imaginary literals are integer or rational literals, if they are immediately followed by an `i`.
 
 For example, `4i` is an imaginary literal.
 
-To get the number i itself, the imaginary literal `1i` has to be used.
+Only `i` without an integer or rational literal in front of it is an identifier.
 
 ## 2.10 Syntax characters
 
-Syntax characters are the punctuation of the language and operators like `+`. They are always analyzed greedily. For example, take this snippet of code:
+Syntax characters are the punctuation of the language and operators like `+`. They are always analyzed greedily. For example:
 
 ```vb
 x += 5;
