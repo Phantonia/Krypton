@@ -1,4 +1,5 @@
 ﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes;
+using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements;
@@ -7,6 +8,7 @@ using Krypton.Analysis.Grammatical;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using NUnit.Framework;
+using System;
 
 namespace UnitTests
 {
@@ -23,8 +25,10 @@ namespace UnitTests
             Assert.AreEqual(8, lexemes.Count);
             Assert.IsInstanceOf<IdentifierLexeme>(lexemes[1]);
 
-            ScriptParser parser = new(lexemes);
-            Node? root = parser.ParseNextNode();
+            int index = 0;
+
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            Node? root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
             Assert.IsInstanceOf<VariableDeclarationStatementNode>(root);
@@ -46,8 +50,11 @@ namespace UnitTests
         public void VariableDeclarationWithValueTest()
         {
             LexemeCollection lexemes = new Lexer("Var x = 5;").LexAll();
-            ScriptParser parser = new(lexemes);
-            Node? root = parser.ParseNextNode();
+
+            int index = 0;
+
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            Node? root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
             Assert.IsInstanceOf<VariableDeclarationStatementNode>(root);
@@ -68,8 +75,11 @@ namespace UnitTests
         public void VariableDeclarationWithTypeTest()
         {
             LexemeCollection lexemes = new Lexer("Var x As Int;").LexAll();
-            ScriptParser parser = new(lexemes);
-            Node? root = parser.ParseNextNode();
+
+            int index = 0;
+
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            Node? root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
             Assert.IsInstanceOf<VariableDeclarationStatementNode>(root);
@@ -86,8 +96,11 @@ namespace UnitTests
         public void VariableDeclarationMoreComplexExpressionTest()
         {
             LexemeCollection lexemes = new Lexer("Var x = 5 + 6 * 9;").LexAll();
-            ScriptParser parser = new(lexemes);
-            Node? root = parser.ParseNextNode();
+
+            int index = 0;
+
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            Node? root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
             Assert.IsInstanceOf<VariableDeclarationStatementNode>(root);
@@ -104,10 +117,50 @@ namespace UnitTests
         public void IllegalVariableDeclarationTest()
         {
             LexemeCollection lexemes = new Lexer("Var x As Int").LexAll();
-            ScriptParser parser = new(lexemes);
-            Node? root = parser.ParseNextNode();
 
-            Assert.IsNull(root);
+            int index = 0;
+
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+
+            Assert.Throws<NotImplementedException>(() => parser.ParseNextStatement(ref index));
+        }
+
+        [Test]
+        public void FunctionCallTest()
+        {
+            LexemeCollection lexemes = new Lexer("Output(4);").LexAll();
+
+            int index = 0;
+
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            Node? root = parser.ParseNextStatement(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(root);
+
+            FunctionCallStatementNode fcsn = (FunctionCallStatementNode)root!;
+
+            Assert.IsInstanceOf<IdentifierExpressionNode>(fcsn.FunctionExpression);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(fcsn.Arguments?[0]);
+        }
+
+        [Test]
+        public void VariableAssignmentTest()
+        {
+            LexemeCollection lexemes = new Lexer("x = True;").LexAll();
+
+            int index = 0;
+
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+
+            StatementNode? node = parser.ParseNextStatement(ref index);
+
+            Assert.NotNull(node);
+            Assert.IsInstanceOf<VariableAssignmentStatementNode>(node);
+
+            var vasn = (VariableAssignmentStatementNode)node!;
+            Assert.IsInstanceOf<BooleanLiteralExpressionNode>(vasn.AssignedValue);
+            Assert.AreEqual("x", vasn.Identifier);
         }
     }
 }
