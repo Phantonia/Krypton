@@ -13,6 +13,7 @@ namespace Krypton.Analysis.Lexical
             var builder = ImmutableDictionary.CreateBuilder<string, Func<int, Lexeme>>();
             AddKeyword<AndKeywordLexeme>(builder, "And");
             AddKeyword<AsKeywordLexeme>(builder, "As");
+            AddKeyword<BlockKeywordLexeme>(builder, "Block");
             AddKeyword<DivKeywordLexeme>(builder, "Div");
             AddKeyword<LeftKeywordLexeme>(builder, "Left");
             AddKeyword<ModKeywordLexeme>(builder, "Mod");
@@ -20,7 +21,7 @@ namespace Krypton.Analysis.Lexical
             AddKeyword<OrKeywordLexeme>(builder, "Or");
             AddKeyword<RightKeywordLexeme>(builder, "Right");
             AddKeyword<VarKeywordLexeme>(builder, "Var");
-            AddKeyword<OutKeywordLexeme>(builder, "Out");
+            AddKeyword<WhileKeywordLexeme>(builder, "While");
             AddKeyword<XorKeywordLexeme>(builder, "Xor");
             builder.Add("True", lineNumber => new BooleanLiteralLexeme(true, lineNumber));
             builder.Add("False", lineNumber => new BooleanLiteralLexeme(false, lineNumber));

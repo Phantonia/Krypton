@@ -9,6 +9,7 @@ using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 
 namespace UnitTests
 {
@@ -161,6 +162,75 @@ namespace UnitTests
             var vasn = (VariableAssignmentStatementNode)node!;
             Assert.IsInstanceOf<BooleanLiteralExpressionNode>(vasn.AssignedValue);
             Assert.AreEqual("x", vasn.Identifier);
+        }
+
+        [Test]
+        public void SeveralStatementsTest()
+        {
+            LexemeCollection lexemes = new Lexer("Var x = 4; Output(x); x = 6; Output(x);").LexAll();
+
+            int index = 0;
+
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+
+            List<StatementNode> statements = new();
+
+            while (true)
+            {
+                StatementNode? nextStatement = parser.ParseNextStatement(ref index);
+
+                if (nextStatement == null)
+                {
+                    break;
+                }
+
+                statements.Add(nextStatement);
+            }
+
+            Assert.AreEqual(4, statements.Count);
+            Assert.IsInstanceOf<VariableDeclarationStatementNode>(statements[0]);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(statements[1]);
+            Assert.IsInstanceOf<VariableAssignmentStatementNode>(statements[2]);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(statements[3]);
+        }
+
+        [Test]
+        public void BlockStatementTest()
+        {
+            LexemeCollection lexemes = new Lexer("Block { Output(4); Output(6); }").LexAll();
+
+            int index = 0;
+
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            StatementNode? statement = parser.ParseNextStatement(ref index);
+
+            Assert.NotNull(statement);
+            Assert.IsInstanceOf<BlockStatementNode>(statement);
+
+            var block = (BlockStatementNode)statement!;
+
+            Assert.AreEqual(2, block.Count);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(block[0]);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(block[1]);
+        }
+
+        [Test]
+        public void WhileStatementTest()
+        {
+            LexemeCollection lexemes = new Lexer("While True { Output(4.9); }").LexAll();
+
+            int index = 0;
+
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            StatementNode? statement = parser.ParseNextStatement(ref index);
+
+            Assert.NotNull(statement);
+            Assert.IsInstanceOf<WhileStatementNode>(statement);
+
+            var @while = (WhileStatementNode)statement!;
+
+            Assert.IsInstanceOf<BooleanLiteralExpressionNode>(@while.Condition);
+            Assert.AreEqual(1, @while.Statements.Count);
         }
     }
 }

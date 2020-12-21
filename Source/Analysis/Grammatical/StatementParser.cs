@@ -10,6 +10,7 @@ using Krypton.Analysis.Lexical.Lexemes.SyntaxCharacters;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using Krypton.Analysis.Utilities;
 using System;
+using System.Collections.Generic;
 
 namespace Krypton.Analysis.Grammatical
 {
@@ -30,9 +31,51 @@ namespace Krypton.Analysis.Grammatical
         {
             return lexemes[index] switch
             {
-                VarKeywordLexeme => ParseVariableDeclarationStatement(ref index),
+                BlockKeywordLexeme => ParseBlock(ref index, lexemes[index].LineNumber),
+                VarKeywordLexeme => ParseVariableDeclarationStatement(ref Increase(ref index)),
+                WhileKeywordLexeme => ParseWhileStatement(ref index),
                 _ => ParseExpressionStatement(ref index),
             };
+
+            static ref int Increase(ref int index)
+            {
+                index++;
+                return ref index;
+            }
+        }
+
+        private BlockStatementNode? ParseBlock(ref int index, int lineNumber)
+        {
+            if (lexemes[index] is BraceOpeningLexeme)
+            {
+                index++;
+
+                List<StatementNode> statements = new();
+
+                while (true)
+                {
+                    switch (lexemes.TryGet(index))
+                    {
+                        case null:
+                            throw new NotImplementedException("Error ???: closing brace expected");
+                        case BraceClosingLexeme:
+                            return new BlockStatementNode(statements, lineNumber);
+                    }
+
+                    StatementNode? nextStatement = ParseNextStatement(ref index);
+
+                    if (nextStatement == null)
+                    {
+                        return null;
+                    }
+
+                    statements.Add(nextStatement);
+                }
+            }
+            else
+            {
+                throw new NotImplementedException("Error ???: opening brace expected");
+            }
         }
 
         private StatementNode? ParseExpressionStatement(ref int index)
@@ -47,7 +90,7 @@ namespace Krypton.Analysis.Grammatical
             return expression switch
             {
                 FunctionCallExpressionNode fcen => ParseFunctionCallStatement(fcen, ref index),
-                IdentifierExpressionNode iden => ParseVariableAssignmentStatement(iden.Identifier, ref index),
+                IdentifierExpressionNode iden => ParseVariableAssignmentStatement(iden.IdentifierNode, ref index),
                 _ => throw new NotImplementedException("Error 104: Only function call expressions may be used as statements"),
             };
         }
@@ -83,6 +126,7 @@ namespace Krypton.Analysis.Grammatical
 
             if (lexemes[index] is SemicolonLexeme)
             {
+                index++;
                 return new VariableAssignmentStatementNode(identifier, assignedValue, identifier.LineNumber);
             }
             else
@@ -128,6 +172,7 @@ namespace Krypton.Analysis.Grammatical
                     }
                     else if (current is SemicolonLexeme)
                     {
+                        index++;
                         return new VariableDeclarationStatementNode(variableName, type, value: null, lineNumber);
                     }
                     else
@@ -155,6 +200,7 @@ namespace Krypton.Analysis.Grammatical
 
                     if (current is SemicolonLexeme)
                     {
+                        index++;
                         return new VariableDeclarationStatementNode(variableName, type, assignedValue, lineNumber);
                     }
                     else
@@ -167,6 +213,29 @@ namespace Krypton.Analysis.Grammatical
             {
                 throw new NotImplementedException("Error 105: Identifier expected");
             }
+        }
+
+        private WhileStatementNode? ParseWhileStatement(ref int index)
+        {
+            int lineNumber = lexemes[index].LineNumber;
+
+            index++;
+
+            ExpressionNode? condition = expressionParser.ParseNextExpression(ref index);
+
+            if (condition == null)
+            {
+                return null;
+            }
+
+            BlockStatementNode? statements = ParseBlock(ref index, lineNumber);
+
+            if (statements == null)
+            {
+                return null;
+            }
+
+            return new WhileStatementNode(condition, statements, lineNumber);
         }
     }
 }

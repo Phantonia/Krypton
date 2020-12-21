@@ -6,19 +6,21 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
     {
         public IdentifierExpressionNode(string identifier, int lineNumber) : base(lineNumber)
         {
-            Identifier = new IdentifierNode(identifier, lineNumber);
+            IdentifierNode = new IdentifierNode(identifier, lineNumber);
         }
 
         private IdentifierExpressionNode(IdentifierNode identifier, int lineNumber) : base(lineNumber)
         {
-            Identifier = identifier;
+            IdentifierNode = identifier;
         }
 
-        public IdentifierNode Identifier { get; }
+        public string Identifier => IdentifierNode.Identifier;
+
+        public IdentifierNode IdentifierNode { get; }
 
         public override IdentifierExpressionNode Clone()
         {
-            return new(Identifier.Clone(), LineNumber);
+            return new(IdentifierNode.Clone(), LineNumber);
         }
 
         public override void GenerateCode(StringBuilder stringBuilder)
