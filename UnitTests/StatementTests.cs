@@ -232,5 +232,104 @@ namespace UnitTests
             Assert.IsInstanceOf<BooleanLiteralExpressionNode>(@while.Condition);
             Assert.AreEqual(1, @while.Statements.Count);
         }
+
+        [Test]
+        public void NestedBlocksTest()
+        {
+            LexemeCollection lexemes = new Lexer(
+@"Block
+{
+    Output(4.9);
+    Block
+    {
+        Output(True);
+    }
+    Var x As Int;
+}").LexAll();
+
+            int index = 0;
+
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            StatementNode? statement = parser.ParseNextStatement(ref index);
+
+            Assert.NotNull(statement);
+            Assert.IsInstanceOf<BlockStatementNode>(statement);
+
+            var block = (BlockStatementNode)statement!;
+
+            Assert.AreEqual(3, block.Count);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(block[0]);
+            Assert.IsInstanceOf<BlockStatementNode>(block[1]);
+            Assert.IsInstanceOf<VariableDeclarationStatementNode>(block[2]);
+
+            var nestedBlock = (BlockStatementNode)block[1];
+
+            Assert.AreEqual(1, nestedBlock.Count);
+        }
+
+        [Test]
+        public void NestedWhileLoopsTest()
+        {
+            LexemeCollection lexemes = new Lexer(
+              @"While a + 1
+                {
+                    While b / 4
+                    {
+                        Output(c);
+                    }
+                }").LexAll();
+
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            int index = 0;
+            StatementNode? statement = parser.ParseNextStatement(ref index);
+
+            Assert.NotNull(statement);
+            Assert.IsInstanceOf<WhileStatementNode>(statement);
+
+            var @while = (WhileStatementNode)statement!;
+
+            Assert.IsInstanceOf<AdditionBinaryOperationExpressionNode>(@while.Condition);
+            Assert.AreEqual(1, @while.Statements.Count);
+            Assert.IsInstanceOf<WhileStatementNode>(@while.Statements[0]);
+        }
+
+        [Test]
+        public void MassiveNestingTest()
+        {
+            LexemeCollection lexemes = new Lexer(
+              @"Block
+                {
+                    Block { }
+                    While b / 4
+                    {
+                        Output(c);
+                        Block
+                        {
+                            y = 6;
+                        }
+                    }
+                    V();
+                }").LexAll();
+
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            int index = 0;
+            StatementNode? statement = parser.ParseNextStatement(ref index);
+
+            Assert.NotNull(statement);
+            Assert.IsInstanceOf<BlockStatementNode>(statement);
+
+            var block = (BlockStatementNode)statement!;
+
+            Assert.AreEqual(3, block.Count);
+            Assert.IsInstanceOf<BlockStatementNode>(block[0]);
+
+            var block_block = (BlockStatementNode)block[0];
+            Assert.AreEqual(0, block_block.Count);
+
+            var block_while = (WhileStatementNode)block[1];
+            Assert.IsInstanceOf<RationalDivisionBinaryOperationExpressionNode>(block_while.Condition);
+            Assert.AreEqual(2, block_while.Statements.Count);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(block_while.Statements[0]);
+        }
     }
 }

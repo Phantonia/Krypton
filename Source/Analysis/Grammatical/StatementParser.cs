@@ -31,7 +31,7 @@ namespace Krypton.Analysis.Grammatical
         {
             return lexemes[index] switch
             {
-                BlockKeywordLexeme => ParseBlock(ref index, lexemes[index].LineNumber),
+                BlockKeywordLexeme => ParseBlock(ref Increase(ref index), lexemes[index].LineNumber),
                 VarKeywordLexeme => ParseVariableDeclarationStatement(ref Increase(ref index)),
                 WhileKeywordLexeme => ParseWhileStatement(ref index),
                 _ => ParseExpressionStatement(ref index),
@@ -59,6 +59,7 @@ namespace Krypton.Analysis.Grammatical
                         case null:
                             throw new NotImplementedException("Error ???: closing brace expected");
                         case BraceClosingLexeme:
+                            index++;
                             return new BlockStatementNode(statements, lineNumber);
                     }
 
@@ -139,7 +140,7 @@ namespace Krypton.Analysis.Grammatical
         {
             int lineNumber = lexemes[index].LineNumber;
 
-            index++;
+            //index++;
             Lexeme? current = lexemes.TryGet(index);
 
             if (current is IdentifierLexeme idl)
