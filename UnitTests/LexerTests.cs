@@ -1,6 +1,5 @@
 using Krypton.Analysis.Lexical;
-using Krypton.Analysis.Lexical.Lexemes.Keywords;
-using Krypton.Analysis.Lexical.Lexemes.SyntaxCharacters;
+using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using NUnit.Framework;
 using System;
@@ -42,15 +41,16 @@ namespace UnitTests
         [Test]
         public void NewOperatorsTest()
         {
+                                                //0 1 2 3     4 5 6 7    8  9 10
             LexemeCollection lexemes = new Lexer("4 & 7 Right 9 | 2 Left 11 ^ 1").LexAll();
 
             Assert.AreEqual(12, lexemes.Count);
 
-            Assert.IsAssignableFrom<AmpersandLexeme>(lexemes[1]);
-            Assert.IsAssignableFrom<RightKeywordLexeme>(lexemes[3]);
-            Assert.IsAssignableFrom<PipeLexeme>(lexemes[5]);
-            Assert.IsAssignableFrom<LeftKeywordLexeme>(lexemes[7]);
-            Assert.IsAssignableFrom<CaretLexeme>(lexemes[9]);
+            Assert.IsTrue(lexemes[1] is CharacterOperatorLexeme { Operator: CharacterOperator.Ampersand });
+            Assert.IsTrue(lexemes[3] is KeywordLexeme { Keyword: ReservedKeyword.Right });
+            Assert.IsTrue(lexemes[5] is CharacterOperatorLexeme { Operator: CharacterOperator.Pipe });
+            Assert.IsTrue(lexemes[7] is KeywordLexeme { Keyword: ReservedKeyword.Left });
+            Assert.IsTrue(lexemes[9] is CharacterOperatorLexeme { Operator: CharacterOperator.Caret });
         }
 
         [Test]

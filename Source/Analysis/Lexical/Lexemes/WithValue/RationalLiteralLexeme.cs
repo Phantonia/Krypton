@@ -6,22 +6,12 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
     {
         public RationalLiteralLexeme(string value, int lineNumber) : base(lineNumber)
         {
-            Init(value);
+            Debug.Assert(NumberLiteralParser.TryParseRational(value, out _));
+            Value = NumberLiteralParser.ParseRational(value);
         }
 
         public override string Content => Value.ToString();
 
-        public RationalLiteralValue Value { get; private set; }
-
-        protected override void Construct(string value)
-        {
-            Init(value);
-        }
-
-        private void Init(string value)
-        {
-            Debug.Assert(NumberLiteralParser.TryParseRational(value, out _));
-            Value = NumberLiteralParser.ParseRational(value);
-        }
+        public RationalLiteralValue Value { get; }
     }
 }

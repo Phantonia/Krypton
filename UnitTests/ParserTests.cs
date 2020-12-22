@@ -5,7 +5,6 @@ using Krypton.Analysis.Errors;
 using Krypton.Analysis.Grammatical;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
-using Krypton.Analysis.Lexical.Lexemes.SyntaxCharacters;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using NUnit.Framework;
 
@@ -38,9 +37,9 @@ namespace UnitTests
             LexemeCollection lexemes = new Lexer("(4)").LexAll();
 
             Assert.AreEqual(4, lexemes.Count);
-            Assert.IsAssignableFrom<ParenthesisOpeningLexeme>(lexemes[0]);
+            Assert.IsTrue(lexemes[0] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisOpening });
             Assert.IsAssignableFrom<IntegerLiteralLexeme>(lexemes[1]);
-            Assert.IsAssignableFrom<ParenthesisClosingLexeme>(lexemes[2]);
+            Assert.IsTrue(lexemes[2] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing });
             Assert.IsAssignableFrom<EndOfFileLexeme>(lexemes[3]);
 
             int index = 0;
@@ -77,9 +76,9 @@ namespace UnitTests
         {
             BinaryOperationChainNode chain = new(1); // Arbitrary line number
             chain.AddOperand(new IntegerLiteralExpressionNode(4, 1));
-            chain.AddOperator(new PlusLexeme(1));
+            chain.AddOperator(new CharacterOperatorLexeme(CharacterOperator.Plus, 1));
             chain.AddOperand(new IntegerLiteralExpressionNode(4, 1));
-            chain.AddOperator(new AsteriskLexeme(1));
+            chain.AddOperator(new CharacterOperatorLexeme(CharacterOperator.Asterisk, 1));
             chain.AddOperand(new IntegerLiteralExpressionNode(4, 1));
             // 4 + 4 * 4 = 20
 
@@ -516,6 +515,17 @@ namespace UnitTests
             FunctionCallExpressionNode call = (FunctionCallExpressionNode)root!;
 
             Assert.IsAssignableFrom<FunctionCallExpressionNode>(call.FunctionExpression);
+        }
+
+        [Test]
+        public void AndTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("x And y").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsInstanceOf<LogicalAndBinaryOperationExpressionNode>(root);
         }
     }
 }

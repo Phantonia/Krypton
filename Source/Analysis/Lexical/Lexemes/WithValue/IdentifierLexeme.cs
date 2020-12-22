@@ -4,16 +4,9 @@
     {
         public IdentifierLexeme(string identifier, int lineNumber) : base(lineNumber)
         {
-            content = identifier;
+            Content = identifier;
         }
 
-        private string content;
-
-        public override string Content => content;
-
-        protected override void Construct(string identifier)
-        {
-            content = identifier;
-        }
+        public override string Content { get; }
     }
 }

@@ -6,25 +6,6 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
     {
         public IntegerLiteralLexeme(string value, IntegerStyle style, int lineNumber) : base(lineNumber)
         {
-            Init(value, style);
-        }
-
-        public IntegerLiteralLexeme(int value, int lineNumber) : base(lineNumber)
-        {
-            Value = value;
-        }
-
-        public override string Content => Value.ToString();
-
-        public long Value { get; private set; }
-
-        protected override void Construct(string value)
-        {
-            Init(value, IntegerStyle.None);
-        }
-
-        private void Init(string value, IntegerStyle style)
-        {
             switch (style)
             {
                 case IntegerStyle.Base10:
@@ -41,5 +22,14 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
                     break;
             }
         }
+
+        public IntegerLiteralLexeme(int value, int lineNumber) : base(lineNumber)
+        {
+            Value = value;
+        }
+
+        public override string Content => Value.ToString();
+
+        public long Value { get; }
     }
 }

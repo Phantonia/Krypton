@@ -12,11 +12,5 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
         public override string Content => Value ? "True" : "False";
 
         public bool Value { get; private set; }
-
-        protected override void Construct(string value)
-        {
-            Debug.Assert(value == "True" | value == "False");
-            Value = value == "True";
-        }
     }
 }

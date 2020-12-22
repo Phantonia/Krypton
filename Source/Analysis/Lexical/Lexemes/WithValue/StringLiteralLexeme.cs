@@ -11,16 +11,11 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
 
         public override string Content => Value;
 
-        public string Value { get; private set; }
+        public string Value { get; }
 
         public string Parse()
         {
             throw new NotImplementedException();
-        }
-
-        protected override void Construct(string value)
-        {
-            Value = value;
         }
     }
 }

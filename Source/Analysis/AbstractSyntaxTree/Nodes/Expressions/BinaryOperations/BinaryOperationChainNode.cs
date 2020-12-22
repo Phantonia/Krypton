@@ -1,6 +1,4 @@
 ﻿using Krypton.Analysis.Lexical.Lexemes;
-using Krypton.Analysis.Lexical.Lexemes.Keywords;
-using Krypton.Analysis.Lexical.Lexemes.SyntaxCharacters;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -84,23 +82,23 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations
 
             return operatorLexeme switch
             {
-                DoubleAsteriskLexeme => new ExponentiationBinaryOperationExpressionNode(left, right, line),
-                AsteriskLexeme => new MultiplicationBinaryOperationExpressionNode(left, right, line),
-                DivKeywordLexeme => new IntegerDivisionBinaryOperationExpressionNode(left, right, line),
-                ForeSlashLexeme => new RationalDivisionBinaryOperationExpressionNode(left, right, line),
-                ModKeywordLexeme => new ModuloBinaryOperationExpressionNode(left, right, line),
-                PlusLexeme => new AdditionBinaryOperationExpressionNode(left, right, line),
-                MinusLexeme => new SubtractionBinaryOperationExpressionNode(left, right, line),
-                AmpersandLexeme => new BitwiseAndBinaryOperationExpressionNode(left, right, line),
-                PipeLexeme => new BitwiseOrBinaryOperationExpressionNode(left, right, line),
-                CaretLexeme => new BitwiseXOrBinaryOperationExpressionNode(left, right, line),
-                LeftKeywordLexeme => new BitwiseLeftShiftBinaryOperationExpressionNode(left, right, line),
-                RightKeywordLexeme => new BitwiseRightShiftBinaryOperationExpressionNode(left, right, line),
-                DoubleEqualsLexeme => new EqualityBinaryOperationExpressionNode(left, right, line),
-                ExclamationEqualsLexeme => new UnequalityBinaryOperationExpressionNode(left, right, line),
-                AndKeywordLexeme => new LogicalAndBinaryOperationExpressionNode(left, right, line),
-                XorKeywordLexeme => new LogicalXOrBinaryOperationExpressionNode(left, right, line),
-                OrKeywordLexeme => new LogicalOrBinaryOperationExpressionNode(left, right, line),
+                CharacterOperatorLexeme { Operator: CharacterOperator.DoubleAsterisk } => new ExponentiationBinaryOperationExpressionNode(left, right, line),
+                CharacterOperatorLexeme { Operator: CharacterOperator.Asterisk } => new MultiplicationBinaryOperationExpressionNode(left, right, line),
+                KeywordLexeme { Keyword: ReservedKeyword.Div } => new IntegerDivisionBinaryOperationExpressionNode(left, right, line),
+                CharacterOperatorLexeme { Operator: CharacterOperator.ForeSlash } => new RationalDivisionBinaryOperationExpressionNode(left, right, line),
+                KeywordLexeme { Keyword: ReservedKeyword.Mod } => new ModuloBinaryOperationExpressionNode(left, right, line),
+                CharacterOperatorLexeme { Operator: CharacterOperator.Plus } => new AdditionBinaryOperationExpressionNode(left, right, line),
+                CharacterOperatorLexeme { Operator: CharacterOperator.Minus } => new SubtractionBinaryOperationExpressionNode(left, right, line),
+                CharacterOperatorLexeme { Operator: CharacterOperator.Ampersand } => new BitwiseAndBinaryOperationExpressionNode(left, right, line),
+                CharacterOperatorLexeme { Operator: CharacterOperator.Pipe } => new BitwiseOrBinaryOperationExpressionNode(left, right, line),
+                CharacterOperatorLexeme { Operator: CharacterOperator.Caret } => new BitwiseXOrBinaryOperationExpressionNode(left, right, line),
+                KeywordLexeme { Keyword: ReservedKeyword.Left } => new BitwiseLeftShiftBinaryOperationExpressionNode(left, right, line),
+                KeywordLexeme { Keyword: ReservedKeyword.Right } => new BitwiseRightShiftBinaryOperationExpressionNode(left, right, line),
+                CharacterOperatorLexeme { Operator: CharacterOperator.DoubleEquals } => new EqualityBinaryOperationExpressionNode(left, right, line),
+                CharacterOperatorLexeme { Operator: CharacterOperator.ExclamationEquals } => new UnequalityBinaryOperationExpressionNode(left, right, line),
+                KeywordLexeme { Keyword: ReservedKeyword.And } => new LogicalAndBinaryOperationExpressionNode(left, right, line),
+                KeywordLexeme { Keyword: ReservedKeyword.Xor } => new LogicalXOrBinaryOperationExpressionNode(left, right, line),
+                KeywordLexeme { Keyword: ReservedKeyword.Or } => new LogicalOrBinaryOperationExpressionNode(left, right, line),
                 _ => OnFailure()
             };
 

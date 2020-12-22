@@ -1,6 +1,5 @@
 ﻿using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical.Lexemes;
-using Krypton.Analysis.Lexical.Lexemes.SyntaxCharacters;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using Krypton.Analysis.Utilities;
 using System;
@@ -43,28 +42,27 @@ namespace Krypton.Analysis.Lexical
             {
                 null => null,
 
-                ';' => LexSpecificLexeme<SemicolonLexeme>(),
-                ',' => LexSpecificLexeme<CommaLexeme>(),
-                ':' => LexSpecificLexeme<ColonLexeme>(),
+                ';' => LexSpecificLexeme(SyntaxCharacter.Semicolon),
+                ',' => LexSpecificLexeme(SyntaxCharacter.Comma),
+                ':' => LexSpecificLexeme(SyntaxCharacter.Colon),
                 '.' => LexDotOrSingleLineComment(),
-                '(' => LexSpecificLexeme<ParenthesisOpeningLexeme>(),
-                ')' => LexSpecificLexeme<ParenthesisClosingLexeme>(),
-                '[' => LexSpecificLexeme<SquareBracketOpeningLexeme>(),
-                ']' => LexSpecificLexeme<SquareBracketClosingLexeme>(),
-                '{' => LexSpecificLexeme<BraceOpeningLexeme>(),
-                '}' => LexSpecificLexeme<BraceClosingLexeme>(),
-                '<' => LexSpecificLexeme<LessThanLexeme>(),
+                '(' => LexSpecificLexeme(SyntaxCharacter.ParenthesisOpening),
+                ')' => LexSpecificLexeme(SyntaxCharacter.ParenthesisClosing),
+                '[' => LexSpecificLexeme(SyntaxCharacter.SquareBracketOpening),
+                ']' => LexSpecificLexeme(SyntaxCharacter.SquareBracketClosing),
+                '{' => LexSpecificLexeme(SyntaxCharacter.BraceOpening),
+                '}' => LexSpecificLexeme(SyntaxCharacter.BraceClosing),
+                '<' => LexWithPossibleEquals(CharacterOperator.LessThan, CharacterOperator.LessThanEquals),
                 '>' => LexGreaterThanOrMultilineCommentEx(),
-                '=' => LexSyntaxCharacterWithPossibleEquals<EqualsLexeme, DoubleEqualsLexeme>(),
+                '=' => LexWithPossibleEquals(SyntaxCharacter.Equals, CharacterOperator.DoubleEquals),
 
-                '+' => LexSyntaxCharacterWithPossibleEquals<PlusLexeme, PlusEqualsLexeme>(),
-                '-' => LexSyntaxCharacterWithPossibleEquals<MinusLexeme, MinusEqualsLexeme>(),
+                '+' => LexWithPossibleEquals(CharacterOperator.Plus),
+                '-' => LexWithPossibleEquals(CharacterOperator.Minus),
                 '*' => LexAsteriskOrDoubleAsteriskOrAsteriskEqualsOrDoubleAsteriskEquals(),
-                '/' => LexSyntaxCharacterWithPossibleEquals<ForeSlashLexeme, ForeSlashEqualsLexeme>(),
-                '\\' => LexSpecificLexeme<BackSlashLexeme>(),
-                '&' => LexSpecificLexeme<AmpersandLexeme>(),
-                '|' => LexSpecificLexeme<PipeLexeme>(),
-                '^' => LexSpecificLexeme<CaretLexeme>(),
+                '/' => LexWithPossibleEquals(CharacterOperator.ForeSlash),
+                '&' => LexWithPossibleEquals(CharacterOperator.Ampersand),
+                '|' => LexWithPossibleEquals(CharacterOperator.Pipe),
+                '^' => LexWithPossibleEquals(CharacterOperator.Caret),
 
                 '"' => LexStringLiteralLexeme(),
                 '\'' => LexCharLiteralLexeme(),
@@ -85,22 +83,22 @@ namespace Krypton.Analysis.Lexical
                 {
                     index++;
 
-                    return new DoubleAsteriskEqualsLexeme(lineNumber);
+                    return new CompoundAssignmentEqualsLexeme(CharacterOperator.DoubleAsterisk, lineNumber);
                 }
                 else
                 {
-                    return new DoubleAsteriskLexeme(lineNumber);
+                    return new CharacterOperatorLexeme(CharacterOperator.DoubleAsterisk, lineNumber);
                 }
             }
             else if (Code.TryGet(index) == '=')
             {
                 index++;
 
-                return new AsteriskEqualsLexeme(lineNumber);
+                return new CompoundAssignmentEqualsLexeme(CharacterOperator.Asterisk, lineNumber);
             }
             else
             {
-                return new AsteriskLexeme(lineNumber);
+                return new CharacterOperatorLexeme(CharacterOperator.Asterisk, lineNumber);
             }
         }
 
@@ -250,7 +248,7 @@ namespace Krypton.Analysis.Lexical
             }
             else
             {
-                return new DotLexeme(lineNumber);
+                return new SyntaxCharacterLexeme(SyntaxCharacter.Dot, lineNumber);
             }
         }
 
@@ -317,7 +315,7 @@ namespace Krypton.Analysis.Lexical
             }
             else
             {
-                return new GreaterThanLexeme(lineNumber);
+                return new CharacterOperatorLexeme(CharacterOperator.GreaterThan, lineNumber);
             }
         }
 
@@ -379,7 +377,7 @@ namespace Krypton.Analysis.Lexical
             }
             else
             {
-                return new GreaterThanLexeme(lineNumber);
+                return new CharacterOperatorLexeme(CharacterOperator.GreaterThan, lineNumber);
             }
         }
 
@@ -453,12 +451,20 @@ namespace Krypton.Analysis.Lexical
             LeftForLoop:
             if (identifier == "_")
             {
-                return new UnderscoreLexeme(lineNumber);
+                return new SyntaxCharacterLexeme(SyntaxCharacter.Underscore, lineNumber);
             }
 
-            if (Keywords.ReservedKeywords.TryGetValue(identifier, out Func<int, Lexeme>? lexemeFactory))
+            if (Enum.TryParse(identifier, out ReservedKeyword keyword))
             {
-                return lexemeFactory(lineNumber);
+                return KeywordLexeme.Create(keyword, lineNumber);
+            }
+            else
+            {
+                bool isTrue = identifier == "True";
+                if (isTrue || identifier == "False")
+                {
+                    return new BooleanLiteralLexeme(isTrue, lineNumber);
+                }
             }
 
             return new IdentifierLexeme(identifier, lineNumber);
@@ -519,11 +525,10 @@ namespace Krypton.Analysis.Lexical
             }
         }
 
-        private Lexeme LexSpecificLexeme<TLexeme>()
-            where TLexeme : LexemeWithoutValue
+        private Lexeme LexSpecificLexeme(SyntaxCharacter syntaxCharacter)
         {
             index++;
-            return Lexeme.New<TLexeme>(lineNumber);
+            return new SyntaxCharacterLexeme(syntaxCharacter, lineNumber);
         }
 
         private Lexeme LexStringLiteralLexeme()
@@ -554,20 +559,48 @@ namespace Krypton.Analysis.Lexical
             return new InvalidLexeme(Code[startIndex..], ErrorCode.UnclosedStringLiteral, lineNumber);
         }
 
-        private Lexeme LexSyntaxCharacterWithPossibleEquals<TWithoutEquals, TWithEquals>()
-            where TWithoutEquals : LexemeWithoutValue
-            where TWithEquals : LexemeWithoutValue
+        private Lexeme LexWithPossibleEquals(CharacterOperator @operator)
         {
             index++;
 
             if (Code.TryGet(index) == '=')
             {
                 index++;
-                return Lexeme.New<TWithEquals>(lineNumber);
+                return new CompoundAssignmentEqualsLexeme(@operator, lineNumber);
             }
             else
             {
-                return Lexeme.New<TWithoutEquals>(lineNumber);
+                return new CharacterOperatorLexeme(@operator, lineNumber);
+            }
+        }
+
+        private Lexeme LexWithPossibleEquals(CharacterOperator withoutEquals, CharacterOperator withEquals)
+        {
+            index++;
+
+            if (Code.TryGet(index) == '=')
+            {
+                index++;
+                return new CharacterOperatorLexeme(withEquals, lineNumber);
+            }
+            else
+            {
+                return new CharacterOperatorLexeme(withoutEquals, lineNumber);
+            }
+        }
+
+        private Lexeme LexWithPossibleEquals(SyntaxCharacter withoutEquals, CharacterOperator withEquals)
+        {
+            index++;
+
+            if (Code.TryGet(index) == '=')
+            {
+                index++;
+                return new CharacterOperatorLexeme(withEquals, lineNumber);
+            }
+            else
+            {
+                return new SyntaxCharacterLexeme(withoutEquals, lineNumber);
             }
         }
     }

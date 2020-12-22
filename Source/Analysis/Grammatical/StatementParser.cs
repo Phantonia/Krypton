@@ -5,8 +5,6 @@ using Krypton.Analysis.AbstractSyntaxTree.Nodes.Types;
 using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
-using Krypton.Analysis.Lexical.Lexemes.Keywords;
-using Krypton.Analysis.Lexical.Lexemes.SyntaxCharacters;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using Krypton.Analysis.Utilities;
 using System;
@@ -31,9 +29,9 @@ namespace Krypton.Analysis.Grammatical
         {
             return lexemes[index] switch
             {
-                BlockKeywordLexeme => ParseBlock(ref Increase(ref index), lexemes[index].LineNumber),
-                VarKeywordLexeme => ParseVariableDeclarationStatement(ref Increase(ref index)),
-                WhileKeywordLexeme => ParseWhileStatement(ref index),
+                KeywordLexeme { Keyword: ReservedKeyword.Block } => ParseBlock(ref Increase(ref index), lexemes[index].LineNumber),
+                KeywordLexeme { Keyword: ReservedKeyword.Var } => ParseVariableDeclarationStatement(ref Increase(ref index)),
+                KeywordLexeme { Keyword: ReservedKeyword.While } => ParseWhileStatement(ref index),
                 _ => ParseExpressionStatement(ref index),
             };
 
@@ -46,7 +44,7 @@ namespace Krypton.Analysis.Grammatical
 
         private BlockStatementNode? ParseBlock(ref int index, int lineNumber)
         {
-            if (lexemes[index] is BraceOpeningLexeme)
+            if (lexemes[index] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.BraceOpening })
             {
                 index++;
 
@@ -58,7 +56,7 @@ namespace Krypton.Analysis.Grammatical
                     {
                         case null:
                             throw new NotImplementedException("Error ???: closing brace expected");
-                        case BraceClosingLexeme:
+                        case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.BraceClosing }:
                             index++;
                             return new BlockStatementNode(statements, lineNumber);
                     }
@@ -98,7 +96,7 @@ namespace Krypton.Analysis.Grammatical
 
         private FunctionCallStatementNode? ParseFunctionCallStatement(FunctionCallExpressionNode expression, ref int index)
         {
-            if (lexemes[index] is SemicolonLexeme)
+            if (lexemes[index] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
             {
                 index++;
                 return new FunctionCallStatementNode(expression, expression.LineNumber);
@@ -111,7 +109,7 @@ namespace Krypton.Analysis.Grammatical
 
         private VariableAssignmentStatementNode? ParseVariableAssignmentStatement(IdentifierNode identifier, ref int index)
         {
-            if (lexemes[index] is not EqualsLexeme)
+            if (lexemes[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
             {
                 throw new NotImplementedException("Error ???: Only function call expression may be used as statements");
             }
@@ -125,7 +123,7 @@ namespace Krypton.Analysis.Grammatical
                 return null;
             }
 
-            if (lexemes[index] is SemicolonLexeme)
+            if (lexemes[index] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
             {
                 index++;
                 return new VariableAssignmentStatementNode(identifier, assignedValue, identifier.LineNumber);
@@ -150,11 +148,11 @@ namespace Krypton.Analysis.Grammatical
 
                 string variableName = idl.Content;
 
-                if (current is EqualsLexeme)
+                if (current is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
                 {
                     return HandleAssignedValue(type: null, ref index);
                 }
-                else if (current is AsKeywordLexeme)
+                else if (current is KeywordLexeme { Keyword: ReservedKeyword.As })
                 {
                     index++;
 
@@ -167,11 +165,11 @@ namespace Krypton.Analysis.Grammatical
 
                     current = lexemes.TryGet(index);
 
-                    if (current is EqualsLexeme)
+                    if (current is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
                     {
                         return HandleAssignedValue(type, ref index);
                     }
-                    else if (current is SemicolonLexeme)
+                    else if (current is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
                     {
                         index++;
                         return new VariableDeclarationStatementNode(variableName, type, value: null, lineNumber);
@@ -199,7 +197,7 @@ namespace Krypton.Analysis.Grammatical
 
                     current = lexemes.TryGet(index);
 
-                    if (current is SemicolonLexeme)
+                    if (current is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
                     {
                         index++;
                         return new VariableDeclarationStatementNode(variableName, type, assignedValue, lineNumber);
