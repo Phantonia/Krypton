@@ -16,6 +16,7 @@ namespace Krypton.Analysis.AbstractSyntaxTree
         public IEnumerator<Node> GetEnumerator()
         {
             List<Node> branches = new();
+            Root.PopulateBranches(branches);
             return branches.GetEnumerator();
         }
 

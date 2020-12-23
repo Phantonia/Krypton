@@ -1,4 +1,4 @@
-﻿namespace Krypton.Analysis.Lexical.Lexemes.WithValue
+﻿namespace Krypton.Analysis.Lexical
 {
     public enum IntegerStyle : byte
     {

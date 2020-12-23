@@ -10,16 +10,36 @@ namespace UnitTests
 {
     public class LexerTests
     {
-        [SetUp]
-        public void Setup() { }
+        private static LexemeCollection LexCode(string code)
+        {
+            return new Lexer(code).LexAll();
+        }
+
+        [Test]
+        public void SimpleStatementTest()
+        {
+            LexemeCollection lexemes = LexCode("Var number As Int = 4 + Sin(PI)");
+
+            Assert.IsTrue(lexemes[0] is KeywordLexeme { Keyword: ReservedKeyword.Var });
+            Assert.IsTrue(lexemes[1] is IdentifierLexeme { Content: "number" });
+            Assert.IsTrue(lexemes[2] is KeywordLexeme { Keyword: ReservedKeyword.As });
+            Assert.IsTrue(lexemes[3] is IdentifierLexeme { Content: "Int" });
+            Assert.IsTrue(lexemes[4] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals });
+            Assert.IsTrue(lexemes[5] is IntegerLiteralLexeme { Value: 4 });
+            Assert.IsTrue(lexemes[6] is CharacterOperatorLexeme { Operator: CharacterOperator.Plus });
+            Assert.IsTrue(lexemes[7] is IdentifierLexeme { Content: "Sin" });
+            Assert.IsTrue(lexemes[8] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisOpening });
+            Assert.IsTrue(lexemes[9] is IdentifierLexeme { Content: "PI" });
+            Assert.IsTrue(lexemes[10] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing });
+            Assert.IsTrue(lexemes[11] is EndOfFileLexeme);
+        }
 
         [Test]
         public void NumberTests()
         {
-            LexemeCollection lexemes;
-
             // Integer literal base 10
-            lexemes = new Lexer("1 10 100 1_ 1_0 10_ 100_000 1_000_000 1__0").LexAll();
+            LexemeCollection lexemes = LexCode("1 10 100 1_ 1_0 10_ 100_000 1_000_000 1__0");
+
             List<IntegerLiteralLexeme> lexemes2 = null!;
             Assert.DoesNotThrow(() =>
             {
@@ -41,7 +61,6 @@ namespace UnitTests
         [Test]
         public void NewOperatorsTest()
         {
-                                                //0 1 2 3     4 5 6 7    8  9 10
             LexemeCollection lexemes = new Lexer("4 & 7 Right 9 | 2 Left 11 ^ 1").LexAll();
 
             Assert.AreEqual(12, lexemes.Count);
@@ -84,6 +103,14 @@ namespace UnitTests
             RationalLiteralLexeme r = (RationalLiteralLexeme)lexemes[0];
 
             Assert.AreEqual(3.14159, (double)r.Value);
+        }
+
+        [Test]
+        public void NotEqualsTest()
+        {
+            LexemeCollection lexemes = LexCode("a != b");
+
+            Assert.IsTrue(lexemes[1] is CharacterOperatorLexeme { Operator: CharacterOperator.ExclamationEquals });
         }
     }
 }
