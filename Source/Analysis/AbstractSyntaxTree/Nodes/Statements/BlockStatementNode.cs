@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Krypton.Analysis.Utilities;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
 {
@@ -9,6 +10,13 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
         public BlockStatementNode(IEnumerable<StatementNode> statements, int lineNumber) : base(lineNumber)
         {
             this.statements = (statements as IList<StatementNode>) ?? statements.ToList();
+
+            for (int i = 0; i < this.statements.Count; i++)
+            {
+                this.statements[i].Parent = this;
+                this.statements[i].Previous = this.statements.TryGet(i - 1);
+                this.statements[i].Next = this.statements.TryGet(i + 1);
+            }
         }
 
         private readonly IList<StatementNode> statements;
@@ -24,20 +32,19 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
         {
             return new(statements.Select(s => s.Clone()), LineNumber);
         }
-        
-        public override void GenerateCode(StringBuilder stringBuilder)
+
+        public IEnumerator<StatementNode> GetEnumerator() => statements.GetEnumerator();
+
+        public override void PopulateBranches(List<Node> list)
         {
-            stringBuilder.Append("{\r\n");
+            list.Add(this);
 
             foreach (StatementNode statement in statements)
             {
-                stringBuilder.Append('\t');
-                statement.GenerateCode(stringBuilder);
+                statement.PopulateBranches(list);
             }
-
-            stringBuilder.Append("}\r\n");
         }
 
-        public IEnumerator<StatementNode> GetEnumerator() => statements.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

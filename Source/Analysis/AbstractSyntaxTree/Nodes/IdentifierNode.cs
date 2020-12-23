@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes
 {
@@ -17,9 +16,9 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes
             return new(Identifier, LineNumber);
         }
 
-        public override void GenerateCode(StringBuilder stringBuilder)
+        public override void PopulateBranches(List<Node> list)
         {
-            throw new NotImplementedException();
+            list.Add(this);
         }
     }
 }

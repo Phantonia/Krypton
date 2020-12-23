@@ -12,7 +12,7 @@ namespace Krypton.Analysis.Utilities
         public static T? TryGet<T>(this IList<T> list, int index)
             where T : class
         {
-            return list.Count > index ? list[index] : null;
+            return list.Count > index & index >= 0 ? list[index] : null;
         }
 
         public static bool IsHex(this char chr, out bool? isUpper)

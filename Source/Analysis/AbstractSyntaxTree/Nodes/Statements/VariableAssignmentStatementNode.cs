@@ -1,6 +1,5 @@
 ﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
-using System;
-using System.Text;
+using System.Collections.Generic;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
 {
@@ -9,7 +8,9 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
         public VariableAssignmentStatementNode(IdentifierNode identifier, ExpressionNode assignedValue, int lineNumber) : base(lineNumber)
         {
             IdentifierNode = identifier;
+            IdentifierNode.Parent = this;
             AssignedValue = assignedValue;
+            AssignedValue.Parent = this;
         }
 
         public ExpressionNode AssignedValue { get; }
@@ -23,9 +24,11 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
             return new(IdentifierNode.Clone(), AssignedValue.Clone(), LineNumber);
         }
 
-        public override void GenerateCode(StringBuilder stringBuilder)
+        public override void PopulateBranches(List<Node> list)
         {
-            throw new NotImplementedException();
+            list.Add(this);
+            IdentifierNode.PopulateBranches(list);
+            AssignedValue.PopulateBranches(list);
         }
     }
 }

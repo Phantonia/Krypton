@@ -1,5 +1,5 @@
 ﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
-using System.Text;
+using System.Collections.Generic;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
 {
@@ -8,7 +8,9 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
         public WhileStatementNode(ExpressionNode condition, BlockStatementNode statements, int lineNumber) : base(lineNumber)
         {
             Condition = condition;
+            Condition.Parent = this;
             Statements = statements;
+            Statements.Parent = this;
         }
 
         public ExpressionNode Condition { get; }
@@ -20,12 +22,11 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
             return new(Condition.Clone(), Statements.Clone(), LineNumber);
         }
 
-        public override void GenerateCode(StringBuilder stringBuilder)
+        public override void PopulateBranches(List<Node> list)
         {
-            stringBuilder.Append("while (");
-            Condition.GenerateCode(stringBuilder);
-            stringBuilder.Append(")\r\n");
-            Statements.GenerateCode(stringBuilder);
+            list.Add(this);
+            Condition.PopulateBranches(list);
+            Statements.PopulateBranches(list);
         }
     }
 }

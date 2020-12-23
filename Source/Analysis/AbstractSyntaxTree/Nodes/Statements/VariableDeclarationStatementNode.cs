@@ -1,32 +1,48 @@
 ﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Types;
-using System.Text;
+using System.Collections.Generic;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
 {
     public sealed class VariableDeclarationStatementNode : StatementNode
     {
-        public VariableDeclarationStatementNode(string variableName, TypeNode? type, ExpressionNode? value, int lineNumber) : base(lineNumber)
+        public VariableDeclarationStatementNode(IdentifierNode identifier, TypeNode? type, ExpressionNode? value, int lineNumber) : base(lineNumber)
         {
-            VariableName = variableName;
+            IdentifierNode = identifier;
+            IdentifierNode.Parent = this;
+
             Type = type;
+            if (Type != null)
+            {
+                Type.Parent = this;
+            }
+
             Value = value;
+            if (Value != null)
+            {
+                Value.Parent = this;
+            }
         }
+
+        public string Identifier => IdentifierNode.Identifier;
+
+        public IdentifierNode IdentifierNode { get; }
 
         public TypeNode? Type { get; }
 
         public ExpressionNode? Value { get; }
 
-        public string VariableName { get; }
-
-        public override StatementNode Clone()
+        public override VariableDeclarationStatementNode Clone()
         {
-            throw new System.NotImplementedException();
+            return new(IdentifierNode.Clone(), Type?.Clone(), Value?.Clone(), LineNumber);
         }
 
-        public override void GenerateCode(StringBuilder stringBuilder)
+        public override void PopulateBranches(List<Node> list)
         {
-            throw new System.NotImplementedException();
+            list.Add(this);
+            IdentifierNode.PopulateBranches(list);
+            Type?.PopulateBranches(list);
+            Value?.PopulateBranches(list);
         }
     }
 }

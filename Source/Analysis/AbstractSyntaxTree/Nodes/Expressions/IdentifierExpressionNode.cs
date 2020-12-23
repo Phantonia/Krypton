@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
 {
@@ -6,7 +6,10 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
     {
         public IdentifierExpressionNode(string identifier, int lineNumber) : base(lineNumber)
         {
-            IdentifierNode = new IdentifierNode(identifier, lineNumber);
+            IdentifierNode = new IdentifierNode(identifier, lineNumber)
+            {
+                Parent = this
+            };
         }
 
         private IdentifierExpressionNode(IdentifierNode identifier, int lineNumber) : base(lineNumber)
@@ -23,9 +26,10 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
             return new(IdentifierNode.Clone(), LineNumber);
         }
 
-        public override void GenerateCode(StringBuilder stringBuilder)
+        public override void PopulateBranches(List<Node> list)
         {
-            throw new System.NotImplementedException();
+            list.Add(this);
+            IdentifierNode.PopulateBranches(list);
         }
     }
 }

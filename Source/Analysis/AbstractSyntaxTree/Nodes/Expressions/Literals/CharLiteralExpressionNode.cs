@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals
+﻿namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals
 {
     public sealed class CharLiteralExpressionNode : LiteralExpressionNode
     {
@@ -14,11 +12,6 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals
         public override CharLiteralExpressionNode Clone()
         {
             return new(Value, LineNumber);
-        }
-
-        public override void GenerateCode(StringBuilder stringBuilder)
-        {
-            stringBuilder.Append((int)Value);
         }
     }
 }

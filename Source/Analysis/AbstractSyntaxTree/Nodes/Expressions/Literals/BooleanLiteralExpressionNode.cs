@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals
+﻿namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals
 {
     public sealed class BooleanLiteralExpressionNode : LiteralExpressionNode
     {
@@ -14,12 +12,6 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals
         public override BooleanLiteralExpressionNode Clone()
         {
             return new(Value, LineNumber);
-        }
-
-        public override void GenerateCode(StringBuilder stringBuilder)
-        {
-            // Using only Value would append "True" or "False", which are not valid Javascript
-            stringBuilder.Append(Value == true ? "true" : "false");
         }
     }
 }

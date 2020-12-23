@@ -1,5 +1,4 @@
 ﻿using Krypton.Analysis.Lexical;
-using System.Text;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals
 {
@@ -15,11 +14,6 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals
         public override ImaginaryLiteralExpressionNode Clone()
         {
             return new(Value, LineNumber);
-        }
-
-        public override void GenerateCode(StringBuilder stringBuilder)
-        {
-            stringBuilder.Append(Value.ToString());
         }
     }
 }

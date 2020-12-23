@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations
+﻿namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations
 {
     public sealed class BitwiseOrBinaryOperationExpressionNode : BinaryOperationExpressionNode
     {
@@ -8,16 +6,7 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations
 
         public override BitwiseOrBinaryOperationExpressionNode Clone()
         {
-            return new(Left, Right, LineNumber);
-        }
-
-        public override void GenerateCode(StringBuilder stringBuilder)
-        {
-            stringBuilder.Append('(');
-            Left.GenerateCode(stringBuilder);
-            stringBuilder.Append(") | (");
-            Right.GenerateCode(stringBuilder);
-            stringBuilder.Append(')');
+            return new(Left.Clone(), Right.Clone(), LineNumber);
         }
     }
 }

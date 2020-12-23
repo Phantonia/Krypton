@@ -1,8 +1,6 @@
 ﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Krypton.Analysis.AbstractSyntaxTree
 {
@@ -15,16 +13,10 @@ namespace Krypton.Analysis.AbstractSyntaxTree
 
         public Node Root { get; }
 
-        public string GenerateCode()
-        {
-            StringBuilder stringBuilder = new();
-            Root.GenerateCode(stringBuilder);
-            return stringBuilder.ToString();
-        }
-
         public IEnumerator<Node> GetEnumerator()
         {
-            return ((IEnumerable<Node>?)Root)?.GetEnumerator() ?? Enumerable.Empty<Node>().GetEnumerator();
+            List<Node> branches = new();
+            return branches.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

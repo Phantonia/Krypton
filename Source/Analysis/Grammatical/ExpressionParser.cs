@@ -1,5 +1,4 @@
 ﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals;
 using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical;
@@ -7,6 +6,7 @@ using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using Krypton.Analysis.Utilities;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Krypton.Analysis.Grammatical
 {
@@ -21,6 +21,7 @@ namespace Krypton.Analysis.Grammatical
 
         public ExpressionNode? ParseNextExpression(ref int index)
         {
+            Debug.Assert(Lexemes.Count > index & index >= 0);
             ExpressionNode? root = ParseNextExpressionInternal(ref index);
             index++;
             return root;

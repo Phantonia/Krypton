@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Types
 {
@@ -6,24 +6,30 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Types
     {
         public IdentifierTypeNode(string identifier, int lineNumber) : base(lineNumber)
         {
-            Identifier = new IdentifierNode(identifier, lineNumber);
+            IdentifierNode = new IdentifierNode(identifier, lineNumber)
+            {
+                Parent = this
+            };
         }
 
         private IdentifierTypeNode(IdentifierNode identifier, int lineNumber) : base(lineNumber)
         {
-            Identifier = identifier;
+            IdentifierNode = identifier;
         }
 
-        public IdentifierNode Identifier { get; }
+        public string Identifier => IdentifierNode.Identifier;
+
+        public IdentifierNode IdentifierNode { get; }
 
         public override IdentifierTypeNode Clone()
         {
-            return new(Identifier.Clone(), LineNumber);
+            return new(IdentifierNode.Clone(), LineNumber);
         }
 
-        public override void GenerateCode(StringBuilder stringBuilder)
+        public override void PopulateBranches(List<Node> list)
         {
-            throw new System.NotImplementedException();
+            list.Add(this);
+            IdentifierNode.PopulateBranches(list);
         }
     }
 }

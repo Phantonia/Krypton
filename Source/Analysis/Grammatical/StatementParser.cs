@@ -2,7 +2,6 @@
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Types;
-using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
@@ -146,7 +145,8 @@ namespace Krypton.Analysis.Grammatical
                 index++;
                 current = lexemes.TryGet(index);
 
-                string variableName = idl.Content;
+                string identifier = idl.Content;
+                int identifierLineNumber = idl.LineNumber;
 
                 if (current is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
                 {
@@ -172,7 +172,7 @@ namespace Krypton.Analysis.Grammatical
                     else if (current is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
                     {
                         index++;
-                        return new VariableDeclarationStatementNode(variableName, type, value: null, lineNumber);
+                        return new VariableDeclarationStatementNode(new IdentifierNode(identifier, identifierLineNumber), type, value: null, lineNumber);
                     }
                     else
                     {
@@ -200,7 +200,7 @@ namespace Krypton.Analysis.Grammatical
                     if (current is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
                     {
                         index++;
-                        return new VariableDeclarationStatementNode(variableName, type, assignedValue, lineNumber);
+                        return new VariableDeclarationStatementNode(new IdentifierNode(identifier, identifierLineNumber), type, assignedValue, lineNumber);
                     }
                     else
                     {

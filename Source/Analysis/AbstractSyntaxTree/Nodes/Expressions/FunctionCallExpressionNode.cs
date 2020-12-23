@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
 {
@@ -8,27 +8,45 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
         public FunctionCallExpressionNode(ExpressionNode functionExpression, int lineNumber) : base(lineNumber)
         {
             FunctionExpression = functionExpression;
+            FunctionExpression.Parent = this;
         }
 
-        public FunctionCallExpressionNode(ExpressionNode functionExpression, List<ExpressionNode>? arguments, int lineNumber) : base(lineNumber)
+        public FunctionCallExpressionNode(ExpressionNode functionExpression, IEnumerable<ExpressionNode>? arguments, int lineNumber) : base(lineNumber)
         {
             FunctionExpression = functionExpression;
-            Arguments = arguments;
+            Arguments = (arguments as IList<ExpressionNode>) ?? arguments?.ToList();
+
+            if (arguments != null)
+            {
+                foreach (ExpressionNode argument in arguments)
+                {
+                    argument.Parent = this;
+                }
+            }
         }
 
         // Null if the function is called without arguments
-        public List<ExpressionNode>? Arguments { get; } = null;
+        public IList<ExpressionNode>? Arguments { get; } = null;
 
         public ExpressionNode FunctionExpression { get; }
 
         public override FunctionCallExpressionNode Clone()
         {
-            return new(FunctionExpression, Arguments, LineNumber);
+            return new(FunctionExpression.Clone(), Arguments?.Select(a => a.Clone()), LineNumber);
         }
 
-        public override void GenerateCode(StringBuilder stringBuilder)
+        public override void PopulateBranches(List<Node> list)
         {
-            throw new System.NotImplementedException();
+            list.Add(this);
+            FunctionExpression.PopulateBranches(list);
+
+            if (Arguments != null)
+            {
+                foreach (ExpressionNode argument in Arguments)
+                {
+                    argument.PopulateBranches(list);
+                }
+            }
         }
     }
 }

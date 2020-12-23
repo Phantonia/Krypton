@@ -1,44 +1,30 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes
 {
-    public abstract class Node : IEnumerable<Node>
+    public abstract class Node
     {
         protected Node(int lineNumber)
         {
             LineNumber = lineNumber;
         }
 
+        private Node? parent;
+
         public int LineNumber { get; }
 
-        public abstract Node Clone();
-
-        public abstract void GenerateCode(StringBuilder stringBuilder);
-
-        protected virtual IEnumerable<Node> GetBranches()
+        public Node? Parent
         {
-            return Enumerable.Empty<Node>();
-        }
-
-        IEnumerator<Node> IEnumerable<Node>.GetEnumerator()
-        {
-            yield return this;
-
-            foreach (Node node in GetBranches())
+            get => parent;
+            internal set
             {
-                foreach (Node children in node)
-                {
-                    yield return children;
-                }
+                parent = value;
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable<Node>)this).GetEnumerator();
-        }
+        public abstract Node Clone();
+
+        public abstract void PopulateBranches(List<Node> list);
     }
 }

@@ -1,23 +1,12 @@
-﻿using System.Text;
-
-namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations
+﻿namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations
 {
-    public sealed class BitwiseXOrBinaryOperationExpressionNode : BinaryOperationExpressionNode
+    public sealed class BitwiseXorBinaryOperationExpressionNode : BinaryOperationExpressionNode
     {
-        public BitwiseXOrBinaryOperationExpressionNode(ExpressionNode left, ExpressionNode right, int lineNumber) : base(left, right, lineNumber) { }
+        public BitwiseXorBinaryOperationExpressionNode(ExpressionNode left, ExpressionNode right, int lineNumber) : base(left, right, lineNumber) { }
 
-        public override BitwiseXOrBinaryOperationExpressionNode Clone()
+        public override BitwiseXorBinaryOperationExpressionNode Clone()
         {
-            return new(Left, Right, LineNumber);
-        }
-
-        public override void GenerateCode(StringBuilder stringBuilder)
-        {
-            stringBuilder.Append('(');
-            Left.GenerateCode(stringBuilder);
-            stringBuilder.Append(") ^ (");
-            Right.GenerateCode(stringBuilder);
-            stringBuilder.Append(')');
+            return new(Left.Clone(), Right.Clone(), LineNumber);
         }
     }
 }
