@@ -1,4 +1,5 @@
 ﻿using Krypton.Analysis.AbstractSyntaxTree;
+using Krypton.Analysis.AbstractSyntaxTree.Nodes;
 using Krypton.Analysis.Grammatical;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Semantical;
@@ -7,13 +8,13 @@ namespace Krypton.Analysis
 {
     public static class Analyser
     {
-        public static SyntaxTree? Analyse(string code)
+        public static SyntaxTree<ScriptNode>? Analyse(string code)
         {
             Lexer lexer = new(code);
             LexemeCollection lexemes = lexer.LexAll();
 
             ScriptParser parser = new(lexemes);
-            SyntaxTree? syntaxTree = parser.ParseWholeScript();
+            SyntaxTree<ScriptNode>? syntaxTree = parser.ParseWholeScript();
 
             if (syntaxTree == null)
             {

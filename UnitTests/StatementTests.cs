@@ -209,9 +209,9 @@ namespace UnitTests
 
             var block = (BlockStatementNode)statement!;
 
-            Assert.AreEqual(2, block.Count);
-            Assert.IsInstanceOf<FunctionCallStatementNode>(block[0]);
-            Assert.IsInstanceOf<FunctionCallStatementNode>(block[1]);
+            Assert.AreEqual(2, block.Statements.Count);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(block.Statements[0]);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(block.Statements[1]);
         }
 
         [Test]
@@ -257,14 +257,14 @@ namespace UnitTests
 
             var block = (BlockStatementNode)statement!;
 
-            Assert.AreEqual(3, block.Count);
-            Assert.IsInstanceOf<FunctionCallStatementNode>(block[0]);
-            Assert.IsInstanceOf<BlockStatementNode>(block[1]);
-            Assert.IsInstanceOf<VariableDeclarationStatementNode>(block[2]);
+            Assert.AreEqual(3, block.Statements.Count);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(block.Statements[0]);
+            Assert.IsInstanceOf<BlockStatementNode>(block.Statements[1]);
+            Assert.IsInstanceOf<VariableDeclarationStatementNode>(block.Statements[2]);
 
-            var nestedBlock = (BlockStatementNode)block[1];
+            var nestedBlock = (BlockStatementNode)block.Statements[1];
 
-            Assert.AreEqual(1, nestedBlock.Count);
+            Assert.AreEqual(1, nestedBlock.Statements.Count);
         }
 
         [Test]
@@ -320,13 +320,13 @@ namespace UnitTests
 
             var block = (BlockStatementNode)statement!;
 
-            Assert.AreEqual(3, block.Count);
-            Assert.IsInstanceOf<BlockStatementNode>(block[0]);
+            Assert.AreEqual(3, block.Statements.Count);
+            Assert.IsInstanceOf<BlockStatementNode>(block.Statements[0]);
 
-            var block_block = (BlockStatementNode)block[0];
-            Assert.AreEqual(0, block_block.Count);
+            var block_block = (BlockStatementNode)block.Statements[0];
+            Assert.AreEqual(0, block_block.Statements.Count);
 
-            var block_while = (WhileStatementNode)block[1];
+            var block_while = (WhileStatementNode)block.Statements[1];
             Assert.IsInstanceOf<RationalDivisionBinaryOperationExpressionNode>(block_while.Condition);
             Assert.AreEqual(2, block_while.Statements.Count);
             Assert.IsInstanceOf<FunctionCallStatementNode>(block_while.Statements[0]);

@@ -28,7 +28,7 @@ namespace Krypton.Analysis.Grammatical
         {
             return lexemes[index] switch
             {
-                KeywordLexeme { Keyword: ReservedKeyword.Block } => ParseBlock(ref Increase(ref index), lexemes[index].LineNumber),
+                KeywordLexeme { Keyword: ReservedKeyword.Block } => ParseBlockStatement(ref index, lexemes[index].LineNumber),
                 KeywordLexeme { Keyword: ReservedKeyword.Var } => ParseVariableDeclarationStatement(ref Increase(ref index)),
                 KeywordLexeme { Keyword: ReservedKeyword.While } => ParseWhileStatement(ref index),
                 _ => ParseExpressionStatement(ref index),
@@ -41,7 +41,21 @@ namespace Krypton.Analysis.Grammatical
             }
         }
 
-        private BlockStatementNode? ParseBlock(ref int index, int lineNumber)
+        private BlockStatementNode? ParseBlockStatement(ref int index, int lineNumber)
+        {
+            index++;
+
+            StatementCollectionNode? statements = ParseStatementBlock(ref index);
+
+            if (statements == null)
+            {
+                return null;
+            }
+
+            return new BlockStatementNode(statements, lineNumber);
+        }
+
+        private StatementCollectionNode? ParseStatementBlock(ref int index)
         {
             if (lexemes[index] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.BraceOpening })
             {
@@ -57,7 +71,7 @@ namespace Krypton.Analysis.Grammatical
                             throw new NotImplementedException("Error ???: closing brace expected");
                         case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.BraceClosing }:
                             index++;
-                            return new BlockStatementNode(statements, lineNumber);
+                            return new StatementCollectionNode(statements);
                     }
 
                     StatementNode? nextStatement = ParseNextStatement(ref index);
@@ -227,7 +241,7 @@ namespace Krypton.Analysis.Grammatical
                 return null;
             }
 
-            BlockStatementNode? statements = ParseBlock(ref index, lineNumber);
+            StatementCollectionNode? statements = ParseStatementBlock(ref index);
 
             if (statements == null)
             {

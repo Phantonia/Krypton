@@ -5,7 +5,7 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
 {
     public sealed class WhileStatementNode : StatementNode
     {
-        public WhileStatementNode(ExpressionNode condition, BlockStatementNode statements, int lineNumber) : base(lineNumber)
+        public WhileStatementNode(ExpressionNode condition, StatementCollectionNode statements, int lineNumber) : base(lineNumber)
         {
             Condition = condition;
             Condition.Parent = this;
@@ -15,7 +15,7 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
 
         public ExpressionNode Condition { get; }
 
-        public BlockStatementNode Statements { get; }
+        public StatementCollectionNode Statements { get; }
 
         public override WhileStatementNode Clone()
         {

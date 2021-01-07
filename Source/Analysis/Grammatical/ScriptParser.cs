@@ -27,7 +27,7 @@ namespace Krypton.Analysis.Grammatical
 
         public LexemeCollection Lexemes { get; }
 
-        public SyntaxTree? ParseWholeScript()
+        public SyntaxTree<ScriptNode>? ParseWholeScript()
         {
             List<StatementNode> statements = new();
 
@@ -42,9 +42,9 @@ namespace Krypton.Analysis.Grammatical
                 }
             }
 
-            BlockStatementNode topLevelStatements = new(statements, statements.TryGet(0)?.LineNumber ?? 0);
+            StatementCollectionNode topLevelStatements = new(statements);
             ScriptNode scriptNode = new(topLevelStatements, topLevelStatements.LineNumber);
-            return new SyntaxTree(scriptNode);
+            return new SyntaxTree<ScriptNode>(scriptNode);
         }
 
         private bool TryParseNextNode([NotNullWhen(true)] out Node? node)

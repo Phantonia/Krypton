@@ -17,7 +17,7 @@ namespace UnitTests
         {
             Node root = SampleNode();
 
-            SyntaxTree tree = new(root);
+            SyntaxTree<Node> tree = new(root);
 
             IEnumerator<Node> enumerator = tree.GetEnumerator();
 
@@ -52,7 +52,7 @@ namespace UnitTests
             FunctionCallStatementNode f2 = new(new FunctionCallExpressionNode(new IdentifierExpressionNode("Input", 1), 1), 1);
             FunctionCallStatementNode f3 = new(new FunctionCallExpressionNode(new IdentifierExpressionNode("Sin", 1), 1), 1);
 
-            BlockStatementNode statement = new BlockStatementNode(new[] { f1, f2, f3 }, 1);
+            StatementCollectionNode statement = new(new[] { f1, f2, f3 });
 
             Assert.IsTrue(ReferenceEquals(statement[1], statement[0].Next));
             Assert.IsTrue(ReferenceEquals(statement[0], statement[1].Previous));

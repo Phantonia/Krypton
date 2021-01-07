@@ -22,12 +22,12 @@ namespace UnitTests
             }
             ";
 
-            SyntaxTree? tree = Analyser.Analyse(Script);
+            SyntaxTree<ScriptNode>? tree = Analyser.Analyse(Script);
 
             Assert.NotNull(tree);
             Assert.IsInstanceOf<ScriptNode>(tree!.Root);
 
-            ScriptNode scriptNode = (ScriptNode)tree.Root;
+            ScriptNode scriptNode = tree.Root;
 
             Assert.AreEqual(4, scriptNode.Statements.Count);
 
