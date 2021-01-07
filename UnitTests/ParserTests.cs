@@ -1,6 +1,7 @@
 ﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals;
+using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.UnaryOperations;
 using Krypton.Analysis.Errors;
 using Krypton.Analysis.Grammatical;
 using Krypton.Analysis.Lexical;
@@ -526,6 +527,65 @@ namespace UnitTests
 
             Assert.NotNull(root);
             Assert.IsInstanceOf<LogicalAndBinaryOperationExpressionNode>(root);
+        }
+
+        [Test]
+        public void UnaryNegationTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("-4").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsInstanceOf<NegationUnaryOperationExpressionNode>(root);
+
+            var neg = (NegationUnaryOperationExpressionNode)root!;
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(neg.Operand);
+
+            var inl = (IntegerLiteralExpressionNode)neg.Operand;
+            Assert.AreEqual(4L, inl.Value);
+        }
+
+        [Test]
+        public void UnaryNegationWithBracketedOperandTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("-(4 + 6)").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsInstanceOf<NegationUnaryOperationExpressionNode>(root);
+
+            var neg = (NegationUnaryOperationExpressionNode)root!;
+            Assert.IsInstanceOf<AdditionBinaryOperationExpressionNode>(neg.Operand);
+        }
+
+        [Test]
+        public void UnaryNegationPrecedenceTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("-4 + 6").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsInstanceOf<AdditionBinaryOperationExpressionNode>(root);
+
+            var add = (AdditionBinaryOperationExpressionNode)root!;
+            Assert.IsInstanceOf<NegationUnaryOperationExpressionNode>(add.Left);
+        }
+
+        [Test]
+        public void UnaryNegationFunctionCallTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("-Sin(4)").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsInstanceOf<NegationUnaryOperationExpressionNode>(root);
+
+            var neg = (NegationUnaryOperationExpressionNode)root!;
+            Assert.IsInstanceOf<FunctionCallExpressionNode>(neg.Operand);
         }
     }
 }

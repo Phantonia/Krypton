@@ -1,5 +1,6 @@
 ﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals;
+using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.UnaryOperations;
 using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
@@ -46,13 +47,13 @@ namespace Krypton.Analysis.Grammatical
             return root;
         }
 
-        private void ParseAfterSubExpression(ref ExpressionNode? root, ref int index)
+        private void ParseAfterSubExpression(ref ExpressionNode? root, ref int index, bool includeOperations = true)
         {
             while (true)
             {
                 switch (Lexemes[index + 1])
                 {
-                    case IOperatorLexeme opl:
+                    case IOperatorLexeme opl when includeOperations:
                         index++;
                         ParseOperationChain(opl, ref root, ref index);
                         return;
@@ -186,6 +187,31 @@ namespace Krypton.Analysis.Grammatical
                             return null;
                         }
                         return root;
+                    }
+                case CharacterOperatorLexeme { Operator: CharacterOperator.Tilde }:
+                    {
+                        index++;
+                        ExpressionNode? operand = ParseNextExpressionInternal(ref index);
+
+                        if (operand != null)
+                        {
+                            return new BitwiseNotUnaryOperationExpressionNode(operand, Lexemes[index].LineNumber);
+                        }
+
+                        return null;
+                    }
+                case CharacterOperatorLexeme { Operator: CharacterOperator.Minus }:
+                    {
+                        index++;
+                        ExpressionNode? operand = ParseSubExpression(ref index);
+                        ParseAfterSubExpression(ref operand, ref index, includeOperations: false);
+
+                        if (operand != null)
+                        {
+                            return new NegationUnaryOperationExpressionNode(operand, Lexemes[index].LineNumber);
+                        }
+
+                        return null;
                     }
                 default:
                     ErrorProvider.ReportUnexpectedExpressionTerm(Lexemes[index]);
