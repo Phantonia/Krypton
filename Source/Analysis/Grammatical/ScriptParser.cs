@@ -2,6 +2,7 @@
 using Krypton.Analysis.AbstractSyntaxTree.Nodes;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements;
 using Krypton.Analysis.Lexical;
+using Krypton.Analysis.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -16,7 +17,6 @@ namespace Krypton.Analysis.Grammatical
 
             expressionParser = new ExpressionParser(lexemes);
             typeParser = new TypeParser(lexemes);
-
             statementParser = new StatementParser(lexemes, expressionParser, typeParser);
         }
 
@@ -42,7 +42,9 @@ namespace Krypton.Analysis.Grammatical
                 }
             }
 
-            throw new NotImplementedException();
+            BlockStatementNode topLevelStatements = new(statements, statements.TryGet(0)?.LineNumber ?? 0);
+            ScriptNode scriptNode = new(topLevelStatements, topLevelStatements.LineNumber);
+            return new SyntaxTree(scriptNode);
         }
 
         private bool TryParseNextNode([NotNullWhen(true)] out Node? node)
