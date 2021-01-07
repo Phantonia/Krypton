@@ -4,9 +4,14 @@ using System.Collections.Generic;
 
 namespace Krypton.Analysis.AbstractSyntaxTree
 {
-    public abstract class SyntaxTree : IEnumerable<Node>
+    public sealed class SyntaxTree : IEnumerable<Node>
     {
-        public abstract Node Root { get; }
+        public SyntaxTree(ScriptNode root)
+        {
+            Root = root;
+        }
+
+        public ScriptNode Root { get; }
 
         public IEnumerator<Node> GetEnumerator()
         {
@@ -19,16 +24,5 @@ namespace Krypton.Analysis.AbstractSyntaxTree
         {
             return GetEnumerator();
         }
-    }
-
-    public sealed class SyntaxTree<TRoot> : SyntaxTree
-        where TRoot : Node
-    {
-        public SyntaxTree(TRoot root)
-        {
-            Root = root;
-        }
-
-        public override TRoot Root { get; }
     }
 }

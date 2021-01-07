@@ -7,6 +7,7 @@ using Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Types;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace UnitTests
 {
@@ -15,11 +16,18 @@ namespace UnitTests
         [Test]
         public void EnumeratingTest()
         {
-            Node root = SampleNode();
+            StatementNode node = (StatementNode)SampleNode();
+            ScriptNode root = new(new StatementCollectionNode(Enumerable.Repeat(node, 1)), 1);
 
-            SyntaxTree<Node> tree = new(root);
+            SyntaxTree tree = new(root);
 
             IEnumerator<Node> enumerator = tree.GetEnumerator();
+
+            Assert.IsTrue(enumerator.MoveNext());
+            Assert.IsInstanceOf<ScriptNode>(enumerator.Current);
+
+            Assert.IsTrue(enumerator.MoveNext());
+            Assert.IsInstanceOf<StatementCollectionNode>(enumerator.Current);
 
             Assert.IsTrue(enumerator.MoveNext());
             Assert.IsInstanceOf<VariableDeclarationStatementNode>(enumerator.Current);

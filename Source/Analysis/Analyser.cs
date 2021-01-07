@@ -8,13 +8,13 @@ namespace Krypton.Analysis
 {
     public static class Analyser
     {
-        public static SyntaxTree<ScriptNode>? Analyse(string code)
+        public static SyntaxTree? Analyse(string code)
         {
             Lexer lexer = new(code);
             LexemeCollection lexemes = lexer.LexAll();
 
             ScriptParser parser = new(lexemes);
-            SyntaxTree<ScriptNode>? syntaxTree = parser.ParseWholeScript();
+            SyntaxTree? syntaxTree = parser.ParseWholeScript();
 
             if (syntaxTree == null)
             {
