@@ -1,7 +1,8 @@
-﻿using Krypton.Analysis;
-using Krypton.Analysis.AbstractSyntaxTree;
+﻿using Krypton.Analysis.AbstractSyntaxTree;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements;
+using Krypton.Analysis.Grammatical;
+using Krypton.Analysis.Lexical;
 using NUnit.Framework;
 
 namespace UnitTests
@@ -9,7 +10,7 @@ namespace UnitTests
     public sealed class ScriptTests
     {
         [Test]
-        public void WholeScriptTest()
+        public void WholeScriptWithoutBindingTest()
         {
             const string Script =
             @"
@@ -22,7 +23,11 @@ namespace UnitTests
             }
             ";
 
-            SyntaxTree? tree = Analyser.Analyse(Script);
+            Lexer lexer = new(Script);
+            LexemeCollection lexemes = lexer.LexAll();
+
+            ScriptParser parser = new(lexemes);
+            SyntaxTree? tree = parser.ParseWholeScript();
 
             Assert.NotNull(tree);
             Assert.IsInstanceOf<ScriptNode>(tree!.Root);

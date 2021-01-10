@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
 {
-    public sealed class WhileStatementNode : StatementNode
+    public sealed class WhileStatementNode : StatementNode, IParentStatementNode
     {
         public WhileStatementNode(ExpressionNode condition, StatementCollectionNode statements, int lineNumber) : base(lineNumber)
         {

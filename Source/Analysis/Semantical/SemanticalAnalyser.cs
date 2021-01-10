@@ -1,4 +1,5 @@
 ﻿using Krypton.Analysis.AbstractSyntaxTree;
+using Krypton.Analysis.Semantical.Binding;
 
 namespace Krypton.Analysis.Semantical
 {
@@ -13,7 +14,8 @@ namespace Krypton.Analysis.Semantical
 
         public bool PerformSemanticalAnalysis()
         {
-            return true;
+            IBinder binder = new TypeAgnosticBinder(SyntaxTree, new BuiltinIdentifierMap());
+            return binder.PerformBinding();
         }
     }
 }

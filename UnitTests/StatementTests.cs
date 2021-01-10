@@ -161,7 +161,7 @@ namespace UnitTests
 
             var vasn = (VariableAssignmentStatementNode)node!;
             Assert.IsInstanceOf<BooleanLiteralExpressionNode>(vasn.AssignedValue);
-            Assert.AreEqual("x", vasn.Identifier);
+            Assert.AreEqual("x", vasn.VariableIdentifier);
         }
 
         [Test]

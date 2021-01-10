@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes
 {
+    [DebuggerDisplay("{GetType().Name} -- {GetHashCode()}")]
     public abstract class Node
     {
         protected Node(int lineNumber)
@@ -23,6 +25,13 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes
         }
 
         public abstract Node Clone();
+
+        public List<Node> GetBranches()
+        {
+            List<Node> branches = new();
+            PopulateBranches(branches);
+            return branches;
+        }
 
         public abstract void PopulateBranches(List<Node> list);
     }

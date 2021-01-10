@@ -1,5 +1,6 @@
 ﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
+using Krypton.Analysis.AbstractSyntaxTree.Nodes.Identifiers;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Types;
 using Krypton.Analysis.Lexical;
@@ -186,7 +187,7 @@ namespace Krypton.Analysis.Grammatical
                     else if (current is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
                     {
                         index++;
-                        return new VariableDeclarationStatementNode(new IdentifierNode(identifier, identifierLineNumber), type, value: null, lineNumber);
+                        return new VariableDeclarationStatementNode(new UnboundIdentifierNode(identifier, identifierLineNumber), type, value: null, lineNumber);
                     }
                     else
                     {
@@ -214,7 +215,7 @@ namespace Krypton.Analysis.Grammatical
                     if (current is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
                     {
                         index++;
-                        return new VariableDeclarationStatementNode(new IdentifierNode(identifier, identifierLineNumber), type, assignedValue, lineNumber);
+                        return new VariableDeclarationStatementNode(new UnboundIdentifierNode(identifier, identifierLineNumber), type, assignedValue, lineNumber);
                     }
                     else
                     {

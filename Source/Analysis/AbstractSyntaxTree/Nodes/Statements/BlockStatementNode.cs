@@ -1,11 +1,8 @@
-﻿using Krypton.Analysis.Utilities;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
 {
-    public sealed class BlockStatementNode : StatementNode
+    public sealed class BlockStatementNode : StatementNode, IParentStatementNode
     {
         public BlockStatementNode(StatementCollectionNode statements, int lineNumber) : base(lineNumber)
         {

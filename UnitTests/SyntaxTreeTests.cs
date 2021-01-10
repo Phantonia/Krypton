@@ -3,6 +3,7 @@ using Krypton.Analysis.AbstractSyntaxTree.Nodes;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals;
+using Krypton.Analysis.AbstractSyntaxTree.Nodes.Identifiers;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Types;
 using NUnit.Framework;
@@ -35,7 +36,7 @@ namespace UnitTests
             VariableDeclarationStatementNode varDecl = (VariableDeclarationStatementNode)enumerator.Current;
 
             Assert.IsTrue(enumerator.MoveNext());
-            Assert.AreEqual(varDecl.IdentifierNode, enumerator.Current);
+            Assert.AreEqual(varDecl.VariableIdentifierNode, enumerator.Current);
             Assert.AreEqual(varDecl.Identifier, ((IdentifierNode)enumerator.Current).Identifier);
         }
 
@@ -67,7 +68,7 @@ namespace UnitTests
             Assert.IsTrue(ReferenceEquals(statement, f1.Parent));
         }
 
-        private static Node SampleNode() => new VariableDeclarationStatementNode(new IdentifierNode("x", 1),
+        private static Node SampleNode() => new VariableDeclarationStatementNode(new UnboundIdentifierNode("x", 1),
                                                                                  new IdentifierTypeNode("Int", 1),
                                                                                  new FunctionCallExpressionNode(new IdentifierExpressionNode("Y", 1),
                                                                                                                 new[] {

@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes.Identifiers;
+using Krypton.Analysis.AbstractSyntaxTree.Nodes.Symbols;
+using System.Collections.Generic;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
 {
-    public sealed class IdentifierExpressionNode : ExpressionNode
+    public sealed class IdentifierExpressionNode : ExpressionNode, IBindable
     {
         public IdentifierExpressionNode(string identifier, int lineNumber) : base(lineNumber)
         {
-            IdentifierNode = new IdentifierNode(identifier, lineNumber)
+            IdentifierNode = new UnboundIdentifierNode(identifier, lineNumber)
             {
                 Parent = this
             };
@@ -19,7 +21,12 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
 
         public string Identifier => IdentifierNode.Identifier;
 
-        public IdentifierNode IdentifierNode { get; }
+        public IdentifierNode IdentifierNode { get; private set; }
+
+        public void Bind(SymbolNode symbol)
+        {
+            IdentifierNode = new BoundIdentifierNode(Identifier, symbol, IdentifierNode.LineNumber) { Parent = this };
+        }
 
         public override IdentifierExpressionNode Clone()
         {

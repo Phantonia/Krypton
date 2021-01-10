@@ -1,15 +1,17 @@
 ﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
+using Krypton.Analysis.AbstractSyntaxTree.Nodes.Identifiers;
+using Krypton.Analysis.AbstractSyntaxTree.Nodes.Symbols;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Types;
 using System.Collections.Generic;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
 {
-    public sealed class VariableDeclarationStatementNode : StatementNode
+    public sealed class VariableDeclarationStatementNode : StatementNode, IDeclaration
     {
         public VariableDeclarationStatementNode(IdentifierNode identifier, TypeNode? type, ExpressionNode? value, int lineNumber) : base(lineNumber)
         {
-            IdentifierNode = identifier;
-            IdentifierNode.Parent = this;
+            VariableIdentifierNode = identifier;
+            VariableIdentifierNode.Parent = this;
 
             Type = type;
             if (Type != null)
@@ -24,9 +26,9 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
             }
         }
 
-        public string Identifier => IdentifierNode.Identifier;
+        public string Identifier => VariableIdentifierNode.Identifier;
 
-        public IdentifierNode IdentifierNode { get; }
+        public IdentifierNode VariableIdentifierNode { get; private set; }
 
         public TypeNode? Type { get; }
 
@@ -34,15 +36,24 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
 
         public override VariableDeclarationStatementNode Clone()
         {
-            return new(IdentifierNode.Clone(), Type?.Clone(), Value?.Clone(), LineNumber);
+            return new(VariableIdentifierNode.Clone(), Type?.Clone(), Value?.Clone(), LineNumber);
+        }
+
+        public LocalVariableSymbolNode CreateVariable()
+        {
+            LocalVariableSymbolNode var = new LocalVariableSymbolNode(Identifier, Type, VariableIdentifierNode.LineNumber);
+            VariableIdentifierNode = new BoundIdentifierNode(Identifier, var, VariableIdentifierNode.LineNumber) { Parent = this };
+            return var;
         }
 
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);
-            IdentifierNode.PopulateBranches(list);
+            VariableIdentifierNode.PopulateBranches(list);
             Type?.PopulateBranches(list);
             Value?.PopulateBranches(list);
         }
+
+        SymbolNode IDeclaration.CreateSymbol() => CreateVariable();
     }
 }
