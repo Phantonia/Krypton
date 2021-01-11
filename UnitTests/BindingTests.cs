@@ -3,9 +3,12 @@ using Krypton.Analysis.AbstractSyntaxTree;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Identifiers;
 using Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements;
+using Krypton.Analysis.AbstractSyntaxTree.Nodes.Symbols;
+using Krypton.Analysis.AbstractSyntaxTree.Nodes.Types;
 using Krypton.Analysis.Semantical.Binding;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 
 namespace UnitTests
 {
@@ -47,7 +50,7 @@ namespace UnitTests
             y = 2;
             ";
 
-            Assert.Throws<NotImplementedException>(() => Analyser.Analyse(Code));
+            MyAssert.Throws<NotImplementedException>(() => Analyser.Analyse(Code));
         }
 
         [Test]
@@ -97,7 +100,7 @@ namespace UnitTests
             y = x;
             ";
 
-            Assert.Throws<NotImplementedException>(() => Analyser.Analyse(Code));
+            MyAssert.Throws<NotImplementedException>(() => Analyser.Analyse(Code));
         }
 
         [Test]
@@ -127,6 +130,88 @@ namespace UnitTests
             var boundOutputFunc = bdid.Symbol;
 
             Assert.True(ReferenceEquals(actualOutputFunc, boundOutputFunc));
+        }
+
+        [Test]
+        public void TypeBindingTest()
+        {
+            const string Code =
+            @"
+            Var str As String;
+            str = ""x"";
+            ";
+
+            SyntaxTree? tree = Analyser.Analyse(Code);
+
+            Assert.NotNull(tree);
+            Assert.AreEqual(2, tree!.Root.Statements.Count);
+            Assert.IsInstanceOf<VariableDeclarationStatementNode>(tree.Root.Statements[0]);
+            Assert.IsInstanceOf<VariableAssignmentStatementNode>(tree.Root.Statements[1]);
+
+            var decl = (VariableDeclarationStatementNode)tree.Root.Statements[0];
+
+            Assert.NotNull(decl.Type);
+            Assert.IsInstanceOf<IdentifierTypeNode>(decl.Type);
+
+            var idtp = (IdentifierTypeNode)decl.Type!;
+
+            Assert.IsInstanceOf<BoundIdentifierNode>(idtp.IdentifierNode);
+
+            var bound = (BoundIdentifierNode)idtp.IdentifierNode;
+
+            var actStringType = new BuiltinIdentifierMap()["String"];
+            var bndStringType = bound.Symbol;
+
+            Assert.True(ReferenceEquals(actStringType, bndStringType));
+        }
+
+        [Test]
+        public void MoreTypeBindingTest()
+        {
+            const string Code =
+            @"
+            Var x As Int;
+            Var y As Rational;
+            Var z As Complex;
+            Var a As Bool;
+            ";
+
+            SyntaxTree? tree = Analyser.Analyse(Code);
+
+            Assert.NotNull(tree);
+            Assert.AreEqual(4, tree!.Root.Statements.Count);
+
+            BuiltinIdentifierMap bim = new();
+            SymbolNode?[] symbols =
+            {
+                bim["Int"],
+                bim["Rational"],
+                bim["Complex"],
+                bim["Bool"]
+            };
+
+            int i = 0;
+
+            foreach (var statement in tree.Root.Statements)
+            {
+                Assert.IsInstanceOf<VariableDeclarationStatementNode>(statement);
+
+                TypeNode? typeSpec = ((VariableDeclarationStatementNode)statement).Type;
+
+                Assert.NotNull(typeSpec);
+                Assert.IsInstanceOf<IdentifierTypeNode>(typeSpec);
+
+                var id = (IdentifierTypeNode)typeSpec!;
+
+                Assert.IsInstanceOf<BoundIdentifierNode>(id.IdentifierNode);
+
+                var bound = (BoundIdentifierNode)id.IdentifierNode;
+
+                Assert.IsInstanceOf<TypeSymbolNode>(bound.Symbol);
+                Assert.True(ReferenceEquals(symbols[i], (TypeSymbolNode)bound.Symbol));
+
+                i++;
+            }
         }
     }
 }

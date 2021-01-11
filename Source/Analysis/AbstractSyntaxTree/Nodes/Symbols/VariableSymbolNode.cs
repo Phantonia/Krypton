@@ -1,16 +1,15 @@
-﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes.Types;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Symbols
 {
     public abstract class VariableSymbolNode : SymbolNode
     {
-        protected VariableSymbolNode(string name, TypeNode? type, int lineNumber) : base(name, lineNumber)
+        protected VariableSymbolNode(string name, TypeSymbolNode? type, int lineNumber) : base(name, lineNumber)
         {
             Type = type;
         }
 
-        public virtual TypeNode? Type { get; protected set; }
+        public virtual TypeSymbolNode? Type { get; protected set; }
 
         public abstract override VariableSymbolNode Clone();
 

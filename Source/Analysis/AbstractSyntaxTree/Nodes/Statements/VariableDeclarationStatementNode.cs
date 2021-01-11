@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
 {
-    public sealed class VariableDeclarationStatementNode : StatementNode, IDeclaration
+    public sealed class VariableDeclarationStatementNode : StatementNode
     {
         public VariableDeclarationStatementNode(IdentifierNode identifier, TypeNode? type, ExpressionNode? value, int lineNumber) : base(lineNumber)
         {
@@ -39,9 +39,9 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
             return new(VariableIdentifierNode.Clone(), Type?.Clone(), Value?.Clone(), LineNumber);
         }
 
-        public LocalVariableSymbolNode CreateVariable()
+        public LocalVariableSymbolNode CreateVariable(TypeSymbolNode? typeSymbol)
         {
-            LocalVariableSymbolNode var = new LocalVariableSymbolNode(Identifier, Type, VariableIdentifierNode.LineNumber);
+            LocalVariableSymbolNode var = new LocalVariableSymbolNode(Identifier, typeSymbol, VariableIdentifierNode.LineNumber);
             VariableIdentifierNode = new BoundIdentifierNode(Identifier, var, VariableIdentifierNode.LineNumber) { Parent = this };
             return var;
         }
@@ -53,7 +53,5 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
             Type?.PopulateBranches(list);
             Value?.PopulateBranches(list);
         }
-
-        SymbolNode IDeclaration.CreateSymbol() => CreateVariable();
     }
 }

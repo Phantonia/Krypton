@@ -3,6 +3,7 @@
     public enum BuiltinFunction
     {
         None = 0,
-        Output = 1,
+        Output,
+        Input,
     }
 }

@@ -123,7 +123,7 @@ namespace UnitTests
 
             StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
 
-            Assert.Throws<NotImplementedException>(() => parser.ParseNextStatement(ref index));
+            MyAssert.Throws<NotImplementedException>(() => parser.ParseNextStatement(ref index));
         }
 
         [Test]

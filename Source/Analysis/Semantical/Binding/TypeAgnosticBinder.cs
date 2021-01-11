@@ -62,7 +62,19 @@ namespace Krypton.Analysis.Semantical.Binding
 
                 if (statement is VariableDeclarationStatementNode declaration)
                 {
-                    LocalVariableSymbolNode variable = declaration.CreateVariable();
+                    TypeSymbolNode? typeSymbol = null;
+
+                    if (declaration.Type != null)
+                    {
+                        typeSymbol = BindType(declaration.Type, localVariableIdentifierMap, globalIdentifierMap);
+
+                        if (typeSymbol == null)
+                        {
+                            return false;
+                        }
+                    }
+
+                    LocalVariableSymbolNode variable = declaration.CreateVariable(typeSymbol);
                     localVariableIdentifierMap.AddSymbol(declaration.Identifier, variable);
                 }
             }
@@ -88,9 +100,7 @@ namespace Krypton.Analysis.Semantical.Binding
                     itn.Bind(tsn);
                 }
 
-                SymbolNode? symbol = localVariableIdentifierMap[bindable.IdentifierNode.Identifier]
-                                  ?? globalIdentifierMap[bindable.IdentifierNode.Identifier]
-                                  ?? builtinIdentifierMap[bindable.IdentifierNode.Identifier];
+                SymbolNode? symbol = FindSymbol(bindable.IdentifierNode.Identifier, localVariableIdentifierMap, globalIdentifierMap);
 
                 if (symbol != null)
                 {
@@ -104,6 +114,32 @@ namespace Krypton.Analysis.Semantical.Binding
 
                 return true;
             });
+        }
+
+        private TypeSymbolNode? BindType(TypeNode typeNode, LocalVariableIdentifierMap localVariableIdentifierMap, GlobalIdentifierMap globalIdentifierMap)
+        {
+            if (typeNode is not IdentifierTypeNode idType)
+            {
+                throw new NotImplementedException("Not implemented: other type expressions");
+            }
+
+            SymbolNode? maybeTypeSymbol = FindSymbol(idType.Identifier, localVariableIdentifierMap, globalIdentifierMap);
+
+            if (maybeTypeSymbol is not TypeSymbolNode typeSymbol)
+            {
+                throw new NotImplementedException("Error ???: Not type used as type");
+            }
+
+            idType.Bind(typeSymbol);
+
+            return typeSymbol;
+        }
+        
+        private SymbolNode? FindSymbol(string identifier, LocalVariableIdentifierMap localVariableIdentifierMap, GlobalIdentifierMap globalIdentifierMap)
+        {
+            return localVariableIdentifierMap[identifier]
+                ?? globalIdentifierMap[identifier]
+                ?? builtinIdentifierMap[identifier];
         }
 
         private GlobalIdentifierMap GatherGlobalSymbols()
