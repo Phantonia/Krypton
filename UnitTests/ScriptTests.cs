@@ -34,14 +34,14 @@ namespace UnitTests
 
             ScriptNode scriptNode = tree.Root;
 
-            Assert.AreEqual(4, scriptNode.Statements.Count);
+            Assert.AreEqual(4, scriptNode.TopLevelStatements.Count);
 
-            Assert.IsInstanceOf<FunctionCallStatementNode>(scriptNode.Statements[0]);
-            Assert.IsInstanceOf<VariableDeclarationStatementNode>(scriptNode.Statements[1]);
-            Assert.IsInstanceOf<FunctionCallStatementNode>(scriptNode.Statements[2]);
-            Assert.IsInstanceOf<WhileStatementNode>(scriptNode.Statements[3]);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(scriptNode.TopLevelStatements[0]);
+            Assert.IsInstanceOf<VariableDeclarationStatementNode>(scriptNode.TopLevelStatements[1]);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(scriptNode.TopLevelStatements[2]);
+            Assert.IsInstanceOf<WhileStatementNode>(scriptNode.TopLevelStatements[3]);
 
-            WhileStatementNode @while = (WhileStatementNode)scriptNode.Statements[3];
+            WhileStatementNode @while = (WhileStatementNode)scriptNode.TopLevelStatements[3];
 
             Assert.AreEqual(1, @while.Statements.Count);
         }

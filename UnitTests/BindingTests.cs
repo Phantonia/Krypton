@@ -26,11 +26,11 @@ namespace UnitTests
             SyntaxTree? tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
-            Assert.IsInstanceOf<VariableDeclarationStatementNode>(tree!.Root.Statements[0]);
-            Assert.IsInstanceOf<VariableAssignmentStatementNode>(tree.Root.Statements[1]);
+            Assert.IsInstanceOf<VariableDeclarationStatementNode>(tree!.Root.TopLevelStatements[0]);
+            Assert.IsInstanceOf<VariableAssignmentStatementNode>(tree.Root.TopLevelStatements[1]);
 
-            var decl = (VariableDeclarationStatementNode)tree!.Root.Statements[0];
-            var assg = (VariableAssignmentStatementNode)tree!.Root.Statements[1];
+            var decl = (VariableDeclarationStatementNode)tree!.Root.TopLevelStatements[0];
+            var assg = (VariableAssignmentStatementNode)tree!.Root.TopLevelStatements[1];
 
             Assert.IsInstanceOf<BoundIdentifierNode>(decl.VariableIdentifierNode);
             Assert.IsInstanceOf<BoundIdentifierNode>(assg.VariableIdentifierNode);
@@ -66,8 +66,8 @@ namespace UnitTests
 
             Assert.NotNull(tree);
 
-            var decl1 = tree!.Root.Statements[0] as VariableDeclarationStatementNode;
-            var decl2 = tree!.Root.Statements[1] as VariableDeclarationStatementNode;
+            var decl1 = tree!.Root.TopLevelStatements[0] as VariableDeclarationStatementNode;
+            var decl2 = tree!.Root.TopLevelStatements[1] as VariableDeclarationStatementNode;
 
             Assert.NotNull(decl1);
             Assert.NotNull(decl2);
@@ -114,9 +114,9 @@ namespace UnitTests
             SyntaxTree? tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
-            Assert.IsInstanceOf<FunctionCallStatementNode>(tree!.Root.Statements[0]);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(tree!.Root.TopLevelStatements[0]);
 
-            var call = (FunctionCallStatementNode)tree.Root.Statements[0];
+            var call = (FunctionCallStatementNode)tree.Root.TopLevelStatements[0];
 
             Assert.IsInstanceOf<IdentifierExpressionNode>(call.FunctionExpression);
 
@@ -144,11 +144,11 @@ namespace UnitTests
             SyntaxTree? tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
-            Assert.AreEqual(2, tree!.Root.Statements.Count);
-            Assert.IsInstanceOf<VariableDeclarationStatementNode>(tree.Root.Statements[0]);
-            Assert.IsInstanceOf<VariableAssignmentStatementNode>(tree.Root.Statements[1]);
+            Assert.AreEqual(2, tree!.Root.TopLevelStatements.Count);
+            Assert.IsInstanceOf<VariableDeclarationStatementNode>(tree.Root.TopLevelStatements[0]);
+            Assert.IsInstanceOf<VariableAssignmentStatementNode>(tree.Root.TopLevelStatements[1]);
 
-            var decl = (VariableDeclarationStatementNode)tree.Root.Statements[0];
+            var decl = (VariableDeclarationStatementNode)tree.Root.TopLevelStatements[0];
 
             Assert.NotNull(decl.Type);
             Assert.IsInstanceOf<IdentifierTypeNode>(decl.Type);
@@ -179,7 +179,7 @@ namespace UnitTests
             SyntaxTree? tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
-            Assert.AreEqual(4, tree!.Root.Statements.Count);
+            Assert.AreEqual(4, tree!.Root.TopLevelStatements.Count);
 
             BuiltinIdentifierMap bim = new();
             SymbolNode?[] symbols =
@@ -192,7 +192,7 @@ namespace UnitTests
 
             int i = 0;
 
-            foreach (var statement in tree.Root.Statements)
+            foreach (var statement in tree.Root.TopLevelStatements)
             {
                 Assert.IsInstanceOf<VariableDeclarationStatementNode>(statement);
 

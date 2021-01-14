@@ -3,7 +3,7 @@
 namespace Krypton.Analysis.Lexical.Lexemes
 {
     [DebuggerDisplay("{DebuggerDisplay()}")]
-    public abstract class Lexeme
+    public abstract class Lexeme : ILexeme
     {
         protected Lexeme(int lineNumber)
         {

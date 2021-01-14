@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes
 {
+    /* A ParameterNode represents the declaration of
+     * a parameter of a function. It is used by 
+     */
     public sealed class ParameterNode : Node
     {
         public ParameterNode(string identifier, TypeSymbolNode type, int lineNumber) : base(lineNumber)

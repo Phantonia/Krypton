@@ -24,7 +24,7 @@ namespace Krypton.Analysis.Semantical.Binding
 
             // Bind top level statements
             LocalVariableIdentifierMap localVariableIdentifierMap = new();
-            if (!BindLocalVariables(syntaxTree.Root.Statements, localVariableIdentifierMap, globalIdentifierMap))
+            if (!BindLocalVariables(syntaxTree.Root.TopLevelStatements, localVariableIdentifierMap, globalIdentifierMap))
             {
                 return false;
             }

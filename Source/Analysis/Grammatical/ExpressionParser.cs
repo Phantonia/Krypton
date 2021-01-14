@@ -39,7 +39,7 @@ namespace Krypton.Analysis.Grammatical
 
             ParseAfterSubExpression(ref root, ref index);
 
-            if (root is BinaryOperationChainNode chain)
+            if (root is BinaryOperationChainExpressionNode chain)
             {
                 root = chain.Resolve();
             }
@@ -126,7 +126,7 @@ namespace Krypton.Analysis.Grammatical
                 return;
             }
 
-            if (root is not BinaryOperationChainNode chain)
+            if (root is not BinaryOperationChainExpressionNode chain)
             {
                 chain = new(opLexeme.LineNumber);
                 chain.AddOperand(root);

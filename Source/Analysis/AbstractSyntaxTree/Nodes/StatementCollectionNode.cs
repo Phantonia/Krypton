@@ -5,6 +5,16 @@ using System.Linq;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes
 {
+    /* A StatementCollectionNode is a collection of statements.
+     * It is used by the ScriptNode to represents top level
+     * statements, by control statements like Block or While
+     * to represents its nested statements, etc.
+     * Branches:
+     * - An ordered list of StatementNodes. 
+     * LineNumber:
+     * - The line number of the first statement
+     * - If there are no statements: 0
+     */
     public sealed class StatementCollectionNode : Node, IIndexedEnumerable<StatementNode>, IEnumerable<StatementNode>
     {
         public StatementCollectionNode(IEnumerable<StatementNode> statements) : base(statements.FirstOrDefault()?.LineNumber ?? 0)

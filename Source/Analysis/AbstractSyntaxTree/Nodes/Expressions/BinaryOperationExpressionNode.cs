@@ -2,6 +2,11 @@
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
 {
+    /* A BinaryOperationExpressionNode is any expression
+     * with a concrete operator lexeme and a sub expression
+     * on the left hand side and one on the right hand
+     * side.
+     */
     public abstract class BinaryOperationExpressionNode : ExpressionNode
     {
         protected BinaryOperationExpressionNode(ExpressionNode left, ExpressionNode right, int lineNumber) : base(lineNumber)

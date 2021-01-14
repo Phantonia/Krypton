@@ -7,9 +7,22 @@ using System.Linq;
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
 {
-    public sealed class BinaryOperationChainNode : ExpressionNode
+    /* A BinaryOperationChainExpressionNode is a helper node
+     * that should never escape grammatical analysis.
+     * It represents multiple binary operations chained one
+     * after the other (e.g. 4 + 5 * 6).
+     * Its Resolve method performs the act of turning this
+     * into the tree 4 + (5 * 6).
+     * It saves an ordered list of ExpressionNodes that represents
+     * the operands (0 op 1 op 2 op 3 ...) and one that represents
+     * the operators (ex 0 ex 1 ex 2 ex ...). In a valid state
+     * there is exactly one more operand than operator.
+     * An operation chain can only resolved if it is in such
+     * a valid state.
+     */
+    public sealed class BinaryOperationChainExpressionNode : ExpressionNode
     {
-        public BinaryOperationChainNode(int lineNumber) : base(lineNumber) { }
+        public BinaryOperationChainExpressionNode(int lineNumber) : base(lineNumber) { }
 
         private readonly List<IOperatorLexeme> operators = new();
         private readonly List<ExpressionNode> operands = new();
@@ -27,9 +40,21 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
             operands.Add(operand);
         }
 
-        public override BinaryOperationChainNode Clone()
+        public override BinaryOperationChainExpressionNode Clone()
         {
-            throw new NotSupportedException();
+            Debug.Assert(operands.Count == operators.Count + 1);
+
+            BinaryOperationChainExpressionNode newChain = new(LineNumber);
+
+            for (int i = 0; i < operators.Count; i++)
+            {
+                newChain.AddOperand(operands[i]);
+                newChain.AddOperator(operators[2]);
+            }
+
+            newChain.AddOperand(operands[^1]);
+
+            return newChain;
         }
 
         public override void PopulateBranches(List<Node> list)

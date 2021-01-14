@@ -75,7 +75,7 @@ namespace UnitTests
         [Test]
         public void ChainResolutionTest()
         {
-            BinaryOperationChainNode chain = new(1); // Arbitrary line number
+            BinaryOperationChainExpressionNode chain = new(1); // Arbitrary line number
             chain.AddOperand(new IntegerLiteralExpressionNode(4, 1));
             chain.AddOperator(new CharacterOperatorLexeme(CharacterOperator.Plus, 1));
             chain.AddOperand(new IntegerLiteralExpressionNode(4, 1));
