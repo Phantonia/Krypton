@@ -1,10 +1,10 @@
-# 5 Datatypes
+# 4 Datatypes
 
-Datatypes are used to guarantee the correctness of the program. Every function and every operation is defined with its types. Violations of type safety cause one of the compile time errors 5xy for any digits x and y.
+Datatypes are used to guarantee the correctness of the program. Every function and every operation is defined with its types. Violations of type safety cause one of the compile time errors 500 <= x < 600.
 
-## 5.1 Datatypes of literals
+## 4.1 Datatypes of literals
 
-Every kind of literal has a built-in datatype associated with it. For a list of built-in datatypes, see <u>5.4 Built-in datatypes</u>.
+Every kind of literal has a built-in datatype associated with it.
 
 | Kind of literal   | Datatype   | Example         |
 | ----------------- | ---------- | --------------- |
@@ -15,7 +15,7 @@ Every kind of literal has a built-in datatype associated with it. For a list of 
 | String literal    | `String`   | `"Hello world"` |
 | Boolean literal   | `Bool`     | `True`, `False` |
 
-## 5.2 Default values
+## 4.2 Default values
 
 The default value is the value of a variable of a type that has not been assigned a value.
 
@@ -32,14 +32,18 @@ The following list lists the default values for built-in datatypes:
 | `String`   | `""`          |
 | `Bool`     | `False`       |
 
-## 5.3 Type inference
+## 4.3 Properties
 
-If an expression has a type, it may be assigned to a variable declaration which lacks the `As` clause. The type of the variable is said to be **inferred**.
+A property of a type is accessible from expressions of this type. It has a type and is read only.
+
+## 4.4 Type inference
+
+If an expression has a type, it may be assigned to a variable declaration which lacks the `As` clause. The type of the variable is said to be inferred.
 
 Inference works the following way:
 
 - If the whole expression is a function call, the type is inferred to be the return type of this function.
-- If the whole expression is an operation, the type is inferred to be the return type of the rightmost appearance of the operator with the lowest precedence.
+- If the whole expression is an operation, the type is inferred to be the return type of the rightmost appearance of the operator with the lowest precedence (leftmost, if this operator is `**`).
 - If the whole expression is a literal with a type (see <u>5.1 Datatypes of literals</u>), the type is inferred to be this literal kind's type.
-- If the whole expression is a read access to a variable, the type is inferred to be the type that this variable was declared with (or that was inferred for this variable)
+- If the whole expression is a read access to a variable, the type is inferred to be the type that this variable was declared with (or that was inferred for this variable).
 

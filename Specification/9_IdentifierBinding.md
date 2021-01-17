@@ -1,12 +1,12 @@
-# 10 Identifier binding
+# 9 Identifier binding
 
-Identifiers are bound at the beginning of semantical analysis. Binding refers to the act of associating an identifier with the entity that is declared with this name.
+Identifiers are bound at the beginning of semantical analysis. Binding refers to the act of associating an identifier with the symbol that is declared with this name.
 
 Different binding semantics are applied to these different contexts:
 
-## 10.1 In an expression
+## 9.1 In an expression
 
-If a local variable declared with the identifier that is about to be bound is in scope (see <u>X Scope</u>, binding always chooses it, even if a function with the same name exists. This is the case even when the variable is called even though it does not allow it, while the call to the function would have been legal. An example:
+If a local variable declared with the identifier that is about to be bound is in scope (see <u>4.x Scope</u>, binding always chooses it, even if a function with the same name exists. This is the case even when the variable is called even though it does not allow it, while the call to the function would have been legal. An example:
 
 ```
 Func Test()
@@ -17,7 +17,7 @@ Func Test()
 
 Func Identifier()
 {
-	Out "Called the function";
+	Output("Called the function");
 }
 ```
 
@@ -25,9 +25,9 @@ In this code snippet, a compile time error is reported. A variable of type `Int`
 
 If no local variable with this identifier is found, then built-in and declared functions are considered. If a function with this name is found, the identifier is bound to that function.
 
-If neither a variable nor a function is found, a compile time error is reported.
+If neither a variable nor a function is found, a compile-time error is reported.
 
-## 10.2 In a type expression
+## 9.2 In a type specifier
 
 In a type expression, only datatypes are considered when binding identifiers. The only identifiers that are allowed here are the built-in types:
 
@@ -44,18 +44,18 @@ Because of this, it is perfectly valid to have a variable or function in scope w
 ```
 If Real()
 {
-	Out "Everything is real";
+	Output("Everything is real");
 }
 Else
 {
-	Out "This is just a dream";
+	Output("This is just a dream");
 }
 
 Var r As Real; ... can still use the type Real.
 
 Func Real() As Bool
 {
-	Return RandomReal() > 0.9;
+	Return RandomRational() > 0.9;
 }
 ```
 
