@@ -21,7 +21,7 @@ This is a list of operations that are defined on the built-in types:
 | `-`      | Subtraction            | `Int`, `Int`    | `Int`       |
 | `&`      | Bitwise And            | `Int`, `Int`    | `Int`       |
 | `^`      | Bitwise Xor            | `Int`, `Int`    | `Int`       |
-| `|`      | Bitwise Or             | `Int`, `Int`    | `Int`       |
+| \|       | Bitwise Or             | `Int`, `Int`    | `Int`       |
 | `->`     | Bitwise right shift    | `Int`, `Int`    | `Int`       |
 | `<-`     | Bitwise left shift     | `Int`, `Int`    | `Int`       |
 | `<`      | Less than              | `Int`, `Int`    | `Bool`      |
