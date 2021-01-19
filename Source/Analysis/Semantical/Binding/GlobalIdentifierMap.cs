@@ -1,4 +1,4 @@
-﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes.Symbols;
+﻿using Krypton.Analysis.AST.Symbols;
 using System.Collections.Generic;
 
 namespace Krypton.Analysis.Semantical.Binding

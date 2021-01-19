@@ -1,9 +1,9 @@
-﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Types;
+﻿using Krypton.Analysis.AST;
+using Krypton.Analysis.AST.Expressions;
+using Krypton.Analysis.AST.Expressions.BinaryOperations;
+using Krypton.Analysis.AST.Expressions.Literals;
+using Krypton.Analysis.AST.Statements;
+using Krypton.Analysis.AST.TypeSpecs;
 using Krypton.Analysis.Grammatical;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
@@ -39,7 +39,7 @@ namespace UnitTests
             Assert.NotNull(vdsn.Type);
             Assert.NotNull(vdsn.Value);
 
-            Assert.IsInstanceOf<IdentifierTypeNode>(vdsn.Type);
+            Assert.IsInstanceOf<IdentifierTypeSpecNode>(vdsn.Type);
             Assert.IsInstanceOf<IntegerLiteralExpressionNode>(vdsn.Value);
 
             var ilen = (IntegerLiteralExpressionNode)vdsn.Value!;
@@ -90,7 +90,7 @@ namespace UnitTests
             Assert.NotNull(vdsn.Type);
             Assert.IsNull(vdsn.Value);
 
-            Assert.IsInstanceOf<IdentifierTypeNode>(vdsn.Type);
+            Assert.IsInstanceOf<IdentifierTypeSpecNode>(vdsn.Type);
         }
 
         [Test]

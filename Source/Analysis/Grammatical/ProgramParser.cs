@@ -1,6 +1,5 @@
-﻿using Krypton.Analysis.AbstractSyntaxTree;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements;
+﻿using Krypton.Analysis.AST;
+using Krypton.Analysis.AST.Statements;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Utilities;
 using System;

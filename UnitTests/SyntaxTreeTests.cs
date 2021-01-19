@@ -1,11 +1,10 @@
-﻿using Krypton.Analysis.AbstractSyntaxTree;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Identifiers;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Types;
+﻿using Krypton.Analysis.AST;
+using Krypton.Analysis.AST.Expressions;
+using Krypton.Analysis.AST.Expressions.BinaryOperations;
+using Krypton.Analysis.AST.Expressions.Literals;
+using Krypton.Analysis.AST.Identifiers;
+using Krypton.Analysis.AST.Statements;
+using Krypton.Analysis.AST.TypeSpecs;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,7 +54,7 @@ namespace UnitTests
         }
 
         private static Node SampleNode() => new VariableDeclarationStatementNode(new UnboundIdentifierNode("x", 1),
-                                                                                 new IdentifierTypeNode("Int", 1),
+                                                                                 new IdentifierTypeSpecNode("Int", 1),
                                                                                  new FunctionCallExpressionNode(new IdentifierExpressionNode("Y", 1),
                                                                                                                 new[] {
                                                                                                                            new BitwiseOrBinaryOperationExpressionNode(new IntegerLiteralExpressionNode(256, 1),

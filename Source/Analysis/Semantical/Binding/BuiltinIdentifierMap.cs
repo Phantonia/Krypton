@@ -1,6 +1,6 @@
-﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Symbols;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Types;
+﻿using Krypton.Analysis.AST;
+using Krypton.Analysis.AST.Symbols;
+using Krypton.Analysis.AST.TypeSpecs;
 using Krypton.Analysis.Framework;
 using Krypton.Analysis.Utilities;
 using System;
@@ -27,7 +27,7 @@ namespace Krypton.Analysis.Semantical.Binding
 
             builtinIdentifiers = builder.ToImmutable();
 
-            void AddFunc(string name, BuiltinFunction builtinFunction, TypeNode? returnType, params (string id, TypeSymbolNode type)[] parameters)
+            void AddFunc(string name, BuiltinFunction builtinFunction, TypeSpecNode? returnType, params (string id, TypeSymbolNode type)[] parameters)
             {
                 builder.Add(name, new BuiltinFunctionSymbolNode(builtinFunction, name, parameters.Select(p => new ParameterNode(p.id, p.type, 0)), returnType, 0));
             }

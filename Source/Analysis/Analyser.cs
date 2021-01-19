@@ -1,4 +1,4 @@
-﻿using Krypton.Analysis.AbstractSyntaxTree;
+﻿using Krypton.Analysis.AST;
 using Krypton.Analysis.Grammatical;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Semantical;

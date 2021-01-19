@@ -1,7 +1,7 @@
-﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.BinaryOperations;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.UnaryOperations;
+﻿using Krypton.Analysis.AST.Expressions;
+using Krypton.Analysis.AST.Expressions.BinaryOperations;
+using Krypton.Analysis.AST.Expressions.Literals;
+using Krypton.Analysis.AST.Expressions.UnaryOperations;
 using Krypton.Analysis.Errors;
 using Krypton.Analysis.Grammatical;
 using Krypton.Analysis.Lexical;

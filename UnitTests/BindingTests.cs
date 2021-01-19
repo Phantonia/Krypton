@@ -1,10 +1,10 @@
 ﻿using Krypton.Analysis;
-using Krypton.Analysis.AbstractSyntaxTree;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Identifiers;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Symbols;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Types;
+using Krypton.Analysis.AST;
+using Krypton.Analysis.AST.Expressions;
+using Krypton.Analysis.AST.Identifiers;
+using Krypton.Analysis.AST.Statements;
+using Krypton.Analysis.AST.Symbols;
+using Krypton.Analysis.AST.TypeSpecs;
 using Krypton.Analysis.Semantical.Binding;
 using NUnit.Framework;
 using System;
@@ -151,9 +151,9 @@ namespace UnitTests
             var decl = (VariableDeclarationStatementNode)tree.Root.TopLevelStatements[0];
 
             Assert.NotNull(decl.Type);
-            Assert.IsInstanceOf<IdentifierTypeNode>(decl.Type);
+            Assert.IsInstanceOf<IdentifierTypeSpecNode>(decl.Type);
 
-            var idtp = (IdentifierTypeNode)decl.Type!;
+            var idtp = (IdentifierTypeSpecNode)decl.Type!;
 
             Assert.IsInstanceOf<BoundIdentifierNode>(idtp.IdentifierNode);
 
@@ -196,12 +196,12 @@ namespace UnitTests
             {
                 Assert.IsInstanceOf<VariableDeclarationStatementNode>(statement);
 
-                TypeNode? typeSpec = ((VariableDeclarationStatementNode)statement).Type;
+                TypeSpecNode? typeSpec = ((VariableDeclarationStatementNode)statement).Type;
 
                 Assert.NotNull(typeSpec);
-                Assert.IsInstanceOf<IdentifierTypeNode>(typeSpec);
+                Assert.IsInstanceOf<IdentifierTypeSpecNode>(typeSpec);
 
-                var id = (IdentifierTypeNode)typeSpec!;
+                var id = (IdentifierTypeSpecNode)typeSpec!;
 
                 Assert.IsInstanceOf<BoundIdentifierNode>(id.IdentifierNode);
 

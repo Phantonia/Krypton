@@ -1,8 +1,7 @@
-﻿using Krypton.Analysis.AbstractSyntaxTree;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Symbols;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Types;
+﻿using Krypton.Analysis.AST;
+using Krypton.Analysis.AST.Statements;
+using Krypton.Analysis.AST.Symbols;
+using Krypton.Analysis.AST.TypeSpecs;
 using System;
 
 namespace Krypton.Analysis.Semantical.Binding
@@ -86,7 +85,7 @@ namespace Krypton.Analysis.Semantical.Binding
         {
             return Walker.PerformForEach<IBindable>(statementNode, bindable =>
             {
-                if (bindable is IdentifierTypeNode itn)
+                if (bindable is IdentifierTypeSpecNode itn)
                 {
                     // No declared types supported yet
                     SymbolNode? type = builtinIdentifierMap[bindable.IdentifierNode.Identifier];
@@ -116,9 +115,9 @@ namespace Krypton.Analysis.Semantical.Binding
             });
         }
 
-        private TypeSymbolNode? BindType(TypeNode typeNode, LocalVariableIdentifierMap localVariableIdentifierMap, GlobalIdentifierMap globalIdentifierMap)
+        private TypeSymbolNode? BindType(TypeSpecNode typeNode, LocalVariableIdentifierMap localVariableIdentifierMap, GlobalIdentifierMap globalIdentifierMap)
         {
-            if (typeNode is not IdentifierTypeNode idType)
+            if (typeNode is not IdentifierTypeSpecNode idType)
             {
                 throw new NotImplementedException("Not implemented: other type expressions");
             }

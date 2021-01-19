@@ -1,8 +1,8 @@
-﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Identifiers;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements;
-using Krypton.Analysis.AbstractSyntaxTree.Nodes.Types;
+﻿using Krypton.Analysis.AST;
+using Krypton.Analysis.AST.Expressions;
+using Krypton.Analysis.AST.Identifiers;
+using Krypton.Analysis.AST.Statements;
+using Krypton.Analysis.AST.TypeSpecs;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
@@ -171,7 +171,7 @@ namespace Krypton.Analysis.Grammatical
                 {
                     index++;
 
-                    TypeNode? type = typeParser.ParseNextType(ref index);
+                    TypeSpecNode? type = typeParser.ParseNextType(ref index);
 
                     if (type == null)
                     {
@@ -199,7 +199,7 @@ namespace Krypton.Analysis.Grammatical
                     throw new NotImplementedException("Error 102: As or equals expected");
                 }
 
-                VariableDeclarationStatementNode? HandleAssignedValue(TypeNode? type, ref int index)
+                VariableDeclarationStatementNode? HandleAssignedValue(TypeSpecNode? type, ref int index)
                 {
                     index++;
 

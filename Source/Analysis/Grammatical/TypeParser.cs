@@ -1,4 +1,4 @@
-﻿using Krypton.Analysis.AbstractSyntaxTree.Nodes.Types;
+﻿using Krypton.Analysis.AST.TypeSpecs;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using Krypton.Analysis.Utilities;
@@ -14,12 +14,12 @@ namespace Krypton.Analysis.Grammatical
 
         public LexemeCollection Lexemes { get; }
 
-        public TypeNode? ParseNextType(ref int index)
+        public TypeSpecNode? ParseNextType(ref int index)
         {
             if (Lexemes.TryGet(index) is IdentifierLexeme idl)
             {
                 index++;
-                return new IdentifierTypeNode(idl.Content, idl.LineNumber);
+                return new IdentifierTypeSpecNode(idl.Content, idl.LineNumber);
             }
 
             return null;
