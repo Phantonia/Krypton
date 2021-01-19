@@ -1,4 +1,4 @@
-﻿namespace Krypton.Analysis.AST.Expressions
+﻿namespace Krypton.Analysis.Ast.Expressions
 {
     /* An ExpressionNode represents an expression according
      * to the spec, so for example:

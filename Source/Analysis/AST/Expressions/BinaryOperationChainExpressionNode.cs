@@ -1,11 +1,11 @@
-﻿using Krypton.Analysis.AST.Expressions.BinaryOperations;
+﻿using Krypton.Analysis.Ast.Expressions.BinaryOperations;
 using Krypton.Analysis.Grammatical;
 using Krypton.Analysis.Lexical.Lexemes;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Krypton.Analysis.AST.Expressions
+namespace Krypton.Analysis.Ast.Expressions
 {
     /* A BinaryOperationChainExpressionNode is a helper node
      * that should never escape grammatical analysis.

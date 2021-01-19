@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Krypton.Analysis.AST
+namespace Krypton.Analysis.Ast
 {
     public interface INode
     {

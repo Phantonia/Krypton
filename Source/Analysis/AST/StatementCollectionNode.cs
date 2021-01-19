@@ -1,9 +1,9 @@
-﻿using Krypton.Analysis.AST.Statements;
+﻿using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Krypton.Analysis.AST
+namespace Krypton.Analysis.Ast
 {
     /* A StatementCollectionNode is a collection of statements.
      * It is used by the ProgramNode to represents top level

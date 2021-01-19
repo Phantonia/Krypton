@@ -1,8 +1,8 @@
-﻿using Krypton.Analysis.AST.TypeSpecs;
+﻿using Krypton.Analysis.Ast.TypeSpecs;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
-namespace Krypton.Analysis.AST.Symbols
+namespace Krypton.Analysis.Ast.Symbols
 {
     public abstract class FunctionSymbolNode : SymbolNode
     {

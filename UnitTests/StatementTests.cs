@@ -1,9 +1,9 @@
-﻿using Krypton.Analysis.AST;
-using Krypton.Analysis.AST.Expressions;
-using Krypton.Analysis.AST.Expressions.BinaryOperations;
-using Krypton.Analysis.AST.Expressions.Literals;
-using Krypton.Analysis.AST.Statements;
-using Krypton.Analysis.AST.TypeSpecs;
+﻿using Krypton.Analysis.Ast;
+using Krypton.Analysis.Ast.Expressions;
+using Krypton.Analysis.Ast.Expressions.BinaryOperations;
+using Krypton.Analysis.Ast.Expressions.Literals;
+using Krypton.Analysis.Ast.Statements;
+using Krypton.Analysis.Ast.TypeSpecs;
 using Krypton.Analysis.Grammatical;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;

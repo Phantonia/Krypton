@@ -1,9 +1,9 @@
-﻿using Krypton.Analysis.AST.TypeSpecs;
+﻿using Krypton.Analysis.Ast.TypeSpecs;
 using Krypton.Analysis.Framework;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Krypton.Analysis.AST.Symbols
+namespace Krypton.Analysis.Ast.Symbols
 {
     public sealed class BuiltinFunctionSymbolNode : FunctionSymbolNode
     {

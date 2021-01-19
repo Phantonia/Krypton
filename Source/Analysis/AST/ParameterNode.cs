@@ -1,8 +1,8 @@
-﻿using Krypton.Analysis.AST.Identifiers;
-using Krypton.Analysis.AST.Symbols;
+﻿using Krypton.Analysis.Ast.Identifiers;
+using Krypton.Analysis.Ast.Symbols;
 using System.Collections.Generic;
 
-namespace Krypton.Analysis.AST
+namespace Krypton.Analysis.Ast
 {
     /* A ParameterNode represents the declaration of
      * a parameter of a function. It is used by 

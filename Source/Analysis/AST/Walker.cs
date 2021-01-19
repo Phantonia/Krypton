@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Krypton.Analysis.AST
+namespace Krypton.Analysis.Ast
 {
     public static class Walker
     {

@@ -1,10 +1,10 @@
-﻿using Krypton.Analysis.AST.Expressions;
-using Krypton.Analysis.AST.Identifiers;
-using Krypton.Analysis.AST.Symbols;
+﻿using Krypton.Analysis.Ast.Expressions;
+using Krypton.Analysis.Ast.Identifiers;
+using Krypton.Analysis.Ast.Symbols;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Krypton.Analysis.AST.Statements
+namespace Krypton.Analysis.Ast.Statements
 {
     public sealed class VariableAssignmentStatementNode : StatementNode, IBindable
     {

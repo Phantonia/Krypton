@@ -1,4 +1,4 @@
-﻿namespace Krypton.Analysis.AST.Expressions.UnaryOperations
+﻿namespace Krypton.Analysis.Ast.Expressions.UnaryOperations
 {
     public sealed class LogicalNotUnaryOperationExpressionNode : UnaryOperationExpressionNode
     {

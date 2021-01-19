@@ -1,4 +1,4 @@
-﻿namespace Krypton.Analysis.AST.TypeSpecs
+﻿namespace Krypton.Analysis.Ast.TypeSpecs
 {
     public abstract class TypeSpecNode : Node
     {

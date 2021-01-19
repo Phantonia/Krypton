@@ -1,5 +1,5 @@
-﻿using Krypton.Analysis.AST;
-using Krypton.Analysis.AST.Statements;
+﻿using Krypton.Analysis.Ast;
+using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Utilities;
 using System;

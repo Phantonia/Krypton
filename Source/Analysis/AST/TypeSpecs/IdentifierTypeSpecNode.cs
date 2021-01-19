@@ -1,9 +1,9 @@
-﻿using Krypton.Analysis.AST.Identifiers;
-using Krypton.Analysis.AST.Symbols;
+﻿using Krypton.Analysis.Ast.Identifiers;
+using Krypton.Analysis.Ast.Symbols;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Krypton.Analysis.AST.TypeSpecs
+namespace Krypton.Analysis.Ast.TypeSpecs
 {
     public sealed class IdentifierTypeSpecNode : TypeSpecNode, IBindable
     {

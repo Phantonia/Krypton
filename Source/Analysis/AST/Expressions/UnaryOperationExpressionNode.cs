@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Krypton.Analysis.AST.Expressions
+namespace Krypton.Analysis.Ast.Expressions
 {
     public abstract class UnaryOperationExpressionNode : ExpressionNode
     {

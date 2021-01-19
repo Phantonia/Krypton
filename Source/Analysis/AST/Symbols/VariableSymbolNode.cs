@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Krypton.Analysis.AST.Symbols
+namespace Krypton.Analysis.Ast.Symbols
 {
     public abstract class VariableSymbolNode : SymbolNode
     {

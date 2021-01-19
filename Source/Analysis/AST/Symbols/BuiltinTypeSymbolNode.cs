@@ -1,7 +1,7 @@
 ﻿using Krypton.Analysis.Framework;
 using System.Collections.Generic;
 
-namespace Krypton.Analysis.AST.Symbols
+namespace Krypton.Analysis.Ast.Symbols
 {
     public sealed class BuiltinTypeSymbolNode : TypeSymbolNode
     {

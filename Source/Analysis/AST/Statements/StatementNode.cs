@@ -1,4 +1,4 @@
-﻿namespace Krypton.Analysis.AST.Statements
+﻿namespace Krypton.Analysis.Ast.Statements
 {
     public abstract class StatementNode : Node
     {

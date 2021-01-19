@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Krypton.Analysis.AST.Expressions
+namespace Krypton.Analysis.Ast.Expressions
 {
     /* A BinaryOperationExpressionNode is any expression
      * with a concrete operator lexeme and a sub expression

@@ -1,6 +1,6 @@
-﻿using Krypton.Analysis.AST;
-using Krypton.Analysis.AST.Symbols;
-using Krypton.Analysis.AST.TypeSpecs;
+﻿using Krypton.Analysis.Ast;
+using Krypton.Analysis.Ast.Symbols;
+using Krypton.Analysis.Ast.TypeSpecs;
 using Krypton.Analysis.Framework;
 using Krypton.Analysis.Utilities;
 using System;

@@ -1,10 +1,10 @@
-﻿using Krypton.Analysis.AST.Expressions;
-using Krypton.Analysis.AST.Identifiers;
-using Krypton.Analysis.AST.Symbols;
-using Krypton.Analysis.AST.TypeSpecs;
+﻿using Krypton.Analysis.Ast.Expressions;
+using Krypton.Analysis.Ast.Identifiers;
+using Krypton.Analysis.Ast.Symbols;
+using Krypton.Analysis.Ast.TypeSpecs;
 using System.Collections.Generic;
 
-namespace Krypton.Analysis.AST.Statements
+namespace Krypton.Analysis.Ast.Statements
 {
     public sealed class VariableDeclarationStatementNode : StatementNode
     {

@@ -1,7 +1,7 @@
-﻿using Krypton.Analysis.AST.Expressions;
+﻿using Krypton.Analysis.Ast.Expressions;
 using System.Collections.Generic;
 
-namespace Krypton.Analysis.AST.Statements
+namespace Krypton.Analysis.Ast.Statements
 {
     public sealed class FunctionCallStatementNode : StatementNode
     {

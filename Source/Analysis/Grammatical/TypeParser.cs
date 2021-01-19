@@ -1,4 +1,4 @@
-﻿using Krypton.Analysis.AST.TypeSpecs;
+﻿using Krypton.Analysis.Ast.TypeSpecs;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using Krypton.Analysis.Utilities;

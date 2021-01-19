@@ -1,4 +1,4 @@
-﻿using Krypton.Analysis.AST;
+﻿using Krypton.Analysis.Ast;
 using Krypton.Analysis.Semantical.Binding;
 
 namespace Krypton.Analysis.Semantical

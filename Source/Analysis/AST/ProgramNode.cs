@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Krypton.Analysis.AST
+namespace Krypton.Analysis.Ast
 {
     /* A ProgramNode is the root of the syntax tree.
      * It represents the whole program. Therefore, it

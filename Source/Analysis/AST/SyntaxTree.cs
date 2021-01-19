@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace Krypton.Analysis.AST
+namespace Krypton.Analysis.Ast
 {
     public sealed class SyntaxTree : IEnumerable<Node>
     {

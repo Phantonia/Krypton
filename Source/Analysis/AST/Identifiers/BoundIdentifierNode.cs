@@ -1,7 +1,7 @@
-﻿using Krypton.Analysis.AST.Symbols;
+﻿using Krypton.Analysis.Ast.Symbols;
 using System.Collections.Generic;
 
-namespace Krypton.Analysis.AST.Identifiers
+namespace Krypton.Analysis.Ast.Identifiers
 {
     public sealed class BoundIdentifierNode : IdentifierNode
     {

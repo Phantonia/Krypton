@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Krypton.Analysis.AST.Statements
+namespace Krypton.Analysis.Ast.Statements
 {
     public sealed class BlockStatementNode : StatementNode, IParentStatementNode
     {

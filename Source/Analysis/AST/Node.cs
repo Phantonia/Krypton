@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Krypton.Analysis.AST
+namespace Krypton.Analysis.Ast
 {
     /* A node is a part of the abstract syntax tree.
      * Each node also saves the exact line in which

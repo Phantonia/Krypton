@@ -1,4 +1,4 @@
-﻿namespace Krypton.Analysis.AST.Expressions.BinaryOperations
+﻿namespace Krypton.Analysis.Ast.Expressions.BinaryOperations
 {
     public sealed class AdditionBinaryOperationExpressionNode : BinaryOperationExpressionNode
     {

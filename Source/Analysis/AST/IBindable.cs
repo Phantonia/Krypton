@@ -1,7 +1,7 @@
-﻿using Krypton.Analysis.AST.Identifiers;
-using Krypton.Analysis.AST.Symbols;
+﻿using Krypton.Analysis.Ast.Identifiers;
+using Krypton.Analysis.Ast.Symbols;
 
-namespace Krypton.Analysis.AST
+namespace Krypton.Analysis.Ast
 {
     public interface IBindable : INode
     {

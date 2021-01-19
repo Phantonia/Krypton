@@ -1,4 +1,4 @@
-﻿namespace Krypton.Analysis.AST.Identifiers
+﻿namespace Krypton.Analysis.Ast.Identifiers
 {
     public abstract class IdentifierNode : Node
     {

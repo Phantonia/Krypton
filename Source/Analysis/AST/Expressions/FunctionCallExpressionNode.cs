@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Krypton.Analysis.AST.Expressions
+namespace Krypton.Analysis.Ast.Expressions
 {
     public sealed class FunctionCallExpressionNode : ExpressionNode
     {

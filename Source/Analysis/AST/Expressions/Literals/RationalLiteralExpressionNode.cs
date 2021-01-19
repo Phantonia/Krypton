@@ -1,6 +1,6 @@
 ﻿using Krypton.Analysis.Lexical;
 
-namespace Krypton.Analysis.AST.Expressions.Literals
+namespace Krypton.Analysis.Ast.Expressions.Literals
 {
     public sealed class RationalLiteralExpressionNode : LiteralExpressionNode
     {

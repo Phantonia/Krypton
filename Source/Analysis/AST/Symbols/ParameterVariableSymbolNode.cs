@@ -1,4 +1,4 @@
-﻿namespace Krypton.Analysis.AST.Symbols
+﻿namespace Krypton.Analysis.Ast.Symbols
 {
     public sealed class ParameterVariableSymbolNode : VariableSymbolNode
     {

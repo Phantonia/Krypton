@@ -1,8 +1,8 @@
-﻿using Krypton.Analysis.AST.Identifiers;
-using Krypton.Analysis.AST.Symbols;
+﻿using Krypton.Analysis.Ast.Identifiers;
+using Krypton.Analysis.Ast.Symbols;
 using System.Collections.Generic;
 
-namespace Krypton.Analysis.AST.Expressions
+namespace Krypton.Analysis.Ast.Expressions
 {
     public sealed class IdentifierExpressionNode : ExpressionNode, IBindable
     {

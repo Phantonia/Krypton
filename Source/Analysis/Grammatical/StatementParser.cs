@@ -1,8 +1,8 @@
-﻿using Krypton.Analysis.AST;
-using Krypton.Analysis.AST.Expressions;
-using Krypton.Analysis.AST.Identifiers;
-using Krypton.Analysis.AST.Statements;
-using Krypton.Analysis.AST.TypeSpecs;
+﻿using Krypton.Analysis.Ast;
+using Krypton.Analysis.Ast.Expressions;
+using Krypton.Analysis.Ast.Identifiers;
+using Krypton.Analysis.Ast.Statements;
+using Krypton.Analysis.Ast.TypeSpecs;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
