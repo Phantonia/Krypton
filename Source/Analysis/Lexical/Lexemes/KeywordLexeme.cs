@@ -22,7 +22,6 @@ namespace Krypton.Analysis.Lexical.Lexemes
                 ReservedKeyword.Xor => new BinaryOperatorKeywordLexeme(OperatorPrecedenceGroup.LogicalXor, keyword, lineNumber),
                 ReservedKeyword.Not => new BinaryOperatorKeywordLexeme(OperatorPrecedenceGroup.LogicalNot, keyword, lineNumber),
                 ReservedKeyword.Div or ReservedKeyword.Mod => new BinaryOperatorKeywordLexeme(OperatorPrecedenceGroup.Multiplicative, keyword, lineNumber),
-                ReservedKeyword.Left or ReservedKeyword.Right => new BinaryOperatorKeywordLexeme(OperatorPrecedenceGroup.Shift, keyword, lineNumber),
                 _ => new KeywordLexeme(keyword, lineNumber),
             };
         }

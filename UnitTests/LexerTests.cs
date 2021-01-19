@@ -61,14 +61,14 @@ namespace UnitTests
         [Test]
         public void NewOperatorsTest()
         {
-            LexemeCollection lexemes = new Lexer("4 & 7 Right 9 | 2 Left 11 ^ 1").LexAll();
+            LexemeCollection lexemes = new Lexer("4 & 7 -> 9 | 2 <- 11 ^ 1").LexAll();
 
             Assert.AreEqual(12, lexemes.Count);
 
             Assert.IsTrue(lexemes[1] is CharacterOperatorLexeme { Operator: CharacterOperator.Ampersand });
-            Assert.IsTrue(lexemes[3] is KeywordLexeme { Keyword: ReservedKeyword.Right });
+            Assert.IsTrue(lexemes[3] is CharacterOperatorLexeme { Operator: CharacterOperator.RightShift });
             Assert.IsTrue(lexemes[5] is CharacterOperatorLexeme { Operator: CharacterOperator.Pipe });
-            Assert.IsTrue(lexemes[7] is KeywordLexeme { Keyword: ReservedKeyword.Left });
+            Assert.IsTrue(lexemes[7] is CharacterOperatorLexeme { Operator: CharacterOperator.LeftShift });
             Assert.IsTrue(lexemes[9] is CharacterOperatorLexeme { Operator: CharacterOperator.Caret });
         }
 

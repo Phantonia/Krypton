@@ -6,49 +6,88 @@ namespace Krypton.Analysis.Lexical
 {
     partial class Lexer
     {
-        private Lexeme LexExlamationMark()
+
+        private Lexeme LexAsteriskOrDoubleAsteriskOrAsteriskEqualsOrDoubleAsteriskEquals() // *
         {
             index++;
 
-            if (Code.TryGet(index) == '=')
-            {
-                index++;
-                return new CharacterOperatorLexeme(CharacterOperator.ExclamationEquals, lineNumber);
-            }
-            else
-            {
-                return new InvalidLexeme("!", ErrorCode.UnknownLexeme, lineNumber);
-            }
-        }
-
-        private Lexeme LexAsteriskOrDoubleAsteriskOrAsteriskEqualsOrDoubleAsteriskEquals()
-        {
-            index++;
-
-            if (Code.TryGet(index) == '*')
+            if (Code.TryGet(index) == '*') // **
             {
                 index++;
 
-                if (Code.TryGet(index) == '=')
+                if (Code.TryGet(index) == '=') // **=
                 {
                     index++;
 
                     return new CompoundAssignmentEqualsLexeme(CharacterOperator.DoubleAsterisk, lineNumber);
                 }
-                else
+                else // **
                 {
                     return new CharacterOperatorLexeme(CharacterOperator.DoubleAsterisk, lineNumber);
                 }
             }
-            else if (Code.TryGet(index) == '=')
+            else if (Code.TryGet(index) == '=') // *=
             {
                 index++;
 
                 return new CompoundAssignmentEqualsLexeme(CharacterOperator.Asterisk, lineNumber);
             }
-            else
+            else // *
             {
                 return new CharacterOperatorLexeme(CharacterOperator.Asterisk, lineNumber);
+            }
+        }
+
+        private Lexeme LexExlamationMark() // !
+        {
+            index++;
+
+            if (Code.TryGet(index) == '=') // !=
+            {
+                index++;
+                return new CharacterOperatorLexeme(CharacterOperator.ExclamationEquals, lineNumber);
+            }
+            else // !
+            {
+                return new InvalidLexeme("!", ErrorCode.UnknownLexeme, lineNumber);
+            }
+        }
+
+        private Lexeme LexLessThanOrLeftShift() // <
+        {
+            index++;
+
+            char? nextChar = Code.TryGet(index);
+
+            switch (nextChar)
+            {
+                case '-': // <-
+                    index++;
+                    return new CharacterOperatorLexeme(CharacterOperator.LeftShift, lineNumber);
+                case '=': // <=
+                    index++;
+                    return new CharacterOperatorLexeme(CharacterOperator.LessThanEquals, lineNumber);
+                default: // <
+                    return new CharacterOperatorLexeme(CharacterOperator.LessThan, lineNumber);
+            }
+        }
+
+        private Lexeme LexMinusSignOrRightShift() // -
+        {
+            index++;
+
+            char? nextChar = Code.TryGet(index);
+
+            switch (nextChar)
+            {
+                case '>': // ->
+                    index++;
+                    return new CharacterOperatorLexeme(CharacterOperator.RightShift, lineNumber);
+                case '=': // -=
+                    index++;
+                    return new CompoundAssignmentEqualsLexeme(CharacterOperator.Minus, lineNumber);
+                default: // -
+                    return new CharacterOperatorLexeme(CharacterOperator.Minus, lineNumber);
             }
         }
 

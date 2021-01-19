@@ -12,6 +12,8 @@
         Ampersand, // &
         Caret, // ^
         Pipe, // |
+        RightShift, // ->
+        LeftShift, // <-
         LessThan, // <
         LessThanEquals, // <=
         GreaterThanEquals, // >=

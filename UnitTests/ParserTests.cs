@@ -587,5 +587,21 @@ namespace UnitTests
             var neg = (NegationUnaryOperationExpressionNode)root!;
             Assert.IsInstanceOf<FunctionCallExpressionNode>(neg.Operand);
         }
+
+        [Test]
+        public void ShiftTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("x -> y + z").LexAll());
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsInstanceOf<BitwiseRightShiftBinaryOperationExpressionNode>(root);
+
+            var shift = (BitwiseRightShiftBinaryOperationExpressionNode)root!;
+
+            Assert.IsInstanceOf<IdentifierExpressionNode>(shift.Left);
+            Assert.IsInstanceOf<AdditionBinaryOperationExpressionNode>(shift.Right);
+        }
     }
 }
