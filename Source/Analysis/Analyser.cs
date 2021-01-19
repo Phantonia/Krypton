@@ -12,8 +12,8 @@ namespace Krypton.Analysis
             Lexer lexer = new(code);
             LexemeCollection lexemes = lexer.LexAll();
 
-            ScriptParser parser = new(lexemes);
-            SyntaxTree? syntaxTree = parser.ParseWholeScript();
+            ProgramParser parser = new(lexemes);
+            SyntaxTree? syntaxTree = parser.ParseWholeProgram();
 
             if (syntaxTree == null)
             {

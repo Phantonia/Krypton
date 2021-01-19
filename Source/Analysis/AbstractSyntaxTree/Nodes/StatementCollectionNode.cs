@@ -6,7 +6,7 @@ using System.Linq;
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes
 {
     /* A StatementCollectionNode is a collection of statements.
-     * It is used by the ScriptNode to represents top level
+     * It is used by the ProgramNode to represents top level
      * statements, by control statements like Block or While
      * to represents its nested statements, etc.
      * Branches:

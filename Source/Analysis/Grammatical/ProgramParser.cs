@@ -9,9 +9,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Krypton.Analysis.Grammatical
 {
-    public sealed class ScriptParser
+    public sealed class ProgramParser
     {
-        public ScriptParser(LexemeCollection lexemes)
+        public ProgramParser(LexemeCollection lexemes)
         {
             Lexemes = lexemes;
 
@@ -27,7 +27,7 @@ namespace Krypton.Analysis.Grammatical
 
         public LexemeCollection Lexemes { get; }
 
-        public SyntaxTree? ParseWholeScript()
+        public SyntaxTree? ParseWholeProgram()
         {
             List<StatementNode> statements = new();
 
@@ -43,8 +43,8 @@ namespace Krypton.Analysis.Grammatical
             }
 
             StatementCollectionNode topLevelStatements = new(statements);
-            ProgramNode scriptNode = new(topLevelStatements, topLevelStatements.LineNumber);
-            return new SyntaxTree(scriptNode);
+            ProgramNode programNode = new(topLevelStatements, topLevelStatements.LineNumber);
+            return new SyntaxTree(programNode);
         }
 
         private bool TryParseNextNode([NotNullWhen(true)] out Node? node)

@@ -2,9 +2,9 @@
 
 namespace Krypton.Analysis.AbstractSyntaxTree.Nodes
 {
-    /* A ScriptNode is the root of the syntax tree.
-     * It represents the whole script. Therefore, it
-     * saves the top level statements of the script
+    /* A ProgramNode is the root of the syntax tree.
+     * It represents the whole program. Therefore, it
+     * saves the top level statements of the program
      * and all declared symbols (none yet, but it will
      * save functions etc.)
      * Branches:
