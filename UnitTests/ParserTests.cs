@@ -603,5 +603,37 @@ namespace UnitTests
             Assert.IsInstanceOf<IdentifierExpressionNode>(shift.Left);
             Assert.IsInstanceOf<AdditionBinaryOperationExpressionNode>(shift.Right);
         }
+
+        [Test]
+        public void ExponentiationAssociativeTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("x ** y ** z").LexAll()); // x ** (y ** z)
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsInstanceOf<ExponentiationBinaryOperationExpressionNode>(root);
+
+            var exp = (ExponentiationBinaryOperationExpressionNode)root!;
+
+            Assert.IsInstanceOf<IdentifierExpressionNode>(exp.Left);
+            Assert.IsInstanceOf<ExponentiationBinaryOperationExpressionNode>(exp.Right);
+        }
+
+        [Test]
+        public void OtherAssociativeTest()
+        {
+            int index = 0;
+            ExpressionParser parser = new(new Lexer("x * y * z").LexAll()); // (x * y) * z
+            ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            Assert.NotNull(root);
+            Assert.IsInstanceOf<MultiplicationBinaryOperationExpressionNode>(root);
+
+            var exp = (MultiplicationBinaryOperationExpressionNode)root!;
+
+            Assert.IsInstanceOf<MultiplicationBinaryOperationExpressionNode>(exp.Left);
+            Assert.IsInstanceOf<IdentifierExpressionNode>(exp.Right);
+        }
     }
 }

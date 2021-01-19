@@ -1,6 +1,6 @@
 ﻿using Krypton.Analysis.AST.Expressions.BinaryOperations;
+using Krypton.Analysis.Grammatical;
 using Krypton.Analysis.Lexical.Lexemes;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -79,9 +79,23 @@ namespace Krypton.Analysis.AST.Expressions
                 return -1;
             }
 
-            return operators.Select((o, i) => (@operator: o.PrecedenceGroup, index: i))
-                            .Aggregate((a, b) => a.@operator > b.@operator ? a : b)
-                            .index;
+            int index = operators.Select((o, i) => (@operator: o.PrecedenceGroup, index: i))
+                                 .Aggregate((a, b) => a.@operator >= b.@operator ? a : b)
+                                 .index;
+
+            // Special case for ** operator: right associative
+            if (operators[index] is { PrecedenceGroup: OperatorPrecedenceGroup.Exponantiation })
+            {
+                for (int i = operators.Count - 1; i >= 0; i--)
+                {
+                    if (operators[i] is { PrecedenceGroup: OperatorPrecedenceGroup.Exponantiation })
+                    {
+                        return i;
+                    }
+                }
+            }
+
+            return index;
         }
 
         private ExpressionNode MakeExpressionNodeOfIndex(int index)
@@ -95,23 +109,23 @@ namespace Krypton.Analysis.AST.Expressions
 
             return operatorLexeme switch
             {
-                CharacterOperatorLexeme { Operator: CharacterOperator.DoubleAsterisk    } => new ExponentiationBinaryOperationExpressionNode   (left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.Asterisk          } => new MultiplicationBinaryOperationExpressionNode   (left, right, lineNumber),
-                KeywordLexeme           { Keyword:  ReservedKeyword  .Div               } => new IntegerDivisionBinaryOperationExpressionNode  (left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.ForeSlash         } => new RationalDivisionBinaryOperationExpressionNode (left, right, lineNumber),
-                KeywordLexeme           { Keyword:  ReservedKeyword  .Mod               } => new ModuloBinaryOperationExpressionNode           (left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.Plus              } => new AdditionBinaryOperationExpressionNode         (left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.Minus             } => new SubtractionBinaryOperationExpressionNode      (left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.Ampersand         } => new BitwiseAndBinaryOperationExpressionNode       (left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.Pipe              } => new BitwiseOrBinaryOperationExpressionNode        (left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.Caret             } => new BitwiseXorBinaryOperationExpressionNode       (left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.LeftShift         } => new BitwiseLeftShiftBinaryOperationExpressionNode (left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.RightShift        } => new BitwiseRightShiftBinaryOperationExpressionNode(left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.DoubleEquals      } => new EqualityBinaryOperationExpressionNode         (left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.ExclamationEquals } => new UnequalityBinaryOperationExpressionNode       (left, right, lineNumber),
-                KeywordLexeme           { Keyword:  ReservedKeyword  .And               } => new LogicalAndBinaryOperationExpressionNode       (left, right, lineNumber),
-                KeywordLexeme           { Keyword:  ReservedKeyword  .Xor               } => new LogicalXorBinaryOperationExpressionNode       (left, right, lineNumber),
-                KeywordLexeme           { Keyword:  ReservedKeyword  .Or                } => new LogicalOrBinaryOperationExpressionNode        (left, right, lineNumber),
+                CharacterOperatorLexeme { Operator: CharacterOperator.DoubleAsterisk } => new ExponentiationBinaryOperationExpressionNode(left, right, lineNumber),
+                CharacterOperatorLexeme { Operator: CharacterOperator.Asterisk } => new MultiplicationBinaryOperationExpressionNode(left, right, lineNumber),
+                KeywordLexeme { Keyword: ReservedKeyword.Div } => new IntegerDivisionBinaryOperationExpressionNode(left, right, lineNumber),
+                CharacterOperatorLexeme { Operator: CharacterOperator.ForeSlash } => new RationalDivisionBinaryOperationExpressionNode(left, right, lineNumber),
+                KeywordLexeme { Keyword: ReservedKeyword.Mod } => new ModuloBinaryOperationExpressionNode(left, right, lineNumber),
+                CharacterOperatorLexeme { Operator: CharacterOperator.Plus } => new AdditionBinaryOperationExpressionNode(left, right, lineNumber),
+                CharacterOperatorLexeme { Operator: CharacterOperator.Minus } => new SubtractionBinaryOperationExpressionNode(left, right, lineNumber),
+                CharacterOperatorLexeme { Operator: CharacterOperator.Ampersand } => new BitwiseAndBinaryOperationExpressionNode(left, right, lineNumber),
+                CharacterOperatorLexeme { Operator: CharacterOperator.Pipe } => new BitwiseOrBinaryOperationExpressionNode(left, right, lineNumber),
+                CharacterOperatorLexeme { Operator: CharacterOperator.Caret } => new BitwiseXorBinaryOperationExpressionNode(left, right, lineNumber),
+                CharacterOperatorLexeme { Operator: CharacterOperator.LeftShift } => new BitwiseLeftShiftBinaryOperationExpressionNode(left, right, lineNumber),
+                CharacterOperatorLexeme { Operator: CharacterOperator.RightShift } => new BitwiseRightShiftBinaryOperationExpressionNode(left, right, lineNumber),
+                CharacterOperatorLexeme { Operator: CharacterOperator.DoubleEquals } => new EqualityBinaryOperationExpressionNode(left, right, lineNumber),
+                CharacterOperatorLexeme { Operator: CharacterOperator.ExclamationEquals } => new UnequalityBinaryOperationExpressionNode(left, right, lineNumber),
+                KeywordLexeme { Keyword: ReservedKeyword.And } => new LogicalAndBinaryOperationExpressionNode(left, right, lineNumber),
+                KeywordLexeme { Keyword: ReservedKeyword.Xor } => new LogicalXorBinaryOperationExpressionNode(left, right, lineNumber),
+                KeywordLexeme { Keyword: ReservedKeyword.Or } => new LogicalOrBinaryOperationExpressionNode(left, right, lineNumber),
                 _ => OnFailure()
             };
 
