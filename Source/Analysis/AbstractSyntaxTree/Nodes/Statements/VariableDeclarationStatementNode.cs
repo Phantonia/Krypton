@@ -34,11 +34,6 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
 
         public ExpressionNode? Value { get; }
 
-        public override VariableDeclarationStatementNode Clone()
-        {
-            return new(VariableIdentifierNode.Clone(), Type?.Clone(), Value?.Clone(), LineNumber);
-        }
-
         public LocalVariableSymbolNode CreateVariable(TypeSymbolNode? typeSymbol)
         {
             LocalVariableSymbolNode var = new LocalVariableSymbolNode(Identifier, typeSymbol, VariableIdentifierNode.LineNumber);

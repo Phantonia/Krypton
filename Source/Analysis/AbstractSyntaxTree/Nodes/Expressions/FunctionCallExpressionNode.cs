@@ -30,11 +30,6 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
 
         public ExpressionNode FunctionExpression { get; }
 
-        public override FunctionCallExpressionNode Clone()
-        {
-            return new(FunctionExpression.Clone(), Arguments?.Select(a => a.Clone()), LineNumber);
-        }
-
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);

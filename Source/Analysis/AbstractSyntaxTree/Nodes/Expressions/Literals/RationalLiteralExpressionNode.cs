@@ -10,10 +10,5 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions.Literals
         }
 
         public RationalLiteralValue Value { get; }
-
-        public override RationalLiteralExpressionNode Clone()
-        {
-            return new(Value, LineNumber);
-        }
     }
 }

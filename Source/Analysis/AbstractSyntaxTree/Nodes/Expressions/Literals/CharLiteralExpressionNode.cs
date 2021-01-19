@@ -8,10 +8,5 @@
         }
 
         public char Value { get; }
-
-        public override CharLiteralExpressionNode Clone()
-        {
-            return new(Value, LineNumber);
-        }
     }
 }

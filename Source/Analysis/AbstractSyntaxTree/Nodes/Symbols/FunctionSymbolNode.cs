@@ -15,7 +15,5 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Symbols
         public ImmutableList<ParameterNode> Parameters { get; }
 
         public TypeNode? ReturnType { get; }
-
-        public abstract override FunctionSymbolNode Clone();
     }
 }

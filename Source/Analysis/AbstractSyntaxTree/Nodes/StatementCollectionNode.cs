@@ -38,11 +38,6 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes
 
         public int Count => statements.Count;
 
-        public override StatementCollectionNode Clone()
-        {
-            return new(statements.Select(s => s.Clone()));
-        }
-
         public IEnumerator<StatementNode> GetEnumerator() => statements.GetEnumerator();
 
         public override void PopulateBranches(List<Node> list)

@@ -40,23 +40,6 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
             operands.Add(operand);
         }
 
-        public override BinaryOperationChainExpressionNode Clone()
-        {
-            Debug.Assert(operands.Count == operators.Count + 1);
-
-            BinaryOperationChainExpressionNode newChain = new(LineNumber);
-
-            for (int i = 0; i < operators.Count; i++)
-            {
-                newChain.AddOperand(operands[i]);
-                newChain.AddOperator(operators[2]);
-            }
-
-            newChain.AddOperand(operands[^1]);
-
-            return newChain;
-        }
-
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);

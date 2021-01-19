@@ -17,11 +17,6 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
 
         public ExpressionNode FunctionExpression => expression.FunctionExpression;
 
-        public override FunctionCallStatementNode Clone()
-        {
-            return new(expression.Clone(), LineNumber);
-        }
-
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);

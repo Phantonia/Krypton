@@ -8,8 +8,6 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes
 
         Node? Parent { get; }
 
-        Node Clone();
-
         List<Node> GetBranches();
 
         void PopulateBranches(List<Node> list);

@@ -8,10 +8,5 @@
         }
 
         public long Value { get; }
-
-        public override IntegerLiteralExpressionNode Clone()
-        {
-            return new(Value, LineNumber);
-        }
     }
 }

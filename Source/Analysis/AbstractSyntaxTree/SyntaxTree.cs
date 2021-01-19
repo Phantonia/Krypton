@@ -6,12 +6,12 @@ namespace Krypton.Analysis.AbstractSyntaxTree
 {
     public sealed class SyntaxTree : IEnumerable<Node>
     {
-        public SyntaxTree(ScriptNode root)
+        public SyntaxTree(ProgramNode root)
         {
             Root = root;
         }
 
-        public ScriptNode Root { get; }
+        public ProgramNode Root { get; }
 
         public IEnumerator<Node> GetEnumerator()
         {

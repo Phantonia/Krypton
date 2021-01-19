@@ -36,25 +36,16 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes
     [DebuggerDisplay("{GetType().Name} -- {GetHashCode()}")]
     public abstract class Node : INode
     {
-        protected Node(int lineNumber)
+        protected private Node(int lineNumber)
         {
             LineNumber = lineNumber;
         }
 
-        private Node? parent;
-
         public int LineNumber { get; }
 
-        public Node? Parent
-        {
-            get => parent;
-            internal set
-            {
-                parent = value;
-            }
-        }
+        public Node? Parent { get; internal set; }
 
-        public abstract Node Clone();
+        //public abstract Node Clone();
 
         public List<Node> GetBranches()
         {

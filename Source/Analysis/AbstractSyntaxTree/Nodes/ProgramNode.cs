@@ -11,19 +11,14 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes
      * - A StatementCollection that represents the
      *   top level statements
      */
-    public sealed class ScriptNode : Node
+    public sealed class ProgramNode : Node
     {
-        public ScriptNode(StatementCollectionNode statements, int lineNumber) : base(lineNumber)
+        public ProgramNode(StatementCollectionNode statements, int lineNumber) : base(lineNumber)
         {
             TopLevelStatements = statements;
         }
 
         public StatementCollectionNode TopLevelStatements { get; }
-
-        public override ScriptNode Clone()
-        {
-            return new(TopLevelStatements.Clone(), LineNumber);
-        }
 
         public override void PopulateBranches(List<Node> list)
         {

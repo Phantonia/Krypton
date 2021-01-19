@@ -8,10 +8,5 @@
         }
 
         public bool Value { get; }
-
-        public override BooleanLiteralExpressionNode Clone()
-        {
-            return new(Value, LineNumber);
-        }
     }
 }

@@ -3,10 +3,5 @@
     public sealed class BitwiseLeftShiftBinaryOperationExpressionNode : BinaryOperationExpressionNode
     {
         public BitwiseLeftShiftBinaryOperationExpressionNode(ExpressionNode left, ExpressionNode right, int lineNumber) : base(left, right, lineNumber) { }
-
-        public override BitwiseLeftShiftBinaryOperationExpressionNode Clone()
-        {
-            return new(Left.Clone(), Right.Clone(), LineNumber);
-        }
     }
 }

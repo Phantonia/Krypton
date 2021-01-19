@@ -27,8 +27,6 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes
 
         public TypeSymbolNode Type { get; }
 
-        public override ParameterNode Clone() => new(IdentifierNode.Clone(), Type.Clone(), LineNumber);
-
         public ParameterVariableSymbolNode CreateParameter()
         {
             ParameterVariableSymbolNode symbol = new(Identifier, Type, LineNumber);

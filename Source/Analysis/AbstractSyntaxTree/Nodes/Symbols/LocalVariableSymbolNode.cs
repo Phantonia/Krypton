@@ -8,8 +8,6 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Symbols
     {
         public LocalVariableSymbolNode(string name, TypeSymbolNode? type, int lineNumber) : base(name, type, lineNumber) { }
 
-        public override LocalVariableSymbolNode Clone() => new(Name, Type, LineNumber);
-
         public void SpecifyType(TypeSymbolNode type)
         {
             Debug.Assert(Type == null);

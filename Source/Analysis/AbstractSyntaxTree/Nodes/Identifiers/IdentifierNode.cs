@@ -2,13 +2,11 @@
 {
     public abstract class IdentifierNode : Node
     {
-        protected IdentifierNode(string identifier, int lineNumber) : base(lineNumber)
+        protected private IdentifierNode(string identifier, int lineNumber) : base(lineNumber)
         {
             Identifier = identifier;
         }
 
         public string Identifier { get; }
-
-        public abstract override IdentifierNode Clone();
     }
 }

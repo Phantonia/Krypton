@@ -18,14 +18,14 @@ namespace UnitTests
         public void EnumeratingTest()
         {
             StatementNode node = (StatementNode)SampleNode();
-            ScriptNode root = new(new StatementCollectionNode(Enumerable.Repeat(node, 1)), 1);
+            ProgramNode root = new(new StatementCollectionNode(Enumerable.Repeat(node, 1)), 1);
 
             SyntaxTree tree = new(root);
 
             IEnumerator<Node> enumerator = tree.GetEnumerator();
 
             Assert.IsTrue(enumerator.MoveNext());
-            Assert.IsInstanceOf<ScriptNode>(enumerator.Current);
+            Assert.IsInstanceOf<ProgramNode>(enumerator.Current);
 
             Assert.IsTrue(enumerator.MoveNext());
             Assert.IsInstanceOf<StatementCollectionNode>(enumerator.Current);
@@ -38,20 +38,6 @@ namespace UnitTests
             Assert.IsTrue(enumerator.MoveNext());
             Assert.AreEqual(varDecl.VariableIdentifierNode, enumerator.Current);
             Assert.AreEqual(varDecl.Identifier, ((IdentifierNode)enumerator.Current).Identifier);
-        }
-
-        [Test]
-        public void CloningTest()
-        {
-            Node root = SampleNode();
-            Node clone = root.Clone();
-
-            Assert.IsFalse(ReferenceEquals(root, clone));
-
-            var varDeclA = (VariableDeclarationStatementNode)root;
-            var varDeclB = (VariableDeclarationStatementNode)clone;
-
-            Assert.IsFalse(ReferenceEquals(varDeclA.Value, varDeclB.Value));
         }
 
         [Test]

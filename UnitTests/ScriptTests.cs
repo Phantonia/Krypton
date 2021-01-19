@@ -30,9 +30,9 @@ namespace UnitTests
             SyntaxTree? tree = parser.ParseWholeScript();
 
             Assert.NotNull(tree);
-            Assert.IsInstanceOf<ScriptNode>(tree!.Root);
+            Assert.IsInstanceOf<ProgramNode>(tree!.Root);
 
-            ScriptNode scriptNode = tree.Root;
+            ProgramNode scriptNode = tree.Root;
 
             Assert.AreEqual(4, scriptNode.TopLevelStatements.Count);
 

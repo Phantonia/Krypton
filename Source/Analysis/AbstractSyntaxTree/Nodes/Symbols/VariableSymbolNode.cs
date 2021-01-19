@@ -11,8 +11,6 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Symbols
 
         public virtual TypeSymbolNode? Type { get; protected set; }
 
-        public abstract override VariableSymbolNode Clone();
-
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);

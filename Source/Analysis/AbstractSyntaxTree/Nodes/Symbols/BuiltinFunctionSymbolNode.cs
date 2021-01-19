@@ -14,8 +14,6 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Symbols
 
         public BuiltinFunction BuiltinFunction { get; }
 
-        public override BuiltinFunctionSymbolNode Clone() => new(BuiltinFunction, Name, Parameters.Select(p => p.Clone()), ReturnType, LineNumber);
-
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);

@@ -12,8 +12,6 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Identifiers
 
         public SymbolNode Symbol { get; }
 
-        public override BoundIdentifierNode Clone() => new(Identifier, Symbol.Clone(), LineNumber) { Parent = this };
-
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);

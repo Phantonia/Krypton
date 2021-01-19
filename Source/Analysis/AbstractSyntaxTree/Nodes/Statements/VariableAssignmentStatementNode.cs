@@ -27,11 +27,6 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
             VariableIdentifierNode = new BoundIdentifierNode(VariableIdentifier, symbol, VariableIdentifierNode.LineNumber) { Parent = this };
         }
 
-        public override VariableAssignmentStatementNode Clone()
-        {
-            return new(VariableIdentifierNode.Clone(), AssignedValue.Clone(), LineNumber);
-        }
-
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);

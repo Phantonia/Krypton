@@ -28,11 +28,6 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
             IdentifierNode = new BoundIdentifierNode(Identifier, symbol, IdentifierNode.LineNumber) { Parent = this };
         }
 
-        public override IdentifierExpressionNode Clone()
-        {
-            return new(IdentifierNode.Clone(), LineNumber);
-        }
-
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);

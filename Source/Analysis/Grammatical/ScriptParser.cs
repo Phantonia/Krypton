@@ -43,7 +43,7 @@ namespace Krypton.Analysis.Grammatical
             }
 
             StatementCollectionNode topLevelStatements = new(statements);
-            ScriptNode scriptNode = new(topLevelStatements, topLevelStatements.LineNumber);
+            ProgramNode scriptNode = new(topLevelStatements, topLevelStatements.LineNumber);
             return new SyntaxTree(scriptNode);
         }
 

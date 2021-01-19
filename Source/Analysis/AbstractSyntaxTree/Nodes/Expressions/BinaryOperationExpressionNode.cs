@@ -9,7 +9,7 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
      */
     public abstract class BinaryOperationExpressionNode : ExpressionNode
     {
-        protected BinaryOperationExpressionNode(ExpressionNode left, ExpressionNode right, int lineNumber) : base(lineNumber)
+        protected private BinaryOperationExpressionNode(ExpressionNode left, ExpressionNode right, int lineNumber) : base(lineNumber)
         {
             Left = left;
             Left.Parent = this;
@@ -20,8 +20,6 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
         public ExpressionNode Left { get; }
 
         public ExpressionNode Right { get; }
-
-        public abstract override BinaryOperationExpressionNode Clone();
 
         public override void PopulateBranches(List<Node> list)
         {

@@ -17,11 +17,6 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Statements
 
         public StatementCollectionNode Statements { get; }
 
-        public override WhileStatementNode Clone()
-        {
-            return new(Condition.Clone(), Statements.Clone(), LineNumber);
-        }
-
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);

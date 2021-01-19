@@ -8,10 +8,5 @@
         }
 
         public string Content { get; }
-
-        public override StringLiteralExpressionNode Clone()
-        {
-            return new(Content, LineNumber);
-        }
     }
 }

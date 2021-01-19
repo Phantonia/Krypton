@@ -12,8 +12,6 @@
      */
     public abstract class ExpressionNode : Node
     {
-        protected ExpressionNode(int lineNumber) : base(lineNumber) { }
-
-        public abstract override ExpressionNode Clone();
+        protected private ExpressionNode(int lineNumber) : base(lineNumber) { }
     }
 }

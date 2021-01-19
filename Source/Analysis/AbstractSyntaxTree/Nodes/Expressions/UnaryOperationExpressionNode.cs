@@ -4,14 +4,12 @@ namespace Krypton.Analysis.AbstractSyntaxTree.Nodes.Expressions
 {
     public abstract class UnaryOperationExpressionNode : ExpressionNode
     {
-        protected UnaryOperationExpressionNode(ExpressionNode operand, int lineNumber) : base(lineNumber)
+        protected private UnaryOperationExpressionNode(ExpressionNode operand, int lineNumber) : base(lineNumber)
         {
             Operand = operand;
         }
 
         public ExpressionNode Operand { get; }
-
-        public abstract override UnaryOperationExpressionNode Clone();
 
         public override void PopulateBranches(List<Node> list)
         {
