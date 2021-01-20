@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Krypton.Analysis.Ast.Expressions
@@ -14,7 +15,7 @@ namespace Krypton.Analysis.Ast.Expressions
         public FunctionCallExpressionNode(ExpressionNode functionExpression, IEnumerable<ExpressionNode>? arguments, int lineNumber) : base(lineNumber)
         {
             FunctionExpression = functionExpression;
-            Arguments = (arguments as IList<ExpressionNode>) ?? arguments?.ToList();
+            Arguments = ((arguments as List<ExpressionNode>) ?? arguments?.ToList())?.AsReadOnly();
 
             if (arguments != null)
             {
@@ -26,7 +27,7 @@ namespace Krypton.Analysis.Ast.Expressions
         }
 
         // Null if the function is called without arguments
-        public IList<ExpressionNode>? Arguments { get; } = null;
+        public ReadOnlyCollection<ExpressionNode>? Arguments { get; } = null;
 
         public ExpressionNode FunctionExpression { get; }
 

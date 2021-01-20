@@ -1,5 +1,6 @@
 ﻿using Krypton.Analysis.Ast.Expressions;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Krypton.Analysis.Ast.Statements
 {
@@ -13,7 +14,7 @@ namespace Krypton.Analysis.Ast.Statements
 
         private readonly FunctionCallExpressionNode expression;
 
-        public IList<ExpressionNode>? Arguments => expression.Arguments;
+        public ReadOnlyCollection<ExpressionNode>? Arguments => expression.Arguments;
 
         public ExpressionNode FunctionExpression => expression.FunctionExpression;
 

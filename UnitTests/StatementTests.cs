@@ -37,12 +37,12 @@ namespace UnitTests
             var vdsn = (VariableDeclarationStatementNode)root!;
 
             Assert.NotNull(vdsn.Type);
-            Assert.NotNull(vdsn.Value);
+            Assert.NotNull(vdsn.AssignedValue);
 
             Assert.IsInstanceOf<IdentifierTypeSpecNode>(vdsn.Type);
-            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(vdsn.Value);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(vdsn.AssignedValue);
 
-            var ilen = (IntegerLiteralExpressionNode)vdsn.Value!;
+            var ilen = (IntegerLiteralExpressionNode)vdsn.AssignedValue!;
 
             Assert.AreEqual(5, ilen.Value);
         }
@@ -63,11 +63,11 @@ namespace UnitTests
             var vdsn = (VariableDeclarationStatementNode)root!;
 
             Assert.IsNull(vdsn.Type);
-            Assert.NotNull(vdsn.Value);
+            Assert.NotNull(vdsn.AssignedValue);
 
-            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(vdsn.Value);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(vdsn.AssignedValue);
 
-            var ilen = (IntegerLiteralExpressionNode)vdsn.Value!;
+            var ilen = (IntegerLiteralExpressionNode)vdsn.AssignedValue!;
 
             Assert.AreEqual(5, ilen.Value);
         }
@@ -88,7 +88,7 @@ namespace UnitTests
             var vdsn = (VariableDeclarationStatementNode)root!;
 
             Assert.NotNull(vdsn.Type);
-            Assert.IsNull(vdsn.Value);
+            Assert.IsNull(vdsn.AssignedValue);
 
             Assert.IsInstanceOf<IdentifierTypeSpecNode>(vdsn.Type);
         }
@@ -109,9 +109,9 @@ namespace UnitTests
             var vdsn = (VariableDeclarationStatementNode)root!;
 
             Assert.IsNull(vdsn.Type);
-            Assert.NotNull(vdsn.Value);
+            Assert.NotNull(vdsn.AssignedValue);
 
-            Assert.IsInstanceOf<AdditionBinaryOperationExpressionNode>(vdsn.Value);
+            Assert.IsInstanceOf<AdditionBinaryOperationExpressionNode>(vdsn.AssignedValue);
         }
 
         [Test]

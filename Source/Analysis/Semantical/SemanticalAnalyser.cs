@@ -1,5 +1,5 @@
 ﻿using Krypton.Analysis.Ast;
-using Krypton.Analysis.Semantical.Binding;
+using System;
 
 namespace Krypton.Analysis.Semantical
 {
@@ -14,8 +14,17 @@ namespace Krypton.Analysis.Semantical
 
         public bool PerformSemanticalAnalysis()
         {
-            IBinder binder = new TypeAgnosticBinder(SyntaxTree, new BuiltinIdentifierMap());
-            return binder.PerformBinding();
+            Binder binder = new(SyntaxTree);
+
+            bool success = binder.PerformBinding();
+
+            if (!success)
+            {
+                throw new NotImplementedException();
+                //return false;
+            }
+
+            return true;
         }
     }
 }

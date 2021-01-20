@@ -19,25 +19,25 @@ namespace Krypton.Analysis.Ast.Statements
                 Type.Parent = this;
             }
 
-            Value = value;
-            if (Value != null)
+            AssignedValue = value;
+            if (AssignedValue != null)
             {
-                Value.Parent = this;
+                AssignedValue.Parent = this;
             }
         }
 
-        public string Identifier => VariableIdentifierNode.Identifier;
+        public string VariableIdentifier => VariableIdentifierNode.Identifier;
 
         public IdentifierNode VariableIdentifierNode { get; private set; }
 
         public TypeSpecNode? Type { get; }
 
-        public ExpressionNode? Value { get; }
+        public ExpressionNode? AssignedValue { get; }
 
         public LocalVariableSymbolNode CreateVariable(TypeSymbolNode? typeSymbol)
         {
-            LocalVariableSymbolNode var = new LocalVariableSymbolNode(Identifier, typeSymbol, VariableIdentifierNode.LineNumber);
-            VariableIdentifierNode = new BoundIdentifierNode(Identifier, var, VariableIdentifierNode.LineNumber) { Parent = this };
+            LocalVariableSymbolNode var = new LocalVariableSymbolNode(VariableIdentifier, typeSymbol, VariableIdentifierNode.LineNumber);
+            VariableIdentifierNode = new BoundIdentifierNode(VariableIdentifier, var, VariableIdentifierNode.LineNumber) { Parent = this };
             return var;
         }
 
@@ -46,7 +46,7 @@ namespace Krypton.Analysis.Ast.Statements
             list.Add(this);
             VariableIdentifierNode.PopulateBranches(list);
             Type?.PopulateBranches(list);
-            Value?.PopulateBranches(list);
+            AssignedValue?.PopulateBranches(list);
         }
     }
 }

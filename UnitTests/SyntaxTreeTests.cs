@@ -36,7 +36,7 @@ namespace UnitTests
 
             Assert.IsTrue(enumerator.MoveNext());
             Assert.AreEqual(varDecl.VariableIdentifierNode, enumerator.Current);
-            Assert.AreEqual(varDecl.Identifier, ((IdentifierNode)enumerator.Current).Identifier);
+            Assert.AreEqual(varDecl.VariableIdentifier, ((IdentifierNode)enumerator.Current).Identifier);
         }
 
         [Test]
