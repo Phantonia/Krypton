@@ -1,7 +1,6 @@
 ﻿using Krypton.Analysis.Ast;
 using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Lexical;
-using Krypton.Analysis.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;

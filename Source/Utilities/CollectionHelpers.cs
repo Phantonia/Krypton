@@ -1,9 +1,8 @@
-﻿using Krypton.Utilities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace Krypton.Framework
+namespace Krypton.Utilities
 {
-    internal static class CollectionHelpers
+    public static class CollectionHelpers
     {
         public static ReadOnlyList<T> MakeReadOnly<T>(this IList<T>? list)
             where T : class
@@ -15,6 +14,12 @@ namespace Krypton.Framework
             where TKey : notnull
         {
             return new ReadOnlyDictionary<TKey, TValue>(dict);
+        }
+
+        public static T? TryGet<T>(this IList<T> list, int index)
+            where T : class
+        {
+            return list.Count > index & index >= 0 ? list[index] : null;
         }
     }
 }

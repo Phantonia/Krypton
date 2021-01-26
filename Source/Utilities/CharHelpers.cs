@@ -1,18 +1,10 @@
-﻿using System.Collections.Generic;
-
-namespace Krypton.Analysis.Utilities
+﻿namespace Krypton.Utilities
 {
-    public static class Extensions
+    public static class CharHelpers
     {
         public static char? TryGet(this string str, int index)
         {
             return str.Length > index ? str[index] : (char?)null;
-        }
-
-        public static T? TryGet<T>(this IList<T> list, int index)
-            where T : class
-        {
-            return list.Count > index & index >= 0 ? list[index] : null;
         }
 
         public static bool IsHex(this char chr, out bool? isUpper)
@@ -46,9 +38,9 @@ namespace Krypton.Analysis.Utilities
 
         public static bool IsLetterOrUnderscore(this char chr)
         {
-            return (chr >= 'a' & chr <= 'z')
-                 | (chr >= 'A' & chr <= 'Z')
-                 | (chr == '_');
+            return chr >= 'a' & chr <= 'z'
+                 | chr >= 'A' & chr <= 'Z'
+                 | chr == '_';
         }
     }
 }

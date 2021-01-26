@@ -6,7 +6,7 @@ using Krypton.Analysis.Ast.TypeSpecs;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
-using Krypton.Analysis.Utilities;
+using Krypton.Utilities;
 using System;
 using System.Collections.Generic;
 

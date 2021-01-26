@@ -1,6 +1,6 @@
 ﻿using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical.Lexemes;
-using Krypton.Analysis.Utilities;
+using Krypton.Utilities;
 
 namespace Krypton.Analysis.Lexical
 {

@@ -5,7 +5,7 @@ using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
-using Krypton.Analysis.Utilities;
+using Krypton.Utilities;
 using System.Collections.Generic;
 using System.Diagnostics;
 

@@ -18,6 +18,7 @@
     <ProjectReference Include="..\Source\Analysis\Krypton.Analysis.csproj" />
     <ProjectReference Include="..\Source\CodeGeneration\Krypton.CodeGeneration.csproj" />
     <ProjectReference Include="..\Source\Compiler\Krypton.Compiler.csproj" />
+    <ProjectReference Include="..\Source\Utilities\Krypton.Utilities.csproj" />
   </ItemGroup>
 
 </Project>

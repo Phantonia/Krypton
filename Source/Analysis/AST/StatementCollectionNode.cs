@@ -1,5 +1,5 @@
 ﻿using Krypton.Analysis.Ast.Statements;
-using Krypton.Analysis.Utilities;
+using Krypton.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 

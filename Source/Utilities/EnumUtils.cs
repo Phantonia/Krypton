@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Krypton.Analysis.Utilities
+namespace Krypton.Utilities
 {
     public static class EnumUtils
     {
