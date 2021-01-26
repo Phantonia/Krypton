@@ -1,5 +1,4 @@
 /.vs/
-Krypton.sln
 _*.*
 Source/**/bin/
 Source/**/obj/
