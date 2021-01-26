@@ -55,12 +55,12 @@ This is a list of operations that are defined on the built-in types:
 | -------- | ----------------- | ---------------------- | ----------- |
 | `-`      | Unary negation    | `Complex`              | `Complex`   |
 | `**`     | Exponentiation    | `Complex`, `Complex`   | `Complex`   |
-| `*`      | Multiplication    | `Rational`, `Rational` | `Complex`   |
-| `/`      | Rational division | `Rational`, `Rational` | `Complex`   |
-| `+`      | Addition          | `Rational`, `Rational` | `Complex`   |
-| `-`      | Subtraction       | `Rational`, `Rational` | `Complex`   |
-| `==`     | Equality          | `Rational`, `Rational` | `Bool`      |
-| `!=`     | Inequality        | `Rational`, `Rational` | `Bool`      |
+| `*`      | Multiplication    | `Complex`, `Complex`   | `Complex`   |
+| `/`      | Rational division | `Complex`, `Complex`   | `Complex`   |
+| `+`      | Addition          | `Complex`, `Complex`   | `Complex`   |
+| `-`      | Subtraction       | `Complex`, `Complex`   | `Complex`   |
+| `==`     | Equality          | `Complex`, `Complex`   | `Bool`      |
+| `!=`     | Inequality        | `Complex`, `Complex`   | `Bool`      |
 
 ## Bool
 
