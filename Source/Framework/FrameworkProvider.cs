@@ -22,6 +22,7 @@ namespace Krypton.Framework
             List<FunctionSymbol> functions = new(capacity: 1)
             {
                 new FunctionSymbol("Output", FrameworkType.None,
+                    p => $"console.log({p[0]})",
                     parameters: new[]
                     {
                         new ParameterSymbol("text", FrameworkType.String)

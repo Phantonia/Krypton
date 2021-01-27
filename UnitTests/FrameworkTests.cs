@@ -1,4 +1,6 @@
-﻿using Krypton.Framework;
+﻿using Krypton.Analysis.Framework;
+using Krypton.Analysis.Semantical.IdentifierMaps;
+using Krypton.Framework;
 using Krypton.Framework.Literals;
 using NUnit.Framework;
 using System.Linq;
@@ -52,6 +54,23 @@ namespace UnitTests
         {
             Assert.AreEqual(1, frw.Functions.Count);
             Assert.AreEqual(1, frw.Functions.First(f => f.Name == "Output").Parameters?.Count);
+        }
+
+        [Test]
+        public void IntegrationTest()
+        {
+            HoistedIdentifierMap gl = new();
+            TypeIdentifierMap tp = new();
+
+            FrameworkIntegration.PopulateWithFrameworkSymbols(gl, tp);
+
+            string[] types = { "String", "Int", "Char", "Complex", "Bool", "Rational" };
+            foreach (string t in types)
+            {
+                Assert.IsTrue(tp.TryGet(t, out _));
+            }
+
+            Assert.IsTrue(gl.TryGet("Output", out _));
         }
     }
 }

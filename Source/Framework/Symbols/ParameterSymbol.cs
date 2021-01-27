@@ -2,11 +2,11 @@
 {
     public sealed class ParameterSymbol : NamedFrameworkSymbol
     {
-        internal ParameterSymbol(string name, FrameworkType returnType) : base(name)
+        internal ParameterSymbol(string name, FrameworkType type) : base(name)
         {
-            ReturnType = returnType;
+            Type = type;
         }
 
-        public FrameworkType ReturnType { get; }
+        public FrameworkType Type { get; }
     }
 }

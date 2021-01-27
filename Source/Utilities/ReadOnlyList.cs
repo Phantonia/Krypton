@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Krypton.Utilities
 {
-    public readonly struct ReadOnlyList<T> : IReadOnlyList<T>
+    public readonly struct ReadOnlyList<T> : IReadOnlyList<T>, IEnumerable<T>
         where T : class
     {
         public ReadOnlyList(IList<T>? list)

@@ -1,16 +1,16 @@
-﻿using Krypton.Analysis.Framework;
+﻿using Krypton.Framework;
 using System.Collections.Generic;
 
 namespace Krypton.Analysis.Ast.Symbols
 {
     public sealed class BuiltinTypeSymbolNode : TypeSymbolNode
     {
-        public BuiltinTypeSymbolNode(BuiltinType builtinType, string name, int lineNumber) : base(name, lineNumber)
+        public BuiltinTypeSymbolNode(FrameworkType builtinType, string name, int lineNumber) : base(name, lineNumber)
         {
             BuiltinType = builtinType;
         }
 
-        public BuiltinType BuiltinType { get; }
+        public FrameworkType BuiltinType { get; }
 
         public override void PopulateBranches(List<Node> list)
         {
