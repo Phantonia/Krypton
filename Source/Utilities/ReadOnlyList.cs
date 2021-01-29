@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Krypton.Utilities
 {
@@ -21,7 +20,12 @@ namespace Krypton.Utilities
 
         public IEnumerator<T> GetEnumerator()
         {
-            return list?.GetEnumerator() ?? Enumerable.Empty<T>().GetEnumerator();
+            return list?.GetEnumerator() ?? EmptyEnumerator();
+
+            static IEnumerator<T> EmptyEnumerator()
+            {
+                yield break;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()

@@ -38,7 +38,12 @@ namespace Krypton.Utilities
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            return dict?.GetEnumerator() ?? Enumerable.Empty<KeyValuePair<TKey, TValue>>().GetEnumerator();
+            return dict?.GetEnumerator() ?? EmptyEnumerator();
+
+            static IEnumerator<KeyValuePair<TKey, TValue>> EmptyEnumerator()
+            {
+                yield break;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
