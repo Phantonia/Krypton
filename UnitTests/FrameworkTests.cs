@@ -101,5 +101,18 @@ namespace UnitTests
                 Assert.IsInstanceOf<ConstantSymbolNode<Rational>>(sym);
             }
         }
+
+        [Test]
+        public void OperationsTest()
+        {
+            TypeIdentifierMap tp = new();
+
+            FrameworkIntegration.PopulateWithFrameworkSymbols(new HoistedIdentifierMap(), tp);
+
+            Assert.IsTrue(tp.TryGet("String", out TypeSymbolNode? stringType));
+            Assert.AreEqual(3, stringType!.BinaryOperations.Count);
+            Assert.IsTrue(stringType.BinaryOperations.ContainsKey(Operator.Plus));
+            Assert.IsTrue(ReferenceEquals(stringType.BinaryOperations[Operator.Plus].LeftType, stringType));
+        }
     }
 }

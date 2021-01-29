@@ -17,20 +17,17 @@ namespace Krypton.Analysis.Framework
         {
             FrameworkVersion frwVersion = FrameworkProvider.GetFrameworkVersion0();
 
-            foreach (TypeSymbol typeSymbol in frwVersion.Types.Select(kvp => kvp.Value))
-            {
-                typeIdentifierMap.AddSymbol(typeSymbol.Name, CreateTypeSymbolNode(typeSymbol));
-            }
+            PopulateWithTypes(typeIdentifierMap, frwVersion);
+            PopulateWithFunctions(globalIdentifierMap, typeIdentifierMap, frwVersion);
+            PopulateWithConstants(globalIdentifierMap, frwVersion);
+        }
 
-            foreach (FunctionSymbol functionSymbol in frwVersion.Functions)
-            {
-                globalIdentifierMap.AddSymbol(functionSymbol.Name, CreateFunctionSymbolNode(functionSymbol, frwVersion, typeIdentifierMap));
-            }
-
-            foreach (ConstantSymbol constantSymbol in frwVersion.Constants)
-            {
-                globalIdentifierMap.AddSymbol(constantSymbol.Name, CreateConstantSymbolNode(constantSymbol, frwVersion));
-            }
+        private static BinaryOperationSymbolNode CreateBinaryOperationSymbolNode(BinaryOperationSymbol binaryOperationSymbol, TypeIdentifierMap typeIdentifierMap, FrameworkVersion frwVersion)
+        {
+            TypeSymbolNode leftType = GetTypeSymbolNode(binaryOperationSymbol.LeftType, typeIdentifierMap, frwVersion);
+            TypeSymbolNode rightType = GetTypeSymbolNode(binaryOperationSymbol.RightType, typeIdentifierMap, frwVersion);
+            TypeSymbolNode returnType = GetTypeSymbolNode(binaryOperationSymbol.ReturnType, typeIdentifierMap, frwVersion);
+            return new BinaryOperationSymbolNode(binaryOperationSymbol.Operator, leftType, rightType, returnType, binaryOperationSymbol.Generator, lineNumber: 0);
         }
 
         private static ConstantSymbolNode CreateConstantSymbolNode(ConstantSymbol constantSymbol, FrameworkVersion frwVersion)
@@ -52,10 +49,10 @@ namespace Krypton.Analysis.Framework
             IEnumerable<ParameterNode>? parameters = functionSymbol.Parameters?.Select(p => CreateParameterNode(p, frwVersion, typeIdentifierMap)) ?? Array.Empty<ParameterNode>();
 
             TypeSymbolNode? returnType = null;
-            
+
             if (functionSymbol.ReturnType != FrameworkType.None)
             {
-                GetTypeSymbolNode(frwVersion, functionSymbol.ReturnType, typeIdentifierMap);
+                GetTypeSymbolNode(functionSymbol.ReturnType, typeIdentifierMap, frwVersion);
             }
 
             return new BuiltinFunctionSymbolNode(functionSymbol.Name, parameters, returnType, functionSymbol.Generator, 0);
@@ -63,7 +60,7 @@ namespace Krypton.Analysis.Framework
 
         private static ParameterNode CreateParameterNode(ParameterSymbol parameterSymbol, FrameworkVersion frwVersion, TypeIdentifierMap typeIdentifierMap)
         {
-            return new ParameterNode(parameterSymbol.Name, GetTypeSymbolNode(frwVersion, parameterSymbol.Type, typeIdentifierMap), 0);
+            return new ParameterNode(parameterSymbol.Name, GetTypeSymbolNode(parameterSymbol.Type, typeIdentifierMap, frwVersion), 0);
         }
 
         private static TypeSymbolNode CreateTypeSymbolNode(TypeSymbol typeSymbol)
@@ -71,11 +68,65 @@ namespace Krypton.Analysis.Framework
             return new BuiltinTypeSymbolNode(typeSymbol.FrameworkType, typeSymbol.Name, 0);
         }
 
-        private static TypeSymbolNode GetTypeSymbolNode(FrameworkVersion frwVersion, FrameworkType frwType, TypeIdentifierMap typeIdentifierMap)
+        private static UnaryOperationSymbolNode CreateUnaryOperationSymbolNode(UnaryOperationSymbol unaryOperationSymbol, TypeIdentifierMap typeIdentifierMap, FrameworkVersion frwVersion)
+        {
+            TypeSymbolNode operandType = GetTypeSymbolNode(unaryOperationSymbol.OperandType, typeIdentifierMap, frwVersion);
+            TypeSymbolNode returnType = GetTypeSymbolNode(unaryOperationSymbol.ReturnType, typeIdentifierMap, frwVersion);
+            return new UnaryOperationSymbolNode(unaryOperationSymbol.Operator, operandType, returnType, unaryOperationSymbol.Generator, lineNumber: 0);
+        }
+
+        private static TypeSymbolNode GetTypeSymbolNode(FrameworkType frwType, TypeIdentifierMap typeIdentifierMap, FrameworkVersion frwVersion)
         {
             bool success = typeIdentifierMap.TryGet(frwVersion.Types[frwType].Name, out TypeSymbolNode? node);
             Debug.Assert(success);
             return node!;
+        }
+
+        private static void PopulateWithConstants(HoistedIdentifierMap globalIdentifierMap, FrameworkVersion frwVersion)
+        {
+            foreach (ConstantSymbol constantSymbol in frwVersion.Constants)
+            {
+                globalIdentifierMap.AddSymbol(constantSymbol.Name, CreateConstantSymbolNode(constantSymbol, frwVersion));
+            }
+        }
+
+        private static void PopulateWithFunctions(HoistedIdentifierMap globalIdentifierMap, TypeIdentifierMap typeIdentifierMap, FrameworkVersion frwVersion)
+        {
+            foreach (FunctionSymbol functionSymbol in frwVersion.Functions)
+            {
+                globalIdentifierMap.AddSymbol(functionSymbol.Name, CreateFunctionSymbolNode(functionSymbol, frwVersion, typeIdentifierMap));
+            }
+        }
+
+        private static void PopulateWithTypes(TypeIdentifierMap typeIdentifierMap, FrameworkVersion frwVersion)
+        {
+            IEnumerable<TypeSymbol> typeSymbols = frwVersion.Types.Select(kvp => kvp.Value);
+
+            foreach (TypeSymbol tp in typeSymbols)
+            {
+                typeIdentifierMap.AddSymbol(tp.Name, CreateTypeSymbolNode(tp));
+            }
+
+            foreach (TypeSymbol tp in typeSymbols)
+            {
+                Dictionary<Operator, BinaryOperationSymbolNode> binaryOperationMapping = new();
+
+                foreach (BinaryOperationSymbol op in tp.BinaryOperations)
+                {
+                    binaryOperationMapping[op.Operator] = CreateBinaryOperationSymbolNode(op, typeIdentifierMap, frwVersion);
+                }
+
+                GetTypeSymbolNode(tp.FrameworkType, typeIdentifierMap, frwVersion).SetBinaryOperations(binaryOperationMapping);
+
+                Dictionary<Operator, UnaryOperationSymbolNode> unaryOperationMapping = new();
+
+                foreach (UnaryOperationSymbol op in tp.UnaryOperations)
+                {
+                    unaryOperationMapping[op.Operator] = CreateUnaryOperationSymbolNode(op, typeIdentifierMap, frwVersion);
+                }
+
+                GetTypeSymbolNode(tp.FrameworkType, typeIdentifierMap, frwVersion).SetUnaryOperations(unaryOperationMapping);
+            }
         }
     }
 }

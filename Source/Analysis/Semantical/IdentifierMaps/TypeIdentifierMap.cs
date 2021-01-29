@@ -10,6 +10,8 @@ namespace Krypton.Analysis.Semantical.IdentifierMaps
 
         private readonly Dictionary<string, TypeSymbolNode> types = new();
 
+        public TypeSymbolNode this[string identifier] => types[identifier];
+
         public bool AddSymbol(string identifier, TypeSymbolNode type)
         {
             return types.TryAdd(identifier, type);

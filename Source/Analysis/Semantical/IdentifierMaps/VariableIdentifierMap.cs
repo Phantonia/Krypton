@@ -12,6 +12,8 @@ namespace Krypton.Analysis.Semantical.IdentifierMaps
         private int level = 0;
         private readonly Dictionary<string, Variable> variables = new();
 
+        public LocalVariableSymbolNode this[string identifier] => variables[identifier].variable;
+
         public bool AddSymbol(string identifier, LocalVariableSymbolNode variable)
         {
             return variables.TryAdd(identifier, new Variable(variable, level));
