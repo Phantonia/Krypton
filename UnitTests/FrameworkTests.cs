@@ -1,8 +1,11 @@
-﻿using Krypton.Analysis.Framework;
+﻿using Krypton.Analysis.Ast.Symbols;
+using Krypton.Analysis.Framework;
 using Krypton.Analysis.Semantical.IdentifierMaps;
 using Krypton.Framework;
 using Krypton.Framework.Literals;
+using Krypton.Framework.Symbols;
 using NUnit.Framework;
+using System;
 using System.Linq;
 
 namespace UnitTests
@@ -71,6 +74,32 @@ namespace UnitTests
             }
 
             Assert.IsTrue(gl.TryGet("Output", out _));
+        }
+
+        [Test]
+        public void ConstantTest()
+        {
+            var pi = frw.Constants.First(c => c.Name == "PI") as ConstantSymbol<Rational>;
+            Assert.NotNull(pi);
+
+            double piValue = (double)pi!.Value.Numerator / pi.Value.Denominator;
+            Assert.AreEqual(Math.PI, piValue);
+        }
+
+        [Test]
+        public void ConstantMapTest()
+        {
+            HoistedIdentifierMap gl = new();
+            TypeIdentifierMap tp = new();
+
+            FrameworkIntegration.PopulateWithFrameworkSymbols(gl, tp);
+
+            string[] constants = { "PI", "E", "TAU", "PHI" };
+            foreach (string c in constants)
+            {
+                Assert.IsTrue(gl.TryGet(c, out var sym));
+                Assert.IsInstanceOf<ConstantSymbolNode<Rational>>(sym);
+            }
         }
     }
 }

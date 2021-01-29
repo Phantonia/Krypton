@@ -1,6 +1,7 @@
 ﻿using Krypton.Framework.Literals;
 using Krypton.Framework.Symbols;
 using Krypton.Utilities;
+using System;
 using System.Collections.Generic;
 
 namespace Krypton.Framework
@@ -18,7 +19,7 @@ namespace Krypton.Framework
                 [FrameworkType.Bool] = GetBoolType(),
                 [FrameworkType.Char] = GetCharType(),
             };
-
+            
             List<FunctionSymbol> functions = new(capacity: 1)
             {
                 new FunctionSymbol("Output", FrameworkType.None,
@@ -29,7 +30,16 @@ namespace Krypton.Framework
                     })
             };
 
-            return new FrameworkVersion(minimalLanguageVersion: 0, types, functions);
+            long denom = (long)Math.Pow(10, 18);
+            List<ConstantSymbol> constants = new(capacity: 4)
+            {
+                new ConstantSymbol<Rational>("PI", new Rational(3141592653589793238, denom)),
+                new ConstantSymbol<Rational>("E", new Rational(2718281828459045235, denom)),
+                new ConstantSymbol<Rational>("TAU", new Rational(6283185307179586476, denom)),
+                new ConstantSymbol<Rational>("PHI", new Rational(1618033988749894848, denom))
+            };
+
+            return new FrameworkVersion(minimalLanguageVersion: 0, types, functions, constants);
         }
 
         private static TypeSymbol GetBoolType()

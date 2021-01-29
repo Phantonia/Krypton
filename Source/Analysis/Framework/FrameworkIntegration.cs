@@ -2,6 +2,7 @@
 using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Semantical.IdentifierMaps;
 using Krypton.Framework;
+using Krypton.Framework.Literals;
 using Krypton.Framework.Symbols;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,25 @@ namespace Krypton.Analysis.Framework
             foreach (FunctionSymbol functionSymbol in frwVersion.Functions)
             {
                 globalIdentifierMap.AddSymbol(functionSymbol.Name, CreateFunctionSymbolNode(functionSymbol, frwVersion, typeIdentifierMap));
+            }
+
+            foreach (ConstantSymbol constantSymbol in frwVersion.Constants)
+            {
+                globalIdentifierMap.AddSymbol(constantSymbol.Name, CreateConstantSymbolNode(constantSymbol, frwVersion));
+            }
+        }
+
+        private static ConstantSymbolNode CreateConstantSymbolNode(ConstantSymbol constantSymbol, FrameworkVersion frwVersion)
+        {
+            switch (constantSymbol)
+            {
+                case ConstantSymbol<long> intConst: return new ConstantSymbolNode<long>(intConst.Name, intConst.Value, 0);
+                case ConstantSymbol<Rational> ratConst: return new ConstantSymbolNode<Rational>(ratConst.Name, ratConst.Value, 0);
+                case ConstantSymbol<Complex> cmpConst: return new ConstantSymbolNode<Complex>(cmpConst.Name, cmpConst.Value, 0);
+                case ConstantSymbol<string> strConst: return new ConstantSymbolNode<string>(strConst.Name, strConst.Value, 0);
+                case ConstantSymbol<char> chrConst: return new ConstantSymbolNode<char>(chrConst.Name, chrConst.Value, 0);
+                case ConstantSymbol<bool> blnConst: return new ConstantSymbolNode<bool>(blnConst.Name, blnConst.Value, 0);
+                default: Debug.Fail(null); return null;
             }
         }
 
