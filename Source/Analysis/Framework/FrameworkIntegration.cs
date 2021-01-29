@@ -15,117 +15,156 @@ namespace Krypton.Analysis.Framework
     {
         public static void PopulateWithFrameworkSymbols(HoistedIdentifierMap globalIdentifierMap, TypeIdentifierMap typeIdentifierMap)
         {
-            FrameworkVersion frwVersion = FrameworkProvider.GetFrameworkVersion0();
+            FrameworkVersion frameworkVersion = FrameworkProvider.GetFrameworkVersion0();
 
-            PopulateWithTypes(typeIdentifierMap, frwVersion);
-            PopulateWithFunctions(globalIdentifierMap, typeIdentifierMap, frwVersion);
-            PopulateWithConstants(globalIdentifierMap, frwVersion);
+            PopulateWithTypes(typeIdentifierMap, frameworkVersion);
+            PopulateWithFunctions(globalIdentifierMap, typeIdentifierMap, frameworkVersion);
+            PopulateWithConstants(globalIdentifierMap, frameworkVersion);
         }
 
-        private static BinaryOperationSymbolNode CreateBinaryOperationSymbolNode(BinaryOperationSymbol binaryOperationSymbol, TypeIdentifierMap typeIdentifierMap, FrameworkVersion frwVersion)
+        private static BinaryOperationSymbolNode CreateBinaryOperationSymbolNode(BinaryOperationSymbol binaryOperationSymbol,
+                                                                                 TypeIdentifierMap typeIdentifierMap,
+                                                                                 FrameworkVersion frameworkVersion)
         {
-            TypeSymbolNode leftType = GetTypeSymbolNode(binaryOperationSymbol.LeftType, typeIdentifierMap, frwVersion);
-            TypeSymbolNode rightType = GetTypeSymbolNode(binaryOperationSymbol.RightType, typeIdentifierMap, frwVersion);
-            TypeSymbolNode returnType = GetTypeSymbolNode(binaryOperationSymbol.ReturnType, typeIdentifierMap, frwVersion);
-            return new BinaryOperationSymbolNode(binaryOperationSymbol.Operator, leftType, rightType, returnType, binaryOperationSymbol.Generator, lineNumber: 0);
+            TypeSymbolNode leftType = GetTypeSymbolNode(binaryOperationSymbol.LeftType, typeIdentifierMap, frameworkVersion);
+            TypeSymbolNode rightType = GetTypeSymbolNode(binaryOperationSymbol.RightType, typeIdentifierMap, frameworkVersion);
+            TypeSymbolNode returnType = GetTypeSymbolNode(binaryOperationSymbol.ReturnType, typeIdentifierMap, frameworkVersion);
+            return new BinaryOperationSymbolNode(binaryOperationSymbol.Operator,
+                                                 leftType,
+                                                 rightType,
+                                                 returnType,
+                                                 binaryOperationSymbol.Generator,
+                                                 lineNumber: 0);
         }
 
-        private static ConstantSymbolNode CreateConstantSymbolNode(ConstantSymbol constantSymbol, FrameworkVersion frwVersion)
+        private static ConstantSymbolNode CreateConstantSymbolNode(ConstantSymbol constantSymbol)
         {
             switch (constantSymbol)
             {
-                case ConstantSymbol<long> intConst: return new ConstantSymbolNode<long>(intConst.Name, intConst.Value, 0);
-                case ConstantSymbol<Rational> ratConst: return new ConstantSymbolNode<Rational>(ratConst.Name, ratConst.Value, 0);
-                case ConstantSymbol<Complex> cmpConst: return new ConstantSymbolNode<Complex>(cmpConst.Name, cmpConst.Value, 0);
-                case ConstantSymbol<string> strConst: return new ConstantSymbolNode<string>(strConst.Name, strConst.Value, 0);
-                case ConstantSymbol<char> chrConst: return new ConstantSymbolNode<char>(chrConst.Name, chrConst.Value, 0);
-                case ConstantSymbol<bool> blnConst: return new ConstantSymbolNode<bool>(blnConst.Name, blnConst.Value, 0);
-                default: Debug.Fail(null); return null;
+                case ConstantSymbol<long> intConst:
+                    return new ConstantSymbolNode<long>(intConst.Name, intConst.Value, lineNumber: 0);
+                case ConstantSymbol<Rational> ratConst:
+                    return new ConstantSymbolNode<Rational>(ratConst.Name, ratConst.Value, lineNumber: 0);
+                case ConstantSymbol<Complex> cmpConst:
+                    return new ConstantSymbolNode<Complex>(cmpConst.Name, cmpConst.Value, lineNumber: 0);
+                case ConstantSymbol<string> strConst:
+                    return new ConstantSymbolNode<string>(strConst.Name, strConst.Value, lineNumber: 0);
+                case ConstantSymbol<char> chrConst:
+                    return new ConstantSymbolNode<char>(chrConst.Name, chrConst.Value, lineNumber: 0);
+                case ConstantSymbol<bool> blnConst:
+                    return new ConstantSymbolNode<bool>(blnConst.Name, blnConst.Value, lineNumber: 0);
+                default:
+                    Debug.Fail(null);
+                    return null;
             }
         }
 
-        private static FunctionSymbolNode CreateFunctionSymbolNode(FunctionSymbol functionSymbol, FrameworkVersion frwVersion, TypeIdentifierMap typeIdentifierMap)
+        private static FunctionSymbolNode CreateFunctionSymbolNode(FunctionSymbol functionSymbol,
+                                                                   FrameworkVersion frameworkVersion,
+                                                                   TypeIdentifierMap typeIdentifierMap)
         {
-            IEnumerable<ParameterNode>? parameters = functionSymbol.Parameters?.Select(p => CreateParameterNode(p, frwVersion, typeIdentifierMap)) ?? Array.Empty<ParameterNode>();
+            IEnumerable<ParameterNode>? parameters = functionSymbol.Parameters
+                                                   ?.Select(p => CreateParameterNode(p, frameworkVersion, typeIdentifierMap))
+                                                  ?? Array.Empty<ParameterNode>();
 
             TypeSymbolNode? returnType = null;
 
             if (functionSymbol.ReturnType != FrameworkType.None)
             {
-                GetTypeSymbolNode(functionSymbol.ReturnType, typeIdentifierMap, frwVersion);
+                returnType = GetTypeSymbolNode(functionSymbol.ReturnType, typeIdentifierMap, frameworkVersion);
             }
 
-            return new BuiltinFunctionSymbolNode(functionSymbol.Name, parameters, returnType, functionSymbol.Generator, 0);
+            return new BuiltinFunctionSymbolNode(functionSymbol.Name, parameters, returnType, functionSymbol.Generator, lineNumber: 0);
         }
 
-        private static ParameterNode CreateParameterNode(ParameterSymbol parameterSymbol, FrameworkVersion frwVersion, TypeIdentifierMap typeIdentifierMap)
+        private static ParameterNode CreateParameterNode(ParameterSymbol parameterSymbol,
+                                                         FrameworkVersion frameworkVersion,
+                                                         TypeIdentifierMap typeIdentifierMap)
         {
-            return new ParameterNode(parameterSymbol.Name, GetTypeSymbolNode(parameterSymbol.Type, typeIdentifierMap, frwVersion), 0);
+            return new ParameterNode(parameterSymbol.Name,
+                                     GetTypeSymbolNode(parameterSymbol.Type, typeIdentifierMap, frameworkVersion),
+                                     lineNumber: 0);
         }
 
         private static TypeSymbolNode CreateTypeSymbolNode(TypeSymbol typeSymbol)
         {
-            return new BuiltinTypeSymbolNode(typeSymbol.FrameworkType, typeSymbol.Name, 0);
+            return new BuiltinTypeSymbolNode(typeSymbol.FrameworkType, typeSymbol.Name, lineNumber: 0);
         }
 
-        private static UnaryOperationSymbolNode CreateUnaryOperationSymbolNode(UnaryOperationSymbol unaryOperationSymbol, TypeIdentifierMap typeIdentifierMap, FrameworkVersion frwVersion)
+        private static UnaryOperationSymbolNode CreateUnaryOperationSymbolNode(UnaryOperationSymbol unaryOperationSymbol,
+                                                                               TypeIdentifierMap typeIdentifierMap,
+                                                                               FrameworkVersion frameworkVersion)
         {
-            TypeSymbolNode operandType = GetTypeSymbolNode(unaryOperationSymbol.OperandType, typeIdentifierMap, frwVersion);
-            TypeSymbolNode returnType = GetTypeSymbolNode(unaryOperationSymbol.ReturnType, typeIdentifierMap, frwVersion);
-            return new UnaryOperationSymbolNode(unaryOperationSymbol.Operator, operandType, returnType, unaryOperationSymbol.Generator, lineNumber: 0);
+            TypeSymbolNode operandType = GetTypeSymbolNode(unaryOperationSymbol.OperandType, typeIdentifierMap, frameworkVersion);
+            TypeSymbolNode returnType = GetTypeSymbolNode(unaryOperationSymbol.ReturnType, typeIdentifierMap, frameworkVersion);
+            return new UnaryOperationSymbolNode(unaryOperationSymbol.Operator,
+                                                operandType,
+                                                returnType,
+                                                unaryOperationSymbol.Generator,
+                                                lineNumber: 0);
         }
 
-        private static TypeSymbolNode GetTypeSymbolNode(FrameworkType frwType, TypeIdentifierMap typeIdentifierMap, FrameworkVersion frwVersion)
+        private static TypeSymbolNode GetTypeSymbolNode(FrameworkType frameworkType,
+                                                        TypeIdentifierMap typeIdentifierMap,
+                                                        FrameworkVersion frameworkVersion)
         {
-            bool success = typeIdentifierMap.TryGet(frwVersion.Types[frwType].Name, out TypeSymbolNode? node);
-            Debug.Assert(success);
-            return node!;
+            string name = frameworkVersion.Types[frameworkType].Name;
+            Debug.Assert(typeIdentifierMap.TryGet(name, out _));
+            return typeIdentifierMap[name];
         }
 
-        private static void PopulateWithConstants(HoistedIdentifierMap globalIdentifierMap, FrameworkVersion frwVersion)
+        private static void PopulateWithConstants(HoistedIdentifierMap globalIdentifierMap, FrameworkVersion frameworkVersion)
         {
-            foreach (ConstantSymbol constantSymbol in frwVersion.Constants)
+            foreach (ConstantSymbol constantSymbol in frameworkVersion.Constants)
             {
-                globalIdentifierMap.AddSymbol(constantSymbol.Name, CreateConstantSymbolNode(constantSymbol, frwVersion));
+                globalIdentifierMap.AddSymbol(constantSymbol.Name, CreateConstantSymbolNode(constantSymbol));
             }
         }
 
-        private static void PopulateWithFunctions(HoistedIdentifierMap globalIdentifierMap, TypeIdentifierMap typeIdentifierMap, FrameworkVersion frwVersion)
+        private static void PopulateWithFunctions(HoistedIdentifierMap globalIdentifierMap,
+                                                  TypeIdentifierMap typeIdentifierMap,
+                                                  FrameworkVersion frameworkVersion)
         {
-            foreach (FunctionSymbol functionSymbol in frwVersion.Functions)
+            foreach (FunctionSymbol functionSymbol in frameworkVersion.Functions)
             {
-                globalIdentifierMap.AddSymbol(functionSymbol.Name, CreateFunctionSymbolNode(functionSymbol, frwVersion, typeIdentifierMap));
+                globalIdentifierMap.AddSymbol(functionSymbol.Name,
+                                              CreateFunctionSymbolNode(functionSymbol, frameworkVersion, typeIdentifierMap));
             }
         }
 
-        private static void PopulateWithTypes(TypeIdentifierMap typeIdentifierMap, FrameworkVersion frwVersion)
+        private static void PopulateWithTypes(TypeIdentifierMap typeIdentifierMap, FrameworkVersion frameworkVersion)
         {
-            IEnumerable<TypeSymbol> typeSymbols = frwVersion.Types.Select(kvp => kvp.Value);
+            IEnumerable<TypeSymbol> allTypeSymbols = frameworkVersion.Types.Select(kvp => kvp.Value);
 
-            foreach (TypeSymbol tp in typeSymbols)
+            foreach (TypeSymbol typeSymbol in allTypeSymbols)
             {
-                typeIdentifierMap.AddSymbol(tp.Name, CreateTypeSymbolNode(tp));
+                typeIdentifierMap.AddSymbol(typeSymbol.Name, CreateTypeSymbolNode(typeSymbol));
             }
 
-            foreach (TypeSymbol tp in typeSymbols)
+            // This loop depends on the TypeIdentifierMap to be fully filled
+            foreach (TypeSymbol typeSymbol in allTypeSymbols)
             {
                 Dictionary<Operator, BinaryOperationSymbolNode> binaryOperationMapping = new();
 
-                foreach (BinaryOperationSymbol op in tp.BinaryOperations)
+                foreach (BinaryOperationSymbol binaryOperationSymbol in typeSymbol.BinaryOperations)
                 {
-                    binaryOperationMapping[op.Operator] = CreateBinaryOperationSymbolNode(op, typeIdentifierMap, frwVersion);
+                    binaryOperationMapping[binaryOperationSymbol.Operator]
+                        = CreateBinaryOperationSymbolNode(binaryOperationSymbol, typeIdentifierMap, frameworkVersion);
                 }
 
-                GetTypeSymbolNode(tp.FrameworkType, typeIdentifierMap, frwVersion).SetBinaryOperations(binaryOperationMapping);
+                GetTypeSymbolNode(typeSymbol.FrameworkType, typeIdentifierMap, frameworkVersion)
+                    .SetBinaryOperations(binaryOperationMapping);
 
                 Dictionary<Operator, UnaryOperationSymbolNode> unaryOperationMapping = new();
 
-                foreach (UnaryOperationSymbol op in tp.UnaryOperations)
+                foreach (UnaryOperationSymbol binaryOperationSymbol in typeSymbol.UnaryOperations)
                 {
-                    unaryOperationMapping[op.Operator] = CreateUnaryOperationSymbolNode(op, typeIdentifierMap, frwVersion);
+                    unaryOperationMapping[binaryOperationSymbol.Operator]
+                        = CreateUnaryOperationSymbolNode(binaryOperationSymbol, typeIdentifierMap, frameworkVersion);
                 }
 
-                GetTypeSymbolNode(tp.FrameworkType, typeIdentifierMap, frwVersion).SetUnaryOperations(unaryOperationMapping);
+                GetTypeSymbolNode(typeSymbol.FrameworkType, typeIdentifierMap, frameworkVersion)
+                    .SetUnaryOperations(unaryOperationMapping);
             }
         }
     }

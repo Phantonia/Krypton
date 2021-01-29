@@ -40,9 +40,9 @@ namespace Krypton.Analysis.Semantical
         {
             variableIdentifierMap.EnterBlock();
 
-            foreach (StatementNode stmt in statements)
+            foreach (StatementNode statement in statements)
             {
-                bool success = BindInStatement(stmt, variableIdentifierMap, globalIdentifierMap);
+                bool success = BindInStatement(statement, variableIdentifierMap, globalIdentifierMap);
 
                 if (!success)
                 {
