@@ -5,6 +5,7 @@ using Krypton.Analysis.Ast.Identifiers;
 using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Ast.TypeSpecs;
+using Krypton.Framework;
 using NUnit.Framework;
 using System;
 
@@ -101,115 +102,116 @@ namespace UnitTests
             MyAssert.Throws<NotImplementedException>(() => Analyser.Analyse(Code));
         }
 
-        //[Test]
-        //public void BuiltinFunctionBindingTest()
-        //{
-        //    const string Code =
-        //    @"
-        //    Output();
-        //    ";
+        [Test]
+        public void FrameworkTypeBindingTest()
+        {
+            const string Code =
+            @"
+            Var x As String;
+            ";
 
-        //    SyntaxTree? tree = Analyser.Analyse(Code);
+            SyntaxTree? tree = Analyser.Analyse(Code);
 
-        //    Assert.NotNull(tree);
-        //    Assert.IsInstanceOf<FunctionCallStatementNode>(tree!.Root.TopLevelStatements[0]);
+            Assert.NotNull(tree);
+            Assert.AreEqual(1, tree!.Root.TopLevelStatements.Count);
+            Assert.IsInstanceOf<VariableDeclarationStatementNode>(tree.Root.TopLevelStatements[0]);
 
-        //    var call = (FunctionCallStatementNode)tree.Root.TopLevelStatements[0];
+            var vdecl = (VariableDeclarationStatementNode)tree.Root.TopLevelStatements[0];
 
-        //    Assert.IsInstanceOf<IdentifierExpressionNode>(call.FunctionExpression);
+            Assert.AreEqual("x", vdecl.VariableIdentifier);
+            Assert.IsInstanceOf<IdentifierTypeSpecNode>(vdecl.Type);
 
-        //    var idex = (IdentifierExpressionNode)call.FunctionExpression;
+            var idtype = (IdentifierTypeSpecNode)vdecl.Type!;
 
-        //    Assert.IsInstanceOf<BoundIdentifierNode>(idex.IdentifierNode);
+            Assert.IsInstanceOf<BoundIdentifierNode>(idtype.IdentifierNode);
 
-        //    var bdid = (BoundIdentifierNode)idex.IdentifierNode;
+            var bdid = (BoundIdentifierNode)idtype.IdentifierNode;
 
-        //    var actualOutputFunc = new BuiltinIdentifierMap()["Output"];
-        //    var boundOutputFunc = bdid.Symbol;
+            Assert.IsInstanceOf<BuiltinTypeSymbolNode>(bdid.Symbol);
 
-        //    Assert.True(ReferenceEquals(actualOutputFunc, boundOutputFunc));
-        //}
+            var bitsn = (BuiltinTypeSymbolNode)bdid.Symbol;
 
-        //[Test]
-        //public void TypeBindingTest()
-        //{
-        //    const string Code =
-        //    @"
-        //    Var str As String;
-        //    str = ""x"";
-        //    ";
+            Assert.AreEqual(FrameworkType.String, bitsn.BuiltinType);
+        }
 
-        //    SyntaxTree? tree = Analyser.Analyse(Code);
+        [Test]
+        public void FrameworkFuncBindingTest()
+        {
+            const string Code =
+            @"
+            Output(4);
+            ";
 
-        //    Assert.NotNull(tree);
-        //    Assert.AreEqual(2, tree!.Root.TopLevelStatements.Count);
-        //    Assert.IsInstanceOf<VariableDeclarationStatementNode>(tree.Root.TopLevelStatements[0]);
-        //    Assert.IsInstanceOf<VariableAssignmentStatementNode>(tree.Root.TopLevelStatements[1]);
+            SyntaxTree? tree = Analyser.Analyse(Code);
 
-        //    var decl = (VariableDeclarationStatementNode)tree.Root.TopLevelStatements[0];
+            Assert.NotNull(tree);
+            Assert.AreEqual(1, tree!.Root.TopLevelStatements.Count);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(tree.Root.TopLevelStatements[0]);
 
-        //    Assert.NotNull(decl.Type);
-        //    Assert.IsInstanceOf<IdentifierTypeSpecNode>(decl.Type);
+            var fcsn = (FunctionCallStatementNode)tree.Root.TopLevelStatements[0];
 
-        //    var idtp = (IdentifierTypeSpecNode)decl.Type!;
+            Assert.IsInstanceOf<IdentifierExpressionNode>(fcsn.FunctionExpression);
 
-        //    Assert.IsInstanceOf<BoundIdentifierNode>(idtp.IdentifierNode);
+            var idex = (IdentifierExpressionNode)fcsn.FunctionExpression;
 
-        //    var bound = (BoundIdentifierNode)idtp.IdentifierNode;
+            Assert.IsInstanceOf<BoundIdentifierNode>(idex.IdentifierNode);
 
-        //    var actStringType = new BuiltinIdentifierMap()["String"];
-        //    var bndStringType = bound.Symbol;
+            var bdid = (BoundIdentifierNode)idex.IdentifierNode;
 
-        //    Assert.True(ReferenceEquals(actStringType, bndStringType));
-        //}
+            Assert.IsInstanceOf<BuiltinFunctionSymbolNode>(bdid.Symbol);
 
-        //[Test]
-        //public void MoreTypeBindingTest()
-        //{
-        //    const string Code =
-        //    @"
-        //    Var x As Int;
-        //    Var y As Rational;
-        //    Var z As Complex;
-        //    Var a As Bool;
-        //    ";
+            var func = (BuiltinFunctionSymbolNode)bdid.Symbol;
 
-        //    SyntaxTree? tree = Analyser.Analyse(Code);
+            Assert.AreEqual("Output", func.Name);
+            Assert.AreEqual("console.log(uwu)", func.Generator(new[] { "uwu" }));
+        }
 
-        //    Assert.NotNull(tree);
-        //    Assert.AreEqual(4, tree!.Root.TopLevelStatements.Count);
+        [Test]
+        public void RepeatingVarIdentifierTest()
+        {
+            const string Code =
+            @"
+            Var x = 5;
+            Var x = ""uwu"";
+            ";
 
-        //    BuiltinIdentifierMap bim = new();
-        //    SymbolNode?[] symbols =
-        //    {
-        //        bim["Int"],
-        //        bim["Rational"],
-        //        bim["Complex"],
-        //        bim["Bool"]
-        //    };
+            MyAssert.Throws<NotImplementedException>(() => Analyser.Analyse(Code));
+        }
 
-        //    int i = 0;
+        [Test]
+        public void LegalRepeatingVarIdentifierTest()
+        {
+            const string Code =
+            @"
+            Block
+            {
+                Var x = 4;
+            }
+            Var x = ""uwu"";
+            ";
 
-        //    foreach (var statement in tree.Root.TopLevelStatements)
-        //    {
-        //        Assert.IsInstanceOf<VariableDeclarationStatementNode>(statement);
+            Assert.DoesNotThrow(() => Analyser.Analyse(Code));
+        }
 
-        //        TypeSpecNode? typeSpec = ((VariableDeclarationStatementNode)statement).Type;
+        [Test]
+        public void FrameworkIdentifierAndLocalIdentifierClashTest()
+        {
+            const string Code =
+            @"
+            Var Output = 5;
+            Output(4);
+            ";
 
-        //        Assert.NotNull(typeSpec);
-        //        Assert.IsInstanceOf<IdentifierTypeSpecNode>(typeSpec);
+            SyntaxTree? tree = null;
+            Assert.DoesNotThrow(() => tree = Analyser.Analyse(Code));
 
-        //        var id = (IdentifierTypeSpecNode)typeSpec!;
+            Assert.NotNull(tree);
 
-        //        Assert.IsInstanceOf<BoundIdentifierNode>(id.IdentifierNode);
+            var fcsn = (FunctionCallStatementNode)tree!.Root.TopLevelStatements[1];
+            var fnex = (IdentifierExpressionNode)fcsn.FunctionExpression;
+            var bdid = (BoundIdentifierNode)fnex.IdentifierNode;
 
-        //        var bound = (BoundIdentifierNode)id.IdentifierNode;
-
-        //        Assert.IsInstanceOf<TypeSymbolNode>(bound.Symbol);
-        //        Assert.True(ReferenceEquals(symbols[i], (TypeSymbolNode)bound.Symbol));
-
-        //        i++;
-        //    }
-        //}
+            Assert.IsInstanceOf<LocalVariableSymbolNode>(bdid.Symbol);
+        }
     }
 }

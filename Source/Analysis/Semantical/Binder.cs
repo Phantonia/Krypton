@@ -2,7 +2,11 @@
 using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Ast.Symbols;
+using Krypton.Analysis.Framework;
 using Krypton.Analysis.Semantical.IdentifierMaps;
+using System;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Krypton.Analysis.Semantical
 {
@@ -11,15 +15,16 @@ namespace Krypton.Analysis.Semantical
         public Binder(SyntaxTree syntaxTree)
         {
             this.syntaxTree = syntaxTree;
-            typeManager = new TypeManager(syntaxTree);
         }
 
         private readonly SyntaxTree syntaxTree;
-        private readonly TypeManager typeManager;
+        private TypeManager? typeManager;
 
+        [MemberNotNull(nameof(typeManager))]
         public bool PerformBinding()
         {
-            HoistedIdentifierMap globalIdentifierMap = GatherGlobalSymbols();
+            (HoistedIdentifierMap globalIdentifierMap, TypeIdentifierMap typeIdentifierMap) = GatherGlobalSymbols();
+            typeManager = new TypeManager(syntaxTree, typeIdentifierMap);
 
             bool success = BindInTopLevelStatements(globalIdentifierMap);
 
@@ -31,7 +36,7 @@ namespace Krypton.Analysis.Semantical
             return true;
         }
 
-        bool BindInBlock(StatementCollectionNode statements, VariableIdentifierMap variableIdentifierMap, HoistedIdentifierMap globalIdentifierMap)
+        private bool BindInBlock(StatementCollectionNode statements, VariableIdentifierMap variableIdentifierMap, HoistedIdentifierMap globalIdentifierMap)
         {
             variableIdentifierMap.EnterBlock();
 
@@ -128,12 +133,21 @@ namespace Krypton.Analysis.Semantical
                             }
                         }
 
+                        Debug.Assert(typeManager != null);
+
                         if (!typeManager.TryGetTypeSymbol(variableDeclaration.Type, out TypeSymbolNode? typeSymbol))
                         {
                             return false;
                         }
 
-                        variableIdentifierMap.AddSymbol(variableDeclaration.VariableIdentifier, variableDeclaration.CreateVariable(typeSymbol));
+                        {
+                            bool success = variableIdentifierMap.AddSymbol(variableDeclaration.VariableIdentifier, variableDeclaration.CreateVariable(typeSymbol));
+
+                            if (!success)
+                            {
+                                throw new NotImplementedException("Error: Duplicate local variable");
+                            }
+                        }
                     }
                     break;
                 case VariableAssignmentStatementNode variableAssignment:
@@ -208,10 +222,12 @@ namespace Krypton.Analysis.Semantical
             return BindInBlock(syntaxTree.Root.TopLevelStatements, variableIdentifierMap, globalIdentifierMap);
         }
 
-        private HoistedIdentifierMap GatherGlobalSymbols()
+        private (HoistedIdentifierMap, TypeIdentifierMap) GatherGlobalSymbols()
         {
-            // Placeholder
-            return new HoistedIdentifierMap();
+            HoistedIdentifierMap globalIdentifierMap = new();
+            TypeIdentifierMap typeIdentifierMap = new();
+            FrameworkIntegration.PopulateWithFrameworkSymbols(globalIdentifierMap, typeIdentifierMap);
+            return (globalIdentifierMap, typeIdentifierMap);
         }
     }
 }
