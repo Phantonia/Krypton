@@ -1,6 +1,7 @@
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
+using Krypton.Framework;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace UnitTests
             Assert.IsTrue(lexemes[3] is IdentifierLexeme { Content: "Int" });
             Assert.IsTrue(lexemes[4] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals });
             Assert.IsTrue(lexemes[5] is IntegerLiteralLexeme { Value: 4 });
-            Assert.IsTrue(lexemes[6] is CharacterOperatorLexeme { Operator: CharacterOperator.Plus });
+            Assert.IsTrue(lexemes[6] is CharacterOperatorLexeme { Operator: Operator.Plus });
             Assert.IsTrue(lexemes[7] is IdentifierLexeme { Content: "Sin" });
             Assert.IsTrue(lexemes[8] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisOpening });
             Assert.IsTrue(lexemes[9] is IdentifierLexeme { Content: "PI" });
@@ -65,11 +66,11 @@ namespace UnitTests
 
             Assert.AreEqual(12, lexemes.Count);
 
-            Assert.IsTrue(lexemes[1] is CharacterOperatorLexeme { Operator: CharacterOperator.Ampersand });
-            Assert.IsTrue(lexemes[3] is CharacterOperatorLexeme { Operator: CharacterOperator.RightShift });
-            Assert.IsTrue(lexemes[5] is CharacterOperatorLexeme { Operator: CharacterOperator.Pipe });
-            Assert.IsTrue(lexemes[7] is CharacterOperatorLexeme { Operator: CharacterOperator.LeftShift });
-            Assert.IsTrue(lexemes[9] is CharacterOperatorLexeme { Operator: CharacterOperator.Caret });
+            Assert.IsTrue(lexemes[1] is CharacterOperatorLexeme { Operator: Operator.Ampersand });
+            Assert.IsTrue(lexemes[3] is CharacterOperatorLexeme { Operator: Operator.SingleRightArrow });
+            Assert.IsTrue(lexemes[5] is CharacterOperatorLexeme { Operator: Operator.Pipe });
+            Assert.IsTrue(lexemes[7] is CharacterOperatorLexeme { Operator: Operator.SingleLeftArrow });
+            Assert.IsTrue(lexemes[9] is CharacterOperatorLexeme { Operator: Operator.Caret });
         }
 
         [Test]
@@ -110,7 +111,7 @@ namespace UnitTests
         {
             LexemeCollection lexemes = LexCode("a != b");
 
-            Assert.IsTrue(lexemes[1] is CharacterOperatorLexeme { Operator: CharacterOperator.ExclamationEquals });
+            Assert.IsTrue(lexemes[1] is CharacterOperatorLexeme { Operator: Operator.ExclamationEquals });
         }
     }
 }

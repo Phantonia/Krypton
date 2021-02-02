@@ -1,5 +1,6 @@
 ﻿using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical.Lexemes;
+using Krypton.Framework;
 using Krypton.Utilities;
 
 namespace Krypton.Analysis.Lexical
@@ -52,15 +53,15 @@ namespace Krypton.Analysis.Lexical
                 '}' => LexSpecificLexeme(SyntaxCharacter.BraceClosing),
                 '<' => LexLessThanOrLeftShift(),
                 '>' => LexGreaterThanOrMultilineComment(),
-                '=' => LexWithPossibleEquals(SyntaxCharacter.Equals, CharacterOperator.DoubleEquals),
+                '=' => LexWithPossibleEquals(SyntaxCharacter.Equals, Operator.DoubleEquals),
 
-                '+' => LexWithPossibleEquals(CharacterOperator.Plus),
+                '+' => LexWithPossibleEquals(Operator.Plus),
                 '-' => LexMinusSignOrRightShift(),
                 '*' => LexAsteriskOrDoubleAsteriskOrAsteriskEqualsOrDoubleAsteriskEquals(),
-                '/' => LexWithPossibleEquals(CharacterOperator.ForeSlash),
-                '&' => LexWithPossibleEquals(CharacterOperator.Ampersand),
-                '|' => LexWithPossibleEquals(CharacterOperator.Pipe),
-                '^' => LexWithPossibleEquals(CharacterOperator.Caret),
+                '/' => LexWithPossibleEquals(Operator.ForeSlash),
+                '&' => LexWithPossibleEquals(Operator.Ampersand),
+                '|' => LexWithPossibleEquals(Operator.Pipe),
+                '^' => LexWithPossibleEquals(Operator.Caret),
                 '!' => LexExlamationMark(),
 
                 '"' => LexStringLiteralLexeme(),

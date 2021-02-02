@@ -1,4 +1,5 @@
 ﻿using Krypton.Analysis.Lexical.Lexemes;
+using Krypton.Framework;
 using Krypton.Utilities;
 
 namespace Krypton.Analysis.Lexical
@@ -92,7 +93,7 @@ namespace Krypton.Analysis.Lexical
             }
             else
             {
-                return new CharacterOperatorLexeme(CharacterOperator.GreaterThan, lineNumber);
+                return new CharacterOperatorLexeme(Operator.GreaterThan, lineNumber);
             }
         }
     }

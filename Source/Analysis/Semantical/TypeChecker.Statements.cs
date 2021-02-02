@@ -38,6 +38,8 @@ namespace Krypton.Analysis.Semantical
                     return CheckVariableAssignmentStatement(varAssignment);
                 case VariableDeclarationStatementNode varDecl when varDecl.AssignedValue != null:
                     return CheckVariableDeclarationStatement(varDecl);
+                case VariableDeclarationStatementNode:
+                    return true;
                 case FunctionCallStatementNode funcCall:
                     return CheckFunctionCallStatement(funcCall);
                 case BlockStatementNode block:

@@ -1,6 +1,6 @@
-﻿using Krypton.Analysis.Ast.Expressions.BinaryOperations;
-using Krypton.Analysis.Grammatical;
+﻿using Krypton.Analysis.Grammatical;
 using Krypton.Analysis.Lexical.Lexemes;
+using Krypton.Framework;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -107,32 +107,19 @@ namespace Krypton.Analysis.Ast.Expressions
             ExpressionNode right = operands[index + 1];
             int lineNumber = operatorLexeme.LineNumber;
 
-            return operatorLexeme switch
+            Operator @operator = operatorLexeme switch
             {
-                CharacterOperatorLexeme { Operator: CharacterOperator.DoubleAsterisk } => new ExponentiationBinaryOperationExpressionNode(left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.Asterisk } => new MultiplicationBinaryOperationExpressionNode(left, right, lineNumber),
-                KeywordLexeme { Keyword: ReservedKeyword.Div } => new IntegerDivisionBinaryOperationExpressionNode(left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.ForeSlash } => new RationalDivisionBinaryOperationExpressionNode(left, right, lineNumber),
-                KeywordLexeme { Keyword: ReservedKeyword.Mod } => new ModuloBinaryOperationExpressionNode(left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.Plus } => new AdditionBinaryOperationExpressionNode(left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.Minus } => new SubtractionBinaryOperationExpressionNode(left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.Ampersand } => new BitwiseAndBinaryOperationExpressionNode(left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.Pipe } => new BitwiseOrBinaryOperationExpressionNode(left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.Caret } => new BitwiseXorBinaryOperationExpressionNode(left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.LeftShift } => new BitwiseLeftShiftBinaryOperationExpressionNode(left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.RightShift } => new BitwiseRightShiftBinaryOperationExpressionNode(left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.DoubleEquals } => new EqualityBinaryOperationExpressionNode(left, right, lineNumber),
-                CharacterOperatorLexeme { Operator: CharacterOperator.ExclamationEquals } => new UnequalityBinaryOperationExpressionNode(left, right, lineNumber),
-                KeywordLexeme { Keyword: ReservedKeyword.And } => new LogicalAndBinaryOperationExpressionNode(left, right, lineNumber),
-                KeywordLexeme { Keyword: ReservedKeyword.Xor } => new LogicalXorBinaryOperationExpressionNode(left, right, lineNumber),
-                KeywordLexeme { Keyword: ReservedKeyword.Or } => new LogicalOrBinaryOperationExpressionNode(left, right, lineNumber),
+                CharacterOperatorLexeme chrLxm => chrLxm.Operator,
+                KeywordLexeme kwdLxm => (Operator)kwdLxm.Keyword,
                 _ => OnFailure()
             };
 
-            static ExpressionNode OnFailure()
+            return new BinaryOperationExpressionNode(left, right, @operator, lineNumber);
+
+            static Operator OnFailure()
             {
-                Debug.Fail("Missed operator");
-                return null;
+                Debug.Fail(message: null);
+                return 0;
             }
         }
     }

@@ -5,7 +5,7 @@
     // no group changes its number.
     public enum OperatorPrecedenceGroup
     {
-        Depending = 0,
+        None = 0,
         LogicalOr = 10,
         LogicalXor = 20,
         LogicalAnd = 30,

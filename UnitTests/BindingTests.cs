@@ -5,9 +5,13 @@ using Krypton.Analysis.Ast.Identifiers;
 using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Ast.TypeSpecs;
+using Krypton.Analysis.Grammatical;
+using Krypton.Analysis.Lexical;
+using Krypton.Analysis.Semantical;
 using Krypton.Framework;
 using NUnit.Framework;
 using System;
+using System.Diagnostics;
 
 namespace UnitTests
 {
@@ -139,7 +143,7 @@ namespace UnitTests
         {
             const string Code =
             @"
-            Output(4);
+            Output(""4"");
             ";
 
             SyntaxTree? tree = Analyser.Analyse(Code);
@@ -202,8 +206,22 @@ namespace UnitTests
             Output(4);
             ";
 
-            SyntaxTree? tree = null;
-            Assert.DoesNotThrow(() => tree = Analyser.Analyse(Code));
+            Lexer lexer = new(Code);
+            LexemeCollection lexemes = lexer.LexAll();
+
+            ProgramParser parser = new(lexemes);
+            SyntaxTree? tree = parser.ParseWholeProgram();
+
+            if (tree != null)
+            {
+                Binder binder = new(tree);
+                bool success = binder.PerformBinding();
+
+                if (!success)
+                {
+                    tree = null;
+                }
+            }
 
             Assert.NotNull(tree);
 

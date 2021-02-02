@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Krypton.Framework;
+using System.Collections.Generic;
 
 namespace Krypton.Analysis.Ast.Expressions
 {
@@ -7,17 +8,20 @@ namespace Krypton.Analysis.Ast.Expressions
      * on the left hand side and one on the right hand
      * side.
      */
-    public abstract class BinaryOperationExpressionNode : ExpressionNode
+    public class BinaryOperationExpressionNode : ExpressionNode
     {
-        protected private BinaryOperationExpressionNode(ExpressionNode left, ExpressionNode right, int lineNumber) : base(lineNumber)
+        internal BinaryOperationExpressionNode(ExpressionNode left, ExpressionNode right, Operator @operator, int lineNumber) : base(lineNumber)
         {
             Left = left;
             Left.Parent = this;
             Right = right;
+            Operator = @operator;
             Right.Parent = this;
         }
 
         public ExpressionNode Left { get; }
+
+        public Operator Operator { get; }
 
         public ExpressionNode Right { get; }
 

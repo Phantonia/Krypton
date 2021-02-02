@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Krypton.Framework;
+using System;
 using System.Diagnostics;
 
 namespace Krypton.Analysis.Lexical.Lexemes
 {
     public sealed class CompoundAssignmentEqualsLexeme : Lexeme
     {
-        public CompoundAssignmentEqualsLexeme(CharacterOperator @operator, int lineNumber) : base(lineNumber)
+        public CompoundAssignmentEqualsLexeme(Operator @operator, int lineNumber) : base(lineNumber)
         {
             Debug.Assert(IsLegalInCompoundAssignment(@operator));
             Operator = @operator;
@@ -13,31 +14,31 @@ namespace Krypton.Analysis.Lexical.Lexemes
 
         public override string Content => Operator switch
         {
-            CharacterOperator.DoubleAsterisk => "**=",
-            CharacterOperator.Asterisk => "*=",
-            CharacterOperator.ForeSlash => "/=",
-            CharacterOperator.Plus => "+=",
-            CharacterOperator.Minus => "-=",
-            CharacterOperator.Ampersand => "&=",
-            CharacterOperator.Caret => "^",
-            CharacterOperator.Pipe => "|=",
+            Operator.DoubleAsterisk => "**=",
+            Operator.Asterisk => "*=",
+            Operator.ForeSlash => "/=",
+            Operator.Plus => "+=",
+            Operator.Minus => "-=",
+            Operator.Ampersand => "&=",
+            Operator.Caret => "^",
+            Operator.Pipe => "|=",
             _ => throw new NotImplementedException(),
         };
 
-        public CharacterOperator Operator { get; }
+        public Operator Operator { get; }
 
-        private static bool IsLegalInCompoundAssignment(CharacterOperator @operator)
+        private static bool IsLegalInCompoundAssignment(Operator @operator)
         {
             return @operator switch
             {
-                CharacterOperator.DoubleAsterisk or
-                CharacterOperator.Asterisk or
-                CharacterOperator.ForeSlash or
-                CharacterOperator.Plus or
-                CharacterOperator.Minus or
-                CharacterOperator.Ampersand or
-                CharacterOperator.Caret or
-                CharacterOperator.Pipe => true,
+                Operator.DoubleAsterisk or
+                Operator.Asterisk or
+                Operator.ForeSlash or
+                Operator.Plus or
+                Operator.Minus or
+                Operator.Ampersand or
+                Operator.Caret or
+                Operator.Pipe => true,
                 _ => false,
             };
         }

@@ -1,10 +1,10 @@
 ﻿using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Expressions.Literals;
-using Krypton.Analysis.Ast.Expressions.UnaryOperations;
 using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
+using Krypton.Framework;
 using Krypton.Utilities;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -137,7 +137,7 @@ namespace Krypton.Analysis.Grammatical
             index++;
 
             ExpressionNode? nextOperand = ParseSubExpression(ref index);
-                            
+
             if (nextOperand == null)
             {
                 return;
@@ -188,19 +188,19 @@ namespace Krypton.Analysis.Grammatical
                         }
                         return root;
                     }
-                case CharacterOperatorLexeme { Operator: CharacterOperator.Tilde }:
+                case CharacterOperatorLexeme { Operator: Operator.Tilde }:
                     {
                         index++;
                         ExpressionNode? operand = ParseNextExpressionInternal(ref index);
 
                         if (operand != null)
                         {
-                            return new BitwiseNotUnaryOperationExpressionNode(operand, Lexemes[index].LineNumber);
+                            return new UnaryOperationExpressionNode(operand, Operator.Tilde, Lexemes[index].LineNumber);
                         }
 
                         return null;
                     }
-                case CharacterOperatorLexeme { Operator: CharacterOperator.Minus }:
+                case CharacterOperatorLexeme { Operator: Operator.Minus }:
                     {
                         index++;
                         ExpressionNode? operand = ParseSubExpression(ref index);
@@ -208,7 +208,7 @@ namespace Krypton.Analysis.Grammatical
 
                         if (operand != null)
                         {
-                            return new NegationUnaryOperationExpressionNode(operand, Lexemes[index].LineNumber);
+                            return new UnaryOperationExpressionNode(operand, Operator.Minus, Lexemes[index].LineNumber);
                         }
 
                         return null;

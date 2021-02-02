@@ -1,59 +1,60 @@
 ﻿using Krypton.Analysis.Grammatical;
+using Krypton.Framework;
 using System;
 
 namespace Krypton.Analysis.Lexical.Lexemes
 {
     public sealed class CharacterOperatorLexeme : Lexeme, IOperatorLexeme
     {
-        public CharacterOperatorLexeme(CharacterOperator @operator, int lineNumber) : base(lineNumber)
+        public CharacterOperatorLexeme(Operator @operator, int lineNumber) : base(lineNumber)
         {
             Operator = @operator;
         }
 
         public override string Content => Operator switch
         {
-            CharacterOperator.Tilde => "~",
-            CharacterOperator.DoubleAsterisk => "**",
-            CharacterOperator.Asterisk => "*",
-            CharacterOperator.ForeSlash => "/",
-            CharacterOperator.Plus => "+",
-            CharacterOperator.Minus => "-",
-            CharacterOperator.Ampersand => "&",
-            CharacterOperator.Caret => "^",
-            CharacterOperator.Pipe => "|",
-            CharacterOperator.LessThan => "<",
-            CharacterOperator.LessThanEquals => "<=",
-            CharacterOperator.GreaterThanEquals => ">=",
-            CharacterOperator.GreaterThan => ">",
-            CharacterOperator.DoubleEquals => "==",
-            CharacterOperator.ExclamationEquals => "!=",
-            CharacterOperator.RightShift => "->",
-            CharacterOperator.LeftShift => "<-",
+            Operator.Tilde => "~",
+            Operator.DoubleAsterisk => "**",
+            Operator.Asterisk => "*",
+            Operator.ForeSlash => "/",
+            Operator.Plus => "+",
+            Operator.Minus => "-",
+            Operator.Ampersand => "&",
+            Operator.Caret => "^",
+            Operator.Pipe => "|",
+            Operator.LessThan => "<",
+            Operator.LessThanEquals => "<=",
+            Operator.GreaterThanEquals => ">=",
+            Operator.GreaterThan => ">",
+            Operator.DoubleEquals => "==",
+            Operator.ExclamationEquals => "!=",
+            Operator.SingleRightArrow => "->",
+            Operator.SingleLeftArrow => "<-",
             _ => throw new InvalidOperationException(),
         };
 
-        public CharacterOperator Operator { get; }
+        public Operator Operator { get; }
 
         public OperatorPrecedenceGroup PrecedenceGroup => Operator switch
         {
-            CharacterOperator.Tilde             => OperatorPrecedenceGroup.BitwiseNotAndNegation,
-            CharacterOperator.DoubleAsterisk    => OperatorPrecedenceGroup.Exponantiation,
-            CharacterOperator.Asterisk          => OperatorPrecedenceGroup.Multiplicative,
-            CharacterOperator.ForeSlash         => OperatorPrecedenceGroup.Multiplicative,
-            CharacterOperator.Plus              => OperatorPrecedenceGroup.Additive,
-            CharacterOperator.Minus             => OperatorPrecedenceGroup.Additive,
-            CharacterOperator.Ampersand         => OperatorPrecedenceGroup.Bitwise,
-            CharacterOperator.Caret             => OperatorPrecedenceGroup.Bitwise,
-            CharacterOperator.Pipe              => OperatorPrecedenceGroup.Bitwise,
-            CharacterOperator.LeftShift         => OperatorPrecedenceGroup.Shift,
-            CharacterOperator.RightShift        => OperatorPrecedenceGroup.Shift,
-            CharacterOperator.LessThan          => OperatorPrecedenceGroup.Comparison,
-            CharacterOperator.LessThanEquals    => OperatorPrecedenceGroup.Comparison,
-            CharacterOperator.GreaterThanEquals => OperatorPrecedenceGroup.Comparison,
-            CharacterOperator.GreaterThan       => OperatorPrecedenceGroup.Comparison,
-            CharacterOperator.DoubleEquals      => OperatorPrecedenceGroup.Equality,
-            CharacterOperator.ExclamationEquals => OperatorPrecedenceGroup.Equality,
-            _ => 0,
+            Operator.Tilde => OperatorPrecedenceGroup.BitwiseNotAndNegation,
+            Operator.DoubleAsterisk => OperatorPrecedenceGroup.Exponantiation,
+            Operator.Asterisk => OperatorPrecedenceGroup.Multiplicative,
+            Operator.ForeSlash => OperatorPrecedenceGroup.Multiplicative,
+            Operator.Plus => OperatorPrecedenceGroup.Additive,
+            Operator.Minus => OperatorPrecedenceGroup.Additive,
+            Operator.Ampersand => OperatorPrecedenceGroup.Bitwise,
+            Operator.Caret => OperatorPrecedenceGroup.Bitwise,
+            Operator.Pipe => OperatorPrecedenceGroup.Bitwise,
+            Operator.SingleRightArrow => OperatorPrecedenceGroup.Shift,
+            Operator.SingleLeftArrow => OperatorPrecedenceGroup.Shift,
+            Operator.LessThan => OperatorPrecedenceGroup.Comparison,
+            Operator.LessThanEquals => OperatorPrecedenceGroup.Comparison,
+            Operator.GreaterThanEquals => OperatorPrecedenceGroup.Comparison,
+            Operator.GreaterThan => OperatorPrecedenceGroup.Comparison,
+            Operator.DoubleEquals => OperatorPrecedenceGroup.Equality,
+            Operator.ExclamationEquals => OperatorPrecedenceGroup.Equality,
+            _ => OperatorPrecedenceGroup.None,
         };
     }
 }

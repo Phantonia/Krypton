@@ -1,12 +1,12 @@
 ﻿using Krypton.Analysis.Ast;
 using Krypton.Analysis.Ast.Expressions;
-using Krypton.Analysis.Ast.Expressions.BinaryOperations;
 using Krypton.Analysis.Ast.Expressions.Literals;
 using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Ast.TypeSpecs;
 using Krypton.Analysis.Grammatical;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
+using Krypton.Framework;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -111,7 +111,7 @@ namespace UnitTests
             Assert.IsNull(vdsn.Type);
             Assert.NotNull(vdsn.AssignedValue);
 
-            Assert.IsInstanceOf<AdditionBinaryOperationExpressionNode>(vdsn.AssignedValue);
+            Assert.IsTrue(vdsn.AssignedValue is BinaryOperationExpressionNode { Operator: Operator.Plus });
         }
 
         [Test]
@@ -288,7 +288,7 @@ namespace UnitTests
 
             var @while = (WhileStatementNode)statement!;
 
-            Assert.IsInstanceOf<AdditionBinaryOperationExpressionNode>(@while.Condition);
+            Assert.IsTrue(@while.Condition is BinaryOperationExpressionNode { Operator: Operator.Plus });
             Assert.AreEqual(1, @while.Statements.Count);
             Assert.IsInstanceOf<WhileStatementNode>(@while.Statements[0]);
         }
@@ -327,7 +327,7 @@ namespace UnitTests
             Assert.AreEqual(0, block_block.Statements.Count);
 
             var block_while = (WhileStatementNode)block.Statements[1];
-            Assert.IsInstanceOf<RationalDivisionBinaryOperationExpressionNode>(block_while.Condition);
+            Assert.IsTrue(block_while.Condition is BinaryOperationExpressionNode { Operator: Operator.ForeSlash });
             Assert.AreEqual(2, block_while.Statements.Count);
             Assert.IsInstanceOf<FunctionCallStatementNode>(block_while.Statements[0]);
         }

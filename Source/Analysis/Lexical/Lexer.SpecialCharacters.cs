@@ -1,5 +1,6 @@
 ﻿using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical.Lexemes;
+using Krypton.Framework;
 using Krypton.Utilities;
 
 namespace Krypton.Analysis.Lexical
@@ -19,22 +20,22 @@ namespace Krypton.Analysis.Lexical
                 {
                     index++;
 
-                    return new CompoundAssignmentEqualsLexeme(CharacterOperator.DoubleAsterisk, lineNumber);
+                    return new CompoundAssignmentEqualsLexeme(Operator.DoubleAsterisk, lineNumber);
                 }
                 else // **
                 {
-                    return new CharacterOperatorLexeme(CharacterOperator.DoubleAsterisk, lineNumber);
+                    return new CharacterOperatorLexeme(Operator.DoubleAsterisk, lineNumber);
                 }
             }
             else if (Code.TryGet(index) == '=') // *=
             {
                 index++;
 
-                return new CompoundAssignmentEqualsLexeme(CharacterOperator.Asterisk, lineNumber);
+                return new CompoundAssignmentEqualsLexeme(Operator.Asterisk, lineNumber);
             }
             else // *
             {
-                return new CharacterOperatorLexeme(CharacterOperator.Asterisk, lineNumber);
+                return new CharacterOperatorLexeme(Operator.Asterisk, lineNumber);
             }
         }
 
@@ -45,7 +46,7 @@ namespace Krypton.Analysis.Lexical
             if (Code.TryGet(index) == '=') // !=
             {
                 index++;
-                return new CharacterOperatorLexeme(CharacterOperator.ExclamationEquals, lineNumber);
+                return new CharacterOperatorLexeme(Operator.ExclamationEquals, lineNumber);
             }
             else // !
             {
@@ -63,12 +64,12 @@ namespace Krypton.Analysis.Lexical
             {
                 case '-': // <-
                     index++;
-                    return new CharacterOperatorLexeme(CharacterOperator.LeftShift, lineNumber);
+                    return new CharacterOperatorLexeme(Operator.SingleLeftArrow, lineNumber);
                 case '=': // <=
                     index++;
-                    return new CharacterOperatorLexeme(CharacterOperator.LessThanEquals, lineNumber);
+                    return new CharacterOperatorLexeme(Operator.LessThanEquals, lineNumber);
                 default: // <
-                    return new CharacterOperatorLexeme(CharacterOperator.LessThan, lineNumber);
+                    return new CharacterOperatorLexeme(Operator.LessThan, lineNumber);
             }
         }
 
@@ -82,12 +83,12 @@ namespace Krypton.Analysis.Lexical
             {
                 case '>': // ->
                     index++;
-                    return new CharacterOperatorLexeme(CharacterOperator.RightShift, lineNumber);
+                    return new CharacterOperatorLexeme(Operator.SingleRightArrow, lineNumber);
                 case '=': // -=
                     index++;
-                    return new CompoundAssignmentEqualsLexeme(CharacterOperator.Minus, lineNumber);
+                    return new CompoundAssignmentEqualsLexeme(Operator.Minus, lineNumber);
                 default: // -
-                    return new CharacterOperatorLexeme(CharacterOperator.Minus, lineNumber);
+                    return new CharacterOperatorLexeme(Operator.Minus, lineNumber);
             }
         }
 
@@ -97,7 +98,7 @@ namespace Krypton.Analysis.Lexical
             return new SyntaxCharacterLexeme(syntaxCharacter, lineNumber);
         }
 
-        private Lexeme LexWithPossibleEquals(CharacterOperator @operator)
+        private Lexeme LexWithPossibleEquals(Operator @operator)
         {
             index++;
 
@@ -112,7 +113,7 @@ namespace Krypton.Analysis.Lexical
             }
         }
 
-        private Lexeme LexWithPossibleEquals(CharacterOperator withoutEquals, CharacterOperator withEquals)
+        private Lexeme LexWithPossibleEquals(Operator withoutEquals, Operator withEquals)
         {
             index++;
 
@@ -127,7 +128,7 @@ namespace Krypton.Analysis.Lexical
             }
         }
 
-        private Lexeme LexWithPossibleEquals(SyntaxCharacter withoutEquals, CharacterOperator withEquals)
+        private Lexeme LexWithPossibleEquals(SyntaxCharacter withoutEquals, Operator withEquals)
         {
             index++;
 

@@ -1,12 +1,11 @@
 ﻿using Krypton.Analysis.Ast.Expressions;
-using Krypton.Analysis.Ast.Expressions.BinaryOperations;
 using Krypton.Analysis.Ast.Expressions.Literals;
-using Krypton.Analysis.Ast.Expressions.UnaryOperations;
 using Krypton.Analysis.Errors;
 using Krypton.Analysis.Grammatical;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
+using Krypton.Framework;
 using NUnit.Framework;
 
 namespace UnitTests
@@ -22,13 +21,13 @@ namespace UnitTests
             LexemeCollection lexemes = new Lexer("3").LexAll();
 
             Assert.AreEqual(2, lexemes.Count);
-            Assert.IsAssignableFrom<IntegerLiteralLexeme>(lexemes[0]);
-            Assert.IsAssignableFrom<EndOfFileLexeme>(lexemes[1]);
+            Assert.IsInstanceOf<IntegerLiteralLexeme>(lexemes[0]);
+            Assert.IsInstanceOf<EndOfFileLexeme>(lexemes[1]);
 
             int index = 0;
             ExpressionNode? root = new ExpressionParser(lexemes).ParseNextExpression(ref index);
             Assert.IsNotNull(root);
-            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(root);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(root);
             Assert.AreEqual(3, ((IntegerLiteralExpressionNode)root!).Value);
         }
 
@@ -39,14 +38,14 @@ namespace UnitTests
 
             Assert.AreEqual(4, lexemes.Count);
             Assert.IsTrue(lexemes[0] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisOpening });
-            Assert.IsAssignableFrom<IntegerLiteralLexeme>(lexemes[1]);
+            Assert.IsInstanceOf<IntegerLiteralLexeme>(lexemes[1]);
             Assert.IsTrue(lexemes[2] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing });
-            Assert.IsAssignableFrom<EndOfFileLexeme>(lexemes[3]);
+            Assert.IsInstanceOf<EndOfFileLexeme>(lexemes[3]);
 
             int index = 0;
             ExpressionNode? root = new ExpressionParser(lexemes).ParseNextExpression(ref index);
             Assert.IsNotNull(root);
-            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(root);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(root);
             Assert.AreEqual(4, ((IntegerLiteralExpressionNode)root!).Value);
         }
 
@@ -68,7 +67,7 @@ namespace UnitTests
             int index = 0;
             ExpressionNode? root = new ExpressionParser(lexemes).ParseNextExpression(ref index);
             Assert.IsNotNull(root);
-            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(root);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(root);
             Assert.AreEqual(6, ((IntegerLiteralExpressionNode)root!).Value);
         }
 
@@ -77,20 +76,21 @@ namespace UnitTests
         {
             BinaryOperationChainExpressionNode chain = new(1); // Arbitrary line number
             chain.AddOperand(new IntegerLiteralExpressionNode(4, 1));
-            chain.AddOperator(new CharacterOperatorLexeme(CharacterOperator.Plus, 1));
+            chain.AddOperator(new CharacterOperatorLexeme(Operator.Plus, 1));
             chain.AddOperand(new IntegerLiteralExpressionNode(4, 1));
-            chain.AddOperator(new CharacterOperatorLexeme(CharacterOperator.Asterisk, 1));
+            chain.AddOperator(new CharacterOperatorLexeme(Operator.Asterisk, 1));
             chain.AddOperand(new IntegerLiteralExpressionNode(4, 1));
             // 4 + 4 * 4 = 20
 
-            ExpressionNode node =  chain.Resolve();
+            ExpressionNode node = chain.Resolve();
 
-            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(node);
+            Assert.IsInstanceOf<BinaryOperationExpressionNode>(node);
 
             BinaryOperationExpressionNode boen = (node as BinaryOperationExpressionNode)!;
 
-            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(boen.Left);
-            Assert.IsAssignableFrom<MultiplicationBinaryOperationExpressionNode>(boen.Right);
+            Assert.AreEqual(Operator.Plus, boen.Operator);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(boen.Left);
+            Assert.IsTrue(boen.Right is BinaryOperationExpressionNode { Operator: Operator.Asterisk });
         }
 
         [Test]
@@ -101,12 +101,12 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Plus });
 
-            var aboen = (AdditionBinaryOperationExpressionNode)root!;
+            var aboen = (BinaryOperationExpressionNode)root!;
 
-            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(aboen.Left);
-            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(aboen.Right);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(aboen.Left);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(aboen.Right);
 
             long left = ((IntegerLiteralExpressionNode)aboen.Left).Value;
             long right = ((IntegerLiteralExpressionNode)aboen.Right).Value;
@@ -123,12 +123,12 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Plus });
 
-            var aboen = (AdditionBinaryOperationExpressionNode)root!;
+            var aboen = (BinaryOperationExpressionNode)root!;
 
-            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(aboen.Left);
-            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(aboen.Right);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(aboen.Left);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(aboen.Right);
 
             long left = ((IntegerLiteralExpressionNode)aboen.Left).Value;
             long right = ((IntegerLiteralExpressionNode)aboen.Right).Value;
@@ -145,12 +145,12 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Plus });
 
-            var aboen = (AdditionBinaryOperationExpressionNode)root!;
+            var aboen = (BinaryOperationExpressionNode)root!;
 
-            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(aboen.Left);
-            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(aboen.Right);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(aboen.Left);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(aboen.Right);
 
             long left = ((IntegerLiteralExpressionNode)aboen.Left).Value;
             long right = ((IntegerLiteralExpressionNode)aboen.Right).Value;
@@ -167,12 +167,12 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Plus });
 
-            var aboen = (AdditionBinaryOperationExpressionNode)root!;
+            var aboen = (BinaryOperationExpressionNode)root!;
 
-            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(aboen.Left);
-            Assert.IsAssignableFrom<MultiplicationBinaryOperationExpressionNode>(aboen.Right);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(aboen.Left);
+            Assert.IsTrue(aboen.Right is BinaryOperationExpressionNode { Operator: Operator.Asterisk });
 
             long left = ((IntegerLiteralExpressionNode)aboen.Left).Value;
             Assert.AreEqual(3, left);
@@ -186,12 +186,12 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Plus });
 
-            var aboen = (AdditionBinaryOperationExpressionNode)root!;
+            var aboen = (BinaryOperationExpressionNode)root!;
 
-            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(aboen.Left);
-            Assert.IsAssignableFrom<MultiplicationBinaryOperationExpressionNode>(aboen.Right);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(aboen.Left);
+            Assert.IsTrue(aboen.Right is BinaryOperationExpressionNode { Operator: Operator.Asterisk });
 
             long left = ((IntegerLiteralExpressionNode)aboen.Left).Value;
             Assert.AreEqual(3, left);
@@ -205,17 +205,17 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<MultiplicationBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Asterisk });
 
-            var mboen = (MultiplicationBinaryOperationExpressionNode)root!;
+            var mboen = (BinaryOperationExpressionNode)root!;
 
-            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(mboen.Left);
-            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(mboen.Right);
+            Assert.IsTrue(mboen.Left is BinaryOperationExpressionNode { Operator: Operator.Plus });
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(mboen.Right);
 
             long right = ((IntegerLiteralExpressionNode)mboen.Right).Value;
             Assert.AreEqual(5, right);
 
-            var aboen = (AdditionBinaryOperationExpressionNode)mboen.Left;
+            var aboen = (BinaryOperationExpressionNode)mboen.Left;
 
             long left = ((IntegerLiteralExpressionNode)aboen.Left).Value;
             right = ((IntegerLiteralExpressionNode)aboen.Right).Value;
@@ -232,12 +232,12 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<RationalDivisionBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.ForeSlash });
 
-            var mboen = (RationalDivisionBinaryOperationExpressionNode)root!;
+            var mboen = (BinaryOperationExpressionNode)root!;
 
-            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(mboen.Left);
-            Assert.IsAssignableFrom<SubtractionBinaryOperationExpressionNode>(mboen.Right);
+            Assert.IsTrue(mboen.Left is BinaryOperationExpressionNode { Operator: Operator.Plus });
+            Assert.IsTrue(mboen.Right is BinaryOperationExpressionNode { Operator: Operator.Minus });
         }
 
         [Test]
@@ -248,12 +248,12 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<IntegerDivisionBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.DivKeyword });
 
             var mboen = (BinaryOperationExpressionNode)root!;
 
-            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(mboen.Left);
-            Assert.IsAssignableFrom<SubtractionBinaryOperationExpressionNode>(mboen.Right);
+            Assert.IsTrue(mboen.Left is BinaryOperationExpressionNode { Operator: Operator.Plus });
+            Assert.IsTrue(mboen.Right is BinaryOperationExpressionNode { Operator: Operator.Minus });
         }
 
         [Test]
@@ -264,20 +264,20 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<BitwiseAndBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Ampersand });
         }
 
         [Test]
         public void RangeTest()
         {
             int index = 3;
-            
+
             //                                       0   1 2 3 4 5 6 7 8
             ExpressionParser parser = new(new Lexer("Var x = 5 | 8 + 9;").LexAll());
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<BitwiseOrBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Pipe });
 
             Assert.AreEqual(index, 8);
         }
@@ -290,12 +290,12 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<LogicalOrBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.OrKeyword });
 
             BinaryOperationExpressionNode orOperation = (BinaryOperationExpressionNode)root!;
 
-            Assert.IsAssignableFrom<BooleanLiteralExpressionNode>(orOperation.Right);
-            Assert.IsAssignableFrom<LogicalAndBinaryOperationExpressionNode>(orOperation.Left);
+            Assert.IsInstanceOf<BooleanLiteralExpressionNode>(orOperation.Right);
+            Assert.IsTrue(orOperation.Left is BinaryOperationExpressionNode { Operator: Operator.AndKeyword });
         }
 
         [Test]
@@ -309,7 +309,7 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<StringLiteralExpressionNode>(root);
+            Assert.IsInstanceOf<StringLiteralExpressionNode>(root);
         }
 
         [Test]
@@ -321,11 +321,11 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<MultiplicationBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Asterisk });
 
             BinaryOperationExpressionNode op = (BinaryOperationExpressionNode)root!;
 
-            Assert.IsAssignableFrom<IdentifierExpressionNode>(op.Left);
+            Assert.IsInstanceOf<IdentifierExpressionNode>(op.Left);
 
             IdentifierExpressionNode id = (IdentifierExpressionNode)op.Left;
 
@@ -341,10 +341,10 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<BitwiseAndBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Ampersand });
 
             BinaryOperationExpressionNode op = (BinaryOperationExpressionNode)root!;
-            Assert.IsAssignableFrom<MultiplicationBinaryOperationExpressionNode>(op.Left);
+            Assert.IsTrue(op.Left is BinaryOperationExpressionNode { Operator: Operator.Asterisk });
 
             BinaryOperationExpressionNode op2 = (BinaryOperationExpressionNode)op.Left;
             Assert.DoesNotThrow(() =>
@@ -352,7 +352,7 @@ namespace UnitTests
                 Assert.AreEqual("x", ((IdentifierExpressionNode)op2.Left).IdentifierNode.Identifier);
             });
 
-            Assert.IsAssignableFrom<SubtractionBinaryOperationExpressionNode>(op.Right);
+            Assert.IsTrue(op.Right is BinaryOperationExpressionNode { Operator: Operator.Minus });
         }
 
         [Test]
@@ -363,7 +363,7 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<IdentifierExpressionNode>(root);
+            Assert.IsInstanceOf<IdentifierExpressionNode>(root);
         }
 
         [Test]
@@ -404,11 +404,11 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<FunctionCallExpressionNode>(root);
+            Assert.IsInstanceOf<FunctionCallExpressionNode>(root);
 
             FunctionCallExpressionNode call = (FunctionCallExpressionNode)root!;
 
-            Assert.IsAssignableFrom<IdentifierExpressionNode>(call.FunctionExpression);
+            Assert.IsInstanceOf<IdentifierExpressionNode>(call.FunctionExpression);
             Assert.IsNull(call.Arguments);
         }
 
@@ -420,14 +420,14 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<FunctionCallExpressionNode>(root);
+            Assert.IsInstanceOf<FunctionCallExpressionNode>(root);
 
             FunctionCallExpressionNode call = (FunctionCallExpressionNode)root!;
 
-            Assert.IsAssignableFrom<IdentifierExpressionNode>(call.FunctionExpression);
+            Assert.IsInstanceOf<IdentifierExpressionNode>(call.FunctionExpression);
             Assert.NotNull(call.Arguments);
             Assert.AreEqual(1, call.Arguments!.Count);
-            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(call.Arguments[0]);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(call.Arguments[0]);
         }
 
         [Test]
@@ -438,15 +438,15 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<FunctionCallExpressionNode>(root);
+            Assert.IsInstanceOf<FunctionCallExpressionNode>(root);
 
             FunctionCallExpressionNode call = (FunctionCallExpressionNode)root!;
 
-            Assert.IsAssignableFrom<IdentifierExpressionNode>(call.FunctionExpression);
+            Assert.IsInstanceOf<IdentifierExpressionNode>(call.FunctionExpression);
             Assert.NotNull(call.Arguments);
             Assert.AreEqual(2, call.Arguments!.Count);
-            Assert.IsAssignableFrom<IntegerLiteralExpressionNode>(call.Arguments[0]);
-            Assert.IsAssignableFrom<StringLiteralExpressionNode>(call.Arguments[1]);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(call.Arguments[0]);
+            Assert.IsInstanceOf<StringLiteralExpressionNode>(call.Arguments[1]);
         }
 
         [Test]
@@ -477,14 +477,14 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<FunctionCallExpressionNode>(root);
+            Assert.IsInstanceOf<FunctionCallExpressionNode>(root);
 
             FunctionCallExpressionNode call = (FunctionCallExpressionNode)root!;
 
-            Assert.IsAssignableFrom<IdentifierExpressionNode>(call.FunctionExpression);
+            Assert.IsInstanceOf<IdentifierExpressionNode>(call.FunctionExpression);
             Assert.NotNull(call.Arguments);
             Assert.AreEqual(1, call.Arguments!.Count);
-            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(call.Arguments[0]);
+            Assert.IsTrue(call.Arguments[0] is BinaryOperationExpressionNode { Operator: Operator.Plus });
         }
 
 
@@ -496,11 +496,11 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<AdditionBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Plus });
 
             BinaryOperationExpressionNode op = (BinaryOperationExpressionNode)root!;
 
-            Assert.IsAssignableFrom<FunctionCallExpressionNode>(op.Left);
+            Assert.IsInstanceOf<FunctionCallExpressionNode>(op.Left);
         }
 
         [Test]
@@ -511,11 +511,11 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsAssignableFrom<FunctionCallExpressionNode>(root);
+            Assert.IsInstanceOf<FunctionCallExpressionNode>(root);
 
             FunctionCallExpressionNode call = (FunctionCallExpressionNode)root!;
 
-            Assert.IsAssignableFrom<FunctionCallExpressionNode>(call.FunctionExpression);
+            Assert.IsInstanceOf<FunctionCallExpressionNode>(call.FunctionExpression);
         }
 
         [Test]
@@ -526,7 +526,7 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsInstanceOf<LogicalAndBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.AndKeyword });
         }
 
         [Test]
@@ -537,9 +537,9 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsInstanceOf<NegationUnaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is UnaryOperationExpressionNode { Operator: Operator.Minus });
 
-            var neg = (NegationUnaryOperationExpressionNode)root!;
+            var neg = (UnaryOperationExpressionNode)root!;
             Assert.IsInstanceOf<IntegerLiteralExpressionNode>(neg.Operand);
 
             var inl = (IntegerLiteralExpressionNode)neg.Operand;
@@ -554,10 +554,10 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsInstanceOf<NegationUnaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is UnaryOperationExpressionNode { Operator: Operator.Minus });
 
-            var neg = (NegationUnaryOperationExpressionNode)root!;
-            Assert.IsInstanceOf<AdditionBinaryOperationExpressionNode>(neg.Operand);
+            var neg = (UnaryOperationExpressionNode)root!;
+            Assert.IsTrue(neg.Operand is BinaryOperationExpressionNode { Operator: Operator.Plus });
         }
 
         [Test]
@@ -568,10 +568,10 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsInstanceOf<AdditionBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Plus });
 
-            var add = (AdditionBinaryOperationExpressionNode)root!;
-            Assert.IsInstanceOf<NegationUnaryOperationExpressionNode>(add.Left);
+            var add = (BinaryOperationExpressionNode)root!;
+            Assert.IsTrue(add.Left is UnaryOperationExpressionNode { Operator: Operator.Minus });
         }
 
         [Test]
@@ -582,9 +582,9 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsInstanceOf<NegationUnaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is UnaryOperationExpressionNode { Operator: Operator.Minus });
 
-            var neg = (NegationUnaryOperationExpressionNode)root!;
+            var neg = (UnaryOperationExpressionNode)root!;
             Assert.IsInstanceOf<FunctionCallExpressionNode>(neg.Operand);
         }
 
@@ -596,12 +596,12 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsInstanceOf<BitwiseRightShiftBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.SingleRightArrow });
 
-            var shift = (BitwiseRightShiftBinaryOperationExpressionNode)root!;
+            var shift = (BinaryOperationExpressionNode)root!;
 
             Assert.IsInstanceOf<IdentifierExpressionNode>(shift.Left);
-            Assert.IsInstanceOf<AdditionBinaryOperationExpressionNode>(shift.Right);
+            Assert.IsTrue(shift.Right is BinaryOperationExpressionNode { Operator: Operator.Plus });
         }
 
         [Test]
@@ -612,12 +612,12 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsInstanceOf<ExponentiationBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.DoubleAsterisk });
 
-            var exp = (ExponentiationBinaryOperationExpressionNode)root!;
+            var exp = (BinaryOperationExpressionNode)root!;
 
             Assert.IsInstanceOf<IdentifierExpressionNode>(exp.Left);
-            Assert.IsInstanceOf<ExponentiationBinaryOperationExpressionNode>(exp.Right);
+            Assert.IsTrue(exp.Right is BinaryOperationExpressionNode { Operator: Operator.DoubleAsterisk });
         }
 
         [Test]
@@ -628,11 +628,11 @@ namespace UnitTests
             ExpressionNode? root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
-            Assert.IsInstanceOf<MultiplicationBinaryOperationExpressionNode>(root);
+            Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Asterisk });
 
-            var exp = (MultiplicationBinaryOperationExpressionNode)root!;
+            var exp = (BinaryOperationExpressionNode)root!;
 
-            Assert.IsInstanceOf<MultiplicationBinaryOperationExpressionNode>(exp.Left);
+            Assert.IsTrue(exp.Left is BinaryOperationExpressionNode { Operator: Operator.Asterisk });
             Assert.IsInstanceOf<IdentifierExpressionNode>(exp.Right);
         }
     }
