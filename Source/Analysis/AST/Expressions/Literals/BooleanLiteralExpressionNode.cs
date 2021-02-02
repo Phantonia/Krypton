@@ -1,8 +1,10 @@
-﻿namespace Krypton.Analysis.Ast.Expressions.Literals
+﻿using Krypton.Framework;
+
+namespace Krypton.Analysis.Ast.Expressions.Literals
 {
     public sealed class BooleanLiteralExpressionNode : LiteralExpressionNode
     {
-        public BooleanLiteralExpressionNode(bool value, int lineNumber) : base(lineNumber)
+        public BooleanLiteralExpressionNode(bool value, int lineNumber) : base(FrameworkType.Bool, lineNumber)
         {
             Value = value;
         }

@@ -3,6 +3,7 @@ using Krypton.Analysis.Ast.Identifiers;
 using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Ast.TypeSpecs;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Krypton.Analysis.Ast.Statements
 {
@@ -26,13 +27,23 @@ namespace Krypton.Analysis.Ast.Statements
             }
         }
 
+        public ExpressionNode? AssignedValue { get; }
+
+        public LocalVariableSymbolNode VariableNode
+        {
+            get
+            {
+                LocalVariableSymbolNode? localVariable = (VariableIdentifierNode as BoundIdentifierNode)?.Symbol as LocalVariableSymbolNode;
+                Debug.Assert(localVariable != null);
+                return localVariable;
+            }
+        }
+
         public string VariableIdentifier => VariableIdentifierNode.Identifier;
 
         public IdentifierNode VariableIdentifierNode { get; private set; }
 
         public TypeSpecNode? Type { get; }
-
-        public ExpressionNode? AssignedValue { get; }
 
         public LocalVariableSymbolNode CreateVariable(TypeSymbolNode? typeSymbol)
         {

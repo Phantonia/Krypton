@@ -18,6 +18,16 @@ namespace Krypton.Analysis.Ast.Statements
 
         public ExpressionNode AssignedValue { get; }
 
+        public VariableSymbolNode VariableNode
+        {
+            get
+            {
+                VariableSymbolNode? variable = (VariableIdentifierNode as BoundIdentifierNode)?.Symbol as VariableSymbolNode;
+                Debug.Assert(variable != null);
+                return variable;
+            }
+        }
+
         public string VariableIdentifier => VariableIdentifierNode.Identifier;
 
         public IdentifierNode VariableIdentifierNode { get; private set; }

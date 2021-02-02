@@ -5,7 +5,7 @@ namespace Krypton.Analysis.Ast.Symbols
 {
     public abstract class FunctionSymbolNode : SymbolNode
     {
-        protected FunctionSymbolNode(string name, IEnumerable<ParameterNode> parameters, TypeSymbolNode? returnType, int lineNumber) : base(name, lineNumber)
+        private protected FunctionSymbolNode(string name, IEnumerable<ParameterNode> parameters, TypeSymbolNode? returnType, int lineNumber) : base(name, lineNumber)
         {
             Parameters = parameters.ToImmutableList();
             ReturnType = returnType;

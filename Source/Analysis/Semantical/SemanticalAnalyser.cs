@@ -24,6 +24,15 @@ namespace Krypton.Analysis.Semantical
                 //return false;
             }
 
+            TypeChecker typeChecker = new(SyntaxTree, binder.TypeManager);
+
+            success = typeChecker.PerformTypeChecking();
+
+            if (!success)
+            {
+                return false;
+            }
+
             return true;
         }
     }

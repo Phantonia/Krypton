@@ -8,20 +8,20 @@ namespace Krypton.Analysis.Ast.Statements
     {
         public FunctionCallStatementNode(FunctionCallExpressionNode expression, int lineNumber) : base(lineNumber)
         {
-            this.expression = expression;
-            this.expression.Parent = this;
+            this.UnderlyingFunctionCallExpressionNode = expression;
+            this.UnderlyingFunctionCallExpressionNode.Parent = this;
         }
 
-        private readonly FunctionCallExpressionNode expression;
+        public ReadOnlyCollection<ExpressionNode>? Arguments => UnderlyingFunctionCallExpressionNode.Arguments;
 
-        public ReadOnlyCollection<ExpressionNode>? Arguments => expression.Arguments;
+        public ExpressionNode FunctionExpression => UnderlyingFunctionCallExpressionNode.FunctionExpression;
 
-        public ExpressionNode FunctionExpression => expression.FunctionExpression;
+        public FunctionCallExpressionNode UnderlyingFunctionCallExpressionNode { get; }
 
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);
-            expression.PopulateBranches(list);
+            UnderlyingFunctionCallExpressionNode.PopulateBranches(list);
         }
     }
 }

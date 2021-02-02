@@ -19,7 +19,7 @@ namespace Krypton.Analysis.Framework
 
             PopulateWithTypes(typeIdentifierMap, frameworkVersion);
             PopulateWithFunctions(globalIdentifierMap, typeIdentifierMap, frameworkVersion);
-            PopulateWithConstants(globalIdentifierMap, frameworkVersion);
+            PopulateWithConstants(globalIdentifierMap, frameworkVersion, typeIdentifierMap);
         }
 
         private static BinaryOperationSymbolNode CreateBinaryOperationSymbolNode(BinaryOperationSymbol binaryOperationSymbol,
@@ -37,22 +37,22 @@ namespace Krypton.Analysis.Framework
                                                  lineNumber: 0);
         }
 
-        private static ConstantSymbolNode CreateConstantSymbolNode(ConstantSymbol constantSymbol)
+        private static ConstantSymbolNode CreateConstantSymbolNode(ConstantSymbol constantSymbol, TypeIdentifierMap typeIdentifierMap)
         {
             switch (constantSymbol)
             {
                 case ConstantSymbol<long> intConst:
-                    return new ConstantSymbolNode<long>(intConst.Name, intConst.Value, lineNumber: 0);
+                    return new ConstantSymbolNode<long>(intConst.Name, intConst.Value, typeIdentifierMap[FrameworkType.Int], lineNumber: 0);
                 case ConstantSymbol<Rational> ratConst:
-                    return new ConstantSymbolNode<Rational>(ratConst.Name, ratConst.Value, lineNumber: 0);
+                    return new ConstantSymbolNode<Rational>(ratConst.Name, ratConst.Value, typeIdentifierMap[FrameworkType.Rational], lineNumber: 0);
                 case ConstantSymbol<Complex> cmpConst:
-                    return new ConstantSymbolNode<Complex>(cmpConst.Name, cmpConst.Value, lineNumber: 0);
+                    return new ConstantSymbolNode<Complex>(cmpConst.Name, cmpConst.Value, typeIdentifierMap[FrameworkType.Complex], lineNumber: 0);
                 case ConstantSymbol<string> strConst:
-                    return new ConstantSymbolNode<string>(strConst.Name, strConst.Value, lineNumber: 0);
+                    return new ConstantSymbolNode<string>(strConst.Name, strConst.Value, typeIdentifierMap[FrameworkType.String], lineNumber: 0);
                 case ConstantSymbol<char> chrConst:
-                    return new ConstantSymbolNode<char>(chrConst.Name, chrConst.Value, lineNumber: 0);
+                    return new ConstantSymbolNode<char>(chrConst.Name, chrConst.Value, typeIdentifierMap[FrameworkType.Char], lineNumber: 0);
                 case ConstantSymbol<bool> blnConst:
-                    return new ConstantSymbolNode<bool>(blnConst.Name, blnConst.Value, lineNumber: 0);
+                    return new ConstantSymbolNode<bool>(blnConst.Name, blnConst.Value, typeIdentifierMap[FrameworkType.Bool], lineNumber: 0);
                 default:
                     Debug.Fail(null);
                     return null;
@@ -113,11 +113,11 @@ namespace Krypton.Analysis.Framework
             return typeIdentifierMap[name];
         }
 
-        private static void PopulateWithConstants(HoistedIdentifierMap globalIdentifierMap, FrameworkVersion frameworkVersion)
+        private static void PopulateWithConstants(HoistedIdentifierMap globalIdentifierMap, FrameworkVersion frameworkVersion, TypeIdentifierMap typeIdentifierMap)
         {
             foreach (ConstantSymbol constantSymbol in frameworkVersion.Constants)
             {
-                globalIdentifierMap.AddSymbol(constantSymbol.Name, CreateConstantSymbolNode(constantSymbol));
+                globalIdentifierMap.AddSymbol(constantSymbol.Name, CreateConstantSymbolNode(constantSymbol, typeIdentifierMap));
             }
         }
 
@@ -138,7 +138,7 @@ namespace Krypton.Analysis.Framework
 
             foreach (TypeSymbol typeSymbol in allTypeSymbols)
             {
-                typeIdentifierMap.AddSymbol(typeSymbol.Name, CreateTypeSymbolNode(typeSymbol));
+                typeIdentifierMap.AddSymbol(typeSymbol.Name, typeSymbol.FrameworkType, CreateTypeSymbolNode(typeSymbol));
             }
 
             // This loop depends on the TypeIdentifierMap to be fully filled

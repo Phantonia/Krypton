@@ -14,17 +14,18 @@ namespace Krypton.Analysis.Semantical
     {
         public Binder(SyntaxTree syntaxTree)
         {
-            this.syntaxTree = syntaxTree;
+            this.SyntaxTree = syntaxTree;
         }
 
-        private readonly SyntaxTree syntaxTree;
-        private TypeManager? typeManager;
+        public SyntaxTree SyntaxTree { get; }
 
-        [MemberNotNull(nameof(typeManager))]
+        public TypeManager? TypeManager { get; set; }
+
+        [MemberNotNull(nameof(TypeManager))]
         public bool PerformBinding()
         {
             (HoistedIdentifierMap globalIdentifierMap, TypeIdentifierMap typeIdentifierMap) = GatherGlobalSymbols();
-            typeManager = new TypeManager(syntaxTree, typeIdentifierMap);
+            TypeManager = new TypeManager(SyntaxTree, typeIdentifierMap);
 
             bool success = BindInTopLevelStatements(globalIdentifierMap);
 
@@ -133,9 +134,9 @@ namespace Krypton.Analysis.Semantical
                             }
                         }
 
-                        Debug.Assert(typeManager != null);
+                        Debug.Assert(TypeManager != null);
 
-                        if (!typeManager.TryGetTypeSymbol(variableDeclaration.Type, out TypeSymbolNode? typeSymbol))
+                        if (!TypeManager.TryGetTypeSymbol(variableDeclaration.Type, out TypeSymbolNode? typeSymbol))
                         {
                             return false;
                         }
@@ -219,7 +220,7 @@ namespace Krypton.Analysis.Semantical
         private bool BindInTopLevelStatements(HoistedIdentifierMap globalIdentifierMap)
         {
             VariableIdentifierMap variableIdentifierMap = new();
-            return BindInBlock(syntaxTree.Root.TopLevelStatements, variableIdentifierMap, globalIdentifierMap);
+            return BindInBlock(SyntaxTree.Root.TopLevelStatements, variableIdentifierMap, globalIdentifierMap);
         }
 
         private (HoistedIdentifierMap, TypeIdentifierMap) GatherGlobalSymbols()

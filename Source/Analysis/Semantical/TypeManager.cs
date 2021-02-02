@@ -2,7 +2,9 @@
 using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Ast.TypeSpecs;
 using Krypton.Analysis.Semantical.IdentifierMaps;
+using Krypton.Framework;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Krypton.Analysis.Semantical
 {
@@ -16,6 +18,8 @@ namespace Krypton.Analysis.Semantical
 
         private readonly SyntaxTree syntaxTree;
         private readonly TypeIdentifierMap typeIdentifierMap;
+
+        public TypeSymbolNode this[FrameworkType frameworkType] => typeIdentifierMap[frameworkType];
 
         public bool TryGetTypeSymbol(TypeSpecNode? typeSpec, out TypeSymbolNode? typeSymbol)
         {
@@ -37,10 +41,15 @@ namespace Krypton.Analysis.Semantical
             }
             else
             {
-                Debug.Fail(null);
+                Debug.Fail(message: null);
                 typeSymbol = null;
                 return false;
             }
+        }
+
+        public bool TryGetTypeSymbol(FrameworkType frameworkType, [NotNullWhen(true)] TypeSymbolNode? typeSymbol)
+        {
+            return typeIdentifierMap.TryGet(frameworkType, out typeSymbol);
         }
     }
 }

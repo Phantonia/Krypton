@@ -1,10 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using Krypton.Framework;
+using System.Collections.Generic;
 
 namespace Krypton.Analysis.Ast.Expressions
 {
     public abstract class LiteralExpressionNode : ExpressionNode
     {
-        protected private LiteralExpressionNode(int lineNumber) : base(lineNumber) { }
+        private protected LiteralExpressionNode(FrameworkType associatedType, int lineNumber) : base(lineNumber)
+        {
+            AssociatedType = associatedType;
+        }
+
+        public FrameworkType AssociatedType { get; }
 
         public override void PopulateBranches(List<Node> list)
         {
