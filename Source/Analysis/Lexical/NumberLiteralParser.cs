@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Krypton.Framework.Literals;
+using System;
 
 namespace Krypton.Analysis.Lexical
 {
@@ -167,9 +168,9 @@ namespace Krypton.Analysis.Lexical
             }
         }
 
-        public static RationalLiteralValue ParseRational(string input)
+        public static Rational ParseRational(string input)
         {
-            if (TryParseRational(input, out RationalLiteralValue output))
+            if (TryParseRational(input, out Rational output))
             {
                 return output;
             }
@@ -179,7 +180,7 @@ namespace Krypton.Analysis.Lexical
             }
         }
 
-        public static bool TryParseRational(string input, out RationalLiteralValue output)
+        public static bool TryParseRational(string input, out Rational output)
         {
             checked
             {
@@ -223,7 +224,7 @@ namespace Krypton.Analysis.Lexical
                     return false;
                 }
 
-                output = new RationalLiteralValue(numerator, power.Value);
+                output = new Rational(numerator, (long)Math.Pow(10, power.Value));
                 return true;
             }
         }

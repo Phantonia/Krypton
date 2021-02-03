@@ -4,10 +4,12 @@ namespace Krypton.Analysis.Ast.Expressions.Literals
 {
     public sealed class IntegerLiteralExpressionNode : LiteralExpressionNode
     {
-        public IntegerLiteralExpressionNode(long value, int lineNumber) : base(FrameworkType.Int, lineNumber)
+        internal IntegerLiteralExpressionNode(long value, int lineNumber) : base(FrameworkType.Int, lineNumber)
         {
             Value = value;
         }
+
+        public override object ObjectValue => Value;
 
         public long Value { get; }
     }

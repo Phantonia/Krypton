@@ -1,50 +1,42 @@
 ﻿using Krypton.Analysis.Ast.Statements;
 using Krypton.Utilities;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Krypton.Analysis.Ast
 {
-    /* A StatementCollectionNode is a collection of statements.
-     * It is used by the ProgramNode to represents top level
-     * statements, by control statements like Block or While
-     * to represents its nested statements, etc.
-     * Branches:
-     * - An ordered list of StatementNodes. 
-     * LineNumber:
-     * - The line number of the first statement
-     * - If there are no statements: 0
-     */
+    [DebuggerDisplay("{GetType().Name}; Count = {Count}")]
     public sealed class StatementCollectionNode : Node, IIndexedEnumerable<StatementNode>, IEnumerable<StatementNode>
     {
-        public StatementCollectionNode(IEnumerable<StatementNode> statements) : base(statements.FirstOrDefault()?.LineNumber ?? 0)
+        internal StatementCollectionNode(IEnumerable<StatementNode> statementNodes) : base(statementNodes.FirstOrDefault()?.LineNumber ?? 0)
         {
-            this.statements = statements as IList<StatementNode> ?? statements.ToList();
+            this.statementNodes = statementNodes as IList<StatementNode> ?? statementNodes.ToList();
 
-            for (int i = 0; i < this.statements.Count; i++)
+            for (int i = 0; i < this.statementNodes.Count; i++)
             {
-                this.statements[i].Parent = this;
-                this.statements[i].Previous = this.statements.TryGet(i - 1);
-                this.statements[i].Next = this.statements.TryGet(i + 1);
+                this.statementNodes[i].ParentNode = this;
+                this.statementNodes[i].PreviousStatementNode = this.statementNodes.TryGet(i - 1);
+                this.statementNodes[i].NextStatementNode = this.statementNodes.TryGet(i + 1);
             }
         }
 
-        private readonly IList<StatementNode> statements;
+        private readonly IList<StatementNode> statementNodes;
 
         public StatementNode this[int index]
         {
-            get => statements[index];
+            get => statementNodes[index];
         }
 
-        public int Count => statements.Count;
+        public int Count => statementNodes.Count;
 
-        public IEnumerator<StatementNode> GetEnumerator() => statements.GetEnumerator();
+        public IEnumerator<StatementNode> GetEnumerator() => statementNodes.GetEnumerator();
 
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);
 
-            foreach (StatementNode statement in statements)
+            foreach (StatementNode statement in statementNodes)
             {
                 statement.PopulateBranches(list);
             }

@@ -1,18 +1,16 @@
-﻿using Krypton.Analysis.Ast;
-
-namespace Krypton.Analysis.Semantical
+﻿namespace Krypton.Analysis.Semantical
 {
     public sealed partial class TypeChecker
     {
-        public TypeChecker(SyntaxTree syntaxTree, TypeManager typeManager)
+        public TypeChecker(Compilation compilation, TypeManager typeManager)
         {
-            SyntaxTree = syntaxTree;
+            Compilation = compilation;
             this.typeManager = typeManager;
         }
 
         private readonly TypeManager typeManager;
 
-        public SyntaxTree SyntaxTree { get; }
+        public Compilation Compilation { get; }
 
         public bool PerformTypeChecking()
         {
@@ -28,7 +26,7 @@ namespace Krypton.Analysis.Semantical
 
         private bool CheckTopLevelStatements()
         {
-            return CheckStatementCollection(SyntaxTree.Root.TopLevelStatements);
+            return CheckStatementCollection(Compilation.Program.TopLevelStatementNodes);
         }
     }
 }

@@ -3,7 +3,7 @@ using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Expressions.Literals;
 using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Ast.TypeSpecs;
-using Krypton.Analysis.Grammatical;
+using Krypton.Analysis.Syntactical;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using Krypton.Framework;
@@ -141,8 +141,8 @@ namespace UnitTests
 
             FunctionCallStatementNode fcsn = (FunctionCallStatementNode)root!;
 
-            Assert.IsInstanceOf<IdentifierExpressionNode>(fcsn.FunctionExpression);
-            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(fcsn.Arguments?[0]);
+            Assert.IsInstanceOf<IdentifierExpressionNode>(fcsn.FunctionExpressionNode);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(fcsn.ArgumentNodes?[0]);
         }
 
         [Test]
@@ -160,7 +160,7 @@ namespace UnitTests
             Assert.IsInstanceOf<VariableAssignmentStatementNode>(node);
 
             var vasn = (VariableAssignmentStatementNode)node!;
-            Assert.IsInstanceOf<BooleanLiteralExpressionNode>(vasn.AssignedValue);
+            Assert.IsInstanceOf<BooleanLiteralExpressionNode>(vasn.AssignedExpressionNode);
             Assert.AreEqual("x", vasn.VariableIdentifier);
         }
 
@@ -209,9 +209,9 @@ namespace UnitTests
 
             var block = (BlockStatementNode)statement!;
 
-            Assert.AreEqual(2, block.Statements.Count);
-            Assert.IsInstanceOf<FunctionCallStatementNode>(block.Statements[0]);
-            Assert.IsInstanceOf<FunctionCallStatementNode>(block.Statements[1]);
+            Assert.AreEqual(2, block.StatementNodes.Count);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(block.StatementNodes[0]);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(block.StatementNodes[1]);
         }
 
         [Test]
@@ -229,8 +229,8 @@ namespace UnitTests
 
             var @while = (WhileStatementNode)statement!;
 
-            Assert.IsInstanceOf<BooleanLiteralExpressionNode>(@while.Condition);
-            Assert.AreEqual(1, @while.Statements.Count);
+            Assert.IsInstanceOf<BooleanLiteralExpressionNode>(@while.ConditionNode);
+            Assert.AreEqual(1, @while.StatementNodes.Count);
         }
 
         [Test]
@@ -257,14 +257,14 @@ namespace UnitTests
 
             var block = (BlockStatementNode)statement!;
 
-            Assert.AreEqual(3, block.Statements.Count);
-            Assert.IsInstanceOf<FunctionCallStatementNode>(block.Statements[0]);
-            Assert.IsInstanceOf<BlockStatementNode>(block.Statements[1]);
-            Assert.IsInstanceOf<VariableDeclarationStatementNode>(block.Statements[2]);
+            Assert.AreEqual(3, block.StatementNodes.Count);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(block.StatementNodes[0]);
+            Assert.IsInstanceOf<BlockStatementNode>(block.StatementNodes[1]);
+            Assert.IsInstanceOf<VariableDeclarationStatementNode>(block.StatementNodes[2]);
 
-            var nestedBlock = (BlockStatementNode)block.Statements[1];
+            var nestedBlock = (BlockStatementNode)block.StatementNodes[1];
 
-            Assert.AreEqual(1, nestedBlock.Statements.Count);
+            Assert.AreEqual(1, nestedBlock.StatementNodes.Count);
         }
 
         [Test]
@@ -288,9 +288,9 @@ namespace UnitTests
 
             var @while = (WhileStatementNode)statement!;
 
-            Assert.IsTrue(@while.Condition is BinaryOperationExpressionNode { Operator: Operator.Plus });
-            Assert.AreEqual(1, @while.Statements.Count);
-            Assert.IsInstanceOf<WhileStatementNode>(@while.Statements[0]);
+            Assert.IsTrue(@while.ConditionNode is BinaryOperationExpressionNode { Operator: Operator.Plus });
+            Assert.AreEqual(1, @while.StatementNodes.Count);
+            Assert.IsInstanceOf<WhileStatementNode>(@while.StatementNodes[0]);
         }
 
         [Test]
@@ -320,16 +320,16 @@ namespace UnitTests
 
             var block = (BlockStatementNode)statement!;
 
-            Assert.AreEqual(3, block.Statements.Count);
-            Assert.IsInstanceOf<BlockStatementNode>(block.Statements[0]);
+            Assert.AreEqual(3, block.StatementNodes.Count);
+            Assert.IsInstanceOf<BlockStatementNode>(block.StatementNodes[0]);
 
-            var block_block = (BlockStatementNode)block.Statements[0];
-            Assert.AreEqual(0, block_block.Statements.Count);
+            var block_block = (BlockStatementNode)block.StatementNodes[0];
+            Assert.AreEqual(0, block_block.StatementNodes.Count);
 
-            var block_while = (WhileStatementNode)block.Statements[1];
-            Assert.IsTrue(block_while.Condition is BinaryOperationExpressionNode { Operator: Operator.ForeSlash });
-            Assert.AreEqual(2, block_while.Statements.Count);
-            Assert.IsInstanceOf<FunctionCallStatementNode>(block_while.Statements[0]);
+            var block_while = (WhileStatementNode)block.StatementNodes[1];
+            Assert.IsTrue(block_while.ConditionNode is BinaryOperationExpressionNode { Operator: Operator.ForeSlash });
+            Assert.AreEqual(2, block_while.StatementNodes.Count);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(block_while.StatementNodes[0]);
         }
     }
 }

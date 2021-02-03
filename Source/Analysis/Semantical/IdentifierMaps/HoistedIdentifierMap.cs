@@ -8,18 +8,18 @@ namespace Krypton.Analysis.Semantical.IdentifierMaps
     {
         public HoistedIdentifierMap() { }
 
-        private readonly Dictionary<string, SymbolNode> symbols = new();
+        private readonly Dictionary<string, SymbolNode> symbolNodes = new();
 
-        public SymbolNode this[string identifier] => symbols[identifier];
+        public SymbolNode this[string identifier] => symbolNodes[identifier];
 
         public bool AddSymbol(string identifier, SymbolNode symbol)
         {
-            return symbols.TryAdd(identifier, symbol);
+            return symbolNodes.TryAdd(identifier, symbol);
         }
 
         public bool TryGet(string identifier, [NotNullWhen(true)] out SymbolNode? symbol)
         {
-            return symbols.TryGetValue(identifier, out symbol);
+            return symbolNodes.TryGetValue(identifier, out symbol);
         }
     }
 }

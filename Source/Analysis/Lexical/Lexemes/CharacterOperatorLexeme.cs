@@ -1,4 +1,4 @@
-﻿using Krypton.Analysis.Grammatical;
+﻿using Krypton.Analysis.Syntactical;
 using Krypton.Framework;
 using System;
 

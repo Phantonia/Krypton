@@ -1,47 +1,43 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using Krypton.Utilities;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Krypton.Analysis.Ast.Expressions
 {
     public sealed class FunctionCallExpressionNode : ExpressionNode
     {
-        public FunctionCallExpressionNode(ExpressionNode functionExpression, int lineNumber) : base(lineNumber)
+        internal FunctionCallExpressionNode(ExpressionNode functionExpression, int lineNumber) : base(lineNumber)
         {
-            FunctionExpression = functionExpression;
-            FunctionExpression.Parent = this;
+            FunctionExpressionNode = functionExpression;
+            FunctionExpressionNode.ParentNode = this;
         }
 
-        public FunctionCallExpressionNode(ExpressionNode functionExpression, IEnumerable<ExpressionNode>? arguments, int lineNumber) : base(lineNumber)
+        internal FunctionCallExpressionNode(ExpressionNode functionExpression, IEnumerable<ExpressionNode>? arguments, int lineNumber) : base(lineNumber)
         {
-            FunctionExpression = functionExpression;
-            Arguments = ((arguments as List<ExpressionNode>) ?? arguments?.ToList())?.AsReadOnly();
+            FunctionExpressionNode = functionExpression;
+            ArgumentNodes = ((arguments as IList<ExpressionNode>) ?? arguments?.ToList())?.MakeReadOnly() ?? new ReadOnlyList<ExpressionNode>();
 
             if (arguments != null)
             {
                 foreach (ExpressionNode argument in arguments)
                 {
-                    argument.Parent = this;
+                    argument.ParentNode = this;
                 }
             }
         }
 
-        // Null if the function is called without arguments
-        public ReadOnlyCollection<ExpressionNode>? Arguments { get; } = null;
+        public ReadOnlyList<ExpressionNode> ArgumentNodes { get; } = default;
 
-        public ExpressionNode FunctionExpression { get; }
+        public ExpressionNode FunctionExpressionNode { get; }
 
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);
-            FunctionExpression.PopulateBranches(list);
+            FunctionExpressionNode.PopulateBranches(list);
 
-            if (Arguments != null)
+            foreach (ExpressionNode argument in ArgumentNodes)
             {
-                foreach (ExpressionNode argument in Arguments)
-                {
-                    argument.PopulateBranches(list);
-                }
+                argument.PopulateBranches(list);
             }
         }
     }

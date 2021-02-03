@@ -9,11 +9,11 @@ namespace Krypton.Analysis.Semantical
 {
     partial class TypeChecker
     {
-        private bool CheckStatementCollection(StatementCollectionNode statements)
+        private bool CheckStatementCollection(StatementCollectionNode statementNodes)
         {
-            foreach (StatementNode statement in statements)
+            foreach (StatementNode statementNode in statementNodes)
             {
-                bool success = CheckStatement(statement);
+                bool success = CheckStatement(statementNode);
 
                 if (!success)
                 {
@@ -24,38 +24,38 @@ namespace Krypton.Analysis.Semantical
             return true;
         }
 
-        private bool CheckFunctionCallStatement(FunctionCallStatementNode statement)
+        private bool CheckFunctionCallStatement(FunctionCallStatementNode statementNode)
         {
-            (_, bool success) = CheckFunctionCallExpression(statement.UnderlyingFunctionCallExpressionNode, tolerateNoReturnType: true);
+            (_, bool success) = CheckFunctionCallExpression(statementNode.UnderlyingFunctionCallExpressionNode, tolerateNoReturnType: true);
             return success;
         }
 
-        private bool CheckStatement(StatementNode statement)
+        private bool CheckStatement(StatementNode statementNode)
         {
-            switch (statement)
+            switch (statementNode)
             {
-                case VariableAssignmentStatementNode varAssignment:
-                    return CheckVariableAssignmentStatement(varAssignment);
-                case VariableDeclarationStatementNode varDecl when varDecl.AssignedValue != null:
-                    return CheckVariableDeclarationStatement(varDecl);
+                case VariableAssignmentStatementNode variableAssignmentNode:
+                    return CheckVariableAssignmentStatement(variableAssignmentNode);
+                case VariableDeclarationStatementNode variableDeclaration when variableDeclaration.AssignedValue != null:
+                    return CheckVariableDeclarationStatement(variableDeclaration);
                 case VariableDeclarationStatementNode:
                     return true;
-                case FunctionCallStatementNode funcCall:
-                    return CheckFunctionCallStatement(funcCall);
-                case BlockStatementNode block:
-                    return CheckStatementCollection(block.Statements);
-                case WhileStatementNode whileStmt:
-                    return CheckWhileStatement(whileStmt);
+                case FunctionCallStatementNode functionCallNode:
+                    return CheckFunctionCallStatement(functionCallNode);
+                case BlockStatementNode blockNode:
+                    return CheckStatementCollection(blockNode.StatementNodes);
+                case WhileStatementNode whileNode:
+                    return CheckWhileStatement(whileNode);
                 default:
                     Debug.Fail(null);
                     return default;
             }
         }
 
-        private bool CheckWhileStatement(WhileStatementNode whileStmt)
+        private bool CheckWhileStatement(WhileStatementNode whileNode)
         {
             TypeSymbolNode boolType = typeManager[FrameworkType.Bool];
-            TypeSymbolNode? conditionType = CheckExpression(whileStmt.Condition);
+            TypeSymbolNode? conditionType = CheckExpression(whileNode.ConditionNode);
 
             if (conditionType == null)
             {
@@ -63,21 +63,21 @@ namespace Krypton.Analysis.Semantical
             }
 
             return TypeCompatibility.IsCompatibleWith(sourceType: conditionType, targetType: boolType)
-                && CheckStatementCollection(whileStmt.Statements);
+                && CheckStatementCollection(whileNode.StatementNodes);
         }
 
-        private bool CheckVariableAssignmentStatement(VariableAssignmentStatementNode varAssignment)
+        private bool CheckVariableAssignmentStatement(VariableAssignmentStatementNode variableAssignmentNode)
         {
-            TypeSymbolNode? assignedType = CheckExpression(varAssignment.AssignedValue);
+            TypeSymbolNode? assignedType = CheckExpression(variableAssignmentNode.AssignedExpressionNode);
 
             if (assignedType == null)
             {
                 return false;
             }
 
-            VariableSymbolNode localVariable = varAssignment.VariableNode;
+            VariableSymbolNode localVariable = variableAssignmentNode.VariableNode;
 
-            if (TypeCompatibility.IsCompatibleWith(assignedType, localVariable.Type))
+            if (TypeCompatibility.IsCompatibleWith(assignedType, localVariable.TypeNode))
             {
                 return true;
             }
@@ -87,22 +87,22 @@ namespace Krypton.Analysis.Semantical
             }
         }
 
-        private bool CheckVariableDeclarationStatement(VariableDeclarationStatementNode varDecl)
+        private bool CheckVariableDeclarationStatement(VariableDeclarationStatementNode variableDeclarationNode)
         {
-            Debug.Assert(varDecl.AssignedValue != null);
+            Debug.Assert(variableDeclarationNode.AssignedValue != null);
 
-            TypeSymbolNode? assignedType = CheckExpression(varDecl.AssignedValue);
+            TypeSymbolNode? assignedType = CheckExpression(variableDeclarationNode.AssignedValue);
 
             if (assignedType == null)
             {
                 return false;
             }
 
-            LocalVariableSymbolNode localVariable = varDecl.VariableNode;
+            LocalVariableSymbolNode localVariable = variableDeclarationNode.VariableNode;
 
-            if (TypeCompatibility.IsCompatibleWith(assignedType, localVariable.Type))
+            if (TypeCompatibility.IsCompatibleWith(assignedType, localVariable.TypeNode))
             {
-                if (localVariable.Type == null)
+                if (localVariable.TypeNode == null)
                 {
                     localVariable.SpecifyType(assignedType);
                 }
@@ -111,7 +111,7 @@ namespace Krypton.Analysis.Semantical
             }
             else
             {
-                throw new NotImplementedException("Error: wrong type");
+                return false;
             }
         }
     }

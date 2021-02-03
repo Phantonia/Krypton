@@ -1,4 +1,4 @@
-﻿using Krypton.Analysis.Grammatical;
+﻿using Krypton.Analysis.Syntactical;
 
 namespace Krypton.Analysis.Lexical.Lexemes
 {

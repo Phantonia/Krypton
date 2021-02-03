@@ -1,26 +1,30 @@
 ﻿using Krypton.Analysis.Ast;
-using Krypton.Analysis.Grammatical;
+using Krypton.Analysis.Syntactical;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Semantical;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("UnitTests")]
 namespace Krypton.Analysis
 {
     public static class Analyser
     {
-        public static SyntaxTree? Analyse(string code)
+        public static Compilation? Analyse(string code)
         {
             Lexer lexer = new(code);
             LexemeCollection lexemes = lexer.LexAll();
 
             ProgramParser parser = new(lexemes);
-            SyntaxTree? syntaxTree = parser.ParseWholeProgram();
+            ProgramNode? program = parser.ParseWholeProgram();
 
-            if (syntaxTree == null)
+            if (program == null)
             {
                 return null;
             }
 
-            SemanticalAnalyser semanticalAnalyser = new(syntaxTree);
+            Compilation compilation = new(program);
+
+            SemanticalAnalyser semanticalAnalyser = new(compilation);
             bool success = semanticalAnalyser.PerformSemanticalAnalysis();
 
             if (!success)
@@ -28,7 +32,7 @@ namespace Krypton.Analysis
                 return null;
             }
 
-            return syntaxTree;
+            return compilation;
         }
     }
 }

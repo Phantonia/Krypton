@@ -31,7 +31,6 @@ namespace Krypton.Analysis.Lexical
 
                         if (input[j] == ';')
                         {
-                            string __tmp__ = input[i..j];
                             if (EscapeSequences.TryParse(input[i..j], out escapeCharacter))
                             {
                                 sb.Append(escapeCharacter);

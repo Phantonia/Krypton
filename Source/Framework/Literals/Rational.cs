@@ -52,6 +52,13 @@ namespace Krypton.Framework.Literals
             }
         }
 
+        public override string ToString()
+        {
+            return $"{Numerator}/{Denominator}";
+        }
+
+        public static explicit operator double(Rational r) => (double)r.Numerator / r.Denominator;
+
         // "Inspired" by https://www.codeproject.com/tips/161824/fast-integer-algorithms-greatest-common-divisor-an
         private static long GCD(long x, long y)
         {

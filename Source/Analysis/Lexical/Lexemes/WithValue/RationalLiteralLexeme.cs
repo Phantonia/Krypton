@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using Krypton.Framework.Literals;
+using System.Diagnostics;
 
 namespace Krypton.Analysis.Lexical.Lexemes.WithValue
 {
@@ -12,6 +13,6 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
 
         public override string Content => Value.ToString();
 
-        public RationalLiteralValue Value { get; }
+        public Rational Value { get; }
     }
 }

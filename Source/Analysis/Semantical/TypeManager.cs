@@ -1,5 +1,4 @@
-﻿using Krypton.Analysis.Ast;
-using Krypton.Analysis.Ast.Symbols;
+﻿using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Ast.TypeSpecs;
 using Krypton.Analysis.Semantical.IdentifierMaps;
 using Krypton.Framework;
@@ -10,13 +9,13 @@ namespace Krypton.Analysis.Semantical
 {
     public sealed class TypeManager
     {
-        public TypeManager(SyntaxTree syntaxTree, TypeIdentifierMap typeIdentifierMap)
+        public TypeManager(Compilation compilation, TypeIdentifierMap typeIdentifierMap)
         {
-            this.syntaxTree = syntaxTree;
+            this.compilation = compilation;
             this.typeIdentifierMap = typeIdentifierMap;
         }
 
-        private readonly SyntaxTree syntaxTree;
+        private readonly Compilation compilation;
         private readonly TypeIdentifierMap typeIdentifierMap;
 
         public TypeSymbolNode this[FrameworkType frameworkType] => typeIdentifierMap[frameworkType];
@@ -29,11 +28,11 @@ namespace Krypton.Analysis.Semantical
                 return true;
             }
 
-            if (typeSpec is IdentifierTypeSpecNode idtn)
+            if (typeSpec is IdentifierTypeSpecNode identifierTypeSpecNode)
             {
-                if (typeIdentifierMap.TryGet(idtn.Identifier, out typeSymbol))
+                if (typeIdentifierMap.TryGet(identifierTypeSpecNode.Identifier, out typeSymbol))
                 {
-                    idtn.Bind(typeSymbol);
+                    identifierTypeSpecNode.Bind(typeSymbol);
                     return true;
                 }
 
@@ -47,7 +46,7 @@ namespace Krypton.Analysis.Semantical
             }
         }
 
-        public bool TryGetTypeSymbol(FrameworkType frameworkType, [NotNullWhen(true)] TypeSymbolNode? typeSymbol)
+        public bool TryGetTypeSymbol(FrameworkType frameworkType, [NotNullWhen(true)] out TypeSymbolNode? typeSymbol)
         {
             return typeIdentifierMap.TryGet(frameworkType, out typeSymbol);
         }

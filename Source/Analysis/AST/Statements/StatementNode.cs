@@ -2,10 +2,10 @@
 {
     public abstract class StatementNode : Node
     {
-        protected private StatementNode(int lineNumber) : base(lineNumber) { }
+        private protected StatementNode(int lineNumber) : base(lineNumber) { }
 
-        public StatementNode? Next { get; internal set; }
+        public StatementNode? NextStatementNode { get; internal set; }
 
-        public StatementNode? Previous { get; internal set; }
+        public StatementNode? PreviousStatementNode { get; internal set; }
     }
 }

@@ -1,5 +1,5 @@
-﻿using Krypton.Analysis.Ast.Symbols;
-using Krypton.Analysis.Framework;
+﻿using Krypton.Analysis;
+using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Semantical.IdentifierMaps;
 using Krypton.Framework;
 using Krypton.Framework.Literals;
@@ -110,9 +110,9 @@ namespace UnitTests
             FrameworkIntegration.PopulateWithFrameworkSymbols(new HoistedIdentifierMap(), tp);
 
             Assert.IsTrue(tp.TryGet("String", out TypeSymbolNode? stringType));
-            Assert.AreEqual(3, stringType!.BinaryOperations.Count);
-            Assert.IsTrue(stringType.BinaryOperations.ContainsKey(Operator.Plus));
-            Assert.IsTrue(ReferenceEquals(stringType.BinaryOperations[Operator.Plus].LeftType, stringType));
+            Assert.AreEqual(3, stringType!.BinaryOperationNodes.Count);
+            Assert.IsTrue(stringType.BinaryOperationNodes.ContainsKey(Operator.Plus));
+            Assert.IsTrue(ReferenceEquals(stringType.BinaryOperationNodes[Operator.Plus].LeftOperandTypeNode, stringType));
         }
     }
 }

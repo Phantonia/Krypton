@@ -1,4 +1,5 @@
 ﻿using Krypton.Analysis.Ast.Symbols;
+using System;
 
 namespace Krypton.Analysis.Semantical
 {
@@ -14,8 +15,13 @@ namespace Krypton.Analysis.Semantical
                 return true;
             }
 
-            // implicit conversions will be added soon
-            return ReferenceEquals(sourceType, targetType);
+            // this is where we would check for implicit conversions
+            if (!ReferenceEquals(sourceType, targetType))
+            {
+                throw new NotImplementedException("Type error");
+            }
+
+            return true;
         }
     }
 }

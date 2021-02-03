@@ -1,4 +1,4 @@
-﻿using Krypton.Analysis.Grammatical;
+﻿using Krypton.Analysis.Syntactical;
 
 namespace Krypton.Analysis.Lexical.Lexemes
 {
@@ -17,18 +17,18 @@ namespace Krypton.Analysis.Lexical.Lexemes
         {
             return keyword switch
             {
-                ReservedKeyword.And => new BinaryOperatorKeywordLexeme(OperatorPrecedenceGroup.LogicalAnd, keyword, lineNumber),
-                ReservedKeyword.Or => new BinaryOperatorKeywordLexeme(OperatorPrecedenceGroup.LogicalOr, keyword, lineNumber),
-                ReservedKeyword.Xor => new BinaryOperatorKeywordLexeme(OperatorPrecedenceGroup.LogicalXor, keyword, lineNumber),
-                ReservedKeyword.Not => new BinaryOperatorKeywordLexeme(OperatorPrecedenceGroup.LogicalNot, keyword, lineNumber),
-                ReservedKeyword.Div or ReservedKeyword.Mod => new BinaryOperatorKeywordLexeme(OperatorPrecedenceGroup.Multiplicative, keyword, lineNumber),
+                ReservedKeyword.And => new OperatorKeywordLexeme(OperatorPrecedenceGroup.LogicalAnd, keyword, lineNumber),
+                ReservedKeyword.Or => new OperatorKeywordLexeme(OperatorPrecedenceGroup.LogicalOr, keyword, lineNumber),
+                ReservedKeyword.Xor => new OperatorKeywordLexeme(OperatorPrecedenceGroup.LogicalXor, keyword, lineNumber),
+                ReservedKeyword.Not => new OperatorKeywordLexeme(OperatorPrecedenceGroup.LogicalNot, keyword, lineNumber),
+                ReservedKeyword.Div or ReservedKeyword.Mod => new OperatorKeywordLexeme(OperatorPrecedenceGroup.Multiplicative, keyword, lineNumber),
                 _ => new KeywordLexeme(keyword, lineNumber),
             };
         }
 
-        private sealed class BinaryOperatorKeywordLexeme : KeywordLexeme, IOperatorLexeme
+        private sealed class OperatorKeywordLexeme : KeywordLexeme, IOperatorLexeme
         {
-            public BinaryOperatorKeywordLexeme(OperatorPrecedenceGroup precedenceGroup, ReservedKeyword keyword, int lineNumber) : base(keyword, lineNumber)
+            public OperatorKeywordLexeme(OperatorPrecedenceGroup precedenceGroup, ReservedKeyword keyword, int lineNumber) : base(keyword, lineNumber)
             {
                 PrecedenceGroup = precedenceGroup;
             }

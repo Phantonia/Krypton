@@ -1,27 +1,29 @@
 ﻿using Krypton.Analysis.Ast.Expressions;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Krypton.Analysis.Ast.Statements
 {
+    [DebuggerDisplay("{GetType().Name}; StatementCount = {StatementNodes.Count}")]
     public sealed class WhileStatementNode : StatementNode, IParentStatementNode
     {
-        public WhileStatementNode(ExpressionNode condition, StatementCollectionNode statements, int lineNumber) : base(lineNumber)
+        internal WhileStatementNode(ExpressionNode condition, StatementCollectionNode statements, int lineNumber) : base(lineNumber)
         {
-            Condition = condition;
-            Condition.Parent = this;
-            Statements = statements;
-            Statements.Parent = this;
+            ConditionNode = condition;
+            ConditionNode.ParentNode = this;
+            StatementNodes = statements;
+            StatementNodes.ParentNode = this;
         }
 
-        public ExpressionNode Condition { get; }
+        public ExpressionNode ConditionNode { get; }
 
-        public StatementCollectionNode Statements { get; }
+        public StatementCollectionNode StatementNodes { get; }
 
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);
-            Condition.PopulateBranches(list);
-            Statements.PopulateBranches(list);
+            ConditionNode.PopulateBranches(list);
+            StatementNodes.PopulateBranches(list);
         }
     }
 }

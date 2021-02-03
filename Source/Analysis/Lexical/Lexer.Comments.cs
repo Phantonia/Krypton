@@ -22,6 +22,7 @@ namespace Krypton.Analysis.Lexical
                         return NextLexeme();
                     }
                 }
+
                 return null;
             }
             else
@@ -34,11 +35,11 @@ namespace Krypton.Analysis.Lexical
         {
             index++;
 
-            if (Code.TryGet(index) == '>')
+            if (Code.TryGet(index) == '>') // >>
             {
                 index++;
 
-                if (Code.TryGet(index) == '>')
+                if (Code.TryGet(index) == '>') // >>>
                 {
                     int openedComments = 0;
 
@@ -46,7 +47,7 @@ namespace Krypton.Analysis.Lexical
                     {
                         if (Code[index - 2] == '<'
                             && Code[index - 1] == '<'
-                            && Code[index] == '<')
+                            && Code[index] == '<') // <<<
                         {
                             openedComments--;
 
@@ -58,7 +59,7 @@ namespace Krypton.Analysis.Lexical
                         }
                         else if (Code[index - 2] == '>'
                             && Code[index - 1] == '>'
-                            && Code[index] == '>')
+                            && Code[index] == '>') // >>>
                         {
                             openedComments++;
                         }
@@ -77,7 +78,7 @@ namespace Krypton.Analysis.Lexical
                         if (Code[index - 2] != '<'
                             && Code[index - 1] == '<'
                             && Code[index] == '<'
-                            && Code.TryGet(index + 1) != '<')
+                            && Code.TryGet(index + 1) != '<') // <<
                         {
                             index++;
                             return NextLexeme();

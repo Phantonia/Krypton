@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using Krypton.Utilities;
+using System.Collections.Generic;
 
 namespace Krypton.Analysis.Ast.Symbols
 {
@@ -7,12 +7,12 @@ namespace Krypton.Analysis.Ast.Symbols
     {
         private protected FunctionSymbolNode(string name, IEnumerable<ParameterNode> parameters, TypeSymbolNode? returnType, int lineNumber) : base(name, lineNumber)
         {
-            Parameters = parameters.ToImmutableList();
-            ReturnType = returnType;
+            ParameterNodes = parameters.MakeReadOnly();
+            ReturnTypeNode = returnType;
         }
 
-        public ImmutableList<ParameterNode> Parameters { get; }
+        public ReadOnlyList<ParameterNode> ParameterNodes { get; }
 
-        public TypeSymbolNode? ReturnType { get; }
+        public TypeSymbolNode? ReturnTypeNode { get; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using Krypton.Framework.Literals;
+using System.Diagnostics;
 
 namespace Krypton.Analysis.Lexical.Lexemes.WithValue
 {
@@ -9,18 +10,19 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
             Debug.Assert(value[^1] == 'i');
             value = value[..^1];
 
-            if (NumberLiteralParser.TryParseRational(value, out RationalLiteralValue rational))
+            if (NumberLiteralParser.TryParseRational(value, out Rational rational))
             {
                 Value = rational;
                 return;
             }
 
+            Debug.Assert(NumberLiteralParser.TryParseDecimal(value, out _));
             long integer = NumberLiteralParser.ParseDecimal(value);
-            Value = new RationalLiteralValue(integer, 0);
+            Value = new Rational(integer, 1);
         }
 
         public override string Content => $"{Value}i";
 
-        public RationalLiteralValue Value { get; }
+        public Rational Value { get; }
     }
 }

@@ -1,49 +1,44 @@
-﻿using Krypton.Analysis.Grammatical;
+﻿using Krypton.Analysis.Ast;
+using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Framework;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Krypton.Analysis.Ast.Expressions
+namespace Krypton.Analysis.Syntactical
 {
-    /* A BinaryOperationChainExpressionNode is a helper node
-     * that should never escape grammatical analysis.
-     * It represents multiple binary operations chained one
-     * after the other (e.g. 4 + 5 * 6).
-     * Its Resolve method performs the act of turning this
-     * into the tree 4 + (5 * 6).
-     * It saves an ordered list of ExpressionNodes that represents
-     * the operands (0 op 1 op 2 op 3 ...) and one that represents
-     * the operators (ex 0 ex 1 ex 2 ex ...). In a valid state
-     * there is exactly one more operand than operator.
-     * An operation chain can only resolved if it is in such
-     * a valid state.
-     */
-    public sealed class BinaryOperationChainExpressionNode : ExpressionNode
+    // This class in some sense cheats the node hierarchie.
+    // Krypton.Analysis.Ast.* types should only save state and no logic.
+    // This node however has logic, which is why it is in this namespace
+    // instead. I also purposefully violated the policy to keep the
+    // base class's name and only adding words in front.
+    // No instance of this class should survive syntactical analysis,
+    // else there's a bug.
+    public sealed class BinaryOperationChain : ExpressionNode
     {
-        public BinaryOperationChainExpressionNode(int lineNumber) : base(lineNumber) { }
+        internal BinaryOperationChain(int lineNumber) : base(lineNumber) { }
 
         private readonly List<IOperatorLexeme> operators = new();
-        private readonly List<ExpressionNode> operands = new();
+        private readonly List<ExpressionNode> operandNodes = new();
 
         public void AddOperator(IOperatorLexeme @operator)
         {
-            Debug.Assert(operands.Count == operators.Count + 1);
+            Debug.Assert(operandNodes.Count == operators.Count + 1);
             operators.Add(@operator);
         }
 
         public void AddOperand(ExpressionNode operand)
         {
-            Debug.Assert(operands.Count == operators.Count);
-            operand.Parent = this;
-            operands.Add(operand);
+            Debug.Assert(operandNodes.Count == operators.Count);
+            operand.ParentNode = this;
+            operandNodes.Add(operand);
         }
 
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);
-            foreach (ExpressionNode operand in operands)
+            foreach (ExpressionNode operand in operandNodes)
             {
                 operand.PopulateBranches(list);
             }
@@ -51,7 +46,7 @@ namespace Krypton.Analysis.Ast.Expressions
 
         public ExpressionNode Resolve()
         {
-            Debug.Assert(operands.Count == operators.Count + 1);
+            Debug.Assert(operandNodes.Count == operators.Count + 1);
 
             while (true)
             {
@@ -59,15 +54,15 @@ namespace Krypton.Analysis.Ast.Expressions
 
                 ExpressionNode node = MakeExpressionNodeOfIndex(index);
 
-                operands[index] = node;
+                operandNodes[index] = node;
                 operators.RemoveAt(index);
-                operands.RemoveAt(index + 1);
+                operandNodes.RemoveAt(index + 1);
 
                 if (operators.Count == 0)
                 {
-                    Debug.Assert(operands.Count == 1);
+                    Debug.Assert(operandNodes.Count == 1);
 
-                    return operands[0];
+                    return operandNodes[0];
                 }
             }
         }
@@ -79,8 +74,8 @@ namespace Krypton.Analysis.Ast.Expressions
                 return -1;
             }
 
-            int index = operators.Select((o, i) => (@operator: o.PrecedenceGroup, index: i))
-                                 .Aggregate((a, b) => a.@operator >= b.@operator ? a : b)
+            int index = operators.Select((o, i) => (precedenceGroup: o.PrecedenceGroup, index: i))
+                                 .Aggregate((a, b) => a.precedenceGroup >= b.precedenceGroup ? a : b)
                                  .index;
 
             // Special case for ** operator: right associative
@@ -103,8 +98,8 @@ namespace Krypton.Analysis.Ast.Expressions
             Debug.Assert(operators[index] is Lexeme);
             Lexeme operatorLexeme = (Lexeme)operators[index];
 
-            ExpressionNode left = operands[index];
-            ExpressionNode right = operands[index + 1];
+            ExpressionNode left = operandNodes[index];
+            ExpressionNode right = operandNodes[index + 1];
             int lineNumber = operatorLexeme.LineNumber;
 
             Operator @operator = operatorLexeme switch

@@ -1,96 +1,16 @@
-﻿using Krypton.Analysis.Ast;
-using Krypton.Analysis.Ast.Expressions;
+﻿using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Identifiers;
 using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Ast.TypeSpecs;
-using Krypton.Analysis.Lexical;
-using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
+using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Utilities;
 using System;
-using System.Collections.Generic;
 
-namespace Krypton.Analysis.Grammatical
+namespace Krypton.Analysis.Syntactical
 {
-    public sealed class StatementParser
+    public sealed partial class StatementParser
     {
-        public StatementParser(LexemeCollection lexemes, ExpressionParser expressionParser, TypeParser typeParser)
-        {
-            this.lexemes = lexemes;
-            this.expressionParser = expressionParser;
-            this.typeParser = typeParser;
-        }
-
-        private readonly ExpressionParser expressionParser;
-        private readonly LexemeCollection lexemes;
-        private readonly TypeParser typeParser;
-
-        public StatementNode? ParseNextStatement(ref int index)
-        {
-            return lexemes[index] switch
-            {
-                KeywordLexeme { Keyword: ReservedKeyword.Block } => ParseBlockStatement(ref index, lexemes[index].LineNumber),
-                KeywordLexeme { Keyword: ReservedKeyword.Var } => ParseVariableDeclarationStatement(ref Increase(ref index)),
-                KeywordLexeme { Keyword: ReservedKeyword.While } => ParseWhileStatement(ref index),
-                _ => ParseExpressionStatement(ref index),
-            };
-
-            static ref int Increase(ref int index)
-            {
-                index++;
-                return ref index;
-            }
-        }
-
-        private BlockStatementNode? ParseBlockStatement(ref int index, int lineNumber)
-        {
-            index++;
-
-            StatementCollectionNode? statements = ParseStatementBlock(ref index);
-
-            if (statements == null)
-            {
-                return null;
-            }
-
-            return new BlockStatementNode(statements, lineNumber);
-        }
-
-        private StatementCollectionNode? ParseStatementBlock(ref int index)
-        {
-            if (lexemes[index] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.BraceOpening })
-            {
-                index++;
-
-                List<StatementNode> statements = new();
-
-                while (true)
-                {
-                    switch (lexemes.TryGet(index))
-                    {
-                        case null:
-                            throw new NotImplementedException("Error ???: closing brace expected");
-                        case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.BraceClosing }:
-                            index++;
-                            return new StatementCollectionNode(statements);
-                    }
-
-                    StatementNode? nextStatement = ParseNextStatement(ref index);
-
-                    if (nextStatement == null)
-                    {
-                        return null;
-                    }
-
-                    statements.Add(nextStatement);
-                }
-            }
-            else
-            {
-                throw new NotImplementedException("Error ???: opening brace expected");
-            }
-        }
-
         private StatementNode? ParseExpressionStatement(ref int index)
         {
             ExpressionNode? expression = expressionParser.ParseNextExpression(ref index);
@@ -152,7 +72,6 @@ namespace Krypton.Analysis.Grammatical
         {
             int lineNumber = lexemes[index].LineNumber;
 
-            //index++;
             Lexeme? current = lexemes.TryGet(index);
 
             if (current is IdentifierLexeme idl)
@@ -227,29 +146,6 @@ namespace Krypton.Analysis.Grammatical
             {
                 throw new NotImplementedException("Error 105: Identifier expected");
             }
-        }
-
-        private WhileStatementNode? ParseWhileStatement(ref int index)
-        {
-            int lineNumber = lexemes[index].LineNumber;
-
-            index++;
-
-            ExpressionNode? condition = expressionParser.ParseNextExpression(ref index);
-
-            if (condition == null)
-            {
-                return null;
-            }
-
-            StatementCollectionNode? statements = ParseStatementBlock(ref index);
-
-            if (statements == null)
-            {
-                return null;
-            }
-
-            return new WhileStatementNode(condition, statements, lineNumber);
         }
     }
 }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Krypton.Analysis.Ast.Symbols
 {
-    public sealed class BuiltinFunctionSymbolNode : FunctionSymbolNode
+    public sealed class FrameworkFunctionSymbolNode : FunctionSymbolNode
     {
-        public BuiltinFunctionSymbolNode(string name, IEnumerable<ParameterNode> parameters, TypeSymbolNode? returnType, FunctionCallGenerator generator, int lineNumber) : base(name, parameters, returnType, lineNumber)
+        internal FrameworkFunctionSymbolNode(string name, IEnumerable<ParameterNode> parameters, TypeSymbolNode? returnType, FunctionCallGenerator generator, int lineNumber) : base(name, parameters, returnType, lineNumber)
         {
             Generator = generator;
         }

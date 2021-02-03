@@ -1,4 +1,4 @@
-﻿namespace Krypton.Analysis.Grammatical
+﻿namespace Krypton.Analysis.Syntactical
 {
     // The order matters. If you need to add a new group,
     // do it so that order is preserved and (if possible)

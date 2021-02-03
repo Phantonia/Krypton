@@ -1,21 +1,22 @@
-﻿using System.Collections;
+﻿using Krypton.Analysis.Ast;
+using System.Collections;
 using System.Collections.Generic;
 
-namespace Krypton.Analysis.Ast
+namespace Krypton.Analysis
 {
-    public sealed class SyntaxTree : IEnumerable<Node>
+    public sealed class Compilation : IEnumerable<Node>
     {
-        public SyntaxTree(ProgramNode root)
+        public Compilation(ProgramNode program)
         {
-            Root = root;
+            Program = program;
         }
 
-        public ProgramNode Root { get; }
+        public ProgramNode Program { get; }
 
         public IEnumerator<Node> GetEnumerator()
         {
             List<Node> branches = new();
-            Root.PopulateBranches(branches);
+            Program.PopulateBranches(branches);
             return branches.GetEnumerator();
         }
 

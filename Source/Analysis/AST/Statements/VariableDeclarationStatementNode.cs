@@ -7,23 +7,24 @@ using System.Diagnostics;
 
 namespace Krypton.Analysis.Ast.Statements
 {
+    [DebuggerDisplay("{GetType().Name}; VariableIdentifier = {VariableIdentifier}")]
     public sealed class VariableDeclarationStatementNode : StatementNode
     {
-        public VariableDeclarationStatementNode(IdentifierNode identifier, TypeSpecNode? type, ExpressionNode? value, int lineNumber) : base(lineNumber)
+        internal VariableDeclarationStatementNode(IdentifierNode identifier, TypeSpecNode? type, ExpressionNode? value, int lineNumber) : base(lineNumber)
         {
             VariableIdentifierNode = identifier;
-            VariableIdentifierNode.Parent = this;
+            VariableIdentifierNode.ParentNode = this;
 
             Type = type;
             if (Type != null)
             {
-                Type.Parent = this;
+                Type.ParentNode = this;
             }
 
             AssignedValue = value;
             if (AssignedValue != null)
             {
-                AssignedValue.Parent = this;
+                AssignedValue.ParentNode = this;
             }
         }
 
@@ -48,7 +49,7 @@ namespace Krypton.Analysis.Ast.Statements
         public LocalVariableSymbolNode CreateVariable(TypeSymbolNode? typeSymbol)
         {
             LocalVariableSymbolNode var = new LocalVariableSymbolNode(VariableIdentifier, typeSymbol, VariableIdentifierNode.LineNumber);
-            VariableIdentifierNode = new BoundIdentifierNode(VariableIdentifier, var, VariableIdentifierNode.LineNumber) { Parent = this };
+            VariableIdentifierNode = new BoundIdentifierNode(VariableIdentifier, var, VariableIdentifierNode.LineNumber) { ParentNode = this };
             return var;
         }
 

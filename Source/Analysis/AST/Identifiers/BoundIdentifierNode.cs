@@ -5,7 +5,7 @@ namespace Krypton.Analysis.Ast.Identifiers
 {
     public sealed class BoundIdentifierNode : IdentifierNode
     {
-        public BoundIdentifierNode(string identifier, SymbolNode symbol, int lineNumber) : base(identifier, lineNumber)
+        internal BoundIdentifierNode(string identifier, SymbolNode symbol, int lineNumber) : base(identifier, lineNumber)
         {
             Symbol = symbol;
         }

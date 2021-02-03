@@ -1,30 +1,26 @@
-﻿using Krypton.Analysis.Ast;
-using System;
-
-namespace Krypton.Analysis.Semantical
+﻿namespace Krypton.Analysis.Semantical
 {
     public sealed class SemanticalAnalyser
     {
-        public SemanticalAnalyser(SyntaxTree syntaxTree)
+        public SemanticalAnalyser(Compilation compilation)
         {
-            SyntaxTree = syntaxTree;
+            Compilation = compilation;
         }
 
-        public SyntaxTree SyntaxTree { get; }
+        public Compilation Compilation { get; }
 
         public bool PerformSemanticalAnalysis()
         {
-            Binder binder = new(SyntaxTree);
+            Binder binder = new(Compilation);
 
             bool success = binder.PerformBinding();
 
             if (!success)
             {
-                throw new NotImplementedException();
-                //return false;
+                return false;
             }
 
-            TypeChecker typeChecker = new(SyntaxTree, binder.TypeManager);
+            TypeChecker typeChecker = new(Compilation, binder.TypeManager);
 
             success = typeChecker.PerformTypeChecking();
 

@@ -1,8 +1,11 @@
-﻿namespace Krypton.Analysis.Ast.Identifiers
+﻿using System.Diagnostics;
+
+namespace Krypton.Analysis.Ast.Identifiers
 {
+    [DebuggerDisplay("{GetType().Name}; Identifier = {Identifier}")]
     public abstract class IdentifierNode : Node
     {
-        protected private IdentifierNode(string identifier, int lineNumber) : base(lineNumber)
+        private protected IdentifierNode(string identifier, int lineNumber) : base(lineNumber)
         {
             Identifier = identifier;
         }

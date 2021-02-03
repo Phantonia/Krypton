@@ -6,7 +6,7 @@ namespace Krypton.Analysis.Ast
     {
         int LineNumber { get; }
 
-        Node? Parent { get; }
+        Node? ParentNode { get; }
 
         List<Node> GetBranches();
 

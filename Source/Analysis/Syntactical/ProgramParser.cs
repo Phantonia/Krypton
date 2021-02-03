@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Krypton.Analysis.Grammatical
+namespace Krypton.Analysis.Syntactical
 {
     public sealed class ProgramParser
     {
@@ -25,7 +25,7 @@ namespace Krypton.Analysis.Grammatical
 
         public LexemeCollection Lexemes { get; }
 
-        public SyntaxTree? ParseWholeProgram()
+        public ProgramNode? ParseWholeProgram()
         {
             List<StatementNode> statements = new();
 
@@ -41,8 +41,7 @@ namespace Krypton.Analysis.Grammatical
             }
 
             StatementCollectionNode topLevelStatements = new(statements);
-            ProgramNode programNode = new(topLevelStatements, topLevelStatements.LineNumber);
-            return new SyntaxTree(programNode);
+            return new ProgramNode(topLevelStatements, topLevelStatements.LineNumber);
         }
 
         private bool TryParseNextNode([NotNullWhen(true)] out Node? node)

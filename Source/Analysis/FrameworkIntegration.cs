@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Krypton.Analysis.Framework
+namespace Krypton.Analysis
 {
     public static class FrameworkIntegration
     {
@@ -74,7 +74,7 @@ namespace Krypton.Analysis.Framework
                 returnType = GetTypeSymbolNode(functionSymbol.ReturnType, typeIdentifierMap, frameworkVersion);
             }
 
-            return new BuiltinFunctionSymbolNode(functionSymbol.Name, parameters, returnType, functionSymbol.Generator, lineNumber: 0);
+            return new FrameworkFunctionSymbolNode(functionSymbol.Name, parameters, returnType, functionSymbol.Generator, lineNumber: 0);
         }
 
         private static ParameterNode CreateParameterNode(ParameterSymbol parameterSymbol,
@@ -88,7 +88,7 @@ namespace Krypton.Analysis.Framework
 
         private static TypeSymbolNode CreateTypeSymbolNode(TypeSymbol typeSymbol)
         {
-            return new BuiltinTypeSymbolNode(typeSymbol.FrameworkType, typeSymbol.Name, lineNumber: 0);
+            return new FrameworkTypeSymbolNode(typeSymbol.FrameworkType, typeSymbol.Name, lineNumber: 0);
         }
 
         private static UnaryOperationSymbolNode CreateUnaryOperationSymbolNode(UnaryOperationSymbol unaryOperationSymbol,

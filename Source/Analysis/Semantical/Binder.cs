@@ -2,7 +2,6 @@
 using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Ast.Symbols;
-using Krypton.Analysis.Framework;
 using Krypton.Analysis.Semantical.IdentifierMaps;
 using System;
 using System.Diagnostics;
@@ -12,12 +11,12 @@ namespace Krypton.Analysis.Semantical
 {
     public sealed class Binder
     {
-        public Binder(SyntaxTree syntaxTree)
+        public Binder(Compilation compilation)
         {
-            this.SyntaxTree = syntaxTree;
+            Compilation = compilation;
         }
 
-        public SyntaxTree SyntaxTree { get; }
+        public Compilation Compilation { get; }
 
         public TypeManager? TypeManager { get; set; }
 
@@ -25,7 +24,7 @@ namespace Krypton.Analysis.Semantical
         public bool PerformBinding()
         {
             (HoistedIdentifierMap globalIdentifierMap, TypeIdentifierMap typeIdentifierMap) = GatherGlobalSymbols();
-            TypeManager = new TypeManager(SyntaxTree, typeIdentifierMap);
+            TypeManager = new TypeManager(Compilation, typeIdentifierMap);
 
             bool success = BindInTopLevelStatements(globalIdentifierMap);
 
@@ -37,13 +36,13 @@ namespace Krypton.Analysis.Semantical
             return true;
         }
 
-        private bool BindInBlock(StatementCollectionNode statements, VariableIdentifierMap variableIdentifierMap, HoistedIdentifierMap globalIdentifierMap)
+        private bool BindInBlock(StatementCollectionNode statementNodes, VariableIdentifierMap variableIdentifierMap, HoistedIdentifierMap globalIdentifierMap)
         {
             variableIdentifierMap.EnterBlock();
 
-            foreach (StatementNode statement in statements)
+            foreach (StatementNode statementNode in statementNodes)
             {
-                bool success = BindInStatement(statement, variableIdentifierMap, globalIdentifierMap);
+                bool success = BindInStatement(statementNode, variableIdentifierMap, globalIdentifierMap);
 
                 if (!success)
                 {
@@ -56,13 +55,13 @@ namespace Krypton.Analysis.Semantical
             return true;
         }
 
-        private static bool BindInExpression(ExpressionNode expression, VariableIdentifierMap variableIdentifierMap, HoistedIdentifierMap globalIdentifierMap)
+        private static bool BindInExpression(ExpressionNode expressionNode, VariableIdentifierMap variableIdentifierMap, HoistedIdentifierMap globalIdentifierMap)
         {
-            switch (expression)
+            switch (expressionNode)
             {
-                case UnaryOperationExpressionNode unaryOperation:
+                case UnaryOperationExpressionNode unaryOperationNode:
                     {
-                        bool success = BindInExpression(unaryOperation.Operand, variableIdentifierMap, globalIdentifierMap);
+                        bool success = BindInExpression(unaryOperationNode.OperandNode, variableIdentifierMap, globalIdentifierMap);
 
                         if (!success)
                         {
@@ -70,10 +69,10 @@ namespace Krypton.Analysis.Semantical
                         }
                     }
                     break;
-                case BinaryOperationExpressionNode binaryOperation:
+                case BinaryOperationExpressionNode binaryOperationNode:
                     {
-                        bool success = BindInExpression(binaryOperation.Left, variableIdentifierMap, globalIdentifierMap)
-                                    && BindInExpression(binaryOperation.Right, variableIdentifierMap, globalIdentifierMap);
+                        bool success = BindInExpression(binaryOperationNode.LeftOperandNode, variableIdentifierMap, globalIdentifierMap)
+                                    && BindInExpression(binaryOperationNode.RightOperandNode, variableIdentifierMap, globalIdentifierMap);
 
                         if (!success)
                         {
@@ -81,35 +80,32 @@ namespace Krypton.Analysis.Semantical
                         }
                     }
                     break;
-                case FunctionCallExpressionNode funcCall:
+                case FunctionCallExpressionNode functionCallNode:
                     {
-                        bool success = BindInExpression(funcCall.FunctionExpression, variableIdentifierMap, globalIdentifierMap);
+                        bool success = BindInExpression(functionCallNode.FunctionExpressionNode, variableIdentifierMap, globalIdentifierMap);
 
                         if (!success)
                         {
                             return false;
                         }
 
-                        if (funcCall.Arguments != null)
+                        foreach (ExpressionNode argumentNode in functionCallNode.ArgumentNodes)
                         {
-                            foreach (ExpressionNode argument in funcCall.Arguments)
+                            success = BindInExpression(argumentNode, variableIdentifierMap, globalIdentifierMap);
+
+                            if (!success)
                             {
-                                success = BindInExpression(argument, variableIdentifierMap, globalIdentifierMap);
-
-                                if (!success)
-                                {
-                                    return false;
-                                }
+                                return false;
                             }
                         }
                     }
                     break;
-                case IdentifierExpressionNode idExpression:
+                case IdentifierExpressionNode identifierExpressionNode:
                     {
-                        if (variableIdentifierMap.TryGet(idExpression.Identifier, out SymbolNode? symbol)
-                           || globalIdentifierMap.TryGet(idExpression.Identifier, out symbol))
+                        if (variableIdentifierMap.TryGet(identifierExpressionNode.Identifier, out SymbolNode? symbolNode)
+                           || globalIdentifierMap.TryGet(identifierExpressionNode.Identifier, out symbolNode))
                         {
-                            idExpression.Bind(symbol);
+                            identifierExpressionNode.Bind(symbolNode);
                         }
                     }
                     break;
@@ -118,15 +114,15 @@ namespace Krypton.Analysis.Semantical
             return true;
         }
 
-        private bool BindInStatement(StatementNode statement, VariableIdentifierMap variableIdentifierMap, HoistedIdentifierMap globalIdentifierMap)
+        private bool BindInStatement(StatementNode statementNode, VariableIdentifierMap variableIdentifierMap, HoistedIdentifierMap globalIdentifierMap)
         {
-            switch (statement)
+            switch (statementNode)
             {
-                case VariableDeclarationStatementNode variableDeclaration:
+                case VariableDeclarationStatementNode variableDeclarationNode:
                     {
-                        if (variableDeclaration.AssignedValue != null)
+                        if (variableDeclarationNode.AssignedValue != null)
                         {
-                            bool success = BindInExpression(variableDeclaration.AssignedValue, variableIdentifierMap, globalIdentifierMap);
+                            bool success = BindInExpression(variableDeclarationNode.AssignedValue, variableIdentifierMap, globalIdentifierMap);
 
                             if (!success)
                             {
@@ -136,13 +132,13 @@ namespace Krypton.Analysis.Semantical
 
                         Debug.Assert(TypeManager != null);
 
-                        if (!TypeManager.TryGetTypeSymbol(variableDeclaration.Type, out TypeSymbolNode? typeSymbol))
+                        if (!TypeManager.TryGetTypeSymbol(variableDeclarationNode.Type, out TypeSymbolNode? typeSymbolNode))
                         {
                             return false;
                         }
 
                         {
-                            bool success = variableIdentifierMap.AddSymbol(variableDeclaration.VariableIdentifier, variableDeclaration.CreateVariable(typeSymbol));
+                            bool success = variableIdentifierMap.AddSymbol(variableDeclarationNode.VariableIdentifier, variableDeclarationNode.CreateVariable(typeSymbolNode));
 
                             if (!success)
                             {
@@ -151,37 +147,37 @@ namespace Krypton.Analysis.Semantical
                         }
                     }
                     break;
-                case VariableAssignmentStatementNode variableAssignment:
+                case VariableAssignmentStatementNode variableAssignmentNode:
                     {
-                        bool success = BindInExpression(variableAssignment.AssignedValue, variableIdentifierMap, globalIdentifierMap);
+                        bool success = BindInExpression(variableAssignmentNode.AssignedExpressionNode, variableIdentifierMap, globalIdentifierMap);
 
                         if (!success)
                         {
                             return false;
                         }
 
-                        if (!variableIdentifierMap.TryGet(variableAssignment.VariableIdentifier, out LocalVariableSymbolNode? variable))
+                        if (!variableIdentifierMap.TryGet(variableAssignmentNode.VariableIdentifier, out LocalVariableSymbolNode? variableNode))
                         {
                             return false;
                         }
-                        
-                        variableAssignment.Bind(variable);
+
+                        variableAssignmentNode.Bind(variableNode);
                     }
                     break;
-                case FunctionCallStatementNode funcCall:
+                case FunctionCallStatementNode functionCallNode:
                     {
-                        bool success = BindInExpression(funcCall.FunctionExpression, variableIdentifierMap, globalIdentifierMap);
+                        bool success = BindInExpression(functionCallNode.FunctionExpressionNode, variableIdentifierMap, globalIdentifierMap);
 
                         if (!success)
                         {
                             return false;
                         }
 
-                        if (funcCall.Arguments != null)
+                        if (functionCallNode.ArgumentNodes != null)
                         {
-                            foreach (ExpressionNode argument in funcCall.Arguments)
+                            foreach (ExpressionNode argumentNode in functionCallNode.ArgumentNodes)
                             {
-                                success = BindInExpression(argument, variableIdentifierMap, globalIdentifierMap);
+                                success = BindInExpression(argumentNode, variableIdentifierMap, globalIdentifierMap);
 
                                 if (!success)
                                 {
@@ -193,7 +189,7 @@ namespace Krypton.Analysis.Semantical
                     break;
                 case BlockStatementNode blockStmt:
                     {
-                        bool success = BindInBlock(blockStmt.Statements, variableIdentifierMap, globalIdentifierMap);
+                        bool success = BindInBlock(blockStmt.StatementNodes, variableIdentifierMap, globalIdentifierMap);
 
                         if (!success)
                         {
@@ -203,8 +199,8 @@ namespace Krypton.Analysis.Semantical
                     break;
                 case WhileStatementNode whileStmt:
                     {
-                        bool success = BindInExpression(whileStmt.Condition, variableIdentifierMap, globalIdentifierMap)
-                                    && BindInBlock(whileStmt.Statements, variableIdentifierMap, globalIdentifierMap);
+                        bool success = BindInExpression(whileStmt.ConditionNode, variableIdentifierMap, globalIdentifierMap)
+                                    && BindInBlock(whileStmt.StatementNodes, variableIdentifierMap, globalIdentifierMap);
 
                         if (!success)
                         {
@@ -220,14 +216,16 @@ namespace Krypton.Analysis.Semantical
         private bool BindInTopLevelStatements(HoistedIdentifierMap globalIdentifierMap)
         {
             VariableIdentifierMap variableIdentifierMap = new();
-            return BindInBlock(SyntaxTree.Root.TopLevelStatements, variableIdentifierMap, globalIdentifierMap);
+            return BindInBlock(Compilation.Program.TopLevelStatementNodes, variableIdentifierMap, globalIdentifierMap);
         }
 
         private (HoistedIdentifierMap, TypeIdentifierMap) GatherGlobalSymbols()
         {
             HoistedIdentifierMap globalIdentifierMap = new();
             TypeIdentifierMap typeIdentifierMap = new();
+
             FrameworkIntegration.PopulateWithFrameworkSymbols(globalIdentifierMap, typeIdentifierMap);
+
             return (globalIdentifierMap, typeIdentifierMap);
         }
     }

@@ -9,13 +9,13 @@ namespace Krypton.Analysis.Semantical
 {
     partial class TypeChecker
     {
-        private TypeSymbolNode? CheckExpression(ExpressionNode expression)
+        private TypeSymbolNode? CheckExpression(ExpressionNode expressionNode)
         {
-            switch (expression)
+            switch (expressionNode)
             {
-                case FunctionCallExpressionNode funcCall:
+                case FunctionCallExpressionNode functionCallNode:
                     {
-                        (TypeSymbolNode? symbol, bool success) = CheckFunctionCallExpression(funcCall, tolerateNoReturnType: false);
+                        (TypeSymbolNode? symbol, bool success) = CheckFunctionCallExpression(functionCallNode, tolerateNoReturnType: false);
                         return success ? symbol : null;
                     }
                 case BinaryOperationExpressionNode binaryOperation:
@@ -30,84 +30,82 @@ namespace Krypton.Analysis.Semantical
             }
         }
 
-        private TypeSymbolNode? CheckBinaryOperation(BinaryOperationExpressionNode binaryOperation)
+        private TypeSymbolNode? CheckBinaryOperation(BinaryOperationExpressionNode binaryOperationNode)
         {
-            TypeSymbolNode? leftType = CheckExpression(binaryOperation.Left);
-            TypeSymbolNode? rightType = CheckExpression(binaryOperation.Right);
+            TypeSymbolNode? leftOperandType = CheckExpression(binaryOperationNode.LeftOperandNode);
+            TypeSymbolNode? rightOperandType = CheckExpression(binaryOperationNode.RightOperandNode);
 
-            if (leftType == null || rightType == null)
+            if (leftOperandType == null || rightOperandType == null)
             {
                 return null;
             }
 
-            Operator appliedOperator = binaryOperation.Operator;
+            Operator appliedOperator = binaryOperationNode.Operator;
 
-            if (!leftType.BinaryOperations.TryGetValue(appliedOperator, out BinaryOperationSymbolNode? declaredOperation))
+            if (!leftOperandType.BinaryOperationNodes.TryGetValue(appliedOperator, out BinaryOperationSymbolNode? declaredOperationNode))
             {
                 throw new NotImplementedException("Error: operand not valid on this type");
             }
 
-            if (!TypeCompatibility.IsCompatibleWith(leftType, declaredOperation.LeftType))
+            if (!TypeCompatibility.IsCompatibleWith(leftOperandType, declaredOperationNode.LeftOperandTypeNode))
             {
                 return null;
             }
 
-            if (!TypeCompatibility.IsCompatibleWith(rightType, declaredOperation.RightType))
+            if (!TypeCompatibility.IsCompatibleWith(rightOperandType, declaredOperationNode.RightOperandTypeNode))
             {
                 return null;
             }
 
-            return declaredOperation.ReturnType;
+            return declaredOperationNode.ReturnTypeNode;
         }
 
-        private (TypeSymbolNode?, bool) CheckFunctionCallExpression(FunctionCallExpressionNode funcCall, bool tolerateNoReturnType)
+        private (TypeSymbolNode?, bool) CheckFunctionCallExpression(FunctionCallExpressionNode functionCallNode, bool tolerateNoReturnType)
         {
-            if (funcCall.FunctionExpression is not IdentifierExpressionNode identifier)
+            if (functionCallNode.FunctionExpressionNode is not IdentifierExpressionNode identifierExpressionNode)
             {
                 throw new NotImplementedException("Error: not a function that is being called");
                 // return (null, false)
             }
 
-            BoundIdentifierNode? boundId = identifier.IdentifierNode as BoundIdentifierNode;
-            Debug.Assert(boundId != null);
+            BoundIdentifierNode? boundIdentifier = identifierExpressionNode.IdentifierNode as BoundIdentifierNode;
+            Debug.Assert(boundIdentifier != null);
 
-            if (boundId.Symbol is not FunctionSymbolNode function)
+            if (boundIdentifier.Symbol is not FunctionSymbolNode functionNode)
             {
                 throw new NotImplementedException("Error: not a function that is being called");
                 // return (null, false);
             }
 
-            if (!tolerateNoReturnType && function.ReturnType == null)
+            if (!tolerateNoReturnType && functionNode.ReturnTypeNode == null)
             {
                 throw new NotImplementedException("Error: function cannot be used as expression, because it doesn't return a value");
                 // return (null, false);
             }
 
-            if (function.Parameters.Count != (funcCall.Arguments?.Count ?? 0))
+            if (functionNode.ParameterNodes.Count != functionCallNode.ArgumentNodes.Count)
             {
                 throw new NotImplementedException("Error: wrong number of arguments");
                 // return (null, false);
             }
 
-            for (int i = 0; i < function.Parameters.Count; i++)
+            for (int i = 0; i < functionNode.ParameterNodes.Count; i++)
             {
-                Debug.Assert(funcCall.Arguments != null);
-
-                TypeSymbolNode? argumentType = CheckExpression(funcCall.Arguments[i]);
+                TypeSymbolNode? argumentType = CheckExpression(functionCallNode.ArgumentNodes[i]);
 
                 if (argumentType == null)
                 {
                     return (null, false);
                 }
 
-                if (!TypeCompatibility.IsCompatibleWith(argumentType, function.Parameters[i].Type))
+                if (!TypeCompatibility.IsCompatibleWith(argumentType, functionNode.ParameterNodes[i].TypeNode))
                 {
                     throw new NotImplementedException("Type error");
                     // return (null, false);
                 }
             }
 
-            return (function.ReturnType, true);
+            return (functionNode.ReturnTypeNode, true);
         }
 
         private TypeSymbolNode? CheckIdentifierExpression(IdentifierExpressionNode id)
@@ -119,7 +117,7 @@ namespace Krypton.Analysis.Semantical
             {
                 case VariableSymbolNode var:
                     {
-                        TypeSymbolNode? varType = var.Type;
+                        TypeSymbolNode? varType = var.TypeNode;
                         Debug.Assert(varType != null);
                         return varType;
                     }

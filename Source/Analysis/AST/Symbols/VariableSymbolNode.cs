@@ -4,17 +4,16 @@ namespace Krypton.Analysis.Ast.Symbols
 {
     public abstract class VariableSymbolNode : SymbolNode
     {
-        private protected VariableSymbolNode(string name, TypeSymbolNode? type, int lineNumber) : base(name, lineNumber)
+        private protected VariableSymbolNode(string identifier, TypeSymbolNode? typeNode, int lineNumber) : base(identifier, lineNumber)
         {
-            Type = type;
+            TypeNode = typeNode;
         }
 
-        public virtual TypeSymbolNode? Type { get; protected set; }
+        public virtual TypeSymbolNode? TypeNode { get; protected set; }
 
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);
-            Type?.PopulateBranches(list);
         }
     }
 }

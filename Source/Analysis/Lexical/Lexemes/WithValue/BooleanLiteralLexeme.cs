@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Krypton.Analysis.Lexical.Lexemes.WithValue
+﻿namespace Krypton.Analysis.Lexical.Lexemes.WithValue
 {
     public sealed class BooleanLiteralLexeme : Lexeme
     {
@@ -11,6 +9,6 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
 
         public override string Content => Value ? "True" : "False";
 
-        public bool Value { get; private set; }
+        public bool Value { get; }
     }
 }

@@ -9,7 +9,7 @@ using Krypton.Utilities;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Krypton.Analysis.Grammatical
+namespace Krypton.Analysis.Syntactical
 {
     public sealed class ExpressionParser
     {
@@ -23,43 +23,43 @@ namespace Krypton.Analysis.Grammatical
         public ExpressionNode? ParseNextExpression(ref int index)
         {
             Debug.Assert(Lexemes.Count > index & index >= 0);
-            ExpressionNode? root = ParseNextExpressionInternal(ref index);
+            ExpressionNode? expression = ParseNextExpressionInternal(ref index);
             index++;
-            return root;
+            return expression;
         }
 
         private ExpressionNode? ParseNextExpressionInternal(ref int index)
         {
-            ExpressionNode? root = ParseSubExpression(ref index);
+            ExpressionNode? expression = ParseSubExpression(ref index);
 
-            if (root == null)
+            if (expression == null)
             {
                 return null;
             }
 
-            ParseAfterSubExpression(ref root, ref index);
+            ParseAfterSubExpression(ref expression, ref index);
 
-            if (root is BinaryOperationChainExpressionNode chain)
+            if (expression is BinaryOperationChain chain)
             {
-                root = chain.Resolve();
+                expression = chain.Resolve();
             }
 
-            return root;
+            return expression;
         }
 
-        private void ParseAfterSubExpression(ref ExpressionNode? root, ref int index, bool includeOperations = true)
+        private void ParseAfterSubExpression(ref ExpressionNode? expression, ref int index, bool includeOperations = true)
         {
             while (true)
             {
                 switch (Lexemes[index + 1])
                 {
-                    case IOperatorLexeme opl when includeOperations:
+                    case IOperatorLexeme operatorLexeme when includeOperations:
                         index++;
-                        ParseOperationChain(opl, ref root, ref index);
+                        ParseOperationChain(operatorLexeme, ref expression, ref index);
                         return;
                     case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisOpening }:
                         index++;
-                        ParseFunctionCall(ref root, ref index);
+                        ParseFunctionCall(ref expression, ref index);
                         continue;
                     default:
                         return;
@@ -67,9 +67,9 @@ namespace Krypton.Analysis.Grammatical
             }
         }
 
-        private void ParseFunctionCall(ref ExpressionNode? root, ref int index)
+        private void ParseFunctionCall(ref ExpressionNode? expression, ref int index)
         {
-            if (root == null)
+            if (expression == null)
             {
                 return;
             }
@@ -80,7 +80,7 @@ namespace Krypton.Analysis.Grammatical
 
             if (Lexemes.TryGet(index) is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing })
             {
-                root = new FunctionCallExpressionNode(root, lineNumber);
+                expression = new FunctionCallExpressionNode(expression, lineNumber);
                 return;
             }
 
@@ -92,7 +92,7 @@ namespace Krypton.Analysis.Grammatical
 
                 if (nextExpression == null)
                 {
-                    root = null;
+                    expression = null;
                     return;
                 }
 
@@ -105,7 +105,7 @@ namespace Krypton.Analysis.Grammatical
                     case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Comma }:
                         break;
                     case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing }:
-                        root = new FunctionCallExpressionNode(root, arguments, lineNumber);
+                        expression = new FunctionCallExpressionNode(expression, arguments, lineNumber);
                         return;
                     case { }:
                         ErrorProvider.ReportMissingCommaOrParenthesis(Lexemes[index].Content, Lexemes[index].LineNumber);
@@ -119,20 +119,20 @@ namespace Krypton.Analysis.Grammatical
             }
         }
 
-        private void ParseOperationChain(IOperatorLexeme opLexeme, ref ExpressionNode? root, ref int index)
+        private void ParseOperationChain(IOperatorLexeme operatorLexeme, ref ExpressionNode? expression, ref int index)
         {
-            if (root == null)
+            if (expression == null)
             {
                 return;
             }
 
-            if (root is not BinaryOperationChainExpressionNode chain)
+            if (expression is not BinaryOperationChain chain)
             {
-                chain = new(opLexeme.LineNumber);
-                chain.AddOperand(root);
+                chain = new(operatorLexeme.LineNumber);
+                chain.AddOperand(expression);
             }
 
-            chain.AddOperator(opLexeme);
+            chain.AddOperator(operatorLexeme);
 
             index++;
 
@@ -145,12 +145,12 @@ namespace Krypton.Analysis.Grammatical
 
             chain.AddOperand(nextOperand);
 
-            root = chain;
+            expression = chain;
 
             if (Lexemes[index + 1] is IOperatorLexeme opl)
             {
                 index++;
-                ParseOperationChain(opl, ref root, ref index);
+                ParseOperationChain(opl, ref expression, ref index);
             }
         }
 
@@ -158,24 +158,25 @@ namespace Krypton.Analysis.Grammatical
         {
             switch (Lexemes[index])
             {
-                case BooleanLiteralLexeme bll:
-                    return new BooleanLiteralExpressionNode(bll.Value, bll.LineNumber);
-                case IntegerLiteralLexeme ill:
-                    return new IntegerLiteralExpressionNode(ill.Value, ill.LineNumber);
-                case StringLiteralLexeme sll:
-                    return new StringLiteralExpressionNode(sll.Value, sll.LineNumber);
-                case CharLiteralLexeme cll:
-                    return new CharLiteralExpressionNode(cll.Value, cll.LineNumber);
-                case ImaginaryLiteralLexeme imll:
-                    return new ImaginaryLiteralExpressionNode(imll.Value, imll.LineNumber);
-                case RationalLiteralLexeme rll:
-                    return new RationalLiteralExpressionNode(rll.Value, rll.LineNumber);
-                case IdentifierLexeme idll:
-                    return new IdentifierExpressionNode(idll.Content, idll.LineNumber);
+                case BooleanLiteralLexeme booleanLiteral:
+                    return new BooleanLiteralExpressionNode(booleanLiteral.Value, booleanLiteral.LineNumber);
+                case IntegerLiteralLexeme integerLiteral:
+                    return new IntegerLiteralExpressionNode(integerLiteral.Value, integerLiteral.LineNumber);
+                case StringLiteralLexeme stringLiteral:
+                    return new StringLiteralExpressionNode(stringLiteral.Value, stringLiteral.LineNumber);
+                case CharLiteralLexeme charLiteral: 
+                    return new CharLiteralExpressionNode(charLiteral.Value, charLiteral.LineNumber);
+                case ImaginaryLiteralLexeme imaginaryLiteral:
+                    return new ImaginaryLiteralExpressionNode(imaginaryLiteral.Value, imaginaryLiteral.LineNumber);
+                case RationalLiteralLexeme rationalLiteral:
+                    return new RationalLiteralExpressionNode(rationalLiteral.Value, rationalLiteral.LineNumber);
+                case IdentifierLexeme identifierLexeme:
+                    return new IdentifierExpressionNode(identifierLexeme.Content, identifierLexeme.LineNumber);
                 case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisOpening }:
                     {
                         index++;
-                        ExpressionNode? root = ParseNextExpressionInternal(ref index);
+
+                        ExpressionNode? expression = ParseNextExpressionInternal(ref index);
 
                         index++;
 
@@ -186,11 +187,13 @@ namespace Krypton.Analysis.Grammatical
                             ErrorProvider.ReportMissingClosingParenthesis(nextLexeme?.Content ?? "", nextLexeme?.LineNumber ?? Lexemes[index - 1].LineNumber);
                             return null;
                         }
-                        return root;
+
+                        return expression;
                     }
                 case CharacterOperatorLexeme { Operator: Operator.Tilde }:
                     {
                         index++;
+
                         ExpressionNode? operand = ParseNextExpressionInternal(ref index);
 
                         if (operand != null)
@@ -203,6 +206,7 @@ namespace Krypton.Analysis.Grammatical
                 case CharacterOperatorLexeme { Operator: Operator.Minus }:
                     {
                         index++;
+
                         ExpressionNode? operand = ParseSubExpression(ref index);
                         ParseAfterSubExpression(ref operand, ref index, includeOperations: false);
 

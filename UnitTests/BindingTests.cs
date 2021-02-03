@@ -1,17 +1,15 @@
 ﻿using Krypton.Analysis;
-using Krypton.Analysis.Ast;
 using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Identifiers;
 using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Ast.TypeSpecs;
-using Krypton.Analysis.Grammatical;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Semantical;
+using Krypton.Analysis.Syntactical;
 using Krypton.Framework;
 using NUnit.Framework;
 using System;
-using System.Diagnostics;
 
 namespace UnitTests
 {
@@ -26,14 +24,14 @@ namespace UnitTests
             x = 2;
             ";
 
-            SyntaxTree? tree = Analyser.Analyse(Code);
+            Compilation? tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
-            Assert.IsInstanceOf<VariableDeclarationStatementNode>(tree!.Root.TopLevelStatements[0]);
-            Assert.IsInstanceOf<VariableAssignmentStatementNode>(tree.Root.TopLevelStatements[1]);
+            Assert.IsInstanceOf<VariableDeclarationStatementNode>(tree!.Program.TopLevelStatementNodes[0]);
+            Assert.IsInstanceOf<VariableAssignmentStatementNode>(tree.Program.TopLevelStatementNodes[1]);
 
-            var decl = (VariableDeclarationStatementNode)tree!.Root.TopLevelStatements[0];
-            var assg = (VariableAssignmentStatementNode)tree!.Root.TopLevelStatements[1];
+            var decl = (VariableDeclarationStatementNode)tree!.Program.TopLevelStatementNodes[0];
+            var assg = (VariableAssignmentStatementNode)tree!.Program.TopLevelStatementNodes[1];
 
             Assert.IsInstanceOf<BoundIdentifierNode>(decl.VariableIdentifierNode);
             Assert.IsInstanceOf<BoundIdentifierNode>(assg.VariableIdentifierNode);
@@ -65,12 +63,12 @@ namespace UnitTests
             Var y = x; ... decl2
             ";
 
-            SyntaxTree? tree = Analyser.Analyse(Code);
+            Compilation? tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
 
-            var decl1 = tree!.Root.TopLevelStatements[0] as VariableDeclarationStatementNode;
-            var decl2 = tree!.Root.TopLevelStatements[1] as VariableDeclarationStatementNode;
+            var decl1 = tree!.Program.TopLevelStatementNodes[0] as VariableDeclarationStatementNode;
+            var decl2 = tree!.Program.TopLevelStatementNodes[1] as VariableDeclarationStatementNode;
 
             Assert.NotNull(decl1);
             Assert.NotNull(decl2);
@@ -114,13 +112,13 @@ namespace UnitTests
             Var x As String;
             ";
 
-            SyntaxTree? tree = Analyser.Analyse(Code);
+            Compilation? tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
-            Assert.AreEqual(1, tree!.Root.TopLevelStatements.Count);
-            Assert.IsInstanceOf<VariableDeclarationStatementNode>(tree.Root.TopLevelStatements[0]);
+            Assert.AreEqual(1, tree!.Program.TopLevelStatementNodes.Count);
+            Assert.IsInstanceOf<VariableDeclarationStatementNode>(tree.Program.TopLevelStatementNodes[0]);
 
-            var vdecl = (VariableDeclarationStatementNode)tree.Root.TopLevelStatements[0];
+            var vdecl = (VariableDeclarationStatementNode)tree.Program.TopLevelStatementNodes[0];
 
             Assert.AreEqual("x", vdecl.VariableIdentifier);
             Assert.IsInstanceOf<IdentifierTypeSpecNode>(vdecl.Type);
@@ -131,11 +129,11 @@ namespace UnitTests
 
             var bdid = (BoundIdentifierNode)idtype.IdentifierNode;
 
-            Assert.IsInstanceOf<BuiltinTypeSymbolNode>(bdid.Symbol);
+            Assert.IsInstanceOf<FrameworkTypeSymbolNode>(bdid.Symbol);
 
-            var bitsn = (BuiltinTypeSymbolNode)bdid.Symbol;
+            var bitsn = (FrameworkTypeSymbolNode)bdid.Symbol;
 
-            Assert.AreEqual(FrameworkType.String, bitsn.BuiltinType);
+            Assert.AreEqual(FrameworkType.String, bitsn.FrameworkType);
         }
 
         [Test]
@@ -146,27 +144,27 @@ namespace UnitTests
             Output(""4"");
             ";
 
-            SyntaxTree? tree = Analyser.Analyse(Code);
+            Compilation? tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
-            Assert.AreEqual(1, tree!.Root.TopLevelStatements.Count);
-            Assert.IsInstanceOf<FunctionCallStatementNode>(tree.Root.TopLevelStatements[0]);
+            Assert.AreEqual(1, tree!.Program.TopLevelStatementNodes.Count);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(tree.Program.TopLevelStatementNodes[0]);
 
-            var fcsn = (FunctionCallStatementNode)tree.Root.TopLevelStatements[0];
+            var fcsn = (FunctionCallStatementNode)tree.Program.TopLevelStatementNodes[0];
 
-            Assert.IsInstanceOf<IdentifierExpressionNode>(fcsn.FunctionExpression);
+            Assert.IsInstanceOf<IdentifierExpressionNode>(fcsn.FunctionExpressionNode);
 
-            var idex = (IdentifierExpressionNode)fcsn.FunctionExpression;
+            var idex = (IdentifierExpressionNode)fcsn.FunctionExpressionNode;
 
             Assert.IsInstanceOf<BoundIdentifierNode>(idex.IdentifierNode);
 
             var bdid = (BoundIdentifierNode)idex.IdentifierNode;
 
-            Assert.IsInstanceOf<BuiltinFunctionSymbolNode>(bdid.Symbol);
+            Assert.IsInstanceOf<FrameworkFunctionSymbolNode>(bdid.Symbol);
 
-            var func = (BuiltinFunctionSymbolNode)bdid.Symbol;
+            var func = (FrameworkFunctionSymbolNode)bdid.Symbol;
 
-            Assert.AreEqual("Output", func.Name);
+            Assert.AreEqual("Output", func.Identifier);
             Assert.AreEqual("console.log(uwu)", func.Generator(new[] { "uwu" }));
         }
 
@@ -210,7 +208,7 @@ namespace UnitTests
             LexemeCollection lexemes = lexer.LexAll();
 
             ProgramParser parser = new(lexemes);
-            SyntaxTree? tree = parser.ParseWholeProgram();
+            Compilation? tree = new(parser.ParseWholeProgram()!);
 
             if (tree != null)
             {
@@ -225,8 +223,8 @@ namespace UnitTests
 
             Assert.NotNull(tree);
 
-            var fcsn = (FunctionCallStatementNode)tree!.Root.TopLevelStatements[1];
-            var fnex = (IdentifierExpressionNode)fcsn.FunctionExpression;
+            var fcsn = (FunctionCallStatementNode)tree!.Program.TopLevelStatementNodes[1];
+            var fnex = (IdentifierExpressionNode)fcsn.FunctionExpressionNode;
             var bdid = (BoundIdentifierNode)fnex.IdentifierNode;
 
             Assert.IsInstanceOf<LocalVariableSymbolNode>(bdid.Symbol);

@@ -3,7 +3,7 @@ using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using Krypton.Utilities;
 
-namespace Krypton.Analysis.Grammatical
+namespace Krypton.Analysis.Syntactical
 {
     public sealed class TypeParser
     {
@@ -16,10 +16,10 @@ namespace Krypton.Analysis.Grammatical
 
         public TypeSpecNode? ParseNextType(ref int index)
         {
-            if (Lexemes.TryGet(index) is IdentifierLexeme idl)
+            if (Lexemes.TryGet(index) is IdentifierLexeme identifierLexeme)
             {
                 index++;
-                return new IdentifierTypeSpecNode(idl.Content, idl.LineNumber);
+                return new IdentifierTypeSpecNode(identifierLexeme.Content, identifierLexeme.LineNumber);
             }
 
             return null;

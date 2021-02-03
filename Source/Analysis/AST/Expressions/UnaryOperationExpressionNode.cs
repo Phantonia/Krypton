@@ -7,18 +7,18 @@ namespace Krypton.Analysis.Ast.Expressions
     {
         internal UnaryOperationExpressionNode(ExpressionNode operand, Operator @operator, int lineNumber) : base(lineNumber)
         {
-            Operand = operand;
+            OperandNode = operand;
             Operator = @operator;
         }
 
-        public ExpressionNode Operand { get; }
+        public ExpressionNode OperandNode { get; }
 
         public Operator Operator { get; }
 
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);
-            Operand.PopulateBranches(list);
+            OperandNode.PopulateBranches(list);
         }
     }
 }

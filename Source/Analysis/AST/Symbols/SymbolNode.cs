@@ -1,12 +1,15 @@
-﻿namespace Krypton.Analysis.Ast.Symbols
+﻿using System.Diagnostics;
+
+namespace Krypton.Analysis.Ast.Symbols
 {
+    [DebuggerDisplay("{GetType().Name}; Identifier = {Identifier}")]
     public abstract class SymbolNode : Node
     {
-        protected private SymbolNode(string name, int lineNumber) : base(lineNumber)
+        private protected SymbolNode(string identifier, int lineNumber) : base(lineNumber)
         {
-            Name = name;
+            Identifier = identifier;
         }
 
-        public string Name { get; }
+        public string Identifier { get; }
     }
 }

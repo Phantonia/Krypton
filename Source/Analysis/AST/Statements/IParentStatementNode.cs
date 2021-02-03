@@ -1,7 +1,7 @@
 ﻿namespace Krypton.Analysis.Ast.Statements
 {
-    public interface IParentStatementNode
+    public interface IParentStatementNode : INode
     {
-        StatementCollectionNode Statements { get; }
+        StatementCollectionNode StatementNodes { get; }
     }
 }

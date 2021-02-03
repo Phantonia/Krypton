@@ -1,5 +1,4 @@
 ﻿using Krypton.Analysis;
-using Krypton.Analysis.Ast;
 using Krypton.Analysis.Ast.Identifiers;
 using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Ast.Symbols;
@@ -18,7 +17,7 @@ namespace UnitTests
             Var x As Int = 4;
             ";
 
-            SyntaxTree? tree = Analyser.Analyse(Code);
+            Compilation? tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
         }
@@ -50,18 +49,18 @@ namespace UnitTests
             {
                 string code = $"Var x = {literal.code};";
 
-                SyntaxTree? tree = Analyser.Analyse(code);
+                Compilation? tree = Analyser.Analyse(code);
 
                 Assert.NotNull(tree);
-                Assert.IsTrue(tree!.Root.TopLevelStatements[0] is VariableDeclarationStatementNode
+                Assert.IsTrue(tree!.Program.TopLevelStatementNodes[0] is VariableDeclarationStatementNode
                 {
                     VariableIdentifierNode: BoundIdentifierNode
                     {
                         Symbol: VariableSymbolNode
                         {
-                            Type: BuiltinTypeSymbolNode
+                            TypeNode: FrameworkTypeSymbolNode
                             {
-                                BuiltinType: var biType
+                                FrameworkType: var biType
                             }
                         }
                     }
@@ -76,7 +75,7 @@ namespace UnitTests
             Output(""Hello world"");
             ";
 
-            SyntaxTree? tree = Analyser.Analyse(Code);
+            Compilation? tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
         }
@@ -115,7 +114,7 @@ namespace UnitTests
             x = False;
             ";
 
-            SyntaxTree? tree = Analyser.Analyse(Code);
+            Compilation? tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
         }
@@ -138,18 +137,18 @@ namespace UnitTests
             Var x = (4 + 5) * 6;
             ";
 
-            SyntaxTree? tree = Analyser.Analyse(Code);
+            Compilation? tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
-            Assert.IsTrue(tree!.Root.TopLevelStatements[0] is VariableDeclarationStatementNode
+            Assert.IsTrue(tree!.Program.TopLevelStatementNodes[0] is VariableDeclarationStatementNode
             {
                 VariableIdentifierNode: BoundIdentifierNode
                 {
                     Symbol: VariableSymbolNode
                     {
-                        Type: BuiltinTypeSymbolNode
+                        TypeNode: FrameworkTypeSymbolNode
                         {
-                            BuiltinType: FrameworkType.Int
+                            FrameworkType: FrameworkType.Int
                         }
                     }
                 }

@@ -1,22 +1,19 @@
 ﻿using Krypton.Analysis.Ast.Identifiers;
 using Krypton.Analysis.Ast.Symbols;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Krypton.Analysis.Ast.Expressions
 {
-    public sealed class IdentifierExpressionNode : ExpressionNode, IBindable
+    [DebuggerDisplay("{GetType().Name}; Identifier = {Identifier}")]
+    public sealed class IdentifierExpressionNode : ExpressionNode
     {
-        public IdentifierExpressionNode(string identifier, int lineNumber) : base(lineNumber)
+        internal IdentifierExpressionNode(string identifier, int lineNumber) : base(lineNumber)
         {
             IdentifierNode = new UnboundIdentifierNode(identifier, lineNumber)
             {
-                Parent = this
+                ParentNode = this
             };
-        }
-
-        private IdentifierExpressionNode(IdentifierNode identifier, int lineNumber) : base(lineNumber)
-        {
-            IdentifierNode = identifier;
         }
 
         public string Identifier => IdentifierNode.Identifier;
@@ -25,7 +22,7 @@ namespace Krypton.Analysis.Ast.Expressions
 
         public void Bind(SymbolNode symbol)
         {
-            IdentifierNode = new BoundIdentifierNode(Identifier, symbol, IdentifierNode.LineNumber) { Parent = this };
+            IdentifierNode = new BoundIdentifierNode(Identifier, symbol, IdentifierNode.LineNumber) { ParentNode = this };
         }
 
         public override void PopulateBranches(List<Node> list)

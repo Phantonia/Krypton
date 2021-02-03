@@ -4,27 +4,24 @@ using System.Collections.Generic;
 
 namespace Krypton.Analysis.Ast
 {
-    /* A ParameterNode represents the declaration of
-     * a parameter of a function. It is used by 
-     */
     public sealed class ParameterNode : Node
     {
-        public ParameterNode(string identifier, TypeSymbolNode type, int lineNumber) : base(lineNumber)
+        internal ParameterNode(string identifier, TypeSymbolNode type, int lineNumber) : base(lineNumber)
         {
-            IdentifierNode = new UnboundIdentifierNode(identifier, lineNumber) { Parent = this };
-            Type = type;
+            IdentifierNode = new UnboundIdentifierNode(identifier, lineNumber) { ParentNode = this };
+            TypeNode = type;
         }
 
         public string Identifier => IdentifierNode.Identifier;
 
         public IdentifierNode IdentifierNode { get; private set; }
 
-        public TypeSymbolNode Type { get; }
+        public TypeSymbolNode TypeNode { get; }
 
-        public ParameterVariableSymbolNode CreateParameter()
+        public ParameterVariableSymbolNode CreateParameterSymbol()
         {
-            ParameterVariableSymbolNode symbol = new(Identifier, Type, LineNumber);
-            IdentifierNode = new BoundIdentifierNode(Identifier, symbol, IdentifierNode.LineNumber) { Parent = this };
+            ParameterVariableSymbolNode symbol = new(Identifier, TypeNode, LineNumber);
+            IdentifierNode = new BoundIdentifierNode(Identifier, symbol, IdentifierNode.LineNumber) { ParentNode = this };
             return symbol;
         }
 
@@ -32,7 +29,7 @@ namespace Krypton.Analysis.Ast
         {
             list.Add(this);
             IdentifierNode.PopulateBranches(list);
-            Type.PopulateBranches(list);
+            TypeNode.PopulateBranches(list);
         }
     }
 }

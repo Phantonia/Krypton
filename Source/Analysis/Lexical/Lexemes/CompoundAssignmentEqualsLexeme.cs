@@ -20,7 +20,7 @@ namespace Krypton.Analysis.Lexical.Lexemes
             Operator.Plus => "+=",
             Operator.Minus => "-=",
             Operator.Ampersand => "&=",
-            Operator.Caret => "^",
+            Operator.Caret => "^=",
             Operator.Pipe => "|=",
             _ => throw new NotImplementedException(),
         };

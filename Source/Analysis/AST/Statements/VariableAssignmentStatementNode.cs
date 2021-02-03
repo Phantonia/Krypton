@@ -6,17 +6,18 @@ using System.Diagnostics;
 
 namespace Krypton.Analysis.Ast.Statements
 {
-    public sealed class VariableAssignmentStatementNode : StatementNode, IBindable
+    [DebuggerDisplay("{GetType().Name}; VariableIdentifier = {VariableIdentifier}")]
+    public sealed class VariableAssignmentStatementNode : StatementNode
     {
-        public VariableAssignmentStatementNode(IdentifierNode identifier, ExpressionNode assignedValue, int lineNumber) : base(lineNumber)
+        internal VariableAssignmentStatementNode(IdentifierNode identifier, ExpressionNode assignedValue, int lineNumber) : base(lineNumber)
         {
             VariableIdentifierNode = identifier;
-            VariableIdentifierNode.Parent = this;
-            AssignedValue = assignedValue;
-            AssignedValue.Parent = this;
+            VariableIdentifierNode.ParentNode = this;
+            AssignedExpressionNode = assignedValue;
+            AssignedExpressionNode.ParentNode = this;
         }
 
-        public ExpressionNode AssignedValue { get; }
+        public ExpressionNode AssignedExpressionNode { get; }
 
         public VariableSymbolNode VariableNode
         {
@@ -34,23 +35,14 @@ namespace Krypton.Analysis.Ast.Statements
 
         public void Bind(LocalVariableSymbolNode symbol)
         {
-            VariableIdentifierNode = new BoundIdentifierNode(VariableIdentifier, symbol, VariableIdentifierNode.LineNumber) { Parent = this };
+            VariableIdentifierNode = new BoundIdentifierNode(VariableIdentifier, symbol, VariableIdentifierNode.LineNumber) { ParentNode = this };
         }
 
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);
             VariableIdentifierNode.PopulateBranches(list);
-            AssignedValue.PopulateBranches(list);
-        }
-
-        IdentifierNode IBindable.IdentifierNode => VariableIdentifierNode;
-
-        void IBindable.Bind(SymbolNode symbol)
-        {
-            LocalVariableSymbolNode? var = symbol as LocalVariableSymbolNode;
-            Debug.Assert(var != null);
-            Bind(var);
+            AssignedExpressionNode.PopulateBranches(list);
         }
     }
 }

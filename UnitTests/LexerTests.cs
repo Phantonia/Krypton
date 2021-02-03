@@ -2,6 +2,7 @@ using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using Krypton.Framework;
+using Krypton.Framework.Literals;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -76,18 +77,16 @@ namespace UnitTests
         [Test]
         public void RationalLiteralTest()
         {
-            bool success = NumberLiteralParser.TryParseRational("3.14", out RationalLiteralValue value);
+            bool success = NumberLiteralParser.TryParseRational("3.14", out Rational value);
 
             Assert.IsTrue(success);
-            Assert.AreEqual(314, value.Numerator);
-            Assert.AreEqual(2, value.Power);
             Assert.AreEqual(3.14, (double)value);
             Assert.AreEqual(314 * Math.Pow(10, -2), (double)value);
 
             success = NumberLiteralParser.TryParseRational("0.0001", out value);
             Assert.IsTrue(success);
             Assert.AreEqual(1, value.Numerator);
-            Assert.AreEqual(4, value.Power);
+            Assert.AreEqual(10000, value.Denominator);
             Assert.AreEqual(0.0001, (double)value);
         }
 

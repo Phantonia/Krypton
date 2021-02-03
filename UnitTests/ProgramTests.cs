@@ -1,6 +1,7 @@
-﻿using Krypton.Analysis.Ast;
+﻿using Krypton.Analysis;
+using Krypton.Analysis.Ast;
 using Krypton.Analysis.Ast.Statements;
-using Krypton.Analysis.Grammatical;
+using Krypton.Analysis.Syntactical;
 using Krypton.Analysis.Lexical;
 using NUnit.Framework;
 
@@ -26,23 +27,23 @@ namespace UnitTests
             LexemeCollection lexemes = lexer.LexAll();
 
             ProgramParser parser = new(lexemes);
-            SyntaxTree? tree = parser.ParseWholeProgram();
+            Compilation? tree = new(parser.ParseWholeProgram()!);
 
             Assert.NotNull(tree);
-            Assert.IsInstanceOf<ProgramNode>(tree!.Root);
+            Assert.IsInstanceOf<ProgramNode>(tree!.Program);
 
-            ProgramNode programNode = tree.Root;
+            ProgramNode programNode = tree.Program;
 
-            Assert.AreEqual(4, programNode.TopLevelStatements.Count);
+            Assert.AreEqual(4, programNode.TopLevelStatementNodes.Count);
 
-            Assert.IsInstanceOf<FunctionCallStatementNode>(programNode.TopLevelStatements[0]);
-            Assert.IsInstanceOf<VariableDeclarationStatementNode>(programNode.TopLevelStatements[1]);
-            Assert.IsInstanceOf<FunctionCallStatementNode>(programNode.TopLevelStatements[2]);
-            Assert.IsInstanceOf<WhileStatementNode>(programNode.TopLevelStatements[3]);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(programNode.TopLevelStatementNodes[0]);
+            Assert.IsInstanceOf<VariableDeclarationStatementNode>(programNode.TopLevelStatementNodes[1]);
+            Assert.IsInstanceOf<FunctionCallStatementNode>(programNode.TopLevelStatementNodes[2]);
+            Assert.IsInstanceOf<WhileStatementNode>(programNode.TopLevelStatementNodes[3]);
 
-            WhileStatementNode @while = (WhileStatementNode)programNode.TopLevelStatements[3];
+            WhileStatementNode @while = (WhileStatementNode)programNode.TopLevelStatementNodes[3];
 
-            Assert.AreEqual(1, @while.Statements.Count);
+            Assert.AreEqual(1, @while.StatementNodes.Count);
         }
     }
 }

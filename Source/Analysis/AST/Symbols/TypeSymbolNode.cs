@@ -8,12 +8,14 @@ namespace Krypton.Analysis.Ast.Symbols
     {
         private protected TypeSymbolNode(string name, int lineNumber) : base(name, lineNumber) { }
 
-        public ReadOnlyDictionary<Operator, BinaryOperationSymbolNode> BinaryOperations { get; private set; }
+        public ReadOnlyDictionary<Operator, BinaryOperationSymbolNode> BinaryOperationNodes { get; private set; }
 
-        public ReadOnlyDictionary<Operator, UnaryOperationSymbolNode> UnaryOperations { get; private set; }
+        public ReadOnlyDictionary<Operator, UnaryOperationSymbolNode> UnaryOperationNodes { get; private set; }
 
-        internal void SetBinaryOperations(IDictionary<Operator, BinaryOperationSymbolNode> binaryOperations) => BinaryOperations = binaryOperations.MakeReadOnly();
+        internal void SetBinaryOperations(IDictionary<Operator, BinaryOperationSymbolNode> binaryOperations)
+            => BinaryOperationNodes = binaryOperations.MakeReadOnly();
 
-        internal void SetUnaryOperations(IDictionary<Operator, UnaryOperationSymbolNode> unaryOperations) => UnaryOperations = unaryOperations.MakeReadOnly();
+        internal void SetUnaryOperations(IDictionary<Operator, UnaryOperationSymbolNode> unaryOperations)
+            => UnaryOperationNodes = unaryOperations.MakeReadOnly();
     }
 }

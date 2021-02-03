@@ -4,7 +4,7 @@ namespace Krypton.Analysis.Ast.Identifiers
 {
     public sealed class UnboundIdentifierNode : IdentifierNode
     {
-        public UnboundIdentifierNode(string identifier, int lineNumber) : base(identifier, lineNumber) { }
+        internal UnboundIdentifierNode(string identifier, int lineNumber) : base(identifier, lineNumber) { }
 
         public override void PopulateBranches(List<Node> list)
         {

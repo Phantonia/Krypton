@@ -1,12 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Krypton.Utilities
 {
     public static class CollectionHelpers
     {
-        public static ReadOnlyList<T> MakeReadOnly<T>(this IList<T>? list)
+        public static ReadOnlyList<T> MakeReadOnly<T>(this IEnumerable<T>? enumerable)
             where T : class
         {
+            if (enumerable == null)
+            {
+                return default;
+            }
+
+            IList<T> list = (enumerable as IList<T>) ?? enumerable.ToList();
             return new ReadOnlyList<T>(list);
         }
 

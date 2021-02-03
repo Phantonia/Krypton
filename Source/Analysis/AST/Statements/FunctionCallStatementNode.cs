@@ -1,20 +1,21 @@
 ﻿using Krypton.Analysis.Ast.Expressions;
+using Krypton.Utilities;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace Krypton.Analysis.Ast.Statements
 {
     public sealed class FunctionCallStatementNode : StatementNode
     {
-        public FunctionCallStatementNode(FunctionCallExpressionNode expression, int lineNumber) : base(lineNumber)
+        internal FunctionCallStatementNode(FunctionCallExpressionNode expression, int lineNumber) : base(lineNumber)
         {
-            this.UnderlyingFunctionCallExpressionNode = expression;
-            this.UnderlyingFunctionCallExpressionNode.Parent = this;
+            UnderlyingFunctionCallExpressionNode = expression;
+            UnderlyingFunctionCallExpressionNode.ParentNode = this;
         }
 
-        public ReadOnlyCollection<ExpressionNode>? Arguments => UnderlyingFunctionCallExpressionNode.Arguments;
+        public ReadOnlyList<ExpressionNode>? ArgumentNodes => UnderlyingFunctionCallExpressionNode.ArgumentNodes;
 
-        public ExpressionNode FunctionExpression => UnderlyingFunctionCallExpressionNode.FunctionExpression;
+        public ExpressionNode FunctionExpressionNode => UnderlyingFunctionCallExpressionNode.FunctionExpressionNode;
 
         public FunctionCallExpressionNode UnderlyingFunctionCallExpressionNode { get; }
 

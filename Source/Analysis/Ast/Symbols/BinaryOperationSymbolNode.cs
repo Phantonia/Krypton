@@ -5,24 +5,24 @@ namespace Krypton.Analysis.Ast.Symbols
 {
     public sealed class BinaryOperationSymbolNode : SymbolNode
     {
-        internal BinaryOperationSymbolNode(Operator @operator, TypeSymbolNode leftType, TypeSymbolNode rightType, TypeSymbolNode returnType, BinaryGenerator generator, int lineNumber) : base(name: string.Empty, lineNumber)
+        internal BinaryOperationSymbolNode(Operator @operator, TypeSymbolNode leftType, TypeSymbolNode rightType, TypeSymbolNode returnType, BinaryGenerator generator, int lineNumber) : base(identifier: string.Empty, lineNumber)
         {
             Operator = @operator;
-            LeftType = leftType;
-            RightType = rightType;
-            ReturnType = returnType;
+            LeftOperandTypeNode = leftType;
+            RightOperandTypeNode = rightType;
+            ReturnTypeNode = returnType;
             Generator = generator;
         }
 
         public BinaryGenerator Generator { get; }
 
-        public TypeSymbolNode LeftType { get; }
+        public TypeSymbolNode LeftOperandTypeNode { get; }
 
         public Operator Operator { get; }
 
-        public TypeSymbolNode ReturnType { get; }
+        public TypeSymbolNode ReturnTypeNode { get; }
 
-        public TypeSymbolNode RightType { get; }
+        public TypeSymbolNode RightOperandTypeNode { get; }
 
         public override void PopulateBranches(List<Node> list)
         {
