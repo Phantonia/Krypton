@@ -77,14 +77,12 @@ namespace Krypton.Analysis.Semantical
 
             VariableSymbolNode localVariable = variableAssignmentNode.VariableNode;
 
-            if (TypeCompatibility.IsCompatibleWith(assignedType, localVariable.TypeNode))
+            if (!TypeCompatibility.IsCompatibleWith(assignedType, localVariable.TypeNode))
             {
-                return true;
+                return false;
             }
-            else
-            {
-                throw new NotImplementedException("Error: wrong type");
-            }
+            
+            return true;
         }
 
         private bool CheckVariableDeclarationStatement(VariableDeclarationStatementNode variableDeclarationNode)

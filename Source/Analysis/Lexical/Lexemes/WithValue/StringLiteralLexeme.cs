@@ -15,7 +15,7 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
 
         public string Parse()
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("Notim: Can't parse string literals yet");
         }
     }
 }

@@ -44,7 +44,7 @@ namespace Krypton.Analysis.Semantical
 
             if (!leftOperandType.BinaryOperationNodes.TryGetValue(appliedOperator, out BinaryOperationSymbolNode? declaredOperationNode))
             {
-                throw new NotImplementedException("Error: operand not valid on this type");
+                throw new NotImplementedException("Error: operator not valid on this type");
             }
 
             if (!TypeCompatibility.IsCompatibleWith(leftOperandType, declaredOperationNode.LeftOperandTypeNode))
@@ -100,8 +100,7 @@ namespace Krypton.Analysis.Semantical
 
                 if (!TypeCompatibility.IsCompatibleWith(argumentType, functionNode.ParameterNodes[i].TypeNode))
                 {
-                    throw new NotImplementedException("Type error");
-                    // return (null, false);
+                    return (null, false);
                 }
             }
 

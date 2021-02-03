@@ -22,7 +22,7 @@ namespace Krypton.Analysis.Lexical.Lexemes
             Operator.Ampersand => "&=",
             Operator.Caret => "^=",
             Operator.Pipe => "|=",
-            _ => throw new NotImplementedException(),
+            _ => throw new NotSupportedException(),
         };
 
         public Operator Operator { get; }

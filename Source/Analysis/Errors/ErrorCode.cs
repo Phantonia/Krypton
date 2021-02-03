@@ -1,6 +1,6 @@
 ﻿namespace Krypton.Analysis.Errors
 {
-    public enum ErrorCode : ushort
+    public enum ErrorCode
     {
         None = 0,
 
@@ -11,12 +11,27 @@
         UnknownEscapeSequence = 4,
         HexLiteralWithMixedCase = 5,
 
-        // Grammatical errors
+        // Syntax errors
         ExpectedSemicolon = 101,
         ExpectedClosingParenthesis = 102,
         UnexpectedExpressionTerm = 103,
         ExpectedCommaOrClosingParenthesis = 104,
         ExpectedIdentifier = 105,
         ExpectedEqualsOrSemicolon = 106,
+        ExpectedClosingBrace = 107,
+        ExpectedOpeningBrace = 108,
+
+        // Semantic errors: binding
+        CantAssignUndeclaredVariable = 401,
+        CantRedeclareVariable = 402,
+
+        // Semantic errors: types
+        BinaryOperatorNotValidOnType = 601,
+        UnaryOperatorNotValidOnType = 602,
+        CanOnlyCallFunctions = 603,
+        OnlyFunctionWithReturnTypeCanBeExpression = 604,
+        WrongNumberOfArguments = 605,
+        CantConvertType = 606,
+
     }
 }
