@@ -158,7 +158,7 @@ namespace Krypton.Analysis.Semantical
 
                         if (!variableIdentifierMap.TryGet(variableAssignmentNode.VariableIdentifier, out LocalVariableSymbolNode? variableNode))
                         {
-                            return false;
+                            throw new NotImplementedException("Error: variable not declared");
                         }
 
                         variableAssignmentNode.Bind(variableNode);
