@@ -208,7 +208,7 @@ namespace UnitTests
             LexemeCollection lexemes = lexer.LexAll();
 
             ProgramParser parser = new(lexemes);
-            Compilation? tree = new(parser.ParseWholeProgram()!);
+            Compilation? tree = new(parser.ParseWholeProgram()!, Code);
 
             if (tree != null)
             {

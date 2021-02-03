@@ -22,7 +22,7 @@ namespace Krypton.Analysis
                 return null;
             }
 
-            Compilation compilation = new(program);
+            Compilation compilation = new(program, code);
 
             SemanticalAnalyser semanticalAnalyser = new(compilation);
             bool success = semanticalAnalyser.PerformSemanticalAnalysis();

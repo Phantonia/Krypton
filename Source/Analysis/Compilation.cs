@@ -6,10 +6,13 @@ namespace Krypton.Analysis
 {
     public sealed class Compilation : IEnumerable<Node>
     {
-        public Compilation(ProgramNode program)
+        public Compilation(ProgramNode program, string code)
         {
             Program = program;
+            Code = code;
         }
+
+        public string Code { get; }
 
         public ProgramNode Program { get; }
 

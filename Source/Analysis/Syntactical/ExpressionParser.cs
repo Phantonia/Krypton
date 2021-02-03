@@ -6,6 +6,7 @@ using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using Krypton.Framework;
 using Krypton.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -108,11 +109,9 @@ namespace Krypton.Analysis.Syntactical
                         expression = new FunctionCallExpressionNode(expression, arguments, lineNumber);
                         return;
                     case { }:
-                        ErrorProvider.ReportMissingCommaOrParenthesis(Lexemes[index].Content, Lexemes[index].LineNumber);
-                        break;
+                        throw new NotImplementedException("Error: missing comma or parenthesis");
                     case null:
-                        ErrorProvider.ReportMissingCommaOrParenthesis("", Lexemes[index - 1].LineNumber);
-                        break;
+                        throw new NotImplementedException("Error: missing comma or parenthesis");
                 }
 
                 index++;
@@ -184,8 +183,7 @@ namespace Krypton.Analysis.Syntactical
 
                         if (nextLexeme is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing })
                         {
-                            ErrorProvider.ReportMissingClosingParenthesis(nextLexeme?.Content ?? "", nextLexeme?.LineNumber ?? Lexemes[index - 1].LineNumber);
-                            return null;
+                            throw new NotImplementedException("Error: missing closing parenthesis");
                         }
 
                         return expression;
@@ -218,8 +216,7 @@ namespace Krypton.Analysis.Syntactical
                         return null;
                     }
                 default:
-                    ErrorProvider.ReportUnexpectedExpressionTerm(Lexemes[index]);
-                    return null;
+                    throw new NotImplementedException("Error: unexpected expression term");
             }
         }
     }
