@@ -7,7 +7,16 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
         public ImaginaryLiteralLexeme(string value, int lineNumber) : base(lineNumber)
         {
             Debug.Assert(value[^1] == 'i');
-            Value = NumberLiteralParser.ParseRational(value[..^1]);
+            value = value[..^1];
+
+            if (NumberLiteralParser.TryParseRational(value, out RationalLiteralValue rational))
+            {
+                Value = rational;
+                return;
+            }
+
+            long integer = NumberLiteralParser.ParseDecimal(value);
+            Value = new RationalLiteralValue(integer, 0);
         }
 
         public override string Content => $"{Value}i";

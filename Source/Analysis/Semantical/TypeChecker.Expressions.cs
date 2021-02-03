@@ -1,6 +1,7 @@
 ﻿using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Identifiers;
 using Krypton.Analysis.Ast.Symbols;
+using Krypton.Framework;
 using System;
 using System.Diagnostics;
 
@@ -17,6 +18,8 @@ namespace Krypton.Analysis.Semantical
                         (TypeSymbolNode? symbol, bool success) = CheckFunctionCallExpression(funcCall, tolerateNoReturnType: false);
                         return success ? symbol : null;
                     }
+                case BinaryOperationExpressionNode binaryOperation:
+                    return CheckBinaryOperation(binaryOperation);
                 case LiteralExpressionNode literal:
                     return CheckLiteralExpression(literal);
                 case IdentifierExpressionNode id:
@@ -27,32 +30,34 @@ namespace Krypton.Analysis.Semantical
             }
         }
 
-        private TypeSymbolNode? CheckIdentifierExpression(IdentifierExpressionNode id)
+        private TypeSymbolNode? CheckBinaryOperation(BinaryOperationExpressionNode binaryOperation)
         {
-            BoundIdentifierNode? boundId = id.IdentifierNode as BoundIdentifierNode;
-            Debug.Assert(boundId != null);
+            TypeSymbolNode? leftType = CheckExpression(binaryOperation.Left);
+            TypeSymbolNode? rightType = CheckExpression(binaryOperation.Right);
 
-            switch (boundId.Symbol)
+            if (leftType == null || rightType == null)
             {
-                case VariableSymbolNode var:
-                    {
-                        TypeSymbolNode? varType = var.Type;
-                        Debug.Assert(varType != null);
-                        return varType;
-                    }
-                case ConstantSymbolNode @const:
-                    {
-                        return @const.Type;
-                    }
-                default:
-                    Debug.Fail(message: null);
-                    return null;
+                return null;
             }
-        }
 
-        private TypeSymbolNode? CheckLiteralExpression(LiteralExpressionNode literal)
-        {
-            return typeManager[literal.AssociatedType];
+            Operator appliedOperator = binaryOperation.Operator;
+
+            if (!leftType.BinaryOperations.TryGetValue(appliedOperator, out BinaryOperationSymbolNode? declaredOperation))
+            {
+                throw new NotImplementedException("Error: operand not valid on this type");
+            }
+
+            if (!TypeCompatibility.IsCompatibleWith(leftType, declaredOperation.LeftType))
+            {
+                return null;
+            }
+
+            if (!TypeCompatibility.IsCompatibleWith(rightType, declaredOperation.RightType))
+            {
+                return null;
+            }
+
+            return declaredOperation.ReturnType;
         }
 
         private (TypeSymbolNode?, bool) CheckFunctionCallExpression(FunctionCallExpressionNode funcCall, bool tolerateNoReturnType)
@@ -103,6 +108,34 @@ namespace Krypton.Analysis.Semantical
             }
 
             return (function.ReturnType, true);
+        }
+
+        private TypeSymbolNode? CheckIdentifierExpression(IdentifierExpressionNode id)
+        {
+            BoundIdentifierNode? boundId = id.IdentifierNode as BoundIdentifierNode;
+            Debug.Assert(boundId != null);
+
+            switch (boundId.Symbol)
+            {
+                case VariableSymbolNode var:
+                    {
+                        TypeSymbolNode? varType = var.Type;
+                        Debug.Assert(varType != null);
+                        return varType;
+                    }
+                case ConstantSymbolNode @const:
+                    {
+                        return @const.Type;
+                    }
+                default:
+                    Debug.Fail(message: null);
+                    return null;
+            }
+        }
+
+        private TypeSymbolNode? CheckLiteralExpression(LiteralExpressionNode literal)
+        {
+            return typeManager[literal.AssociatedType];
         }
     }
 }
