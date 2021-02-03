@@ -76,9 +76,9 @@ namespace UnitTests
         {
             BinaryOperationChain chain = new(1); // Arbitrary line number
             chain.AddOperand(new IntegerLiteralExpressionNode(4, 1));
-            chain.AddOperator(new CharacterOperatorLexeme(Operator.Plus, 1));
+            chain.AddOperator(new CharacterOperatorLexeme(Operator.Plus, 1, 0));
             chain.AddOperand(new IntegerLiteralExpressionNode(4, 1));
-            chain.AddOperator(new CharacterOperatorLexeme(Operator.Asterisk, 1));
+            chain.AddOperator(new CharacterOperatorLexeme(Operator.Asterisk, 1, 0));
             chain.AddOperand(new IntegerLiteralExpressionNode(4, 1));
             // 4 + 4 * 4 = 20
 

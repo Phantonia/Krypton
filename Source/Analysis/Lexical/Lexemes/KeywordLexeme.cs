@@ -4,7 +4,7 @@ namespace Krypton.Analysis.Lexical.Lexemes
 {
     public class KeywordLexeme : Lexeme
     {
-        private KeywordLexeme(ReservedKeyword keyword, int lineNumber) : base(lineNumber)
+        private KeywordLexeme(ReservedKeyword keyword, int lineNumber, int index) : base(lineNumber, index)
         {
             Keyword = keyword;
         }
@@ -13,22 +13,22 @@ namespace Krypton.Analysis.Lexical.Lexemes
 
         public ReservedKeyword Keyword { get; }
 
-        public static KeywordLexeme Create(ReservedKeyword keyword, int lineNumber)
+        public static KeywordLexeme Create(ReservedKeyword keyword, int lineNumber, int index)
         {
             return keyword switch
             {
-                ReservedKeyword.And => new OperatorKeywordLexeme(OperatorPrecedenceGroup.LogicalAnd, keyword, lineNumber),
-                ReservedKeyword.Or => new OperatorKeywordLexeme(OperatorPrecedenceGroup.LogicalOr, keyword, lineNumber),
-                ReservedKeyword.Xor => new OperatorKeywordLexeme(OperatorPrecedenceGroup.LogicalXor, keyword, lineNumber),
-                ReservedKeyword.Not => new OperatorKeywordLexeme(OperatorPrecedenceGroup.LogicalNot, keyword, lineNumber),
-                ReservedKeyword.Div or ReservedKeyword.Mod => new OperatorKeywordLexeme(OperatorPrecedenceGroup.Multiplicative, keyword, lineNumber),
-                _ => new KeywordLexeme(keyword, lineNumber),
+                ReservedKeyword.And => new OperatorKeywordLexeme(OperatorPrecedenceGroup.LogicalAnd, keyword, lineNumber, index),
+                ReservedKeyword.Or => new OperatorKeywordLexeme(OperatorPrecedenceGroup.LogicalOr, keyword, lineNumber, index),
+                ReservedKeyword.Xor => new OperatorKeywordLexeme(OperatorPrecedenceGroup.LogicalXor, keyword, lineNumber, index),
+                ReservedKeyword.Not => new OperatorKeywordLexeme(OperatorPrecedenceGroup.LogicalNot, keyword, lineNumber, index),
+                ReservedKeyword.Div or ReservedKeyword.Mod => new OperatorKeywordLexeme(OperatorPrecedenceGroup.Multiplicative, keyword, lineNumber, index),
+                _ => new KeywordLexeme(keyword, lineNumber, index),
             };
         }
 
         private sealed class OperatorKeywordLexeme : KeywordLexeme, IOperatorLexeme
         {
-            public OperatorKeywordLexeme(OperatorPrecedenceGroup precedenceGroup, ReservedKeyword keyword, int lineNumber) : base(keyword, lineNumber)
+            public OperatorKeywordLexeme(OperatorPrecedenceGroup precedenceGroup, ReservedKeyword keyword, int lineNumber, int index) : base(keyword, lineNumber, index)
             {
                 PrecedenceGroup = precedenceGroup;
             }

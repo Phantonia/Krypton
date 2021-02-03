@@ -16,10 +16,10 @@ namespace Krypton.Analysis.Lexical
         private const bool open = true;
 #endif
 
-        public void Seal(int lineNumber)
+        public void Seal(int lineNumber, int index)
         {
             Debug.Assert(open);
-            Add(new EndOfFileLexeme(lineNumber));
+            Add(new EndOfFileLexeme(lineNumber, index));
 #if DEBUG
             open = false;
 #endif

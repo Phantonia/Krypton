@@ -4,7 +4,7 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
 {
     public sealed class IntegerLiteralLexeme : Lexeme
     {
-        public IntegerLiteralLexeme(string value, IntegerStyle style, int lineNumber) : base(lineNumber)
+        public IntegerLiteralLexeme(string value, IntegerStyle style, int lineNumber, int index) : base(lineNumber, index)
         {
             switch (style)
             {
@@ -23,7 +23,7 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
             }
         }
 
-        public IntegerLiteralLexeme(int value, int lineNumber) : base(lineNumber)
+        public IntegerLiteralLexeme(int value, int lineNumber, int index) : base(lineNumber, index)
         {
             Value = value;
         }

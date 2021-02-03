@@ -2,7 +2,7 @@
 {
     public sealed class BooleanLiteralLexeme : Lexeme
     {
-        public BooleanLiteralLexeme(bool value, int lineNumber) : base(lineNumber)
+        public BooleanLiteralLexeme(bool value, int lineNumber, int index) : base(lineNumber, index)
         {
             Value = value;
         }

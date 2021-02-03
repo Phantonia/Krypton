@@ -5,7 +5,7 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
 {
     public sealed class RationalLiteralLexeme : Lexeme
     {
-        public RationalLiteralLexeme(string value, int lineNumber) : base(lineNumber)
+        public RationalLiteralLexeme(string value, int lineNumber, int index) : base(lineNumber, index)
         {
             Debug.Assert(NumberLiteralParser.TryParseRational(value, out _));
             Value = NumberLiteralParser.ParseRational(value);

@@ -6,7 +6,7 @@ namespace Krypton.Analysis.Lexical.Lexemes
 {
     public sealed class CompoundAssignmentEqualsLexeme : Lexeme
     {
-        public CompoundAssignmentEqualsLexeme(Operator @operator, int lineNumber) : base(lineNumber)
+        public CompoundAssignmentEqualsLexeme(Operator @operator, int lineNumber, int index) : base(lineNumber, index)
         {
             Debug.Assert(IsLegalInCompoundAssignment(@operator));
             Operator = @operator;

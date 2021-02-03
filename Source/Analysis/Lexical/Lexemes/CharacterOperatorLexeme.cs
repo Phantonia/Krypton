@@ -6,7 +6,7 @@ namespace Krypton.Analysis.Lexical.Lexemes
 {
     public sealed class CharacterOperatorLexeme : Lexeme, IOperatorLexeme
     {
-        public CharacterOperatorLexeme(Operator @operator, int lineNumber) : base(lineNumber)
+        public CharacterOperatorLexeme(Operator @operator, int lineNumber, int index) : base(lineNumber, index)
         {
             Operator = @operator;
         }

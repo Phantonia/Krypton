@@ -2,7 +2,7 @@
 {
     public sealed class IdentifierLexeme : Lexeme
     {
-        public IdentifierLexeme(string identifier, int lineNumber) : base(lineNumber)
+        public IdentifierLexeme(string identifier, int lineNumber, int index) : base(lineNumber, index)
         {
             Content = identifier;
         }

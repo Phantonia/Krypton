@@ -30,7 +30,7 @@ namespace Krypton.Analysis.Lexical
                 nextLexeme = NextLexeme();
             }
 
-            collection.Seal(lineNumber);
+            collection.Seal(lineNumber, Code.Length);
 
             return collection;
         }
@@ -73,6 +73,7 @@ namespace Krypton.Analysis.Lexical
 
         private Lexeme? LexOther()
         {
+            int lexemeIndex = index;
             char currentChar = Code[index];
 
             if (char.IsWhiteSpace(currentChar))
@@ -122,7 +123,7 @@ namespace Krypton.Analysis.Lexical
             {
                 index++;
 
-                return new InvalidLexeme(currentChar.ToString(), ErrorCode.UnknownLexeme, lineNumber);
+                return new InvalidLexeme(currentChar.ToString(), ErrorCode.UnknownLexeme, lineNumber, lexemeIndex);
             }
         }
     }

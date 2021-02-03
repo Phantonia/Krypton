@@ -5,7 +5,7 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
 {
     public sealed class ImaginaryLiteralLexeme : Lexeme
     {
-        public ImaginaryLiteralLexeme(string value, int lineNumber) : base(lineNumber)
+        public ImaginaryLiteralLexeme(string value, int lineNumber, int index) : base(lineNumber, index)
         {
             Debug.Assert(value[^1] == 'i');
             value = value[..^1];

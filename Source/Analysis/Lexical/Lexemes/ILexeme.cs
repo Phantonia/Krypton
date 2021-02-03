@@ -4,6 +4,8 @@
     {
         string Content { get; }
 
+        int Index { get; }
+
         int LineNumber { get; }
     }
 }

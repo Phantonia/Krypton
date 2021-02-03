@@ -8,7 +8,9 @@ namespace Krypton.Analysis.Lexical
     {
         private Lexeme? LexDotOrSingleLineComment()
         {
+            int lexemeIndex = index;
             index++;
+
             if (Code.TryGet(index) == '.' && Code.TryGet(index + 1) == '.')
             {
                 index += 2;
@@ -27,12 +29,13 @@ namespace Krypton.Analysis.Lexical
             }
             else
             {
-                return new SyntaxCharacterLexeme(SyntaxCharacter.Dot, lineNumber);
+                return new SyntaxCharacterLexeme(SyntaxCharacter.Dot, lineNumber, lexemeIndex);
             }
         }
 
         private Lexeme? LexGreaterThanOrMultilineComment()
         {
+            int lexemeIndex = index;
             index++;
 
             if (Code.TryGet(index) == '>') // >>
@@ -94,7 +97,7 @@ namespace Krypton.Analysis.Lexical
             }
             else
             {
-                return new CharacterOperatorLexeme(Operator.GreaterThan, lineNumber);
+                return new CharacterOperatorLexeme(Operator.GreaterThan, lineNumber, lexemeIndex);
             }
         }
     }
