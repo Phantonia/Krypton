@@ -2,6 +2,6 @@
 {
     public abstract class ExpressionNode : Node
     {
-        private protected ExpressionNode(int lineNumber) : base(lineNumber) { }
+        private protected ExpressionNode(int lineNumber, int index) : base(lineNumber, index) { }
     }
 }

@@ -5,7 +5,7 @@ namespace Krypton.Analysis.Ast.Expressions
 {
     public class UnaryOperationExpressionNode : ExpressionNode
     {
-        internal UnaryOperationExpressionNode(ExpressionNode operand, Operator @operator, int lineNumber) : base(lineNumber)
+        internal UnaryOperationExpressionNode(ExpressionNode operand, Operator @operator, int lineNumber, int index) : base(lineNumber, index)
         {
             OperandNode = operand;
             Operator = @operator;

@@ -12,6 +12,8 @@ namespace Krypton.Analysis.Syntactical
     {
         private BlockStatementNode? ParseBlockStatement(ref int index, int lineNumber)
         {
+            int nodeIndex = lexemes[index].Index;
+            
             index++;
 
             StatementCollectionNode? statements = ParseStatementBlock(ref index);
@@ -21,7 +23,7 @@ namespace Krypton.Analysis.Syntactical
                 return null;
             }
 
-            return new BlockStatementNode(statements, lineNumber);
+            return new BlockStatementNode(statements, lineNumber, nodeIndex);
         }
 
         private StatementCollectionNode? ParseStatementBlock(ref int index)
@@ -62,6 +64,7 @@ namespace Krypton.Analysis.Syntactical
         private WhileStatementNode? ParseWhileStatement(ref int index)
         {
             int lineNumber = lexemes[index].LineNumber;
+            int nodeIndex = lexemes[index].Index;
 
             index++;
 
@@ -79,7 +82,7 @@ namespace Krypton.Analysis.Syntactical
                 return null;
             }
 
-            return new WhileStatementNode(condition, statements, lineNumber);
+            return new WhileStatementNode(condition, statements, lineNumber, index);
         }
     }
 }

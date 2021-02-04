@@ -6,13 +6,13 @@ namespace Krypton.Analysis.Ast.Expressions
 {
     public sealed class FunctionCallExpressionNode : ExpressionNode
     {
-        internal FunctionCallExpressionNode(ExpressionNode functionExpression, int lineNumber) : base(lineNumber)
+        internal FunctionCallExpressionNode(ExpressionNode functionExpression, int lineNumber, int index) : base(lineNumber, index)
         {
             FunctionExpressionNode = functionExpression;
             FunctionExpressionNode.ParentNode = this;
         }
 
-        internal FunctionCallExpressionNode(ExpressionNode functionExpression, IEnumerable<ExpressionNode>? arguments, int lineNumber) : base(lineNumber)
+        internal FunctionCallExpressionNode(ExpressionNode functionExpression, IEnumerable<ExpressionNode>? arguments, int lineNumber, int index) : base(lineNumber, index)
         {
             FunctionExpressionNode = functionExpression;
             ArgumentNodes = ((arguments as IList<ExpressionNode>) ?? arguments?.ToList())?.MakeReadOnly() ?? new ReadOnlyList<ExpressionNode>();

@@ -6,7 +6,7 @@ namespace Krypton.Analysis.Ast.Statements
     [DebuggerDisplay("{GetType().Name}; StatementCount = {StatementNodes.Count}")]
     public sealed class BlockStatementNode : StatementNode, IParentStatementNode
     {
-        internal BlockStatementNode(StatementCollectionNode statements, int lineNumber) : base(lineNumber)
+        internal BlockStatementNode(StatementCollectionNode statements, int lineNumber, int index) : base(lineNumber, index)
         {
             StatementNodes = statements;
         }

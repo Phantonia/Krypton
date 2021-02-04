@@ -19,7 +19,7 @@ namespace Krypton.Analysis.Syntactical
             if (Lexemes.TryGet(index) is IdentifierLexeme identifierLexeme)
             {
                 index++;
-                return new IdentifierTypeSpecNode(identifierLexeme.Content, identifierLexeme.LineNumber);
+                return new IdentifierTypeSpecNode(identifierLexeme.Content, identifierLexeme.LineNumber, identifierLexeme.Index);
             }
 
             return null;

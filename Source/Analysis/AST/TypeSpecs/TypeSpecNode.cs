@@ -2,6 +2,6 @@
 {
     public abstract class TypeSpecNode : Node
     {
-        private protected TypeSpecNode(int lineNumber) : base(lineNumber) { }
+        private protected TypeSpecNode(int lineNumber, int index) : base(lineNumber, index) { }
     }
 }

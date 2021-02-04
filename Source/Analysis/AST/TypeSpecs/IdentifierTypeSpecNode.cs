@@ -8,9 +8,9 @@ namespace Krypton.Analysis.Ast.TypeSpecs
     [DebuggerDisplay("{GetType().Name}; Identifier = {Identifier}")]
     public sealed class IdentifierTypeSpecNode : TypeSpecNode
     {
-        internal IdentifierTypeSpecNode(string identifier, int lineNumber) : base(lineNumber)
+        internal IdentifierTypeSpecNode(string identifier, int lineNumber, int index) : base(lineNumber, index)
         {
-            IdentifierNode = new UnboundIdentifierNode(identifier, lineNumber)
+            IdentifierNode = new UnboundIdentifierNode(identifier, lineNumber, index)
             {
                 ParentNode = this
             };
@@ -22,7 +22,10 @@ namespace Krypton.Analysis.Ast.TypeSpecs
 
         public void Bind(TypeSymbolNode symbol)
         {
-            IdentifierNode = new BoundIdentifierNode(Identifier, symbol, IdentifierNode.LineNumber) { ParentNode = this };
+            IdentifierNode = new BoundIdentifierNode(Identifier, symbol, IdentifierNode.LineNumber, IdentifierNode.Index)
+            {
+                ParentNode = this
+            };
         }
 
         public override void PopulateBranches(List<Node> list)

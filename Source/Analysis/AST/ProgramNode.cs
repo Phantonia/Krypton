@@ -4,7 +4,7 @@ namespace Krypton.Analysis.Ast
 {
     public sealed class ProgramNode : Node
     {
-        internal ProgramNode(StatementCollectionNode statements, int lineNumber) : base(lineNumber)
+        internal ProgramNode(StatementCollectionNode statements, int lineNumber, int index) : base(lineNumber, index)
         {
             TopLevelStatementNodes = statements;
         }

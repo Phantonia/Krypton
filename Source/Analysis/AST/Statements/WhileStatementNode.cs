@@ -7,7 +7,7 @@ namespace Krypton.Analysis.Ast.Statements
     [DebuggerDisplay("{GetType().Name}; StatementCount = {StatementNodes.Count}")]
     public sealed class WhileStatementNode : StatementNode, IParentStatementNode
     {
-        internal WhileStatementNode(ExpressionNode condition, StatementCollectionNode statements, int lineNumber) : base(lineNumber)
+        internal WhileStatementNode(ExpressionNode condition, StatementCollectionNode statements, int lineNumber, int index) : base(lineNumber, index)
         {
             ConditionNode = condition;
             ConditionNode.ParentNode = this;

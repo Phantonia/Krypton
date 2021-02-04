@@ -5,7 +5,12 @@ namespace Krypton.Analysis.Ast.Symbols
 {
     public sealed class FrameworkFunctionSymbolNode : FunctionSymbolNode
     {
-        internal FrameworkFunctionSymbolNode(string name, IEnumerable<ParameterNode> parameters, TypeSymbolNode? returnType, FunctionCallGenerator generator, int lineNumber) : base(name, parameters, returnType, lineNumber)
+        internal FrameworkFunctionSymbolNode(string name,
+                                             IEnumerable<ParameterNode> parameters,
+                                             TypeSymbolNode? returnType,
+                                             FunctionCallGenerator generator,
+                                             int lineNumber,
+                                             int index) : base(name, parameters, returnType, lineNumber, index)
         {
             Generator = generator;
         }

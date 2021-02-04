@@ -17,7 +17,7 @@ namespace Krypton.Analysis.Syntactical
     // else there's a bug.
     public sealed class BinaryOperationChain : ExpressionNode
     {
-        internal BinaryOperationChain(int lineNumber) : base(lineNumber) { }
+        internal BinaryOperationChain(int lineNumber, int index) : base(lineNumber, index) { }
 
         private readonly List<IOperatorLexeme> operators = new();
         private readonly List<ExpressionNode> operandNodes = new();
@@ -100,7 +100,8 @@ namespace Krypton.Analysis.Syntactical
 
             ExpressionNode left = operandNodes[index];
             ExpressionNode right = operandNodes[index + 1];
-            int lineNumber = operatorLexeme.LineNumber;
+            int lineNumber = left.LineNumber;
+            int nodeIndex = left.Index;
 
             Operator @operator = operatorLexeme switch
             {
@@ -109,7 +110,7 @@ namespace Krypton.Analysis.Syntactical
                 _ => OnFailure()
             };
 
-            return new BinaryOperationExpressionNode(left, right, @operator, lineNumber);
+            return new BinaryOperationExpressionNode(left, right, @operator, lineNumber, nodeIndex);
 
             static Operator OnFailure()
             {

@@ -6,9 +6,12 @@ namespace Krypton.Analysis.Ast
 {
     public sealed class ParameterNode : Node
     {
-        internal ParameterNode(string identifier, TypeSymbolNode type, int lineNumber) : base(lineNumber)
+        internal ParameterNode(string identifier, TypeSymbolNode type, int lineNumber, int index) : base(lineNumber, index)
         {
-            IdentifierNode = new UnboundIdentifierNode(identifier, lineNumber) { ParentNode = this };
+            IdentifierNode = new UnboundIdentifierNode(identifier, lineNumber, index)
+            {
+                ParentNode = this
+            };
             TypeNode = type;
         }
 
@@ -18,10 +21,13 @@ namespace Krypton.Analysis.Ast
 
         public TypeSymbolNode TypeNode { get; }
 
-        public ParameterVariableSymbolNode CreateParameterSymbol()
+        public ParameterVariableSymbolNode CreateParameterVariableSymbol()
         {
-            ParameterVariableSymbolNode symbol = new(Identifier, TypeNode, LineNumber);
-            IdentifierNode = new BoundIdentifierNode(Identifier, symbol, IdentifierNode.LineNumber) { ParentNode = this };
+            ParameterVariableSymbolNode symbol = new(Identifier, TypeNode, LineNumber, Index);
+            IdentifierNode = new BoundIdentifierNode(Identifier, symbol, IdentifierNode.LineNumber, IdentifierNode.Index)
+            {
+                ParentNode = this
+            };
             return symbol;
         }
 

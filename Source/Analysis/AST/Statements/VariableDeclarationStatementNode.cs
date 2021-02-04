@@ -10,7 +10,7 @@ namespace Krypton.Analysis.Ast.Statements
     [DebuggerDisplay("{GetType().Name}; VariableIdentifier = {VariableIdentifier}")]
     public sealed class VariableDeclarationStatementNode : StatementNode
     {
-        internal VariableDeclarationStatementNode(IdentifierNode identifier, TypeSpecNode? type, ExpressionNode? value, int lineNumber) : base(lineNumber)
+        internal VariableDeclarationStatementNode(IdentifierNode identifier, TypeSpecNode? type, ExpressionNode? value, int lineNumber, int index) : base(lineNumber, index)
         {
             VariableIdentifierNode = identifier;
             VariableIdentifierNode.ParentNode = this;
@@ -48,9 +48,18 @@ namespace Krypton.Analysis.Ast.Statements
 
         public LocalVariableSymbolNode CreateVariable(TypeSymbolNode? typeSymbol)
         {
-            LocalVariableSymbolNode var = new LocalVariableSymbolNode(VariableIdentifier, typeSymbol, VariableIdentifierNode.LineNumber);
-            VariableIdentifierNode = new BoundIdentifierNode(VariableIdentifier, var, VariableIdentifierNode.LineNumber) { ParentNode = this };
-            return var;
+            LocalVariableSymbolNode variable = new LocalVariableSymbolNode(VariableIdentifier,
+                                                                           typeSymbol,
+                                                                           VariableIdentifierNode.LineNumber,
+                                                                           VariableIdentifierNode.Index);
+            VariableIdentifierNode = new BoundIdentifierNode(VariableIdentifier,
+                                                             variable,
+                                                             VariableIdentifierNode.LineNumber,
+                                                             VariableIdentifierNode.Index)
+            {
+                ParentNode = this
+            };
+            return variable;
         }
 
         public override void PopulateBranches(List<Node> list)

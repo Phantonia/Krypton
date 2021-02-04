@@ -9,7 +9,7 @@ namespace Krypton.Analysis.Ast
     [DebuggerDisplay("{GetType().Name}; Count = {Count}")]
     public sealed class StatementCollectionNode : Node, IIndexedEnumerable<StatementNode>, IEnumerable<StatementNode>
     {
-        internal StatementCollectionNode(IEnumerable<StatementNode> statementNodes) : base(statementNodes.FirstOrDefault()?.LineNumber ?? 0)
+        internal StatementCollectionNode(IEnumerable<StatementNode> statementNodes) : base(statementNodes.FirstOrDefault()?.LineNumber ?? 0, statementNodes.FirstOrDefault()?.Index ?? -1)
         {
             this.statementNodes = statementNodes as IList<StatementNode> ?? statementNodes.ToList();
 

@@ -7,7 +7,7 @@ namespace Krypton.Analysis.Ast.Expressions
     [DebuggerDisplay("{GetType().Name}; Operator = {Operator}")]
     public sealed class BinaryOperationExpressionNode : ExpressionNode
     {
-        internal BinaryOperationExpressionNode(ExpressionNode leftOperand, ExpressionNode rightOperand, Operator @operator, int lineNumber) : base(lineNumber)
+        internal BinaryOperationExpressionNode(ExpressionNode leftOperand, ExpressionNode rightOperand, Operator @operator, int lineNumber, int index) : base(lineNumber, index)
         {
             LeftOperandNode = leftOperand;
             LeftOperandNode.ParentNode = this;

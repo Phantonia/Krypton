@@ -7,7 +7,7 @@ namespace Krypton.Analysis.Ast.Expressions
     [DebuggerDisplay("{GetType().Name}; Value = {ObjectValue}")]
     public abstract class LiteralExpressionNode : ExpressionNode
     {
-        private protected LiteralExpressionNode(FrameworkType associatedType, int lineNumber) : base(lineNumber)
+        private protected LiteralExpressionNode(FrameworkType associatedType, int lineNumber, int index) : base(lineNumber, index)
         {
             AssociatedType = associatedType;
         }

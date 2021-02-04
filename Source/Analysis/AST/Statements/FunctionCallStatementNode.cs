@@ -7,7 +7,7 @@ namespace Krypton.Analysis.Ast.Statements
 {
     public sealed class FunctionCallStatementNode : StatementNode
     {
-        internal FunctionCallStatementNode(FunctionCallExpressionNode expression, int lineNumber) : base(lineNumber)
+        internal FunctionCallStatementNode(FunctionCallExpressionNode expression, int lineNumber, int index) : base(lineNumber, index)
         {
             UnderlyingFunctionCallExpressionNode = expression;
             UnderlyingFunctionCallExpressionNode.ParentNode = this;

@@ -33,7 +33,7 @@ namespace Krypton.Analysis.Syntactical
             if (lexemes[index] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
             {
                 index++;
-                return new FunctionCallStatementNode(expression, expression.LineNumber);
+                return new FunctionCallStatementNode(expression, expression.LineNumber, expression.Index);
             }
             else
             {
@@ -60,7 +60,7 @@ namespace Krypton.Analysis.Syntactical
             if (lexemes[index] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
             {
                 index++;
-                return new VariableAssignmentStatementNode(identifier, assignedValue, identifier.LineNumber);
+                return new VariableAssignmentStatementNode(identifier, assignedValue, identifier.LineNumber, identifier.Index);
             }
             else
             {
@@ -71,16 +71,18 @@ namespace Krypton.Analysis.Syntactical
         private VariableDeclarationStatementNode? ParseVariableDeclarationStatement(ref int index)
         {
             int lineNumber = lexemes[index].LineNumber;
+            int nodeIndex = lexemes[index].Index;
 
             Lexeme? current = lexemes.TryGet(index);
 
-            if (current is IdentifierLexeme idl)
+            if (current is IdentifierLexeme identifierLexeme)
             {
                 index++;
                 current = lexemes.TryGet(index);
 
-                string identifier = idl.Content;
-                int identifierLineNumber = idl.LineNumber;
+                string identifier = identifierLexeme.Content;
+                int identifierLineNumber = identifierLexeme.LineNumber;
+                int identifierIndex = identifierLexeme.Index;
 
                 if (current is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
                 {
@@ -106,7 +108,11 @@ namespace Krypton.Analysis.Syntactical
                     else if (current is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
                     {
                         index++;
-                        return new VariableDeclarationStatementNode(new UnboundIdentifierNode(identifier, identifierLineNumber), type, value: null, lineNumber);
+                        return new VariableDeclarationStatementNode(new UnboundIdentifierNode(identifier, identifierLineNumber, identifierIndex),
+                                                                    type,
+                                                                    value: null,
+                                                                    lineNumber,
+                                                                    nodeIndex);
                     }
                     else
                     {
@@ -134,7 +140,11 @@ namespace Krypton.Analysis.Syntactical
                     if (current is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
                     {
                         index++;
-                        return new VariableDeclarationStatementNode(new UnboundIdentifierNode(identifier, identifierLineNumber), type, assignedValue, lineNumber);
+                        return new VariableDeclarationStatementNode(new UnboundIdentifierNode(identifier, identifierLineNumber, identifierIndex),
+                                                                    type,
+                                                                    assignedValue,
+                                                                    lineNumber,
+                                                                    nodeIndex);
                     }
                     else
                     {

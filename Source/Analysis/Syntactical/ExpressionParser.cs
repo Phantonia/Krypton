@@ -76,12 +76,13 @@ namespace Krypton.Analysis.Syntactical
             }
 
             int lineNumber = Lexemes[index].LineNumber;
+            int nodeIndex = Lexemes[index].Index;
 
             index++;
 
             if (Lexemes.TryGet(index) is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing })
             {
-                expression = new FunctionCallExpressionNode(expression, lineNumber);
+                expression = new FunctionCallExpressionNode(expression, lineNumber, nodeIndex);
                 return;
             }
 
@@ -106,7 +107,7 @@ namespace Krypton.Analysis.Syntactical
                     case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Comma }:
                         break;
                     case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing }:
-                        expression = new FunctionCallExpressionNode(expression, arguments, lineNumber);
+                        expression = new FunctionCallExpressionNode(expression, arguments, lineNumber, nodeIndex);
                         return;
                     case { }:
                         throw new NotImplementedException("Error: missing comma or parenthesis");
@@ -127,7 +128,7 @@ namespace Krypton.Analysis.Syntactical
 
             if (expression is not BinaryOperationChain chain)
             {
-                chain = new(operatorLexeme.LineNumber);
+                chain = new(operatorLexeme.LineNumber, operatorLexeme.Index);
                 chain.AddOperand(expression);
             }
 
@@ -158,19 +159,19 @@ namespace Krypton.Analysis.Syntactical
             switch (Lexemes[index])
             {
                 case BooleanLiteralLexeme booleanLiteral:
-                    return new BooleanLiteralExpressionNode(booleanLiteral.Value, booleanLiteral.LineNumber);
+                    return new BooleanLiteralExpressionNode(booleanLiteral.Value, booleanLiteral.LineNumber, booleanLiteral.Index);
                 case IntegerLiteralLexeme integerLiteral:
-                    return new IntegerLiteralExpressionNode(integerLiteral.Value, integerLiteral.LineNumber);
+                    return new IntegerLiteralExpressionNode(integerLiteral.Value, integerLiteral.LineNumber, integerLiteral.Index);
                 case StringLiteralLexeme stringLiteral:
-                    return new StringLiteralExpressionNode(stringLiteral.Value, stringLiteral.LineNumber);
+                    return new StringLiteralExpressionNode(stringLiteral.Value, stringLiteral.LineNumber, stringLiteral.Index);
                 case CharLiteralLexeme charLiteral: 
-                    return new CharLiteralExpressionNode(charLiteral.Value, charLiteral.LineNumber);
+                    return new CharLiteralExpressionNode(charLiteral.Value, charLiteral.LineNumber, charLiteral.Index);
                 case ImaginaryLiteralLexeme imaginaryLiteral:
-                    return new ImaginaryLiteralExpressionNode(imaginaryLiteral.Value, imaginaryLiteral.LineNumber);
+                    return new ImaginaryLiteralExpressionNode(imaginaryLiteral.Value, imaginaryLiteral.LineNumber, imaginaryLiteral.Index);
                 case RationalLiteralLexeme rationalLiteral:
-                    return new RationalLiteralExpressionNode(rationalLiteral.Value, rationalLiteral.LineNumber);
+                    return new RationalLiteralExpressionNode(rationalLiteral.Value, rationalLiteral.LineNumber, rationalLiteral.Index);
                 case IdentifierLexeme identifierLexeme:
-                    return new IdentifierExpressionNode(identifierLexeme.Content, identifierLexeme.LineNumber);
+                    return new IdentifierExpressionNode(identifierLexeme.Content, identifierLexeme.LineNumber, identifierLexeme.Index);
                 case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisOpening }:
                     {
                         index++;
@@ -196,7 +197,7 @@ namespace Krypton.Analysis.Syntactical
 
                         if (operand != null)
                         {
-                            return new UnaryOperationExpressionNode(operand, Operator.Tilde, Lexemes[index].LineNumber);
+                            return new UnaryOperationExpressionNode(operand, Operator.Tilde, Lexemes[index].LineNumber, Lexemes[index].LineNumber);
                         }
 
                         return null;
@@ -210,7 +211,7 @@ namespace Krypton.Analysis.Syntactical
 
                         if (operand != null)
                         {
-                            return new UnaryOperationExpressionNode(operand, Operator.Minus, Lexemes[index].LineNumber);
+                            return new UnaryOperationExpressionNode(operand, Operator.Minus, Lexemes[index].LineNumber, Lexemes[index].Index);
                         }
 
                         return null;

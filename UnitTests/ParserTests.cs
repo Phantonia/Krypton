@@ -7,6 +7,7 @@ using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using Krypton.Framework;
 using NUnit.Framework;
+using System;
 
 namespace UnitTests
 {
@@ -55,8 +56,11 @@ namespace UnitTests
             LexemeCollection lexemes = new Lexer("(5").LexAll();
 
             int index = 0;
-            ExpressionNode? root = new ExpressionParser(lexemes).ParseNextExpression(ref index);
-            Assert.IsNull(root);
+
+            MyAssert.Throws<NotImplementedException>(() => new ExpressionParser(lexemes).ParseNextExpression(ref index));
+
+            //ExpressionNode? root = new ExpressionParser(lexemes).ParseNextExpression(ref index);
+            //Assert.IsNull(root);
         }
 
         [Test]
@@ -74,12 +78,12 @@ namespace UnitTests
         [Test]
         public void ChainResolutionTest()
         {
-            BinaryOperationChain chain = new(1); // Arbitrary line number
-            chain.AddOperand(new IntegerLiteralExpressionNode(4, 1));
+            BinaryOperationChain chain = new(1, 5); // Arbitrary line and index number
+            chain.AddOperand(new IntegerLiteralExpressionNode(4, 1, 10));
             chain.AddOperator(new CharacterOperatorLexeme(Operator.Plus, 1, 0));
-            chain.AddOperand(new IntegerLiteralExpressionNode(4, 1));
+            chain.AddOperand(new IntegerLiteralExpressionNode(4, 1, 11));
             chain.AddOperator(new CharacterOperatorLexeme(Operator.Asterisk, 1, 0));
-            chain.AddOperand(new IntegerLiteralExpressionNode(4, 1));
+            chain.AddOperand(new IntegerLiteralExpressionNode(4, 1, 12));
             // 4 + 4 * 4 = 20
 
             ExpressionNode node = chain.Resolve();
@@ -371,9 +375,12 @@ namespace UnitTests
         {
             int index = 0;
             ExpressionParser parser = new(new Lexer("(hello +").LexAll());
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
 
-            Assert.IsNull(root);
+            MyAssert.Throws<NotImplementedException>(() => parser.ParseNextExpression(ref index));
+
+            //ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            //Assert.IsNull(root);
         }
 
         [Test]
@@ -385,15 +392,17 @@ namespace UnitTests
                 Assert.AreEqual(ErrorCode.ExpectedClosingParenthesis, e.ErrorCode);
             };
 
-            ErrorProvider.Error += handler;
+            //ErrorProvider.Error += handler;
 
             int index = 0;
             ExpressionParser parser = new(new Lexer("(4;").LexAll());
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            MyAssert.Throws<NotImplementedException>(() => parser.ParseNextExpression(ref index));
 
-            Assert.IsNull(root);
+            //ExpressionNode? root = parser.ParseNextExpression(ref index);
 
-            ErrorProvider.Error -= handler;
+            //Assert.IsNull(root);
+
+            //ErrorProvider.Error -= handler;
         }
 
         [Test]
@@ -458,13 +467,16 @@ namespace UnitTests
                 Assert.AreEqual(1, e.LineNumber);
             };
 
-            ErrorProvider.Error += handler;
+            //ErrorProvider.Error += handler;
 
             int index = 0;
             ExpressionParser parser = new(new Lexer("Output(4, )").LexAll());
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
 
-            Assert.IsNull(root);
+            MyAssert.Throws<NotImplementedException>(() => parser.ParseNextExpression(ref index));
+
+            //ExpressionNode? root = parser.ParseNextExpression(ref index);
+
+            //Assert.IsNull(root);
 
             ErrorProvider.Error -= handler;
         }

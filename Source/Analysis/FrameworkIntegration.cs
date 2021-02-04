@@ -34,7 +34,8 @@ namespace Krypton.Analysis
                                                  rightType,
                                                  returnType,
                                                  binaryOperationSymbol.Generator,
-                                                 lineNumber: 0);
+                                                 lineNumber: 0,
+                                                 index: -1);
         }
 
         private static ConstantSymbolNode CreateConstantSymbolNode(ConstantSymbol constantSymbol, TypeIdentifierMap typeIdentifierMap)
@@ -42,17 +43,41 @@ namespace Krypton.Analysis
             switch (constantSymbol)
             {
                 case ConstantSymbol<long> intConst:
-                    return new ConstantSymbolNode<long>(intConst.Name, intConst.Value, typeIdentifierMap[FrameworkType.Int], lineNumber: 0);
+                    return new ConstantSymbolNode<long>(intConst.Name,
+                                                        intConst.Value,
+                                                        typeIdentifierMap[FrameworkType.Int],
+                                                        lineNumber: 0,
+                                                        index: -1);
                 case ConstantSymbol<Rational> ratConst:
-                    return new ConstantSymbolNode<Rational>(ratConst.Name, ratConst.Value, typeIdentifierMap[FrameworkType.Rational], lineNumber: 0);
+                    return new ConstantSymbolNode<Rational>(ratConst.Name,
+                                                            ratConst.Value,
+                                                            typeIdentifierMap[FrameworkType.Rational],
+                                                            lineNumber: 0,
+                                                            index: -1);
                 case ConstantSymbol<Complex> cmpConst:
-                    return new ConstantSymbolNode<Complex>(cmpConst.Name, cmpConst.Value, typeIdentifierMap[FrameworkType.Complex], lineNumber: 0);
+                    return new ConstantSymbolNode<Complex>(cmpConst.Name,
+                                                           cmpConst.Value,
+                                                           typeIdentifierMap[FrameworkType.Complex],
+                                                           lineNumber: 0,
+                                                           index: -1);
                 case ConstantSymbol<string> strConst:
-                    return new ConstantSymbolNode<string>(strConst.Name, strConst.Value, typeIdentifierMap[FrameworkType.String], lineNumber: 0);
+                    return new ConstantSymbolNode<string>(strConst.Name,
+                                                          strConst.Value,
+                                                          typeIdentifierMap[FrameworkType.String],
+                                                          lineNumber: 0,
+                                                          index: -1);
                 case ConstantSymbol<char> chrConst:
-                    return new ConstantSymbolNode<char>(chrConst.Name, chrConst.Value, typeIdentifierMap[FrameworkType.Char], lineNumber: 0);
+                    return new ConstantSymbolNode<char>(chrConst.Name,
+                                                        chrConst.Value,
+                                                        typeIdentifierMap[FrameworkType.Char],
+                                                        lineNumber: 0,
+                                                        index: -1);
                 case ConstantSymbol<bool> blnConst:
-                    return new ConstantSymbolNode<bool>(blnConst.Name, blnConst.Value, typeIdentifierMap[FrameworkType.Bool], lineNumber: 0);
+                    return new ConstantSymbolNode<bool>(blnConst.Name,
+                                                        blnConst.Value,
+                                                        typeIdentifierMap[FrameworkType.Bool],
+                                                        lineNumber: 0,
+                                                        index: -1);
                 default:
                     Debug.Fail(null);
                     return null;
@@ -74,7 +99,12 @@ namespace Krypton.Analysis
                 returnType = GetTypeSymbolNode(functionSymbol.ReturnType, typeIdentifierMap, frameworkVersion);
             }
 
-            return new FrameworkFunctionSymbolNode(functionSymbol.Name, parameters, returnType, functionSymbol.Generator, lineNumber: 0);
+            return new FrameworkFunctionSymbolNode(functionSymbol.Name,
+                                                   parameters,
+                                                   returnType,
+                                                   functionSymbol.Generator,
+                                                   lineNumber: 0,
+                                                   index: -1);
         }
 
         private static ParameterNode CreateParameterNode(ParameterSymbol parameterSymbol,
@@ -83,12 +113,16 @@ namespace Krypton.Analysis
         {
             return new ParameterNode(parameterSymbol.Name,
                                      GetTypeSymbolNode(parameterSymbol.Type, typeIdentifierMap, frameworkVersion),
-                                     lineNumber: 0);
+                                     lineNumber: 0,
+                                     index: -1);
         }
 
         private static TypeSymbolNode CreateTypeSymbolNode(TypeSymbol typeSymbol)
         {
-            return new FrameworkTypeSymbolNode(typeSymbol.FrameworkType, typeSymbol.Name, lineNumber: 0);
+            return new FrameworkTypeSymbolNode(typeSymbol.FrameworkType,
+                                               typeSymbol.Name,
+                                               lineNumber: 0,
+                                               index: -1);
         }
 
         private static UnaryOperationSymbolNode CreateUnaryOperationSymbolNode(UnaryOperationSymbol unaryOperationSymbol,
@@ -101,7 +135,8 @@ namespace Krypton.Analysis
                                                 operandType,
                                                 returnType,
                                                 unaryOperationSymbol.Generator,
-                                                lineNumber: 0);
+                                                lineNumber: 0,
+                                                index: -1);
         }
 
         private static TypeSymbolNode GetTypeSymbolNode(FrameworkType frameworkType,

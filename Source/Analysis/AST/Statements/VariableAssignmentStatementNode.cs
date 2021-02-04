@@ -9,7 +9,7 @@ namespace Krypton.Analysis.Ast.Statements
     [DebuggerDisplay("{GetType().Name}; VariableIdentifier = {VariableIdentifier}")]
     public sealed class VariableAssignmentStatementNode : StatementNode
     {
-        internal VariableAssignmentStatementNode(IdentifierNode identifier, ExpressionNode assignedValue, int lineNumber) : base(lineNumber)
+        internal VariableAssignmentStatementNode(IdentifierNode identifier, ExpressionNode assignedValue, int lineNumber, int index) : base(lineNumber, index)
         {
             VariableIdentifierNode = identifier;
             VariableIdentifierNode.ParentNode = this;
@@ -35,7 +35,10 @@ namespace Krypton.Analysis.Ast.Statements
 
         public void Bind(LocalVariableSymbolNode symbol)
         {
-            VariableIdentifierNode = new BoundIdentifierNode(VariableIdentifier, symbol, VariableIdentifierNode.LineNumber) { ParentNode = this };
+            VariableIdentifierNode = new BoundIdentifierNode(VariableIdentifier, symbol, VariableIdentifierNode.LineNumber, VariableIdentifierNode.LineNumber)
+            {
+                ParentNode = this
+            };
         }
 
         public override void PopulateBranches(List<Node> list)

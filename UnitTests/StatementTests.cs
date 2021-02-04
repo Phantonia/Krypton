@@ -10,6 +10,7 @@ using Krypton.Framework;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using Krypton.Analysis.Lexical.Lexemes;
 
 namespace UnitTests
 {
@@ -177,6 +178,11 @@ namespace UnitTests
 
             while (true)
             {
+                if (lexemes[index] is EndOfFileLexeme)
+                {
+                    break;
+                }
+
                 StatementNode? nextStatement = parser.ParseNextStatement(ref index);
 
                 if (nextStatement == null)

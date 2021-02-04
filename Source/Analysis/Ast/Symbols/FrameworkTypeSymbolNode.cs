@@ -5,7 +5,10 @@ namespace Krypton.Analysis.Ast.Symbols
 {
     public sealed class FrameworkTypeSymbolNode : TypeSymbolNode
     {
-        internal FrameworkTypeSymbolNode(FrameworkType frameworkType, string name, int lineNumber) : base(name, lineNumber)
+        internal FrameworkTypeSymbolNode(FrameworkType frameworkType,
+                                         string name,
+                                         int lineNumber,
+                                         int index) : base(name, lineNumber, index)
         {
             FrameworkType = frameworkType;
         }

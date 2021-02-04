@@ -8,9 +8,9 @@ namespace Krypton.Analysis.Ast.Expressions
     [DebuggerDisplay("{GetType().Name}; Identifier = {Identifier}")]
     public sealed class IdentifierExpressionNode : ExpressionNode
     {
-        internal IdentifierExpressionNode(string identifier, int lineNumber) : base(lineNumber)
+        internal IdentifierExpressionNode(string identifier, int lineNumber, int index) : base(lineNumber, index)
         {
-            IdentifierNode = new UnboundIdentifierNode(identifier, lineNumber)
+            IdentifierNode = new UnboundIdentifierNode(identifier, lineNumber, index)
             {
                 ParentNode = this
             };
@@ -22,7 +22,10 @@ namespace Krypton.Analysis.Ast.Expressions
 
         public void Bind(SymbolNode symbol)
         {
-            IdentifierNode = new BoundIdentifierNode(Identifier, symbol, IdentifierNode.LineNumber) { ParentNode = this };
+            IdentifierNode = new BoundIdentifierNode(Identifier, symbol, IdentifierNode.LineNumber, Index)
+            {
+                ParentNode = this
+            };
         }
 
         public override void PopulateBranches(List<Node> list)

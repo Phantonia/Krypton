@@ -6,13 +6,16 @@ namespace Krypton.Analysis.Ast
     [DebuggerDisplay("{GetType().Name}")]
     public abstract class Node : INode
     {
-        private protected Node(int lineNumber)
+        private protected Node(int lineNumber, int index)
         {
             LineNumber = lineNumber;
+            Index = index;
         }
 
-        public int LineNumber { get; }
+        public int Index { get; }
 
+        public int LineNumber { get; }
+        
         public Node? ParentNode { get; internal set; }
 
         public List<Node> GetBranches()

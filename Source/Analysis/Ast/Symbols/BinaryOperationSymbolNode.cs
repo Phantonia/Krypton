@@ -5,7 +5,13 @@ namespace Krypton.Analysis.Ast.Symbols
 {
     public sealed class BinaryOperationSymbolNode : SymbolNode
     {
-        internal BinaryOperationSymbolNode(Operator @operator, TypeSymbolNode leftType, TypeSymbolNode rightType, TypeSymbolNode returnType, BinaryGenerator generator, int lineNumber) : base(identifier: string.Empty, lineNumber)
+        internal BinaryOperationSymbolNode(Operator @operator,
+                                           TypeSymbolNode leftType,
+                                           TypeSymbolNode rightType,
+                                           TypeSymbolNode returnType,
+                                           BinaryGenerator generator,
+                                           int lineNumber,
+                                           int index) : base(identifier: string.Empty, lineNumber, index)
         {
             Operator = @operator;
             LeftOperandTypeNode = leftType;

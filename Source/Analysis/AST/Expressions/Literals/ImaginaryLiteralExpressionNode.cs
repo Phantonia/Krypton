@@ -5,7 +5,7 @@ namespace Krypton.Analysis.Ast.Expressions.Literals
 {
     public sealed class ImaginaryLiteralExpressionNode : LiteralExpressionNode
     {
-        internal ImaginaryLiteralExpressionNode(Rational value, int lineNumber) : base(FrameworkType.Complex, lineNumber)
+        internal ImaginaryLiteralExpressionNode(Rational value, int lineNumber, int index) : base(FrameworkType.Complex, lineNumber, index)
         {
             Value = value;
         }

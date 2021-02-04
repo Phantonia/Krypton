@@ -4,7 +4,7 @@ namespace Krypton.Analysis.Ast.Expressions.Literals
 {
     public sealed class BooleanLiteralExpressionNode : LiteralExpressionNode
     {
-        internal BooleanLiteralExpressionNode(bool value, int lineNumber) : base(FrameworkType.Bool, lineNumber)
+        internal BooleanLiteralExpressionNode(bool value, int lineNumber, int index) : base(FrameworkType.Bool, lineNumber, index)
         {
             Value = value;
         }

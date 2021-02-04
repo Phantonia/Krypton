@@ -5,7 +5,7 @@ namespace Krypton.Analysis.Ast.Expressions.Literals
 {
     public sealed class RationalLiteralExpressionNode : LiteralExpressionNode
     {
-        internal RationalLiteralExpressionNode(Rational value, int lineNumber) : base(FrameworkType.Rational, lineNumber)
+        internal RationalLiteralExpressionNode(Rational value, int lineNumber, int index) : base(FrameworkType.Rational, lineNumber, index)
         {
             Value = value;
         }

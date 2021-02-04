@@ -6,7 +6,7 @@ namespace Krypton.Analysis.Ast.Symbols
 {
     public abstract class TypeSymbolNode : SymbolNode
     {
-        private protected TypeSymbolNode(string name, int lineNumber) : base(name, lineNumber) { }
+        private protected TypeSymbolNode(string name, int lineNumber, int index) : base(name, lineNumber, index) { }
 
         public ReadOnlyDictionary<Operator, BinaryOperationSymbolNode> BinaryOperationNodes { get; private set; }
 

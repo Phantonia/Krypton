@@ -7,7 +7,7 @@ namespace Krypton.Analysis.Ast.Symbols
 {
     public abstract class ConstantSymbolNode : SymbolNode
     {
-        internal ConstantSymbolNode(string name, TypeSymbolNode type, int lineNumber) : base(name, lineNumber)
+        internal ConstantSymbolNode(string name, TypeSymbolNode type, int lineNumber, int index) : base(name, lineNumber, index)
         {
             Type = type;
         }
@@ -17,7 +17,7 @@ namespace Krypton.Analysis.Ast.Symbols
 
     public sealed class ConstantSymbolNode<T> : ConstantSymbolNode
     {
-        internal ConstantSymbolNode(string name, T value, TypeSymbolNode type, int lineNumber) : base(name, type, lineNumber)
+        internal ConstantSymbolNode(string name, T value, TypeSymbolNode type, int lineNumber, int index) : base(name, type, lineNumber, index)
         {
             AssertTypeIsCorrect();
             Value = value;

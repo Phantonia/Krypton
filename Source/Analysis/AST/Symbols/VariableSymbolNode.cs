@@ -4,7 +4,10 @@ namespace Krypton.Analysis.Ast.Symbols
 {
     public abstract class VariableSymbolNode : SymbolNode
     {
-        private protected VariableSymbolNode(string identifier, TypeSymbolNode? typeNode, int lineNumber) : base(identifier, lineNumber)
+        private protected VariableSymbolNode(string identifier,
+                                             TypeSymbolNode? typeNode,
+                                             int lineNumber,
+                                             int index) : base(identifier, lineNumber, index)
         {
             TypeNode = typeNode;
         }
