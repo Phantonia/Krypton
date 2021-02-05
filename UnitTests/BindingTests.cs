@@ -79,7 +79,7 @@ namespace UnitTests
             Assert.NotNull(varX);
             Assert.NotNull(varY);
 
-            var idX = decl2.AssignedValue as IdentifierExpressionNode;
+            var idX = decl2.AssignedValueNode as IdentifierExpressionNode;
 
             Assert.NotNull(idX);
 

@@ -2,6 +2,7 @@
 using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Ast.Symbols;
+using Krypton.Analysis.Errors;
 using Krypton.Analysis.Semantical.IdentifierMaps;
 using System;
 using System.Diagnostics;
@@ -120,9 +121,9 @@ namespace Krypton.Analysis.Semantical
             {
                 case VariableDeclarationStatementNode variableDeclarationNode:
                     {
-                        if (variableDeclarationNode.AssignedValue != null)
+                        if (variableDeclarationNode.AssignedValueNode != null)
                         {
-                            bool success = BindInExpression(variableDeclarationNode.AssignedValue, variableIdentifierMap, globalIdentifierMap);
+                            bool success = BindInExpression(variableDeclarationNode.AssignedValueNode, variableIdentifierMap, globalIdentifierMap);
 
                             if (!success)
                             {
@@ -142,7 +143,12 @@ namespace Krypton.Analysis.Semantical
 
                             if (!success)
                             {
-                                throw new NotImplementedException("Error: Duplicate local variable");
+                                ErrorProvider.ReportError(ErrorCode.CantRedeclareVariable,
+                                                          Compilation,
+                                                          variableDeclarationNode.LineNumber,
+                                                          variableDeclarationNode.Index,
+                                                          $"Variable name: {variableDeclarationNode.VariableIdentifier}");
+                                return false;
                             }
                         }
                     }
@@ -158,7 +164,12 @@ namespace Krypton.Analysis.Semantical
 
                         if (!variableIdentifierMap.TryGet(variableAssignmentNode.VariableIdentifier, out LocalVariableSymbolNode? variableNode))
                         {
-                            throw new NotImplementedException("Error: variable not declared");
+                            ErrorProvider.ReportError(ErrorCode.CantAssignUndeclaredVariable,
+                                                      Compilation,
+                                                      variableAssignmentNode.LineNumber,
+                                                      variableAssignmentNode.Index,
+                                                      $"Variable name: {variableAssignmentNode.VariableIdentifier}");
+                            return false;
                         }
 
                         variableAssignmentNode.Bind(variableNode);

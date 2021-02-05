@@ -38,12 +38,12 @@ namespace UnitTests
             var vdsn = (VariableDeclarationStatementNode)root!;
 
             Assert.NotNull(vdsn.Type);
-            Assert.NotNull(vdsn.AssignedValue);
+            Assert.NotNull(vdsn.AssignedValueNode);
 
             Assert.IsInstanceOf<IdentifierTypeSpecNode>(vdsn.Type);
-            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(vdsn.AssignedValue);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(vdsn.AssignedValueNode);
 
-            var ilen = (IntegerLiteralExpressionNode)vdsn.AssignedValue!;
+            var ilen = (IntegerLiteralExpressionNode)vdsn.AssignedValueNode!;
 
             Assert.AreEqual(5, ilen.Value);
         }
@@ -64,11 +64,11 @@ namespace UnitTests
             var vdsn = (VariableDeclarationStatementNode)root!;
 
             Assert.IsNull(vdsn.Type);
-            Assert.NotNull(vdsn.AssignedValue);
+            Assert.NotNull(vdsn.AssignedValueNode);
 
-            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(vdsn.AssignedValue);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(vdsn.AssignedValueNode);
 
-            var ilen = (IntegerLiteralExpressionNode)vdsn.AssignedValue!;
+            var ilen = (IntegerLiteralExpressionNode)vdsn.AssignedValueNode!;
 
             Assert.AreEqual(5, ilen.Value);
         }
@@ -89,7 +89,7 @@ namespace UnitTests
             var vdsn = (VariableDeclarationStatementNode)root!;
 
             Assert.NotNull(vdsn.Type);
-            Assert.IsNull(vdsn.AssignedValue);
+            Assert.IsNull(vdsn.AssignedValueNode);
 
             Assert.IsInstanceOf<IdentifierTypeSpecNode>(vdsn.Type);
         }
@@ -110,9 +110,9 @@ namespace UnitTests
             var vdsn = (VariableDeclarationStatementNode)root!;
 
             Assert.IsNull(vdsn.Type);
-            Assert.NotNull(vdsn.AssignedValue);
+            Assert.NotNull(vdsn.AssignedValueNode);
 
-            Assert.IsTrue(vdsn.AssignedValue is BinaryOperationExpressionNode { Operator: Operator.Plus });
+            Assert.IsTrue(vdsn.AssignedValueNode is BinaryOperationExpressionNode { Operator: Operator.Plus });
         }
 
         [Test]

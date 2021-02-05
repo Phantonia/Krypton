@@ -1,6 +1,7 @@
 ﻿using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Identifiers;
 using Krypton.Analysis.Ast.Symbols;
+using Krypton.Analysis.Errors;
 using Krypton.Framework;
 using System;
 using System.Diagnostics;
@@ -15,7 +16,7 @@ namespace Krypton.Analysis.Semantical
             {
                 case FunctionCallExpressionNode functionCallNode:
                     {
-                        (TypeSymbolNode? symbol, bool success) = CheckFunctionCallExpression(functionCallNode, tolerateNoReturnType: false);
+                        (TypeSymbolNode? symbol, bool success) = CheckFunctionCallExpression(functionCallNode, expressionContext: false);
                         return success ? symbol : null;
                     }
                 case BinaryOperationExpressionNode binaryOperation:
@@ -44,15 +45,15 @@ namespace Krypton.Analysis.Semantical
 
             if (!leftOperandType.BinaryOperationNodes.TryGetValue(appliedOperator, out BinaryOperationSymbolNode? declaredOperationNode))
             {
-                throw new NotImplementedException("Error: operator not valid on this type");
+                throw new NotImplementedException("Notim: no implicit conversions in this case yet; else error");
             }
 
-            if (!TypeCompatibility.IsCompatibleWith(leftOperandType, declaredOperationNode.LeftOperandTypeNode))
+            if (!TypeCompatibility.IsCompatibleWith(leftOperandType, declaredOperationNode.LeftOperandTypeNode, Compilation.Code, binaryOperationNode))
             {
                 return null;
             }
 
-            if (!TypeCompatibility.IsCompatibleWith(rightOperandType, declaredOperationNode.RightOperandTypeNode))
+            if (!TypeCompatibility.IsCompatibleWith(rightOperandType, declaredOperationNode.RightOperandTypeNode, Compilation.Code, binaryOperationNode))
             {
                 return null;
             }
@@ -60,12 +61,12 @@ namespace Krypton.Analysis.Semantical
             return declaredOperationNode.ReturnTypeNode;
         }
 
-        private (TypeSymbolNode?, bool) CheckFunctionCallExpression(FunctionCallExpressionNode functionCallNode, bool tolerateNoReturnType)
+        private (TypeSymbolNode?, bool) CheckFunctionCallExpression(FunctionCallExpressionNode functionCallNode, bool expressionContext)
         {
             if (functionCallNode.FunctionExpressionNode is not IdentifierExpressionNode identifierExpressionNode)
             {
-                throw new NotImplementedException("Error: not a function that is being called");
-                // return (null, false)
+                ErrorProvider.ReportError(ErrorCode.CanOnlyCallFunctions, Compilation, functionCallNode);
+                return (null, false);
             }
 
             BoundIdentifierNode? boundIdentifier = identifierExpressionNode.IdentifierNode as BoundIdentifierNode;
@@ -73,20 +74,24 @@ namespace Krypton.Analysis.Semantical
 
             if (boundIdentifier.Symbol is not FunctionSymbolNode functionNode)
             {
-                throw new NotImplementedException("Error: not a function that is being called");
-                // return (null, false);
+                ErrorProvider.ReportError(ErrorCode.CanOnlyCallFunctions, Compilation, functionCallNode);
+                return (null, false);
             }
 
-            if (!tolerateNoReturnType && functionNode.ReturnTypeNode == null)
+            if (!expressionContext && functionNode.ReturnTypeNode == null)
             {
-                throw new NotImplementedException("Error: function cannot be used as expression, because it doesn't return a value");
-                // return (null, false);
+                ErrorProvider.ReportError(ErrorCode.OnlyFunctionWithReturnTypeCanBeExpression, Compilation, functionCallNode);
+                return (null, false);
             }
 
             if (functionNode.ParameterNodes.Count != functionCallNode.ArgumentNodes.Count)
             {
-                throw new NotImplementedException("Error: wrong number of arguments");
-                // return (null, false);
+                ErrorProvider.ReportError(ErrorCode.WrongNumberOfArguments,
+                                          Compilation,
+                                          functionCallNode,
+                                          $"Expected number of arguments: {functionNode.ParameterNodes.Count}",
+                                          $"Provided number of arguments: {functionCallNode.ArgumentNodes.Count}");
+                return (null, false);
             }
 
             for (int i = 0; i < functionNode.ParameterNodes.Count; i++)
@@ -98,7 +103,7 @@ namespace Krypton.Analysis.Semantical
                     return (null, false);
                 }
 
-                if (!TypeCompatibility.IsCompatibleWith(argumentType, functionNode.ParameterNodes[i].TypeNode))
+                if (!TypeCompatibility.IsCompatibleWith(argumentType, functionNode.ParameterNodes[i].TypeNode, Compilation.Code, functionCallNode))
                 {
                     return (null, false);
                 }

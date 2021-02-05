@@ -26,7 +26,7 @@ namespace Krypton.Analysis.Semantical
 
         private bool CheckFunctionCallStatement(FunctionCallStatementNode statementNode)
         {
-            (_, bool success) = CheckFunctionCallExpression(statementNode.UnderlyingFunctionCallExpressionNode, tolerateNoReturnType: true);
+            (_, bool success) = CheckFunctionCallExpression(statementNode.UnderlyingFunctionCallExpressionNode, expressionContext: true);
             return success;
         }
 
@@ -36,7 +36,7 @@ namespace Krypton.Analysis.Semantical
             {
                 case VariableAssignmentStatementNode variableAssignmentNode:
                     return CheckVariableAssignmentStatement(variableAssignmentNode);
-                case VariableDeclarationStatementNode variableDeclaration when variableDeclaration.AssignedValue != null:
+                case VariableDeclarationStatementNode variableDeclaration when variableDeclaration.AssignedValueNode != null:
                     return CheckVariableDeclarationStatement(variableDeclaration);
                 case VariableDeclarationStatementNode:
                     return true;
@@ -62,7 +62,10 @@ namespace Krypton.Analysis.Semantical
                 return false;
             }
 
-            return TypeCompatibility.IsCompatibleWith(sourceType: conditionType, targetType: boolType)
+            return TypeCompatibility.IsCompatibleWith(sourceType: conditionType,
+                                                      targetType: boolType,
+                                                      Compilation.Code,
+                                                      whileNode.ConditionNode)
                 && CheckStatementCollection(whileNode.StatementNodes);
         }
 
@@ -77,7 +80,10 @@ namespace Krypton.Analysis.Semantical
 
             VariableSymbolNode localVariable = variableAssignmentNode.VariableNode;
 
-            if (!TypeCompatibility.IsCompatibleWith(assignedType, localVariable.TypeNode))
+            if (!TypeCompatibility.IsCompatibleWith(assignedType,
+                                                    localVariable.TypeNode,
+                                                    Compilation.Code,
+                                                    variableAssignmentNode.AssignedExpressionNode))
             {
                 return false;
             }
@@ -87,9 +93,9 @@ namespace Krypton.Analysis.Semantical
 
         private bool CheckVariableDeclarationStatement(VariableDeclarationStatementNode variableDeclarationNode)
         {
-            Debug.Assert(variableDeclarationNode.AssignedValue != null);
+            Debug.Assert(variableDeclarationNode.AssignedValueNode != null);
 
-            TypeSymbolNode? assignedType = CheckExpression(variableDeclarationNode.AssignedValue);
+            TypeSymbolNode? assignedType = CheckExpression(variableDeclarationNode.AssignedValueNode);
 
             if (assignedType == null)
             {
@@ -98,7 +104,7 @@ namespace Krypton.Analysis.Semantical
 
             LocalVariableSymbolNode localVariable = variableDeclarationNode.VariableNode;
 
-            if (TypeCompatibility.IsCompatibleWith(assignedType, localVariable.TypeNode))
+            if (TypeCompatibility.IsCompatibleWith(assignedType, localVariable.TypeNode, Compilation.Code, variableDeclarationNode.AssignedValueNode))
             {
                 if (localVariable.TypeNode == null)
                 {
