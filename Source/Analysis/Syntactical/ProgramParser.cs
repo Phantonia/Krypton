@@ -10,15 +10,17 @@ namespace Krypton.Analysis.Syntactical
 {
     public sealed class ProgramParser
     {
-        public ProgramParser(LexemeCollection lexemes)
+        public ProgramParser(LexemeCollection lexemes, string code)
         {
             Lexemes = lexemes;
 
-            expressionParser = new ExpressionParser(lexemes);
+            this.code = code;
+            expressionParser = new ExpressionParser(lexemes, code);
             typeParser = new TypeParser(lexemes);
             statementParser = new StatementParser(lexemes, expressionParser, typeParser);
         }
 
+        private readonly string code;
         private readonly ExpressionParser expressionParser;
         private int index;
         private readonly StatementParser statementParser;

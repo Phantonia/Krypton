@@ -20,6 +20,7 @@
         ExpectedEqualsOrSemicolon = 106,
         ExpectedClosingBrace = 107,
         ExpectedOpeningBrace = 108,
+        ExpectedExpressionTerm = 109,
 
         // Semantic errors: binding
         CantAssignUndeclaredVariable = 401,

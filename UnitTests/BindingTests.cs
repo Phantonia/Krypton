@@ -4,6 +4,7 @@ using Krypton.Analysis.Ast.Identifiers;
 using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Ast.TypeSpecs;
+using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Semantical;
 using Krypton.Analysis.Syntactical;
@@ -51,7 +52,18 @@ namespace UnitTests
             y = 2;
             ";
 
-            MyAssert.Throws<NotImplementedException>(() => Analyser.Analyse(Code));
+            var e = MyAssert.Error(Code);
+            Assert.AreEqual(ErrorCode.CantAssignUndeclaredVariable, e.ErrorCode);
+            Assert.AreEqual(3, e.LineNumber);
+            Assert.AreEqual(1, e.Column);
+
+            //MyAssert.Error(Code,
+            //               e =>
+            //               {
+            //                   Assert.AreEqual(ErrorCode.CantAssignUndeclaredVariable, e.ErrorCode);
+            //                   Assert.AreEqual(3, e.LineNumber);
+            //                   Assert.AreEqual(1, e.Column);
+            //               });
         }
 
         [Test]
@@ -101,7 +113,10 @@ namespace UnitTests
             y = x;
             ";
 
-            MyAssert.Throws<NotImplementedException>(() => Analyser.Analyse(Code));
+            var e = MyAssert.Error(Code);
+            Assert.AreEqual(ErrorCode.CantAssignUndeclaredVariable, e.ErrorCode);
+            Assert.AreEqual(7, e.LineNumber);
+            Assert.AreEqual(1, e.Column);
         }
 
         [Test]
@@ -177,7 +192,12 @@ namespace UnitTests
             Var x = ""uwu"";
             ";
 
-            MyAssert.Throws<NotImplementedException>(() => Analyser.Analyse(Code));
+            var e = MyAssert.Error(Code);
+            Assert.AreEqual(ErrorCode.CantRedeclareVariable, e.ErrorCode);
+            Assert.AreEqual(ErrorMessages.Messages[ErrorCode.CantRedeclareVariable], e.Message);
+            Assert.AreEqual(Code, e.EntireCode);
+            Assert.AreEqual(3, e.LineNumber);
+            Assert.AreEqual(5, e.Column);
         }
 
         [Test]
@@ -207,7 +227,7 @@ namespace UnitTests
             Lexer lexer = new(Code);
             LexemeCollection lexemes = lexer.LexAll();
 
-            ProgramParser parser = new(lexemes);
+            ProgramParser parser = new(lexemes, Code);
             Compilation? tree = new(parser.ParseWholeProgram()!, Code);
 
             if (tree != null)

@@ -14,10 +14,13 @@ namespace Krypton.Analysis.Syntactical
 {
     public sealed class ExpressionParser
     {
-        public ExpressionParser(LexemeCollection lexemes)
+        public ExpressionParser(LexemeCollection lexemes, string code)
         {
             Lexemes = lexemes;
+            this.code = code;
         }
+
+        private readonly string code;
 
         public LexemeCollection Lexemes { get; }
 
@@ -75,8 +78,8 @@ namespace Krypton.Analysis.Syntactical
                 return;
             }
 
-            int lineNumber = Lexemes[index].LineNumber;
-            int nodeIndex = Lexemes[index].Index;
+            int lineNumber = expression.LineNumber;
+            int nodeIndex = expression.Index;
 
             index++;
 
@@ -109,10 +112,13 @@ namespace Krypton.Analysis.Syntactical
                     case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing }:
                         expression = new FunctionCallExpressionNode(expression, arguments, lineNumber, nodeIndex);
                         return;
-                    case { }:
-                        throw new NotImplementedException("Error: missing comma or parenthesis");
+                    case Lexeme lexeme:
+                        ErrorProvider.ReportError(ErrorCode.ExpectedCommaOrClosingParenthesis, code, lexeme);
+                        expression = null;
+                        return;
                     case null:
-                        throw new NotImplementedException("Error: missing comma or parenthesis");
+                        Debug.Fail(message: null);
+                        return;
                 }
 
                 index++;
@@ -140,6 +146,7 @@ namespace Krypton.Analysis.Syntactical
 
             if (nextOperand == null)
             {
+                expression = null;
                 return;
             }
 
@@ -178,13 +185,23 @@ namespace Krypton.Analysis.Syntactical
 
                         ExpressionNode? expression = ParseNextExpressionInternal(ref index);
 
+                        if (expression == null)
+                        {
+                            return null;
+                        }
+
                         index++;
 
                         Lexeme? nextLexeme = Lexemes.TryGet(index);
 
                         if (nextLexeme is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing })
                         {
-                            throw new NotImplementedException("Error: missing closing parenthesis");
+                            if (nextLexeme == null)
+                            {
+                                nextLexeme = Lexemes[^1];
+                            }
+                            ErrorProvider.ReportError(ErrorCode.ExpectedClosingParenthesis, code, nextLexeme);
+                            return null;
                         }
 
                         return expression;
@@ -209,15 +226,19 @@ namespace Krypton.Analysis.Syntactical
                         ExpressionNode? operand = ParseSubExpression(ref index);
                         ParseAfterSubExpression(ref operand, ref index, includeOperations: false);
 
-                        if (operand != null)
+                        if (operand == null)
                         {
-                            return new UnaryOperationExpressionNode(operand, Operator.Minus, Lexemes[index].LineNumber, Lexemes[index].Index);
+                            return null;
                         }
 
-                        return null;
+                        return new UnaryOperationExpressionNode(operand, Operator.Minus, Lexemes[index].LineNumber, Lexemes[index].Index);
                     }
-                default:
-                    throw new NotImplementedException("Error: unexpected expression term");
+                case EndOfFileLexeme endOfFileLexeme:
+                    ErrorProvider.ReportError(ErrorCode.ExpectedExpressionTerm, code, endOfFileLexeme);
+                    return null;
+                case var lexeme:
+                    ErrorProvider.ReportError(ErrorCode.UnexpectedExpressionTerm, code, lexeme);
+                    return null;
             }
         }
     }

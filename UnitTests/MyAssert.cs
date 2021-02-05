@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using Krypton.Analysis;
+using Krypton.Analysis.Errors;
+using NUnit.Framework;
 using System;
 
 namespace UnitTests
@@ -21,6 +23,43 @@ namespace UnitTests
             {
                 return ex;
             }
+        }
+
+        public static ErrorEventArgs Error(Action action)
+        {
+            ErrorEventArgs? result = null;
+
+            ErrorEventHandler handler = e =>
+            {
+                Assert.IsNull(result);
+                result = e;
+            };
+
+            ErrorProvider.Error += handler;
+
+            action();
+
+            ErrorProvider.Error -= handler;
+
+            Assert.NotNull(result);
+
+            return result!;
+        }
+
+        public static ErrorEventArgs Error(string code)
+        {
+            return Error(() =>
+            {
+                Compilation? compilation = Analyser.Analyse(code);
+                Assert.IsNull(compilation);
+            });
+        }
+
+        public static ErrorEventArgs Error(string code, ErrorCode errorCode)
+        {
+            ErrorEventArgs e = Error(code);
+            Assert.AreEqual(errorCode, e.ErrorCode);
+            return e;
         }
     }
 }

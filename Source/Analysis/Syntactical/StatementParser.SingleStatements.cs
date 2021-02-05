@@ -22,8 +22,8 @@ namespace Krypton.Analysis.Syntactical
 
             return expression switch
             {
-                FunctionCallExpressionNode fcen => ParseFunctionCallStatement(fcen, ref index),
-                IdentifierExpressionNode iden => ParseVariableAssignmentStatement(iden.IdentifierNode, ref index),
+                FunctionCallExpressionNode functionCall => ParseFunctionCallStatement(functionCall, ref index),
+                IdentifierExpressionNode identifierExpression => ParseVariableAssignmentStatement(identifierExpression.IdentifierNode, ref index),
                 _ => throw new NotImplementedException("Error 104: Only function call expressions may be used as statements"),
             };
         }
@@ -72,6 +72,8 @@ namespace Krypton.Analysis.Syntactical
         {
             int lineNumber = lexemes[index].LineNumber;
             int nodeIndex = lexemes[index].Index;
+
+            index++;
 
             Lexeme? current = lexemes.TryGet(index);
 

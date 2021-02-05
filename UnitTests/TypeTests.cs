@@ -2,6 +2,7 @@
 using Krypton.Analysis.Ast.Identifiers;
 using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Ast.Symbols;
+using Krypton.Analysis.Errors;
 using Krypton.Framework;
 using NUnit.Framework;
 using System;
@@ -29,7 +30,8 @@ namespace UnitTests
             Var x As Int = True;
             ";
 
-            MyAssert.Throws<NotImplementedException>(() => Analyser.Analyse(Code));
+            var e = MyAssert.Error(Code);
+            Assert.AreEqual(ErrorCode.CantConvertType, e.ErrorCode);
         }
 
         [Test]
@@ -92,7 +94,7 @@ namespace UnitTests
 
             foreach (string code in illegalCodes)
             {
-                MyAssert.Throws<NotImplementedException>(() => Analyser.Analyse(code));
+                MyAssert.Error(code);
             }
         }
 
@@ -103,7 +105,7 @@ namespace UnitTests
             Var x = Output(""xyz"");
             ";
 
-            MyAssert.Throws<NotImplementedException>(() => Analyser.Analyse(Code));
+            MyAssert.Error(Code, ErrorCode.OnlyFunctionWithReturnTypeCanBeExpression);
         }
 
         [Test]
@@ -127,7 +129,7 @@ namespace UnitTests
             x = 'v';
             ";
 
-            MyAssert.Throws<NotImplementedException>(() => Analyser.Analyse(Code));
+            MyAssert.Error(Code, ErrorCode.CantConvertType);
         }
 
         [Test]

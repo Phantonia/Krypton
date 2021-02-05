@@ -5,7 +5,7 @@ namespace Krypton.Analysis.Errors
 {
     public static class ErrorMessages
     {
-        private static Dictionary<ErrorCode, string> messages = new()
+        private static readonly Dictionary<ErrorCode, string> messages = new()
         {
             // Lexical errors
             [ErrorCode.UnknownLexeme] = "Unexpected character",
@@ -23,6 +23,7 @@ namespace Krypton.Analysis.Errors
             [ErrorCode.ExpectedIdentifier] = "An identifier was expected",
             [ErrorCode.ExpectedEqualsOrSemicolon] = "An equals '=' to specify this variable's initial value or a " +
                                                     "semicolon ';' to end the variable declaration was expected",
+            [ErrorCode.ExpectedExpressionTerm] = "An expression term was expected",
 
             // Semantic errors: binding
             [ErrorCode.CantAssignUndeclaredVariable] = "This variable is not declared (at least not in scope)",

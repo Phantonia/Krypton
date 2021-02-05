@@ -26,7 +26,7 @@ namespace UnitTests
             Lexer lexer = new(Code);
             LexemeCollection lexemes = lexer.LexAll();
 
-            ProgramParser parser = new(lexemes);
+            ProgramParser parser = new(lexemes, Code);
             Compilation? tree = new(parser.ParseWholeProgram()!, Code);
 
             Assert.NotNull(tree);

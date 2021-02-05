@@ -22,14 +22,15 @@ namespace UnitTests
         [Test]
         public void VariableDeclarationWithTypeAndValueTest()
         {
-            LexemeCollection lexemes = new Lexer("Var x As Int = 5;").LexAll();
+            const string Code = "Var x As Int = 5;";
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
 
             Assert.AreEqual(8, lexemes.Count);
             Assert.IsInstanceOf<IdentifierLexeme>(lexemes[1]);
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes));
             Node? root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
@@ -51,11 +52,12 @@ namespace UnitTests
         [Test]
         public void VariableDeclarationWithValueTest()
         {
-            LexemeCollection lexemes = new Lexer("Var x = 5;").LexAll();
+            const string Code = "Var x = 5;";
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes));
             Node? root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
@@ -76,11 +78,12 @@ namespace UnitTests
         [Test]
         public void VariableDeclarationWithTypeTest()
         {
-            LexemeCollection lexemes = new Lexer("Var x As Int;").LexAll();
+            const string Code = "Var x As Int;";
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes));
             Node? root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
@@ -97,11 +100,12 @@ namespace UnitTests
         [Test]
         public void VariableDeclarationMoreComplexExpressionTest()
         {
-            LexemeCollection lexemes = new Lexer("Var x = 5 + 6 * 9;").LexAll();
+            const string Code = "Var x = 5 + 6 * 9;";
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes));
             Node? root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
@@ -118,11 +122,12 @@ namespace UnitTests
         [Test]
         public void IllegalVariableDeclarationTest()
         {
-            LexemeCollection lexemes = new Lexer("Var x As Int").LexAll();
+            const string Code = "Var x As Int";
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes));
 
             MyAssert.Throws<NotImplementedException>(() => parser.ParseNextStatement(ref index));
         }
@@ -130,11 +135,12 @@ namespace UnitTests
         [Test]
         public void FunctionCallTest()
         {
-            LexemeCollection lexemes = new Lexer("Output(4);").LexAll();
+            const string Code = "Output(4);";
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes));
             Node? root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
@@ -149,11 +155,12 @@ namespace UnitTests
         [Test]
         public void VariableAssignmentTest()
         {
-            LexemeCollection lexemes = new Lexer("x = True;").LexAll();
+            const string Code = "x = True;";
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes));
 
             StatementNode? node = parser.ParseNextStatement(ref index);
 
@@ -168,11 +175,12 @@ namespace UnitTests
         [Test]
         public void SeveralStatementsTest()
         {
-            LexemeCollection lexemes = new Lexer("Var x = 4; Output(x); x = 6; Output(x);").LexAll();
+            const string Code = "Var x = 4; Output(x); x = 6; Output(x);";
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes));
 
             List<StatementNode> statements = new();
 
@@ -203,11 +211,12 @@ namespace UnitTests
         [Test]
         public void BlockStatementTest()
         {
-            LexemeCollection lexemes = new Lexer("Block { Output(4); Output(6); }").LexAll();
+            const string Code = "Block { Output(4); Output(6); }";
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes));
             StatementNode? statement = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(statement);
@@ -223,11 +232,12 @@ namespace UnitTests
         [Test]
         public void WhileStatementTest()
         {
-            LexemeCollection lexemes = new Lexer("While True { Output(4.9); }").LexAll();
+            const string Code = "While True { Output(4.9); }";
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes));
             StatementNode? statement = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(statement);
@@ -242,8 +252,7 @@ namespace UnitTests
         [Test]
         public void NestedBlocksTest()
         {
-            LexemeCollection lexemes = new Lexer(
-@"Block
+            const string Code = @"Block
 {
     Output(4.9);
     Block
@@ -251,11 +260,12 @@ namespace UnitTests
         Output(True);
     }
     Var x As Int;
-}").LexAll();
+}";
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes));
             StatementNode? statement = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(statement);
@@ -276,16 +286,16 @@ namespace UnitTests
         [Test]
         public void NestedWhileLoopsTest()
         {
-            LexemeCollection lexemes = new Lexer(
-              @"While a + 1
+            const string Code = @"While a + 1
                 {
                     While b / 4
                     {
                         Output(c);
                     }
-                }").LexAll();
+                }";
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes));
             int index = 0;
             StatementNode? statement = parser.ParseNextStatement(ref index);
 
@@ -302,8 +312,7 @@ namespace UnitTests
         [Test]
         public void MassiveNestingTest()
         {
-            LexemeCollection lexemes = new Lexer(
-              @"Block
+            const string Code = @"Block
                 {
                     Block { }
                     While b / 4
@@ -315,9 +324,10 @@ namespace UnitTests
                         }
                     }
                     V();
-                }").LexAll();
+                }";
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes), new TypeParser(lexemes));
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes));
             int index = 0;
             StatementNode? statement = parser.ParseNextStatement(ref index);
 

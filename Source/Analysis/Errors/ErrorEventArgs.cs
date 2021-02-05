@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Krypton.Utilities;
+using System;
+using System.Diagnostics;
 using System.Text;
 
 namespace Krypton.Analysis.Errors
 {
     public delegate void ErrorEventHandler(ErrorEventArgs e);
 
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public sealed class ErrorEventArgs : EventArgs
     {
         internal ErrorEventArgs(ErrorCode errorCode,
@@ -18,7 +21,7 @@ namespace Krypton.Analysis.Errors
         {
             ErrorCode = errorCode;
             Message = message;
-            Details = details;
+            Details = details.MakeReadOnly();
             OffendingLine = offendingLine;
             EntireCode = entireCode;
             LineNumber = lineNumber;
@@ -30,7 +33,7 @@ namespace Krypton.Analysis.Errors
 
         public int Column { get; }
 
-        public string[] Details { get; }
+        public ReadOnlyList<string> Details { get; }
 
         public ErrorCode ErrorCode { get; }
 
@@ -42,7 +45,7 @@ namespace Krypton.Analysis.Errors
 
         public string OffendingLine { get; }
 
-        public override string ToString()
+        public string GetFullMessage()
         {
             StringBuilder sb = new();
 
@@ -62,9 +65,14 @@ namespace Krypton.Analysis.Errors
 
             sb.AppendLine(OffendingLine)
               .Append(' ', repeatCount: Column - 1)
-              .Append('^');
+              .Append('\u25b2'); // ▲
 
             return sb.ToString();
+        }
+
+        private string GetDebuggerDisplay()
+        {
+            return $"Error {(int)ErrorCode} ({ErrorCode})";
         }
     }
 }

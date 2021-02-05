@@ -22,16 +22,10 @@ namespace Krypton.Analysis.Syntactical
             return lexemes[index] switch
             {
                 KeywordLexeme { Keyword: ReservedKeyword.Block } => ParseBlockStatement(ref index, lexemes[index].LineNumber),
-                KeywordLexeme { Keyword: ReservedKeyword.Var } => ParseVariableDeclarationStatement(ref Increase(ref index)),
+                KeywordLexeme { Keyword: ReservedKeyword.Var } => ParseVariableDeclarationStatement(ref index),
                 KeywordLexeme { Keyword: ReservedKeyword.While } => ParseWhileStatement(ref index),
                 _ => ParseExpressionStatement(ref index),
             };
-
-            static ref int Increase(ref int index)
-            {
-                index++;
-                return ref index;
-            }
         }
     }
 }

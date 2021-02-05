@@ -145,8 +145,8 @@ namespace Krypton.Analysis.Semantical
                             {
                                 ErrorProvider.ReportError(ErrorCode.CantRedeclareVariable,
                                                           Compilation,
-                                                          variableDeclarationNode.LineNumber,
-                                                          variableDeclarationNode.Index,
+                                                          variableDeclarationNode.VariableIdentifierNode.LineNumber,
+                                                          variableDeclarationNode.VariableIdentifierNode.Index,
                                                           $"Variable name: {variableDeclarationNode.VariableIdentifier}");
                                 return false;
                             }

@@ -43,6 +43,11 @@ namespace Krypton.Analysis.Errors
 
         internal static int GetColumn(string str, int index)
         {
+            if (index >= str.Length)
+            {
+                index = str.Length - 1;
+            }
+
             for (int i = index; i >= 0; i--)
             {
                 if (str[i] == '\n')

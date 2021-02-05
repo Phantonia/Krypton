@@ -1,6 +1,6 @@
-﻿using Krypton.Analysis.Errors;
+﻿using Krypton.Analysis;
+using Krypton.Analysis.Errors;
 using NUnit.Framework;
-using System;
 
 namespace UnitTests
 {
