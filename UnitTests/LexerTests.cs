@@ -112,5 +112,17 @@ namespace UnitTests
 
             Assert.IsTrue(lexemes[1] is CharacterOperatorLexeme { Operator: Operator.ExclamationEquals });
         }
+
+        [Test]
+        public void NewKeywordsTest()
+        {
+            LexemeCollection lxms = new Lexer("Oops If Else Var").LexAll();
+
+            Assert.AreEqual(5, lxms.Count);
+            Assert.IsInstanceOf<IdentifierLexeme>(lxms[0]);
+            Assert.IsInstanceOf<KeywordLexeme>(lxms[1]);
+            Assert.IsInstanceOf<KeywordLexeme>(lxms[2]);
+            Assert.IsInstanceOf<KeywordLexeme>(lxms[3]);
+        }
     }
 }

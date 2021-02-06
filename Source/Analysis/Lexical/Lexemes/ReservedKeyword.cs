@@ -18,6 +18,8 @@ namespace Krypton.Analysis.Lexical.Lexemes
         // remaining operators are counted upwards from 100
         As = 100,
         Block,
+        Else,
+        If,
         Var,
         While,
     }
