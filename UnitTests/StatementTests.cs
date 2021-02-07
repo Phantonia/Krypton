@@ -1,4 +1,5 @@
-﻿using Krypton.Analysis.Ast;
+﻿using Krypton.Analysis;
+using Krypton.Analysis.Ast;
 using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Expressions.Literals;
 using Krypton.Analysis.Ast.Statements;
@@ -347,6 +348,212 @@ namespace UnitTests
             Assert.IsTrue(block_while.ConditionNode is BinaryOperationExpressionNode { Operator: Operator.ForeSlash });
             Assert.AreEqual(2, block_while.StatementNodes.Count);
             Assert.IsInstanceOf<FunctionCallStatementNode>(block_while.StatementNodes[0]);
+        }
+
+        [Test]
+        public void IfTest()
+        {
+            const string Code = @"
+            Var x = 4;
+            If x == 4
+            {
+                Output(""works"");
+            }";
+
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
+            ProgramParser parser = new ProgramParser(lexemes, Code);
+            ProgramNode? program = parser.ParseWholeProgram();
+
+            Assert.NotNull(program);
+            Assert.AreEqual(2, program!.TopLevelStatementNodes.Count);
+            Assert.IsInstanceOf<IfStatementNode>(program.TopLevelStatementNodes[1]);
+
+            var ifStatement = (IfStatementNode)program.TopLevelStatementNodes[1];
+
+            Assert.IsInstanceOf<BinaryOperationExpressionNode>(ifStatement.ConditionNode);
+            Assert.AreEqual(1, ifStatement.StatementNodes.Count);
+
+            Assert.IsNull(ifStatement.ElsePartNode);
+            Assert.AreEqual(0, ifStatement.ElseIfPartNodes.Count);
+        }
+
+        [Test]
+        public void IfElseTest()
+        {
+            const string Code = @"
+            Var x = 4;
+            If x == 4
+            {
+                Output(""works"");
+            }
+            Else
+            {
+                Output(""time space continuum broken; 4 != 4??? owo"");
+            }";
+
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
+            ProgramParser parser = new ProgramParser(lexemes, Code);
+            ProgramNode? program = parser.ParseWholeProgram();
+
+            Assert.NotNull(program);
+            Assert.AreEqual(2, program!.TopLevelStatementNodes.Count);
+            Assert.IsInstanceOf<IfStatementNode>(program.TopLevelStatementNodes[1]);
+
+            var ifStatement = (IfStatementNode)program.TopLevelStatementNodes[1];
+
+            Assert.NotNull(ifStatement.ElsePartNode);
+            Assert.AreEqual(0, ifStatement.ElseIfPartNodes.Count);
+        }
+
+        [Test]
+        public void IfElseIfTest()
+        {
+            const string Code = @"
+            Var x = 4;
+            If x == 4
+            {
+                Output(""works"");
+            }
+            Else If x == 5
+            {
+                Output(""time space continuum broken; 4 != 4??? owo"");
+            }";
+
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
+            ProgramParser parser = new ProgramParser(lexemes, Code);
+            ProgramNode? program = parser.ParseWholeProgram();
+
+            Assert.NotNull(program);
+            Assert.AreEqual(2, program!.TopLevelStatementNodes.Count);
+            Assert.IsInstanceOf<IfStatementNode>(program.TopLevelStatementNodes[1]);
+
+            var ifStatement = (IfStatementNode)program.TopLevelStatementNodes[1];
+
+            Assert.IsNull(ifStatement.ElsePartNode);
+            Assert.AreEqual(1, ifStatement.ElseIfPartNodes.Count);
+        }
+
+        [Test]
+        public void IfElseIfElseTest()
+        {
+            const string Code = @"
+            Var x = 4;
+            If x == 4
+            {
+                Output(""works"");
+            }
+            Else If x == 5
+            {
+                Output(""time space continuum broken; 4 != 4??? owo"");
+            }
+            Else
+            {
+                Output(""hmm"");
+            }";
+
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
+            ProgramParser parser = new ProgramParser(lexemes, Code);
+            ProgramNode? program = parser.ParseWholeProgram();
+
+            Assert.NotNull(program);
+            Assert.AreEqual(2, program!.TopLevelStatementNodes.Count);
+            Assert.IsInstanceOf<IfStatementNode>(program.TopLevelStatementNodes[1]);
+
+            var ifStatement = (IfStatementNode)program.TopLevelStatementNodes[1];
+
+            Assert.NotNull(ifStatement.ElsePartNode);
+            Assert.AreEqual(1, ifStatement.ElseIfPartNodes.Count);
+        }
+
+        [Test]
+        public void IfMultipleElseIfsTest()
+        {
+            const string Code = @"
+            Var x = 4;
+            If x == 4
+            {
+                Output(""works"");
+            }
+            Else If x == 5
+            {
+                Output(""time space continuum broken; 4 != 4??? owo"");
+            }
+            Else If x == 6
+            {
+                Output(""hmm"");
+            }";
+
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
+            ProgramParser parser = new ProgramParser(lexemes, Code);
+            ProgramNode? program = parser.ParseWholeProgram();
+
+            Assert.NotNull(program);
+            Assert.AreEqual(2, program!.TopLevelStatementNodes.Count);
+            Assert.IsInstanceOf<IfStatementNode>(program.TopLevelStatementNodes[1]);
+
+            var ifStatement = (IfStatementNode)program.TopLevelStatementNodes[1];
+
+            Assert.IsNull(ifStatement.ElsePartNode);
+            Assert.AreEqual(2, ifStatement.ElseIfPartNodes.Count);
+        }
+
+        [Test]
+        public void IfWithTrailingStatementsTest()
+        {
+            const string Code = @"
+            Var x = 4;
+            If x == 4
+            {
+                Output(""works"");
+            }
+            Else If x == 5
+            {
+                Output(""time space continuum broken; 4 != 4??? owo"");
+            }
+            Else
+            {
+                Output(""hmm"");
+            }
+            Output(""Hello world"");";
+
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
+            ProgramParser parser = new ProgramParser(lexemes, Code);
+            ProgramNode? program = parser.ParseWholeProgram();
+
+            Assert.NotNull(program);
+            Assert.AreEqual(3, program!.TopLevelStatementNodes.Count);
+            Assert.IsInstanceOf<IfStatementNode>(program.TopLevelStatementNodes[1]);
+
+            var ifStatement = (IfStatementNode)program.TopLevelStatementNodes[1];
+
+            Assert.NotNull(ifStatement.ElsePartNode);
+            Assert.AreEqual(1, ifStatement.ElseIfPartNodes.Count);
+        }
+
+        [Test]
+        public void IllegalIfTest()
+        {
+            const string Code = @"
+            Var x = 4;
+            If x == 4
+            {
+                Output(""works"");
+            }
+            Else x == 5
+            {
+                Output(""time space continuum broken; 4 != 4??? owo"");
+            }";
+
+            var e = MyAssert.Error(() =>
+            {
+                LexemeCollection lexemes = new Lexer(Code).LexAll();
+                ProgramParser parser = new ProgramParser(lexemes, Code);
+                ProgramNode? program = parser.ParseWholeProgram();
+
+                Assert.IsNull(program);
+            });
+
+            Assert.AreEqual(ErrorCode.ExpectedOpeningBrace, e.ErrorCode);
         }
     }
 }

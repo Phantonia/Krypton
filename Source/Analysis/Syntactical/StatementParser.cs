@@ -29,6 +29,7 @@ namespace Krypton.Analysis.Syntactical
                 KeywordLexeme { Keyword: ReservedKeyword.Block } => ParseBlockStatement(ref index, lexemes[index].LineNumber),
                 KeywordLexeme { Keyword: ReservedKeyword.Var } => ParseVariableDeclarationStatement(ref index),
                 KeywordLexeme { Keyword: ReservedKeyword.While } => ParseWhileStatement(ref index),
+                KeywordLexeme { Keyword: ReservedKeyword.If } => ParseIfStatement(ref index),
                 _ => ParseExpressionStatement(ref index),
             };
         }

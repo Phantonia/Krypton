@@ -23,7 +23,12 @@ namespace Krypton.Analysis.Errors
             [ErrorCode.ExpectedIdentifier] = "An identifier was expected",
             [ErrorCode.ExpectedEqualsOrSemicolon] = "An equals '=' to specify this variable's initial value or a " +
                                                     "semicolon ';' to end the variable declaration was expected",
+            [ErrorCode.ExpectedClosingBrace] = "Expected a closing brace '}'",
+            [ErrorCode.ExpectedOpeningBrace] = "Expected an opening brace '{'",
             [ErrorCode.ExpectedExpressionTerm] = "An expression term was expected",
+            [ErrorCode.OnlyFunctionCallExpressionCanBeStatement] = "This kind of expression is not a legal statement",
+            [ErrorCode.ExpectedAsOrEquals] = "Expected the keyword 'As' to specify the type or an equals '=' to " +
+                                             "specify the initial value",
 
             // Semantic errors: binding
             [ErrorCode.CantAssignUndeclaredVariable] = "This variable is not declared (at least not in scope)",

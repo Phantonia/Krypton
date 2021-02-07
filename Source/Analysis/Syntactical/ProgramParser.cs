@@ -32,8 +32,13 @@ namespace Krypton.Analysis.Syntactical
         {
             List<StatementNode> statements = new();
 
-            while (TryParseNextNode(out Node? node))
+            while (TryParseNextNode(out Node? node, out bool error))
             {
+                if (error)
+                {
+                    return null;
+                }
+
                 switch (node)
                 {
                     case StatementNode statement:
@@ -47,24 +52,27 @@ namespace Krypton.Analysis.Syntactical
             return new ProgramNode(topLevelStatements, lineNumber: 1, index: 0);
         }
 
-        private bool TryParseNextNode([NotNullWhen(true)] out Node? node)
+        private bool TryParseNextNode([NotNullWhen(true)] out Node? node, out bool error)
         {
             if (Lexemes[index] is EndOfFileLexeme)
             {
                 node = null;
+                error = false;
                 return false;
             }
 
             StatementNode? statementNode = statementParser.ParseNextStatement(ref index);
 
-            if (statementNode != null)
+            if (statementNode == null)
             {
-                node = statementNode;
+                node = null;
+                error = true;
                 return true;
             }
 
-            node = null;
-            return false;
+            node = statementNode;
+            error = false;
+            return true;
         }
     }
 }

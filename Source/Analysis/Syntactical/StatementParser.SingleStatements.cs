@@ -2,15 +2,14 @@
 using Krypton.Analysis.Ast.Identifiers;
 using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Ast.TypeSpecs;
-using Krypton.Analysis.Lexical.Lexemes.WithValue;
-using Krypton.Analysis.Lexical.Lexemes;
-using Krypton.Utilities;
-using System;
 using Krypton.Analysis.Errors;
+using Krypton.Analysis.Lexical.Lexemes;
+using Krypton.Analysis.Lexical.Lexemes.WithValue;
+using Krypton.Utilities;
 
 namespace Krypton.Analysis.Syntactical
 {
-    public sealed partial class StatementParser
+    partial class StatementParser
     {
         private StatementNode? ParseExpressionStatement(ref int index)
         {
@@ -108,7 +107,7 @@ namespace Krypton.Analysis.Syntactical
                 ErrorProvider.ReportError(ErrorCode.ExpectedAsOrEquals, code, current ?? lexemes[^1]);
                 return null;
             }
-            
+
             index++;
 
             TypeSpecNode? type = typeParser.ParseNextType(ref index);

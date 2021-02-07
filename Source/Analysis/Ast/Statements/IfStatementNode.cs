@@ -8,6 +8,16 @@ namespace Krypton.Analysis.Ast.Statements
     {
         internal IfStatementNode(ExpressionNode condition,
                                  StatementCollectionNode statements,
+                                 int lineNumber,
+                                 int index) : this(condition,
+                                                   statements,
+                                                   elseIfParts: null,
+                                                   elsePart: null,
+                                                   lineNumber,
+                                                   index) { }
+
+        internal IfStatementNode(ExpressionNode condition,
+                                 StatementCollectionNode statements,
                                  IList<ElseIfPartNode>? elseIfParts,
                                  ElsePartNode? elsePart,
                                  int lineNumber,
@@ -15,7 +25,7 @@ namespace Krypton.Analysis.Ast.Statements
         {
             ConditionNode = condition;
             ElseIfPartNodes = elseIfParts.MakeReadOnly();
-            ElsePart = elsePart;
+            ElsePartNode = elsePart;
             StatementNodes = statements;
         }
 
@@ -23,7 +33,7 @@ namespace Krypton.Analysis.Ast.Statements
 
         public ReadOnlyList<ElseIfPartNode> ElseIfPartNodes { get; }
 
-        public ElsePartNode? ElsePart { get; }
+        public ElsePartNode? ElsePartNode { get; }
 
         public StatementCollectionNode StatementNodes { get; }
 
@@ -38,7 +48,7 @@ namespace Krypton.Analysis.Ast.Statements
                 part.PopulateBranches(list);
             }
 
-            ElsePart?.PopulateBranches(list);
+            ElsePartNode?.PopulateBranches(list);
         }
     }
 }

@@ -35,6 +35,7 @@ namespace Krypton.Analysis.Errors
 
         internal static void ReportError(ErrorCode errorCode, string entireCode, int lineNumber, int index, params string[] details)
         {
+            Debug.Assert(ErrorMessages.Messages.ContainsKey(errorCode));
             int column = GetColumn(entireCode, index);
             string offendingLine = GetOffendingLine(entireCode, lineNumber, ref column);
             ErrorEventArgs e = new(errorCode, ErrorMessages.Messages[errorCode], details, offendingLine, entireCode, lineNumber, index, column);
