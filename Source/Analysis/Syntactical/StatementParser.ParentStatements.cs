@@ -1,10 +1,10 @@
-﻿using Krypton.Analysis.Ast.Expressions;
+﻿using Krypton.Analysis.Ast;
+using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Statements;
-using Krypton.Analysis.Ast;
+using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Utilities;
 using System.Collections.Generic;
-using System;
 
 namespace Krypton.Analysis.Syntactical
 {
@@ -13,7 +13,7 @@ namespace Krypton.Analysis.Syntactical
         private BlockStatementNode? ParseBlockStatement(ref int index, int lineNumber)
         {
             int nodeIndex = lexemes[index].Index;
-            
+
             index++;
 
             StatementCollectionNode? statements = ParseStatementBlock(ref index);
@@ -28,36 +28,36 @@ namespace Krypton.Analysis.Syntactical
 
         private StatementCollectionNode? ParseStatementBlock(ref int index)
         {
-            if (lexemes[index] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.BraceOpening })
+            if (lexemes[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.BraceOpening })
             {
-                index++;
-
-                List<StatementNode> statements = new();
-
-                while (true)
-                {
-                    switch (lexemes.TryGet(index))
-                    {
-                        case null:
-                            throw new NotImplementedException("Error ???: closing brace expected");
-                        case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.BraceClosing }:
-                            index++;
-                            return new StatementCollectionNode(statements);
-                    }
-
-                    StatementNode? nextStatement = ParseNextStatement(ref index);
-
-                    if (nextStatement == null)
-                    {
-                        return null;
-                    }
-
-                    statements.Add(nextStatement);
-                }
+                ErrorProvider.ReportError(ErrorCode.ExpectedOpeningBrace, code, lexemes[index]);
+                return null;
             }
-            else
+
+            index++;
+
+            List<StatementNode> statements = new();
+
+            while (true)
             {
-                throw new NotImplementedException("Error ???: opening brace expected");
+                switch (lexemes.TryGet(index))
+                {
+                    case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.BraceClosing }:
+                        index++;
+                        return new StatementCollectionNode(statements);
+                    case null:
+                        ErrorProvider.ReportError(ErrorCode.ExpectedClosingBrace, code, lexemes[^1]);
+                        return null;
+                }
+
+                StatementNode? nextStatement = ParseNextStatement(ref index);
+
+                if (nextStatement == null)
+                {
+                    return null;
+                }
+
+                statements.Add(nextStatement);
             }
         }
 
@@ -82,7 +82,7 @@ namespace Krypton.Analysis.Syntactical
                 return null;
             }
 
-            return new WhileStatementNode(condition, statements, lineNumber, index);
+            return new WhileStatementNode(condition, statements, lineNumber, nodeIndex);
         }
     }
 }

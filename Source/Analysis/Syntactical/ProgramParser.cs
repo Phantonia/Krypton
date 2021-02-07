@@ -17,7 +17,7 @@ namespace Krypton.Analysis.Syntactical
             this.code = code;
             expressionParser = new ExpressionParser(lexemes, code);
             typeParser = new TypeParser(lexemes);
-            statementParser = new StatementParser(lexemes, expressionParser, typeParser);
+            statementParser = new StatementParser(lexemes, expressionParser, typeParser, code);
         }
 
         private readonly string code;

@@ -21,6 +21,8 @@
         ExpectedClosingBrace = 107,
         ExpectedOpeningBrace = 108,
         ExpectedExpressionTerm = 109,
+        OnlyFunctionCallExpressionCanBeStatement = 110,
+        ExpectedAsOrEquals = 111,
 
         // Semantic errors: binding
         CantAssignUndeclaredVariable = 401,

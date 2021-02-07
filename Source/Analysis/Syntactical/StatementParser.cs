@@ -6,13 +6,18 @@ namespace Krypton.Analysis.Syntactical
 {
     public sealed partial class StatementParser
     {
-        public StatementParser(LexemeCollection lexemes, ExpressionParser expressionParser, TypeParser typeParser)
+        public StatementParser(LexemeCollection lexemes,
+                               ExpressionParser expressionParser,
+                               TypeParser typeParser,
+                               string code)
         {
             this.lexemes = lexemes;
             this.expressionParser = expressionParser;
             this.typeParser = typeParser;
+            this.code = code;
         }
 
+        private readonly string code;
         private readonly ExpressionParser expressionParser;
         private readonly LexemeCollection lexemes;
         private readonly TypeParser typeParser;
