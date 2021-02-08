@@ -2,6 +2,8 @@
 
 namespace Krypton.Analysis.Lexical.Lexemes
 {
+    // Except for NoKeyword these have to be the exact Krypton keyword.
+    // Adding a new member will reserve new keywords.
     public enum ReservedKeyword
     {
         NoKeyword = 0, // this is not a Krypton keyword, this is the default value of the type ReservedKeyword
@@ -15,12 +17,14 @@ namespace Krypton.Analysis.Lexical.Lexemes
         Or = Operator.OrKeyword,
         Xor = Operator.XorKeyword,
 
-        // remaining operators are counted upwards from 100
+        // remaining keywords are counted upwards from 100
         As = 100,
         Block,
         Else,
+        For,
         If,
         Var,
         While,
+        With,
     }
 }
