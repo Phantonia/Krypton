@@ -10,7 +10,6 @@ using Krypton.Analysis.Semantical;
 using Krypton.Analysis.Syntactical;
 using Krypton.Framework;
 using NUnit.Framework;
-using System;
 
 namespace UnitTests
 {
@@ -248,6 +247,117 @@ namespace UnitTests
             var bdid = (BoundIdentifierNode)fnex.IdentifierNode;
 
             Assert.IsInstanceOf<LocalVariableSymbolNode>(bdid.Symbol);
+        }
+
+        [Test]
+        public void IfBindingTest()
+        {
+            const string Code =
+            @"
+            Var x = 4;
+            If x == 4
+            {
+                Output(""*sigh* everything alright"");
+            }
+            Else
+            {
+                Output(""Help, 4 != 4 ;-;"");
+            }
+            ";
+
+            Lexer lexer = new(Code);
+            LexemeCollection lexemes = lexer.LexAll();
+
+            ProgramParser parser = new(lexemes, Code);
+            Compilation? tree = new(parser.ParseWholeProgram()!, Code);
+
+            if (tree != null)
+            {
+                Binder binder = new(tree);
+                bool success = binder.PerformBinding();
+
+                if (!success)
+                {
+                    tree = null;
+                }
+            }
+
+            Assert.NotNull(tree);
+            Assert.AreEqual(2, tree!.Program.TopLevelStatementNodes.Count);
+
+            Assert.IsTrue(tree.Program.TopLevelStatementNodes[1] is IfStatementNode
+            {
+                ConditionNode: BinaryOperationExpressionNode
+                {
+                    LeftOperandNode: IdentifierExpressionNode
+                    {
+                        IdentifierNode: BoundIdentifierNode
+                        {
+                            Symbol: LocalVariableSymbolNode
+                            {
+                                TypeNode: null,
+                                Identifier: "x"
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        [Test]
+        public void ForVarBindingTest()
+        {
+            const string Code =
+            @"
+            For Var i = 0 While i < 10
+            {
+                Output(""This is printed 10 times ^^"");
+            }
+            ";
+
+            Lexer lexer = new(Code);
+            LexemeCollection lexemes = lexer.LexAll();
+
+            ProgramParser parser = new(lexemes, Code);
+            Compilation? tree = new(parser.ParseWholeProgram()!, Code);
+
+            if (tree != null)
+            {
+                Binder binder = new(tree);
+                bool success = binder.PerformBinding();
+
+                if (!success)
+                {
+                    tree = null;
+                }
+            }
+
+            Assert.NotNull(tree);
+            Assert.AreEqual(1, tree!.Program.TopLevelStatementNodes.Count);
+
+            Assert.IsTrue(tree.Program.TopLevelStatementNodes[0] is ForStatementNode
+            {
+                VariableIdentifierNode: BoundIdentifierNode
+                {
+                    Symbol: LocalVariableSymbolNode
+                    {
+                        Identifier: "i"
+                    }
+                },
+                ConditionNode: BinaryOperationExpressionNode
+                {
+                    LeftOperandNode: IdentifierExpressionNode
+                    {
+                        IdentifierNode: BoundIdentifierNode
+                        {
+                            Symbol: LocalVariableSymbolNode
+                            {
+                                Identifier: "i"
+                            }
+                        }
+                    }
+                }
+            });
         }
     }
 }

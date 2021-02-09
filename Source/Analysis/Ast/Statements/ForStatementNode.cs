@@ -1,5 +1,6 @@
 ﻿using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Identifiers;
+using Krypton.Analysis.Ast.Symbols;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -18,7 +19,7 @@ namespace Krypton.Analysis.Ast.Statements
         {
             Debug.Assert((condition != null) | (withValue != null));
 
-            IdentifierNode = identifier;
+            VariableIdentifierNode = identifier;
             identifier.ParentNode = this;
 
             DeclaresNew = declaresNew;
@@ -36,7 +37,7 @@ namespace Krypton.Analysis.Ast.Statements
             }
 
             WithExpressionNode = withValue;
-            Statements = statements;
+            StatementNodes = statements;
             if (withValue != null)
             {
                 withValue.ParentNode = this;
@@ -47,20 +48,36 @@ namespace Krypton.Analysis.Ast.Statements
 
         public bool DeclaresNew { get; }
 
-        public string Identifier => IdentifierNode.Identifier;
-
-        public IdentifierNode IdentifierNode { get; }
-
         public ExpressionNode? InitialValue { get; }
 
-        public StatementCollectionNode Statements { get; }
+        public StatementCollectionNode StatementNodes { get; }
+
+        public string VariableIdentifier => VariableIdentifierNode.Identifier;
+
+        public IdentifierNode VariableIdentifierNode { get; private set; }
 
         public ExpressionNode? WithExpressionNode { get; }
+
+        public LocalVariableSymbolNode CreateVariable()
+        {
+            LocalVariableSymbolNode variable = new LocalVariableSymbolNode(VariableIdentifier,
+                                                                           type: null,
+                                                                           VariableIdentifierNode.LineNumber,
+                                                                           VariableIdentifierNode.Index);
+            VariableIdentifierNode = new BoundIdentifierNode(VariableIdentifier,
+                                                             variable,
+                                                             VariableIdentifierNode.LineNumber,
+                                                             VariableIdentifierNode.Index)
+            {
+                ParentNode = this
+            };
+            return variable;
+        }
 
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);
-            IdentifierNode.PopulateBranches(list);
+            VariableIdentifierNode.PopulateBranches(list);
             InitialValue?.PopulateBranches(list);
             ConditionNode?.PopulateBranches(list);
             WithExpressionNode?.PopulateBranches(list);

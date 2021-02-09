@@ -579,8 +579,8 @@ namespace UnitTests
             Assert.NotNull(forStmt.ConditionNode);
             Assert.IsNull(forStmt.WithExpressionNode);
             Assert.IsTrue(forStmt.DeclaresNew);
-            Assert.AreEqual("i", forStmt.Identifier);
-            Assert.AreEqual(1, forStmt.Statements.Count);
+            Assert.AreEqual("i", forStmt.VariableIdentifier);
+            Assert.AreEqual(1, forStmt.StatementNodes.Count);
 
             Assert.IsTrue(forStmt.ConditionNode is BinaryOperationExpressionNode { Operator: Operator.LessThan });
         }
@@ -608,8 +608,8 @@ namespace UnitTests
             Assert.IsNull(forStmt.ConditionNode);
             Assert.NotNull(forStmt.WithExpressionNode);
             Assert.IsTrue(forStmt.DeclaresNew);
-            Assert.AreEqual("i", forStmt.Identifier);
-            Assert.AreEqual(1, forStmt.Statements.Count);
+            Assert.AreEqual("i", forStmt.VariableIdentifier);
+            Assert.AreEqual(1, forStmt.StatementNodes.Count);
 
             Assert.IsTrue(forStmt.WithExpressionNode is BinaryOperationExpressionNode { Operator: Operator.Plus });
         }
@@ -637,8 +637,8 @@ namespace UnitTests
             Assert.NotNull(forStmt.ConditionNode);
             Assert.NotNull(forStmt.WithExpressionNode);
             Assert.IsTrue(forStmt.DeclaresNew);
-            Assert.AreEqual("i", forStmt.Identifier);
-            Assert.AreEqual(1, forStmt.Statements.Count);
+            Assert.AreEqual("i", forStmt.VariableIdentifier);
+            Assert.AreEqual(1, forStmt.StatementNodes.Count);
 
             Assert.IsTrue(forStmt.ConditionNode is BinaryOperationExpressionNode { Operator: Operator.LessThanEquals });
             Assert.IsTrue(forStmt.WithExpressionNode is BinaryOperationExpressionNode { Operator: Operator.Asterisk });

@@ -4,9 +4,9 @@ using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Errors;
 using Krypton.Analysis.Semantical.IdentifierMaps;
-using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace Krypton.Analysis.Semantical
 {
@@ -115,7 +115,71 @@ namespace Krypton.Analysis.Semantical
             return true;
         }
 
-        private bool BindInStatement(StatementNode statementNode, VariableIdentifierMap variableIdentifierMap, HoistedIdentifierMap globalIdentifierMap)
+        private bool BindInForStatement(ForStatementNode forStatement,
+                                        VariableIdentifierMap variableIdentifierMap,
+                                        HoistedIdentifierMap globalIdentifierMap)
+        {
+            bool success = forStatement.InitialValue == null || BindInExpression(forStatement.InitialValue,
+                                                                                 variableIdentifierMap,
+                                                                                 globalIdentifierMap);
+
+            if (!success)
+            {
+                return false;
+            }
+
+            variableIdentifierMap.EnterBlock();
+            variableIdentifierMap.AddSymbol(forStatement.VariableIdentifier, forStatement.CreateVariable());
+
+            success = (forStatement.ConditionNode == null || BindInExpression(forStatement.ConditionNode,
+                                                                              variableIdentifierMap,
+                                                                              globalIdentifierMap))
+                   && (forStatement.WithExpressionNode == null || BindInExpression(forStatement.WithExpressionNode,
+                                                                                   variableIdentifierMap,
+                                                                                   globalIdentifierMap));
+
+            if (!success)
+            {
+                return false;
+            }
+
+            foreach (StatementNode statement in forStatement.StatementNodes)
+            {
+                success = BindInStatement(statement, variableIdentifierMap, globalIdentifierMap);
+
+                if (!success)
+                {
+                    return false;
+                }
+            }
+
+            variableIdentifierMap.LeaveBlock();
+
+            return true;
+        }
+
+        private bool BindInIfStatement(IfStatementNode ifStatement,
+                                       VariableIdentifierMap variableIdentifierMap,
+                                       HoistedIdentifierMap globalIdentifierMap)
+        {
+            bool success = BindInExpression(ifStatement.ConditionNode, variableIdentifierMap, globalIdentifierMap)
+                        && BindInBlock(ifStatement.StatementNodes, variableIdentifierMap, globalIdentifierMap)
+                        && ifStatement.ElseIfPartNodes.All(p => BindInExpression(p.ConditionNode,
+                                                                                 variableIdentifierMap,
+                                                                                 globalIdentifierMap)
+                                                             && BindInBlock(p.StatementNodes,
+                                                                            variableIdentifierMap,
+                                                                            globalIdentifierMap))
+                        && (ifStatement.ElsePartNode == null || BindInBlock(ifStatement.ElsePartNode.StatementNodes,
+                                                                            variableIdentifierMap,
+                                                                            globalIdentifierMap));
+
+            return success;
+        }
+
+        private bool BindInStatement(StatementNode statementNode,
+                                     VariableIdentifierMap variableIdentifierMap,
+                                     HoistedIdentifierMap globalIdentifierMap)
         {
             switch (statementNode)
             {
@@ -198,9 +262,9 @@ namespace Krypton.Analysis.Semantical
                         }
                     }
                     break;
-                case BlockStatementNode blockStmt:
+                case BlockStatementNode blockStatement:
                     {
-                        bool success = BindInBlock(blockStmt.StatementNodes, variableIdentifierMap, globalIdentifierMap);
+                        bool success = BindInBlock(blockStatement.StatementNodes, variableIdentifierMap, globalIdentifierMap);
 
                         if (!success)
                         {
@@ -208,10 +272,30 @@ namespace Krypton.Analysis.Semantical
                         }
                     }
                     break;
-                case WhileStatementNode whileStmt:
+                case WhileStatementNode whileStatement:
                     {
-                        bool success = BindInExpression(whileStmt.ConditionNode, variableIdentifierMap, globalIdentifierMap)
-                                    && BindInBlock(whileStmt.StatementNodes, variableIdentifierMap, globalIdentifierMap);
+                        bool success = BindInExpression(whileStatement.ConditionNode, variableIdentifierMap, globalIdentifierMap)
+                                    && BindInBlock(whileStatement.StatementNodes, variableIdentifierMap, globalIdentifierMap);
+
+                        if (!success)
+                        {
+                            return false;
+                        }
+                    }
+                    break;
+                case IfStatementNode ifStatement:
+                    {
+                        bool success = BindInIfStatement(ifStatement, variableIdentifierMap, globalIdentifierMap);
+
+                        if (!success)
+                        {
+                            return false;
+                        }
+                    }
+                    break;
+                case ForStatementNode forStatement:
+                    {
+                        bool success = BindInForStatement(forStatement, variableIdentifierMap, globalIdentifierMap);
 
                         if (!success)
                         {
