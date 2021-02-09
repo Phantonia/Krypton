@@ -23,6 +23,10 @@
         ExpectedExpressionTerm = 109,
         OnlyFunctionCallExpressionCanBeStatement = 110,
         ExpectedAsOrEquals = 111,
+        NewVariableInForWithoutDefaultValue = 112,
+        ForConditionHasToBeTrueOrComparisonWithIterationVariable = 113,
+        ForWithPartHasToAssignIterationVariable = 114,
+        ForNeitherWhileNorWith = 115,
 
         // Semantic errors: binding
         CantAssignUndeclaredVariable = 401,

@@ -12,10 +12,11 @@ namespace Krypton.Analysis.Ast.Statements
                                   ExpressionNode? initialValue,
                                   ExpressionNode? condition,
                                   ExpressionNode? withValue,
+                                  StatementCollectionNode statements,
                                   int lineNumber,
                                   int index) : base(lineNumber, index)
         {
-            Debug.Assert((condition == null) ^ (withValue == null));
+            Debug.Assert((condition != null) | (withValue != null));
 
             IdentifierNode = identifier;
             identifier.ParentNode = this;
@@ -34,7 +35,8 @@ namespace Krypton.Analysis.Ast.Statements
                 condition.ParentNode = this;
             }
 
-            WithValue = withValue;
+            WithExpressionNode = withValue;
+            Statements = statements;
             if (withValue != null)
             {
                 withValue.ParentNode = this;
@@ -51,7 +53,9 @@ namespace Krypton.Analysis.Ast.Statements
 
         public ExpressionNode? InitialValue { get; }
 
-        public ExpressionNode? WithValue { get; }
+        public StatementCollectionNode Statements { get; }
+
+        public ExpressionNode? WithExpressionNode { get; }
 
         public override void PopulateBranches(List<Node> list)
         {
@@ -59,7 +63,7 @@ namespace Krypton.Analysis.Ast.Statements
             IdentifierNode.PopulateBranches(list);
             InitialValue?.PopulateBranches(list);
             ConditionNode?.PopulateBranches(list);
-            WithValue?.PopulateBranches(list);
+            WithExpressionNode?.PopulateBranches(list);
         }
     }
 }

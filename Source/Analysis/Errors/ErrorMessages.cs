@@ -29,6 +29,15 @@ namespace Krypton.Analysis.Errors
             [ErrorCode.OnlyFunctionCallExpressionCanBeStatement] = "This kind of expression is not a legal statement",
             [ErrorCode.ExpectedAsOrEquals] = "Expected the keyword 'As' to specify the type or an equals '=' to " +
                                              "specify the initial value",
+            [ErrorCode.NewVariableInForWithoutDefaultValue] = "A variable declared in a For statement has to have " +
+                                                              "an initial value",
+            [ErrorCode.ForConditionHasToBeTrueOrComparisonWithIterationVariable] =
+                "The condition after 'While' in a For loop has to be either the 'True' or a comparison with the " +
+                "iteration variable as its left operand",
+            [ErrorCode.ForWithPartHasToAssignIterationVariable] = "The 'With' part of a For loop has to assign " +
+                                                                  "the iteration variable",
+            [ErrorCode.ForNeitherWhileNorWith] = "The For statement neither has a 'While' nor a 'With' part while it " +
+                                                 "has to have one or both of them",
 
             // Semantic errors: binding
             [ErrorCode.CantAssignUndeclaredVariable] = "This variable is not declared (at least not in scope)",

@@ -4,7 +4,6 @@ using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Krypton.Analysis.Syntactical
 {
@@ -52,7 +51,7 @@ namespace Krypton.Analysis.Syntactical
             return new ProgramNode(topLevelStatements, lineNumber: 1, index: 0);
         }
 
-        private bool TryParseNextNode([NotNullWhen(true)] out Node? node, out bool error)
+        private bool TryParseNextNode(out Node? node, out bool error)
         {
             if (Lexemes[index] is EndOfFileLexeme)
             {

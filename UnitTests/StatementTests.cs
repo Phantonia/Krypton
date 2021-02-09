@@ -555,5 +555,205 @@ namespace UnitTests
 
             Assert.AreEqual(ErrorCode.ExpectedOpeningBrace, e.ErrorCode);
         }
+
+        [Test]
+        public void ForWhileTest()
+        {
+            const string Code = @"
+            For Var i = 0 While i < 10
+            {
+                Output(""Test"");
+            }
+            ";
+
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
+            ProgramParser parser = new ProgramParser(lexemes, Code);
+            ProgramNode? program = parser.ParseWholeProgram();
+
+            Assert.NotNull(program);
+            Assert.AreEqual(1, program!.TopLevelStatementNodes.Count);
+            Assert.IsInstanceOf<ForStatementNode>(program.TopLevelStatementNodes[0]);
+
+            var forStmt = (ForStatementNode)program.TopLevelStatementNodes[0];
+
+            Assert.NotNull(forStmt.ConditionNode);
+            Assert.IsNull(forStmt.WithExpressionNode);
+            Assert.IsTrue(forStmt.DeclaresNew);
+            Assert.AreEqual("i", forStmt.Identifier);
+            Assert.AreEqual(1, forStmt.Statements.Count);
+
+            Assert.IsTrue(forStmt.ConditionNode is BinaryOperationExpressionNode { Operator: Operator.LessThan });
+        }
+
+        [Test]
+        public void ForWithTest()
+        {
+            const string Code = @"
+            For Var i = 0 With i = i + 1
+            {
+                Output(""Test"");
+            }
+            ";
+
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
+            ProgramParser parser = new ProgramParser(lexemes, Code);
+            ProgramNode? program = parser.ParseWholeProgram();
+
+            Assert.NotNull(program);
+            Assert.AreEqual(1, program!.TopLevelStatementNodes.Count);
+            Assert.IsInstanceOf<ForStatementNode>(program.TopLevelStatementNodes[0]);
+
+            var forStmt = (ForStatementNode)program.TopLevelStatementNodes[0];
+
+            Assert.IsNull(forStmt.ConditionNode);
+            Assert.NotNull(forStmt.WithExpressionNode);
+            Assert.IsTrue(forStmt.DeclaresNew);
+            Assert.AreEqual("i", forStmt.Identifier);
+            Assert.AreEqual(1, forStmt.Statements.Count);
+
+            Assert.IsTrue(forStmt.WithExpressionNode is BinaryOperationExpressionNode { Operator: Operator.Plus });
+        }
+
+        [Test]
+        public void ForWhileWithTest()
+        {
+            const string Code = @"
+            For Var i = 0 While i <= 20 With i = i * 2
+            {
+                Output(""Test"");
+            }
+            ";
+
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
+            ProgramParser parser = new ProgramParser(lexemes, Code);
+            ProgramNode? program = parser.ParseWholeProgram();
+
+            Assert.NotNull(program);
+            Assert.AreEqual(1, program!.TopLevelStatementNodes.Count);
+            Assert.IsInstanceOf<ForStatementNode>(program.TopLevelStatementNodes[0]);
+
+            var forStmt = (ForStatementNode)program.TopLevelStatementNodes[0];
+
+            Assert.NotNull(forStmt.ConditionNode);
+            Assert.NotNull(forStmt.WithExpressionNode);
+            Assert.IsTrue(forStmt.DeclaresNew);
+            Assert.AreEqual("i", forStmt.Identifier);
+            Assert.AreEqual(1, forStmt.Statements.Count);
+
+            Assert.IsTrue(forStmt.ConditionNode is BinaryOperationExpressionNode { Operator: Operator.LessThanEquals });
+            Assert.IsTrue(forStmt.WithExpressionNode is BinaryOperationExpressionNode { Operator: Operator.Asterisk });
+        }
+
+        [Test]
+        public void ForNeitherWhileNorWithTest()
+        {
+            const string Code = @"
+            For Var i = 0
+            {
+                Output(""Test"");
+            }
+            ";
+
+            var e = MyAssert.Error(() =>
+            {
+                LexemeCollection lexemes = new Lexer(Code).LexAll();
+                ProgramParser parser = new ProgramParser(lexemes, Code);
+                ProgramNode? program = parser.ParseWholeProgram();
+
+                Assert.IsNull(program);
+            });
+
+            Assert.AreEqual(ErrorCode.ForNeitherWhileNorWith, e.ErrorCode);
+        }
+
+        [Test]
+        public void ForIllegalConditionTest()
+        {
+            const string Code = @"
+            For Var i = 0 While i != 4
+            {
+                Output(""Test"");
+            }
+            ";
+
+            var e = MyAssert.Error(() =>
+            {
+                LexemeCollection lexemes = new Lexer(Code).LexAll();
+                ProgramParser parser = new ProgramParser(lexemes, Code);
+                ProgramNode? program = parser.ParseWholeProgram();
+
+                Assert.IsNull(program);
+            });
+
+            Assert.AreEqual(ErrorCode.ForConditionHasToBeTrueOrComparisonWithIterationVariable, e.ErrorCode);
+        }
+
+        [Test]
+        public void ForIllegalWithPartTest()
+        {
+            const string Code = @"
+            For Var i = 0 With i + 1
+            {
+                Output(""Test"");
+            }
+            ";
+
+            var e = MyAssert.Error(() =>
+            {
+                LexemeCollection lexemes = new Lexer(Code).LexAll();
+                ProgramParser parser = new ProgramParser(lexemes, Code);
+                ProgramNode? program = parser.ParseWholeProgram();
+
+                Assert.IsNull(program);
+            });
+
+            Assert.AreEqual(ErrorCode.ForWithPartHasToAssignIterationVariable, e.ErrorCode);
+        }
+
+        [Test]
+        public void ForIllegalDeclarationPartTest()
+        {
+            const string Code = @"
+            For Var i With i + 1
+            {
+                Output(""Test"");
+            }
+            ";
+
+            var e = MyAssert.Error(() =>
+            {
+                LexemeCollection lexemes = new Lexer(Code).LexAll();
+                ProgramParser parser = new ProgramParser(lexemes, Code);
+                ProgramNode? program = parser.ParseWholeProgram();
+
+                Assert.IsNull(program);
+            });
+
+            Assert.AreEqual(ErrorCode.NewVariableInForWithoutDefaultValue, e.ErrorCode);
+        }
+
+        [Test]
+        public void ForExistingVariablePartTest()
+        {
+            const string Code = @"
+            Var i = 0;
+            For i With i = i + 1
+            {
+                Output(""Test"");
+            }
+            ";
+
+            LexemeCollection lexemes = new Lexer(Code).LexAll();
+            ProgramParser parser = new ProgramParser(lexemes, Code);
+            ProgramNode? program = parser.ParseWholeProgram();
+
+            Assert.NotNull(program);
+            Assert.AreEqual(2, program!.TopLevelStatementNodes.Count);
+            Assert.IsInstanceOf<ForStatementNode>(program.TopLevelStatementNodes[1]);
+
+            var forStmt = (ForStatementNode)program.TopLevelStatementNodes[1];
+
+            Assert.IsFalse(forStmt.DeclaresNew);
+        }
     }
 }
