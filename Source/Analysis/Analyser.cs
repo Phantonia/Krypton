@@ -24,8 +24,10 @@ namespace Krypton.Analysis
 
             Compilation compilation = new(program, code);
 
-            SemanticalAnalyser semanticalAnalyser = new(compilation);
-            bool success = semanticalAnalyser.PerformSemanticalAnalysis();
+            Binder binder = new(compilation);
+            bool success = binder.PerformBinding();
+            //SemanticalAnalyser semanticalAnalyser = new(compilation);
+            //bool success = semanticalAnalyser.PerformSemanticalAnalysis();
 
             if (!success)
             {

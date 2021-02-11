@@ -176,5 +176,124 @@ namespace UnitTests
 
             MyAssert.Throws<NotImplementedException>(() => Analyser.Analyse(Code));
         }
+
+        [Test]
+        public void ForIntTypeTest()
+        {
+            const string Code = @"
+            For Var i = 0 While i < 10
+            { }";
+
+            Compilation compilation = MyAssert.NoError(Code);
+
+            if (compilation.Program.TopLevelStatementNodes[0] is not ForStatementNode
+                {
+                    VariableIdentifierNode: BoundIdentifierNode
+                    {
+                        Symbol: LocalVariableSymbolNode
+                        {
+                            TypeNode: FrameworkTypeSymbolNode
+                            {
+                                FrameworkType: FrameworkType frameworkType
+                            }
+                        }
+                    }
+                })
+            {
+                Assert.Fail();
+                return;
+            }
+
+            Assert.AreEqual(FrameworkType.Int, frameworkType);
+        }
+
+        [Test]
+        public void ForRationalTypeTest()
+        {
+            const string Code = @"
+            For Var i = 0.0 While i < 10.0
+            { }";
+
+            Compilation compilation = MyAssert.NoError(Code);
+
+            if (compilation.Program.TopLevelStatementNodes[0] is not ForStatementNode
+                {
+                    VariableIdentifierNode: BoundIdentifierNode
+                    {
+                        Symbol: LocalVariableSymbolNode
+                        {
+                            TypeNode: FrameworkTypeSymbolNode
+                            {
+                                FrameworkType: FrameworkType frameworkType
+                            }
+                        }
+                    }
+                })
+            {
+                Assert.Fail();
+                return;
+            }
+
+            Assert.AreEqual(FrameworkType.Rational, frameworkType);
+        }
+
+        [Test]
+        public void ForComplexTypeTest()
+        {
+            const string Code = @"
+            For Var i = 0i With i = 2i ... this code makes no sense, but hey, unit tests \o/
+            { }";
+
+            Compilation compilation = MyAssert.NoError(Code);
+
+            if (compilation.Program.TopLevelStatementNodes[0] is not ForStatementNode
+                {
+                    VariableIdentifierNode: BoundIdentifierNode
+                    {
+                        Symbol: LocalVariableSymbolNode
+                        {
+                            TypeNode: FrameworkTypeSymbolNode
+                            {
+                                FrameworkType: FrameworkType frameworkType
+                            }
+                        }
+                    }
+                })
+            {
+                Assert.Fail();
+                return;
+            }
+
+            Assert.AreEqual(FrameworkType.Complex, frameworkType);
+        }
+
+        [Test]
+        public void IllegalForStringTypeTest()
+        {
+            const string Code = @"
+            For Var i = ""str"" While True
+            { }";
+
+            MyAssert.Error(Code, ErrorCode.ForIterationVariableHasToBeNumberType);
+        }
+
+        [Test]
+        public void IfConditionTest()
+        {
+            const string Code = @"
+            If 4 == 4 { }
+            ";
+
+            MyAssert.NoError(Code);
+        }
+
+        [Test]
+        public void IllegalIfConditionTest()
+        {
+            const string Code = @"
+            If 4i { }";
+
+            MyAssert.Error(Code, ErrorCode.CantConvertType);
+        }
     }
 }

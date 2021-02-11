@@ -61,5 +61,22 @@ namespace UnitTests
             Assert.AreEqual(errorCode, e.ErrorCode);
             return e;
         }
+
+        public static Compilation NoError(string code)
+        {
+            ErrorEventHandler handler = e =>
+            {
+                Assert.Fail($"Got the error {e.ErrorCode}");
+            };
+
+            ErrorProvider.Error += handler;
+
+            Compilation? compilation = Analyser.Analyse(code);
+            Assert.NotNull(compilation);
+
+            ErrorProvider.Error -= handler;
+
+            return compilation!;
+        }
     }
 }

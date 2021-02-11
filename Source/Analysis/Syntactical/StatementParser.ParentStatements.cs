@@ -103,6 +103,7 @@ namespace Krypton.Analysis.Syntactical
             switch (lexemes.TryGet(index))
             {
                 case BooleanLiteralLexeme { Value: true } booleanLiteral:
+                    index++;
                     return new BooleanLiteralExpressionNode(true, booleanLiteral.LineNumber, booleanLiteral.Index);
                 case IdentifierLexeme
                 {

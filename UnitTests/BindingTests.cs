@@ -90,7 +90,7 @@ namespace UnitTests
             Assert.NotNull(varX);
             Assert.NotNull(varY);
 
-            var idX = decl2.AssignedValueNode as IdentifierExpressionNode;
+            var idX = decl2.AssignedExpressionNode as IdentifierExpressionNode;
 
             Assert.NotNull(idX);
 
@@ -135,9 +135,9 @@ namespace UnitTests
             var vdecl = (VariableDeclarationStatementNode)tree.Program.TopLevelStatementNodes[0];
 
             Assert.AreEqual("x", vdecl.VariableIdentifier);
-            Assert.IsInstanceOf<IdentifierTypeSpecNode>(vdecl.Type);
+            Assert.IsInstanceOf<IdentifierTypeSpecNode>(vdecl.TypeSpecNode);
 
-            var idtype = (IdentifierTypeSpecNode)vdecl.Type!;
+            var idtype = (IdentifierTypeSpecNode)vdecl.TypeSpecNode!;
 
             Assert.IsInstanceOf<BoundIdentifierNode>(idtype.IdentifierNode);
 
@@ -223,30 +223,9 @@ namespace UnitTests
             Output(4);
             ";
 
-            Lexer lexer = new(Code);
-            LexemeCollection lexemes = lexer.LexAll();
-
-            ProgramParser parser = new(lexemes, Code);
-            Compilation? tree = new(parser.ParseWholeProgram()!, Code);
-
-            if (tree != null)
-            {
-                Binder binder = new(tree);
-                bool success = binder.PerformBinding();
-
-                if (!success)
-                {
-                    tree = null;
-                }
-            }
-
-            Assert.NotNull(tree);
-
-            var fcsn = (FunctionCallStatementNode)tree!.Program.TopLevelStatementNodes[1];
-            var fnex = (IdentifierExpressionNode)fcsn.FunctionExpressionNode;
-            var bdid = (BoundIdentifierNode)fnex.IdentifierNode;
-
-            Assert.IsInstanceOf<LocalVariableSymbolNode>(bdid.Symbol);
+            // this shows that shadowing worked and "Output" refers
+            // to the variable and not the function
+            MyAssert.Error(Code, ErrorCode.CanOnlyCallFunctions);
         }
 
         [Test]
@@ -265,25 +244,9 @@ namespace UnitTests
             }
             ";
 
-            Lexer lexer = new(Code);
-            LexemeCollection lexemes = lexer.LexAll();
+            Compilation tree = MyAssert.NoError(Code);
 
-            ProgramParser parser = new(lexemes, Code);
-            Compilation? tree = new(parser.ParseWholeProgram()!, Code);
-
-            if (tree != null)
-            {
-                Binder binder = new(tree);
-                bool success = binder.PerformBinding();
-
-                if (!success)
-                {
-                    tree = null;
-                }
-            }
-
-            Assert.NotNull(tree);
-            Assert.AreEqual(2, tree!.Program.TopLevelStatementNodes.Count);
+            Assert.AreEqual(2, tree.Program.TopLevelStatementNodes.Count);
 
             Assert.IsTrue(tree.Program.TopLevelStatementNodes[1] is IfStatementNode
             {
@@ -295,7 +258,6 @@ namespace UnitTests
                         {
                             Symbol: LocalVariableSymbolNode
                             {
-                                TypeNode: null,
                                 Identifier: "x"
                             }
                         }
@@ -315,24 +277,8 @@ namespace UnitTests
             }
             ";
 
-            Lexer lexer = new(Code);
-            LexemeCollection lexemes = lexer.LexAll();
+            Compilation? tree = MyAssert.NoError(Code);
 
-            ProgramParser parser = new(lexemes, Code);
-            Compilation? tree = new(parser.ParseWholeProgram()!, Code);
-
-            if (tree != null)
-            {
-                Binder binder = new(tree);
-                bool success = binder.PerformBinding();
-
-                if (!success)
-                {
-                    tree = null;
-                }
-            }
-
-            Assert.NotNull(tree);
             Assert.AreEqual(1, tree!.Program.TopLevelStatementNodes.Count);
 
             Assert.IsTrue(tree.Program.TopLevelStatementNodes[0] is ForStatementNode

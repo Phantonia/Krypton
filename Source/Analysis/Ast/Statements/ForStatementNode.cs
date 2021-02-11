@@ -24,7 +24,7 @@ namespace Krypton.Analysis.Ast.Statements
 
             DeclaresNew = declaresNew;
 
-            InitialValue = initialValue;
+            InitialValueNode = initialValue;
             if (initialValue != null)
             {
                 initialValue.ParentNode = this;
@@ -48,7 +48,7 @@ namespace Krypton.Analysis.Ast.Statements
 
         public bool DeclaresNew { get; }
 
-        public ExpressionNode? InitialValue { get; }
+        public ExpressionNode? InitialValueNode { get; }
 
         public StatementCollectionNode StatementNodes { get; }
 
@@ -58,10 +58,10 @@ namespace Krypton.Analysis.Ast.Statements
 
         public ExpressionNode? WithExpressionNode { get; }
 
-        public LocalVariableSymbolNode CreateVariable()
+        public LocalVariableSymbolNode CreateVariable(TypeSymbolNode type)
         {
             LocalVariableSymbolNode variable = new LocalVariableSymbolNode(VariableIdentifier,
-                                                                           type: null,
+                                                                           type,
                                                                            VariableIdentifierNode.LineNumber,
                                                                            VariableIdentifierNode.Index);
             VariableIdentifierNode = new BoundIdentifierNode(VariableIdentifier,
@@ -78,7 +78,7 @@ namespace Krypton.Analysis.Ast.Statements
         {
             list.Add(this);
             VariableIdentifierNode.PopulateBranches(list);
-            InitialValue?.PopulateBranches(list);
+            InitialValueNode?.PopulateBranches(list);
             ConditionNode?.PopulateBranches(list);
             WithExpressionNode?.PopulateBranches(list);
         }

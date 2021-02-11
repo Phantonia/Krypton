@@ -15,28 +15,26 @@ namespace Krypton.Analysis.Ast.Statements
             VariableIdentifierNode = identifier;
             VariableIdentifierNode.ParentNode = this;
 
-            Type = type;
-            if (Type != null)
+            TypeSpecNode = type;
+            if (TypeSpecNode != null)
             {
-                Type.ParentNode = this;
+                TypeSpecNode.ParentNode = this;
             }
 
-            AssignedValueNode = value;
-            if (AssignedValueNode != null)
+            AssignedExpressionNode = value;
+            if (AssignedExpressionNode != null)
             {
-                AssignedValueNode.ParentNode = this;
+                AssignedExpressionNode.ParentNode = this;
             }
         }
 
-        public ExpressionNode? AssignedValueNode { get; }
+        public ExpressionNode? AssignedExpressionNode { get; }
 
-        public LocalVariableSymbolNode VariableNode
+        public LocalVariableSymbolNode? VariableNode
         {
             get
             {
-                LocalVariableSymbolNode? localVariable = (VariableIdentifierNode as BoundIdentifierNode)?.Symbol as LocalVariableSymbolNode;
-                Debug.Assert(localVariable != null);
-                return localVariable;
+                return (VariableIdentifierNode as BoundIdentifierNode)?.Symbol as LocalVariableSymbolNode;
             }
         }
 
@@ -44,7 +42,7 @@ namespace Krypton.Analysis.Ast.Statements
 
         public IdentifierNode VariableIdentifierNode { get; private set; }
 
-        public TypeSpecNode? Type { get; }
+        public TypeSpecNode? TypeSpecNode { get; }
 
         public LocalVariableSymbolNode CreateVariable(TypeSymbolNode? typeSymbol)
         {
@@ -66,8 +64,8 @@ namespace Krypton.Analysis.Ast.Statements
         {
             list.Add(this);
             VariableIdentifierNode.PopulateBranches(list);
-            Type?.PopulateBranches(list);
-            AssignedValueNode?.PopulateBranches(list);
+            TypeSpecNode?.PopulateBranches(list);
+            AssignedExpressionNode?.PopulateBranches(list);
         }
     }
 }

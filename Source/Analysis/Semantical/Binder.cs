@@ -1,327 +1,39 @@
-﻿using Krypton.Analysis.Ast;
-using Krypton.Analysis.Ast.Expressions;
-using Krypton.Analysis.Ast.Statements;
-using Krypton.Analysis.Ast.Symbols;
-using Krypton.Analysis.Errors;
-using Krypton.Analysis.Semantical.IdentifierMaps;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+﻿using Krypton.Analysis.Semantical.IdentifierMaps;
 
 namespace Krypton.Analysis.Semantical
 {
-    public sealed class Binder
+    public sealed partial class Binder
     {
         public Binder(Compilation compilation)
         {
             Compilation = compilation;
         }
 
+#nullable disable // these are assigned by the only method that calls others, PerformBinding()
+        private HoistedIdentifierMap globalIdentifierMap;
+        private TypeManager typeManager;
+#nullable restore
+
         public Compilation Compilation { get; }
 
-        public TypeManager? TypeManager { get; set; }
-
-        [MemberNotNull(nameof(TypeManager))]
         public bool PerformBinding()
         {
             (HoistedIdentifierMap globalIdentifierMap, TypeIdentifierMap typeIdentifierMap) = GatherGlobalSymbols();
-            TypeManager = new TypeManager(Compilation, typeIdentifierMap);
+            this.globalIdentifierMap = globalIdentifierMap;
+            typeManager = new TypeManager(Compilation, typeIdentifierMap);
 
-            bool success = BindInTopLevelStatements(globalIdentifierMap);
-
-            if (!success)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private bool BindInBlock(StatementCollectionNode statementNodes, VariableIdentifierMap variableIdentifierMap, HoistedIdentifierMap globalIdentifierMap)
-        {
-            variableIdentifierMap.EnterBlock();
-
-            foreach (StatementNode statementNode in statementNodes)
-            {
-                bool success = BindInStatement(statementNode, variableIdentifierMap, globalIdentifierMap);
-
-                if (!success)
-                {
-                    return false;
-                }
-            }
-
-            variableIdentifierMap.LeaveBlock();
-
-            return true;
-        }
-
-        private static bool BindInExpression(ExpressionNode expressionNode, VariableIdentifierMap variableIdentifierMap, HoistedIdentifierMap globalIdentifierMap)
-        {
-            switch (expressionNode)
-            {
-                case UnaryOperationExpressionNode unaryOperationNode:
-                    {
-                        bool success = BindInExpression(unaryOperationNode.OperandNode, variableIdentifierMap, globalIdentifierMap);
-
-                        if (!success)
-                        {
-                            return false;
-                        }
-                    }
-                    break;
-                case BinaryOperationExpressionNode binaryOperationNode:
-                    {
-                        bool success = BindInExpression(binaryOperationNode.LeftOperandNode, variableIdentifierMap, globalIdentifierMap)
-                                    && BindInExpression(binaryOperationNode.RightOperandNode, variableIdentifierMap, globalIdentifierMap);
-
-                        if (!success)
-                        {
-                            return false;
-                        }
-                    }
-                    break;
-                case FunctionCallExpressionNode functionCallNode:
-                    {
-                        bool success = BindInExpression(functionCallNode.FunctionExpressionNode, variableIdentifierMap, globalIdentifierMap);
-
-                        if (!success)
-                        {
-                            return false;
-                        }
-
-                        foreach (ExpressionNode argumentNode in functionCallNode.ArgumentNodes)
-                        {
-                            success = BindInExpression(argumentNode, variableIdentifierMap, globalIdentifierMap);
-
-                            if (!success)
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                    break;
-                case IdentifierExpressionNode identifierExpressionNode:
-                    {
-                        if (variableIdentifierMap.TryGet(identifierExpressionNode.Identifier, out SymbolNode? symbolNode)
-                           || globalIdentifierMap.TryGet(identifierExpressionNode.Identifier, out symbolNode))
-                        {
-                            identifierExpressionNode.Bind(symbolNode);
-                        }
-                    }
-                    break;
-            }
-
-            return true;
-        }
-
-        private bool BindInForStatement(ForStatementNode forStatement,
-                                        VariableIdentifierMap variableIdentifierMap,
-                                        HoistedIdentifierMap globalIdentifierMap)
-        {
-            bool success = forStatement.InitialValue == null || BindInExpression(forStatement.InitialValue,
-                                                                                 variableIdentifierMap,
-                                                                                 globalIdentifierMap);
-
-            if (!success)
-            {
-                return false;
-            }
-
-            variableIdentifierMap.EnterBlock();
-            variableIdentifierMap.AddSymbol(forStatement.VariableIdentifier, forStatement.CreateVariable());
-
-            success = (forStatement.ConditionNode == null || BindInExpression(forStatement.ConditionNode,
-                                                                              variableIdentifierMap,
-                                                                              globalIdentifierMap))
-                   && (forStatement.WithExpressionNode == null || BindInExpression(forStatement.WithExpressionNode,
-                                                                                   variableIdentifierMap,
-                                                                                   globalIdentifierMap));
-
-            if (!success)
-            {
-                return false;
-            }
-
-            foreach (StatementNode statement in forStatement.StatementNodes)
-            {
-                success = BindInStatement(statement, variableIdentifierMap, globalIdentifierMap);
-
-                if (!success)
-                {
-                    return false;
-                }
-            }
-
-            variableIdentifierMap.LeaveBlock();
-
-            return true;
-        }
-
-        private bool BindInIfStatement(IfStatementNode ifStatement,
-                                       VariableIdentifierMap variableIdentifierMap,
-                                       HoistedIdentifierMap globalIdentifierMap)
-        {
-            bool success = BindInExpression(ifStatement.ConditionNode, variableIdentifierMap, globalIdentifierMap)
-                        && BindInBlock(ifStatement.StatementNodes, variableIdentifierMap, globalIdentifierMap)
-                        && ifStatement.ElseIfPartNodes.All(p => BindInExpression(p.ConditionNode,
-                                                                                 variableIdentifierMap,
-                                                                                 globalIdentifierMap)
-                                                             && BindInBlock(p.StatementNodes,
-                                                                            variableIdentifierMap,
-                                                                            globalIdentifierMap))
-                        && (ifStatement.ElsePartNode == null || BindInBlock(ifStatement.ElsePartNode.StatementNodes,
-                                                                            variableIdentifierMap,
-                                                                            globalIdentifierMap));
-
+            bool success = BindInTopLevelStatements();
             return success;
         }
 
-        private bool BindInStatement(StatementNode statementNode,
-                                     VariableIdentifierMap variableIdentifierMap,
-                                     HoistedIdentifierMap globalIdentifierMap)
-        {
-            switch (statementNode)
-            {
-                case VariableDeclarationStatementNode variableDeclarationNode:
-                    {
-                        if (variableDeclarationNode.AssignedValueNode != null)
-                        {
-                            bool success = BindInExpression(variableDeclarationNode.AssignedValueNode, variableIdentifierMap, globalIdentifierMap);
-
-                            if (!success)
-                            {
-                                return false;
-                            }
-                        }
-
-                        Debug.Assert(TypeManager != null);
-
-                        if (!TypeManager.TryGetTypeSymbol(variableDeclarationNode.Type, out TypeSymbolNode? typeSymbolNode))
-                        {
-                            return false;
-                        }
-
-                        {
-                            bool success = variableIdentifierMap.AddSymbol(variableDeclarationNode.VariableIdentifier, variableDeclarationNode.CreateVariable(typeSymbolNode));
-
-                            if (!success)
-                            {
-                                ErrorProvider.ReportError(ErrorCode.CantRedeclareVariable,
-                                                          Compilation,
-                                                          variableDeclarationNode.VariableIdentifierNode.LineNumber,
-                                                          variableDeclarationNode.VariableIdentifierNode.Index,
-                                                          $"Variable name: {variableDeclarationNode.VariableIdentifier}");
-                                return false;
-                            }
-                        }
-                    }
-                    break;
-                case VariableAssignmentStatementNode variableAssignmentNode:
-                    {
-                        bool success = BindInExpression(variableAssignmentNode.AssignedExpressionNode, variableIdentifierMap, globalIdentifierMap);
-
-                        if (!success)
-                        {
-                            return false;
-                        }
-
-                        if (!variableIdentifierMap.TryGet(variableAssignmentNode.VariableIdentifier, out LocalVariableSymbolNode? variableNode))
-                        {
-                            ErrorProvider.ReportError(ErrorCode.CantAssignUndeclaredVariable,
-                                                      Compilation,
-                                                      variableAssignmentNode.LineNumber,
-                                                      variableAssignmentNode.Index,
-                                                      $"Variable name: {variableAssignmentNode.VariableIdentifier}");
-                            return false;
-                        }
-
-                        variableAssignmentNode.Bind(variableNode);
-                    }
-                    break;
-                case FunctionCallStatementNode functionCallNode:
-                    {
-                        bool success = BindInExpression(functionCallNode.FunctionExpressionNode, variableIdentifierMap, globalIdentifierMap);
-
-                        if (!success)
-                        {
-                            return false;
-                        }
-
-                        if (functionCallNode.ArgumentNodes != null)
-                        {
-                            foreach (ExpressionNode argumentNode in functionCallNode.ArgumentNodes)
-                            {
-                                success = BindInExpression(argumentNode, variableIdentifierMap, globalIdentifierMap);
-
-                                if (!success)
-                                {
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                    break;
-                case BlockStatementNode blockStatement:
-                    {
-                        bool success = BindInBlock(blockStatement.StatementNodes, variableIdentifierMap, globalIdentifierMap);
-
-                        if (!success)
-                        {
-                            return false;
-                        }
-                    }
-                    break;
-                case WhileStatementNode whileStatement:
-                    {
-                        bool success = BindInExpression(whileStatement.ConditionNode, variableIdentifierMap, globalIdentifierMap)
-                                    && BindInBlock(whileStatement.StatementNodes, variableIdentifierMap, globalIdentifierMap);
-
-                        if (!success)
-                        {
-                            return false;
-                        }
-                    }
-                    break;
-                case IfStatementNode ifStatement:
-                    {
-                        bool success = BindInIfStatement(ifStatement, variableIdentifierMap, globalIdentifierMap);
-
-                        if (!success)
-                        {
-                            return false;
-                        }
-                    }
-                    break;
-                case ForStatementNode forStatement:
-                    {
-                        bool success = BindInForStatement(forStatement, variableIdentifierMap, globalIdentifierMap);
-
-                        if (!success)
-                        {
-                            return false;
-                        }
-                    }
-                    break;
-            }
-
-            return true;
-        }
-
-        private bool BindInTopLevelStatements(HoistedIdentifierMap globalIdentifierMap)
+        private bool BindInTopLevelStatements()
         {
             VariableIdentifierMap variableIdentifierMap = new();
-            return BindInBlock(Compilation.Program.TopLevelStatementNodes, variableIdentifierMap, globalIdentifierMap);
-        }
 
-        private (HoistedIdentifierMap, TypeIdentifierMap) GatherGlobalSymbols()
-        {
-            HoistedIdentifierMap globalIdentifierMap = new();
-            TypeIdentifierMap typeIdentifierMap = new();
+            bool success = BindInStatementBlock(Compilation.Program.TopLevelStatementNodes,
+                                                variableIdentifierMap);
 
-            FrameworkIntegration.PopulateWithFrameworkSymbols(globalIdentifierMap, typeIdentifierMap);
-
-            return (globalIdentifierMap, typeIdentifierMap);
+            return success;
         }
     }
 }

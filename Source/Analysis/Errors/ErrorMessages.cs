@@ -42,6 +42,8 @@ namespace Krypton.Analysis.Errors
             // Semantic errors: binding
             [ErrorCode.CantAssignUndeclaredVariable] = "This variable is not declared (at least not in scope)",
             [ErrorCode.CantRedeclareVariable] = "A variable with the same name is already declared in scope",
+            [ErrorCode.ForNotVariable] = "The identifier does not refer to a local variable",
+            [ErrorCode.NoVariableOfThisNameInScope] = "There is no variable of the this name in scope",
 
             // Semantic errors: types
             [ErrorCode.BinaryOperatorNotValidOnType] = "This binary operator cannot be used on these two types",
@@ -50,6 +52,9 @@ namespace Krypton.Analysis.Errors
             [ErrorCode.OnlyFunctionWithReturnTypeCanBeExpression] = "A function with no return type cannot be used as an expression",
             [ErrorCode.WrongNumberOfArguments] = "This function cannot be called with this number of arguments",
             [ErrorCode.CantConvertType] = "The source type cannot be converted to the target type",
+            [ErrorCode.FunctionNotValidInContext] = "A function is not valid in the current context",
+            [ErrorCode.ForIterationVariableHasToBeNumberType] = "The iteration variable of a For statement has to be one " +
+                                                                "of the following types: Int, Rational, Complex",
         };
 
         public static ReadOnlyDictionary<ErrorCode, string> Messages => messages.MakeReadOnly();

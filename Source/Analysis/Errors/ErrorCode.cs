@@ -31,6 +31,8 @@
         // Semantic errors: binding
         CantAssignUndeclaredVariable = 401,
         CantRedeclareVariable = 402,
+        ForNotVariable = 403,
+        NoVariableOfThisNameInScope = 404,
 
         // Semantic errors: types
         BinaryOperatorNotValidOnType = 601,
@@ -39,6 +41,7 @@
         OnlyFunctionWithReturnTypeCanBeExpression = 604,
         WrongNumberOfArguments = 605,
         CantConvertType = 606,
-
+        FunctionNotValidInContext = 607,
+        ForIterationVariableHasToBeNumberType = 608,
     }
 }

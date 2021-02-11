@@ -88,8 +88,8 @@ namespace Krypton.Framework
                     MakeBinaryOperator(Operator.ForeSlash, "rdiv"),
                     MakeBinaryOperator(Operator.Plus, "plus"),
                     MakeBinaryOperator(Operator.Minus, "minus"),
-                    MakeBinaryOperator(Operator.DoubleEquals, "eq"),
-                    MakeBinaryOperator(Operator.ExclamationEquals, "neq"),
+                    MakeBinaryOperator(Operator.DoubleEquals, "eq", returnType: FrameworkType.Bool),
+                    MakeBinaryOperator(Operator.ExclamationEquals, "neq", returnType: FrameworkType.Bool),
                 },
                 unaryOperations: new[]
                 {
@@ -131,12 +131,12 @@ namespace Krypton.Framework
                     MakeBinaryOperator(Operator.Pipe, jsOperator: "|"),
                     MakeBinaryOperator(Operator.SingleRightArrow, jsOperator: ">>"),
                     MakeBinaryOperator(Operator.SingleLeftArrow, jsOperator: "<<"),
-                    MakeBinaryOperator(Operator.LessThan, jsOperator: "<"),
-                    MakeBinaryOperator(Operator.LessThanEquals, jsOperator: "<="),
-                    MakeBinaryOperator(Operator.GreaterThanEquals, jsOperator: ">="),
-                    MakeBinaryOperator(Operator.GreaterThan, jsOperator: ">"),
-                    MakeBinaryOperator(Operator.DoubleEquals, jsOperator: "==="),
-                    MakeBinaryOperator(Operator.ExclamationEquals, jsOperator: "!=="),
+                    MakeBinaryOperator(Operator.LessThan, jsOperator: "<", returnType : FrameworkType.Bool),
+                    MakeBinaryOperator(Operator.LessThanEquals, jsOperator: "<=", returnType : FrameworkType.Bool),
+                    MakeBinaryOperator(Operator.GreaterThanEquals, jsOperator: ">=", returnType : FrameworkType.Bool),
+                    MakeBinaryOperator(Operator.GreaterThan, jsOperator: ">", returnType : FrameworkType.Bool),
+                    MakeBinaryOperator(Operator.DoubleEquals, jsOperator: "===", returnType: FrameworkType.Bool),
+                    MakeBinaryOperator(Operator.ExclamationEquals, jsOperator: "!==", returnType: FrameworkType.Bool),
                 },
                 unaryOperations: new[]
                 {
@@ -179,12 +179,12 @@ namespace Krypton.Framework
                     MakeBinaryOperator(Operator.ModKeyword, "mod"),
                     MakeBinaryOperator(Operator.Plus, "plus"),
                     MakeBinaryOperator(Operator.Minus, "minus"),
-                    MakeBinaryOperator(Operator.LessThan, "less"),
-                    MakeBinaryOperator(Operator.LessThanEquals, "leq"),
-                    MakeBinaryOperator(Operator.GreaterThanEquals, "geq"),
-                    MakeBinaryOperator(Operator.GreaterThan, "gre"),
-                    MakeBinaryOperator(Operator.DoubleEquals, "eq"),
-                    MakeBinaryOperator(Operator.ExclamationEquals, "neq"),
+                    MakeBinaryOperator(Operator.LessThan, "less", returnType : FrameworkType.Bool),
+                    MakeBinaryOperator(Operator.LessThanEquals, "leq", returnType : FrameworkType.Bool),
+                    MakeBinaryOperator(Operator.GreaterThanEquals, "geq", returnType : FrameworkType.Bool),
+                    MakeBinaryOperator(Operator.GreaterThan, "gre", returnType : FrameworkType.Bool),
+                    MakeBinaryOperator(Operator.DoubleEquals, "eq", returnType : FrameworkType.Bool),
+                    MakeBinaryOperator(Operator.ExclamationEquals, "neq", returnType : FrameworkType.Bool),
                 },
                 unaryOperations: new[]
                 {
