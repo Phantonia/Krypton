@@ -1,4 +1,9 @@
-﻿using Krypton.Analysis.Ast.Declarations;
+﻿using Krypton.Analysis;
+using Krypton.Analysis.Ast;
+using Krypton.Analysis.Ast.Declarations;
+using Krypton.Analysis.Ast.Expressions.Literals;
+using Krypton.Analysis.Ast.Statements;
+using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Syntactical;
 using NUnit.Framework;
@@ -126,5 +131,70 @@ namespace UnitTests
             Assert.NotNull(func.ReturnTypeNode);
             Assert.AreEqual(1, func.BodyNode.Count);
         }
+
+        [Test]
+        public void ReturnNoExpressionTest()
+        {
+            const string Code = @"
+            Return;
+            ";
+
+            ProgramNode? program = MyAssert.NoError(() =>
+            {
+                var lexemes = new Lexer(Code).LexAll();
+                var parser = new ProgramParser(lexemes, Code);
+                return parser.ParseWholeProgram();
+            });
+
+            Assert.NotNull(program);
+            Assert.AreEqual(1, program!.TopLevelStatementNodes.Count);
+            Assert.IsTrue(program.TopLevelStatementNodes[0] is ReturnStatementNode
+            {
+                ReturnExpressionNode: null
+            });
+        }
+
+        [Test]
+        public void ReturnWithExpressionTest()
+        {
+            const string Code = @"
+            Return 4;
+            ";
+
+            ProgramNode? program = MyAssert.NoError(() =>
+            {
+                var lexemes = new Lexer(Code).LexAll();
+                var parser = new ProgramParser(lexemes, Code);
+                return parser.ParseWholeProgram();
+            });
+
+            Assert.NotNull(program);
+            Assert.AreEqual(1, program!.TopLevelStatementNodes.Count);
+            Assert.IsTrue(program.TopLevelStatementNodes[0] is ReturnStatementNode
+            {
+                ReturnExpressionNode: IntegerLiteralExpressionNode
+                {
+                    Value: 4
+                }
+            });
+        }
+
+        //[Test]
+        //public void ReturnMissingSemicolonTest()
+        //{
+        //    const string Code = @"
+        //    Return 4
+        //    ";
+
+        //    var e = MyAssert.Error(() =>
+        //    {
+        //        var lexemes = new Lexer(Code).LexAll();
+        //        var parser = new ProgramParser(lexemes, Code);
+        //        var p = parser.ParseWholeProgram();
+        //        Assert.IsNull(p);
+        //    });
+
+        //    Assert.AreEqual(ErrorCode.ExpectedSemicolon, e.ErrorCode);
+        //}
     }
 }

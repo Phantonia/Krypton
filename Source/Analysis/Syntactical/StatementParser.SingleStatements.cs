@@ -48,6 +48,38 @@ namespace Krypton.Analysis.Syntactical
             }
         }
 
+        private ReturnStatementNode? ParseReturnStatement(ref int index)
+        {
+            int lineNumber = lexemes[index].LineNumber;
+            int nodeIndex = lexemes[index].Index;
+
+            index++;
+
+            if (lexemes[index] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
+            {
+                index++;
+
+                return new ReturnStatementNode(lineNumber, nodeIndex);
+            }
+
+            ExpressionNode? returnExpression = expressionParser.ParseNextExpression(ref index);
+
+            if (returnExpression == null)
+            {
+                return null;
+            }
+
+            if (lexemes[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
+            {
+                ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, lexemes[index]);
+                return null;
+            }
+
+            index++;
+
+            return new ReturnStatementNode(returnExpression, lineNumber, nodeIndex);
+        }
+
         private VariableAssignmentStatementNode? ParseVariableAssignmentStatement(ref int index, IdentifierNode identifier, ExpressionNode expression)
         {
             if (lexemes[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })

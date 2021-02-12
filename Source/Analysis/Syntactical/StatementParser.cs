@@ -35,6 +35,7 @@ namespace Krypton.Analysis.Syntactical
                 KeywordLexeme { Keyword: ReservedKeyword.While } => ParseWhileStatement(ref index),
                 KeywordLexeme { Keyword: ReservedKeyword.If } => ParseIfStatement(ref index),
                 KeywordLexeme { Keyword: ReservedKeyword.For } => ParseForStatement(ref index),
+                KeywordLexeme { Keyword: ReservedKeyword.Return } => ParseReturnStatement(ref index),
                 _ => ParseExpressionStatement(ref index),
             };
         }
