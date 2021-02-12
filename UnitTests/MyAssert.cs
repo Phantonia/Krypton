@@ -62,7 +62,7 @@ namespace UnitTests
             return e;
         }
 
-        public static Compilation NoError(string code)
+        public static T NoError<T>(Func<T> func)
         {
             ErrorEventHandler handler = e =>
             {
@@ -71,12 +71,21 @@ namespace UnitTests
 
             ErrorProvider.Error += handler;
 
-            Compilation? compilation = Analyser.Analyse(code);
-            Assert.NotNull(compilation);
+            T v = func();
 
             ErrorProvider.Error -= handler;
 
-            return compilation!;
+            return v;
+        }
+
+        public static Compilation NoError(string code)
+        {
+            return NoError(() =>
+            {
+                Compilation? compilation = Analyser.Analyse(code);
+                Assert.NotNull(compilation);
+                return compilation!;
+            });
         }
     }
 }

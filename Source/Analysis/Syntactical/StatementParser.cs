@@ -1,6 +1,10 @@
-﻿using Krypton.Analysis.Ast.Statements;
+﻿using Krypton.Analysis.Ast;
+using Krypton.Analysis.Ast.Statements;
+using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
+using Krypton.Utilities;
+using System.Collections.Generic;
 
 namespace Krypton.Analysis.Syntactical
 {
@@ -33,6 +37,41 @@ namespace Krypton.Analysis.Syntactical
                 KeywordLexeme { Keyword: ReservedKeyword.For } => ParseForStatement(ref index),
                 _ => ParseExpressionStatement(ref index),
             };
+        }
+
+        public StatementCollectionNode? ParseStatementBlock(ref int index)
+        {
+            if (lexemes[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.BraceOpening })
+            {
+                ErrorProvider.ReportError(ErrorCode.ExpectedOpeningBrace, code, lexemes[index]);
+                return null;
+            }
+
+            index++;
+
+            List<StatementNode> statements = new();
+
+            while (true)
+            {
+                switch (lexemes.TryGet(index))
+                {
+                    case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.BraceClosing }:
+                        index++;
+                        return new StatementCollectionNode(statements);
+                    case null:
+                        ErrorProvider.ReportError(ErrorCode.ExpectedClosingBrace, code, lexemes[^1]);
+                        return null;
+                }
+
+                StatementNode? nextStatement = ParseNextStatement(ref index);
+
+                if (nextStatement == null)
+                {
+                    return null;
+                }
+
+                statements.Add(nextStatement);
+            }
         }
     }
 }

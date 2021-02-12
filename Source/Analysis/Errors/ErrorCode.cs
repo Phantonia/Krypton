@@ -27,6 +27,8 @@
         ForConditionHasToBeTrueOrComparisonWithIterationVariable = 113,
         ForWithPartHasToAssignIterationVariable = 114,
         ForNeitherWhileNorWith = 115,
+        ExpectedOpenParenthesis = 116,
+        ExpectedKeywordAs = 117,
 
         // Semantic errors: binding
         CantAssignUndeclaredVariable = 401,

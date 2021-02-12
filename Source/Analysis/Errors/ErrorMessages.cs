@@ -38,6 +38,8 @@ namespace Krypton.Analysis.Errors
                                                                   "the iteration variable",
             [ErrorCode.ForNeitherWhileNorWith] = "The For statement neither has a 'While' nor a 'With' part while it " +
                                                  "has to have one or both of them",
+            [ErrorCode.ExpectedOpenParenthesis] = "An open parenthesis '(' was expected",
+            [ErrorCode.ExpectedKeywordAs] = "The keyword 'As' was expected",
 
             // Semantic errors: binding
             [ErrorCode.CantAssignUndeclaredVariable] = "This variable is not declared (at least not in scope)",

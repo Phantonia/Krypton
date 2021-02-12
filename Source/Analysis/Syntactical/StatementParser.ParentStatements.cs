@@ -323,41 +323,6 @@ namespace Krypton.Analysis.Syntactical
             }
         }
 
-        private StatementCollectionNode? ParseStatementBlock(ref int index)
-        {
-            if (lexemes[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.BraceOpening })
-            {
-                ErrorProvider.ReportError(ErrorCode.ExpectedOpeningBrace, code, lexemes[index]);
-                return null;
-            }
-
-            index++;
-
-            List<StatementNode> statements = new();
-
-            while (true)
-            {
-                switch (lexemes.TryGet(index))
-                {
-                    case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.BraceClosing }:
-                        index++;
-                        return new StatementCollectionNode(statements);
-                    case null:
-                        ErrorProvider.ReportError(ErrorCode.ExpectedClosingBrace, code, lexemes[^1]);
-                        return null;
-                }
-
-                StatementNode? nextStatement = ParseNextStatement(ref index);
-
-                if (nextStatement == null)
-                {
-                    return null;
-                }
-
-                statements.Add(nextStatement);
-            }
-        }
-
         private WhileStatementNode? ParseWhileStatement(ref int index)
         {
             int lineNumber = lexemes[index].LineNumber;
