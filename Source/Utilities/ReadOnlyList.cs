@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Krypton.Utilities
 {
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public readonly struct ReadOnlyList<T> : IReadOnlyList<T>, IEnumerable<T>, IIndexedEnumerable<T>
         where T : class
     {
@@ -26,6 +27,11 @@ namespace Krypton.Utilities
             {
                 yield break;
             }
+        }
+
+        private string GetDebuggerDisplay()
+        {
+            return $"Count = {Count}";
         }
     }
 }
