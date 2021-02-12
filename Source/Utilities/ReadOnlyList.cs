@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Krypton.Utilities
 {
-    public readonly struct ReadOnlyList<T> : IReadOnlyList<T>, IEnumerable<T>
+    public readonly struct ReadOnlyList<T> : IReadOnlyList<T>, IEnumerable<T>, IIndexedEnumerable<T>
         where T : class
     {
         public ReadOnlyList(IList<T>? list)
@@ -26,11 +26,6 @@ namespace Krypton.Utilities
             {
                 yield break;
             }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }
