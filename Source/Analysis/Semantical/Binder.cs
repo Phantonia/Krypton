@@ -1,4 +1,5 @@
 ﻿using Krypton.Analysis.Ast.Declarations;
+using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Semantical.IdentifierMaps;
 
 namespace Krypton.Analysis.Semantical
@@ -42,8 +43,7 @@ namespace Krypton.Analysis.Semantical
 
             foreach (FunctionDeclarationNode function in Compilation.Program.Functions)
             {
-                VariableIdentifierMap variableIdentifierMap = new();
-                bool success = BindInStatementBlock(function.BodyNode, variableIdentifierMap);
+                bool success = BindInFunction(function);
 
                 if (!success)
                 {
@@ -52,6 +52,31 @@ namespace Krypton.Analysis.Semantical
             }
 
             return true;
+        }
+
+        private bool BindInFunction(FunctionDeclarationNode function)
+        {
+            VariableIdentifierMap variableIdentifierMap = new();
+
+            foreach (ParameterDeclarationNode parameter in function.ParameterNodes)
+            {
+                TypeSymbolNode? typeSymbol = GetTypeSymbol(parameter.TypeNode);
+
+                if (typeSymbol == null)
+                {
+                    return false;
+                }
+
+                VariableSymbolNode parameterVariable = new(parameter.Identifier,
+                                                           typeSymbol,
+                                                           parameter.LineNumber,
+                                                           parameter.Index);
+
+                variableIdentifierMap.AddSymbol(parameter.Identifier, parameterVariable);
+            }
+
+            bool success = BindInStatementBlock(function.BodyNode, variableIdentifierMap);
+            return success;
         }
 
         private bool BindInTopLevelStatements()

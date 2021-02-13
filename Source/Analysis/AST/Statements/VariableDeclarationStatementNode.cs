@@ -30,11 +30,11 @@ namespace Krypton.Analysis.Ast.Statements
 
         public ExpressionNode? AssignedExpressionNode { get; }
 
-        public LocalVariableSymbolNode? VariableNode
+        public VariableSymbolNode? VariableNode
         {
             get
             {
-                return (VariableIdentifierNode as BoundIdentifierNode)?.Symbol as LocalVariableSymbolNode;
+                return (VariableIdentifierNode as BoundIdentifierNode)?.Symbol as VariableSymbolNode;
             }
         }
 
@@ -44,12 +44,12 @@ namespace Krypton.Analysis.Ast.Statements
 
         public TypeSpecNode? TypeSpecNode { get; }
 
-        public LocalVariableSymbolNode CreateVariable(TypeSymbolNode? typeSymbol)
+        public VariableSymbolNode CreateVariable(TypeSymbolNode? typeSymbol)
         {
-            LocalVariableSymbolNode variable = new LocalVariableSymbolNode(VariableIdentifier,
-                                                                           typeSymbol,
-                                                                           VariableIdentifierNode.LineNumber,
-                                                                           VariableIdentifierNode.Index);
+            VariableSymbolNode variable = new VariableSymbolNode(VariableIdentifier,
+                                                                 typeSymbol,
+                                                                 VariableIdentifierNode.LineNumber,
+                                                                 VariableIdentifierNode.Index);
             VariableIdentifierNode = new BoundIdentifierNode(VariableIdentifier,
                                                              variable,
                                                              VariableIdentifierNode.LineNumber,

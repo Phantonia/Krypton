@@ -12,9 +12,9 @@ namespace Krypton.Analysis.Semantical.IdentifierMaps
         private int level = 0;
         private readonly Dictionary<string, Variable> variables = new();
 
-        public LocalVariableSymbolNode this[string identifier] => variables[identifier].variable;
+        public VariableSymbolNode this[string identifier] => variables[identifier].variable;
 
-        public bool AddSymbol(string identifier, LocalVariableSymbolNode variable)
+        public bool AddSymbol(string identifier, VariableSymbolNode variable)
         {
             return variables.TryAdd(identifier, new Variable(variable, level));
         }
@@ -26,12 +26,12 @@ namespace Krypton.Analysis.Semantical.IdentifierMaps
 
         public bool TryGet(string identifier, [NotNullWhen(true)] out SymbolNode? variable)
         {
-            bool ret = TryGet(identifier, out LocalVariableSymbolNode? var);
+            bool ret = TryGet(identifier, out VariableSymbolNode? var);
             variable = var;
             return ret;
         }
 
-        public bool TryGet(string identifier, [NotNullWhen(true)] out LocalVariableSymbolNode? variable)
+        public bool TryGet(string identifier, [NotNullWhen(true)] out VariableSymbolNode? variable)
         {
             if (variables.TryGetValue(identifier, out Variable var))
             {
@@ -60,14 +60,14 @@ namespace Krypton.Analysis.Semantical.IdentifierMaps
 
         private readonly struct Variable
         {
-            public Variable(LocalVariableSymbolNode variable, int level)
+            public Variable(VariableSymbolNode variable, int level)
             {
                 this.variable = variable;
                 this.level = level;
             }
 
             public readonly int level;
-            public readonly LocalVariableSymbolNode variable;
+            public readonly VariableSymbolNode variable;
         }
     }
 }

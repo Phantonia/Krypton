@@ -58,12 +58,12 @@ namespace Krypton.Analysis.Ast.Statements
 
         public ExpressionNode? WithExpressionNode { get; }
 
-        public LocalVariableSymbolNode CreateVariable(TypeSymbolNode type)
+        public VariableSymbolNode CreateVariable(TypeSymbolNode type)
         {
-            LocalVariableSymbolNode variable = new LocalVariableSymbolNode(VariableIdentifier,
-                                                                           type,
-                                                                           VariableIdentifierNode.LineNumber,
-                                                                           VariableIdentifierNode.Index);
+            VariableSymbolNode variable = new VariableSymbolNode(VariableIdentifier,
+                                                                 type,
+                                                                 VariableIdentifierNode.LineNumber,
+                                                                 VariableIdentifierNode.Index);
             VariableIdentifierNode = new BoundIdentifierNode(VariableIdentifier,
                                                              variable,
                                                              VariableIdentifierNode.LineNumber,

@@ -8,14 +8,14 @@ namespace Krypton.Analysis.Ast.Declarations
     {
         internal ParameterDeclarationNode(IdentifierNode identifierNode, TypeSpecNode type, int lineNumber, int index) : base(identifierNode, lineNumber, index)
         {
-            Type = type;
+            TypeNode = type;
         }
 
-        public TypeSpecNode Type { get; }
+        public TypeSpecNode TypeNode { get; }
 
         protected override void PopulateBranchesInternal(List<Node> list)
         {
-            Type.PopulateBranches(list);
+            TypeNode.PopulateBranches(list);
         }
     }
 }

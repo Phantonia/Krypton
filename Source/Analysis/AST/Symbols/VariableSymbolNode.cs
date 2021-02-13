@@ -2,17 +2,17 @@
 
 namespace Krypton.Analysis.Ast.Symbols
 {
-    public abstract class VariableSymbolNode : SymbolNode
+    public sealed class VariableSymbolNode : SymbolNode
     {
-        private protected VariableSymbolNode(string identifier,
-                                             TypeSymbolNode? typeNode,
-                                             int lineNumber,
-                                             int index) : base(identifier, lineNumber, index)
+        internal VariableSymbolNode(string identifier,
+                                    TypeSymbolNode? typeNode,
+                                    int lineNumber,
+                                    int index) : base(identifier, lineNumber, index)
         {
             TypeNode = typeNode;
         }
 
-        public virtual TypeSymbolNode? TypeNode { get; protected set; }
+        public TypeSymbolNode? TypeNode { get; private set; }
 
         public override void PopulateBranches(List<Node> list)
         {

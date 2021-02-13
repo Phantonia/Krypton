@@ -1,6 +1,7 @@
 ﻿using Krypton.Analysis.Ast;
 using Krypton.Analysis.Ast.Declarations;
 using Krypton.Analysis.Ast.Symbols;
+using Krypton.Analysis.Ast.TypeSpecs;
 using Krypton.Analysis.Errors;
 using Krypton.Analysis.Semantical.IdentifierMaps;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace Krypton.Analysis.Semantical
 
                 foreach (ParameterDeclarationNode parameterDeclaration in functionDeclaration.ParameterNodes)
                 {
-                    if (!typeManager.TryGetTypeSymbol(parameterDeclaration.Type,
+                    if (!typeManager.TryGetTypeSymbol(parameterDeclaration.TypeNode,
                                                       out TypeSymbolNode? parameterType))
                     {
                         return null;
@@ -83,6 +84,16 @@ namespace Krypton.Analysis.Semantical
                || globalIdentifierMap.TryGet(identifier, out symbolNode))
             {
                 return symbolNode;
+            }
+
+            return null;
+        }
+
+        private TypeSymbolNode? GetTypeSymbol(TypeSpecNode typeSpec)
+        {
+            if (typeManager.TryGetTypeSymbol(typeSpec, out TypeSymbolNode? typeSymbol))
+            {
+                return typeSymbol;
             }
 
             return null;

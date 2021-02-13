@@ -253,7 +253,7 @@ namespace UnitTests
                     {
                         IdentifierNode: BoundIdentifierNode
                         {
-                            Symbol: LocalVariableSymbolNode
+                            Symbol: VariableSymbolNode
                             {
                                 Identifier: "x"
                             }
@@ -282,7 +282,7 @@ namespace UnitTests
             {
                 VariableIdentifierNode: BoundIdentifierNode
                 {
-                    Symbol: LocalVariableSymbolNode
+                    Symbol: VariableSymbolNode
                     {
                         Identifier: "i"
                     }
@@ -293,7 +293,7 @@ namespace UnitTests
                     {
                         IdentifierNode: BoundIdentifierNode
                         {
-                            Symbol: LocalVariableSymbolNode
+                            Symbol: VariableSymbolNode
                             {
                                 Identifier: "i"
                             }
@@ -351,6 +351,30 @@ namespace UnitTests
             { }
 
             Cos(3.14);
+            ";
+
+            MyAssert.Error(Code, ErrorCode.CantFindIdentifierInScope);
+        }
+
+        [Test]
+        public void ParameterBindingTest()
+        {
+            const string Code = @"
+            Func HelloWorld(name As String)
+            {
+                Output(""Hello "" + name);
+            }
+            ";
+
+            MyAssert.NoError(Code);
+        }
+
+        [Test]
+        public void ParameterDoesNotExistTest()
+        {
+            const string Code = @"
+            Func HelloWorld(name As String)
+            { Output(nane); }
             ";
 
             MyAssert.Error(Code, ErrorCode.CantFindIdentifierInScope);

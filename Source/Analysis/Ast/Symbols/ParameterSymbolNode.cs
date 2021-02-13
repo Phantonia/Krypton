@@ -11,12 +11,6 @@ namespace Krypton.Analysis.Ast.Symbols
 
         public TypeSymbolNode TypeNode { get; }
 
-        public ParameterVariableSymbolNode CreateParameterVariableSymbol()
-        {
-            ParameterVariableSymbolNode symbol = new(Identifier, TypeNode, LineNumber, Index);
-            return symbol;
-        }
-
         public override void PopulateBranches(List<Node> list)
         {
             list.Add(this);

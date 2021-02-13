@@ -33,7 +33,7 @@ namespace Krypton.Analysis.Ast.Statements
 
         public IdentifierNode VariableIdentifierNode { get; private set; }
 
-        public void Bind(LocalVariableSymbolNode symbol)
+        public void Bind(VariableSymbolNode symbol)
         {
             VariableIdentifierNode = new BoundIdentifierNode(VariableIdentifier, symbol, VariableIdentifierNode.LineNumber, VariableIdentifierNode.LineNumber)
             {

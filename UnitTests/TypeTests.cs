@@ -190,7 +190,7 @@ namespace UnitTests
                 {
                     VariableIdentifierNode: BoundIdentifierNode
                     {
-                        Symbol: LocalVariableSymbolNode
+                        Symbol: VariableSymbolNode
                         {
                             TypeNode: FrameworkTypeSymbolNode
                             {
@@ -220,7 +220,7 @@ namespace UnitTests
                 {
                     VariableIdentifierNode: BoundIdentifierNode
                     {
-                        Symbol: LocalVariableSymbolNode
+                        Symbol: VariableSymbolNode
                         {
                             TypeNode: FrameworkTypeSymbolNode
                             {
@@ -250,7 +250,7 @@ namespace UnitTests
                 {
                     VariableIdentifierNode: BoundIdentifierNode
                     {
-                        Symbol: LocalVariableSymbolNode
+                        Symbol: VariableSymbolNode
                         {
                             TypeNode: FrameworkTypeSymbolNode
                             {

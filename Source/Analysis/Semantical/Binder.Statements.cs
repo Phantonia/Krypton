@@ -83,7 +83,7 @@ namespace Krypton.Analysis.Semantical
 
                 iterationVariableType = assignedValueType;
 
-                LocalVariableSymbolNode variable = forStatement.CreateVariable(iterationVariableType);
+                VariableSymbolNode variable = forStatement.CreateVariable(iterationVariableType);
 
                 variableIdentifierMap.AddSymbol(forStatement.VariableIdentifier, variable);
             }
@@ -302,7 +302,7 @@ namespace Krypton.Analysis.Semantical
             }
 
             if (!variableIdentifierMap.TryGet(variableAssignment.VariableIdentifier,
-                                              out LocalVariableSymbolNode? variable))
+                                              out VariableSymbolNode? variable))
             {
                 ErrorProvider.ReportError(ErrorCode.CantAssignUndeclaredVariable,
                                           Compilation,
@@ -324,7 +324,7 @@ namespace Krypton.Analysis.Semantical
         private bool BindInVariableDeclaration(VariableDeclarationStatementNode variableDeclaration,
                                                VariableIdentifierMap variableIdentifierMap)
         {
-            if (variableIdentifierMap.TryGet(variableDeclaration.VariableIdentifier, out LocalVariableSymbolNode? _))
+            if (variableIdentifierMap.TryGet(variableDeclaration.VariableIdentifier, out VariableSymbolNode? _))
             {
                 ErrorProvider.ReportError(ErrorCode.CantRedeclareVariable,
                                           Compilation,
@@ -332,7 +332,7 @@ namespace Krypton.Analysis.Semantical
                 return false;
             }
 
-            LocalVariableSymbolNode variable;
+            VariableSymbolNode variable;
 
             if (variableDeclaration.AssignedExpressionNode != null)
             {
