@@ -13,6 +13,11 @@ namespace Krypton.Utilities
                 return default;
             }
 
+            if (enumerable is ReadOnlyList<T> readOnlyList)
+            {
+                return readOnlyList;
+            }
+
             IList<T> list = (enumerable as IList<T>) ?? enumerable.ToList();
             return new ReadOnlyList<T>(list);
         }
