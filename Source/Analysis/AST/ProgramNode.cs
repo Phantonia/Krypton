@@ -1,10 +1,11 @@
 ﻿using Krypton.Analysis.Ast.Declarations;
+using Krypton.Analysis.Ast.TypeSpecs;
 using Krypton.Utilities;
 using System.Collections.Generic;
 
 namespace Krypton.Analysis.Ast
 {
-    public sealed class ProgramNode : Node
+    public sealed class ProgramNode : Node, IReturnableNode
     {
         internal ProgramNode(StatementCollectionNode topLevelStatements,
                              IList<FunctionDeclarationNode> functions,
@@ -29,5 +30,9 @@ namespace Krypton.Analysis.Ast
                 function.PopulateBranches(list);
             }
         }
+
+        StatementCollectionNode IReturnableNode.BodyNode => TopLevelStatementNodes;
+
+        TypeSpecNode? IReturnableNode.ReturnTypeNode => null;
     }
 }

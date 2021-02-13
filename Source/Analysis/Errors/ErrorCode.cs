@@ -45,5 +45,7 @@
         CantConvertType = 606,
         FunctionNotValidInContext = 607,
         ForIterationVariableHasToBeNumberType = 608,
+        ReturnedValueEvenThoughFunctionDoesNotHaveReturnType = 609,
+        ReturnedNoValueEvenThoughFunctionShouldReturn = 610,
     }
 }

@@ -1,5 +1,5 @@
-﻿using Krypton.Analysis.Semantical.IdentifierMaps;
-using System.Diagnostics;
+﻿using Krypton.Analysis.Ast.Declarations;
+using Krypton.Analysis.Semantical.IdentifierMaps;
 
 namespace Krypton.Analysis.Semantical
 {
@@ -31,8 +31,27 @@ namespace Krypton.Analysis.Semantical
 
             this.globalIdentifierMap = globalIdentifierMap;
 
-            bool success = BindInTopLevelStatements();
-            return success;
+            {
+                bool success = BindInTopLevelStatements();
+
+                if (!success)
+                {
+                    return false;
+                }
+            }
+
+            foreach (FunctionDeclarationNode function in Compilation.Program.Functions)
+            {
+                VariableIdentifierMap variableIdentifierMap = new();
+                bool success = BindInStatementBlock(function.BodyNode, variableIdentifierMap);
+
+                if (!success)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private bool BindInTopLevelStatements()

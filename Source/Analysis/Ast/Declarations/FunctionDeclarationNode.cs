@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Krypton.Analysis.Ast.Declarations
 {
-    public sealed class FunctionDeclarationNode : DeclarationNode
+    public sealed class FunctionDeclarationNode : DeclarationNode, IReturnableNode
     {
         internal FunctionDeclarationNode(IdentifierNode identifierNode,
                                          IList<ParameterDeclarationNode>? parameters,
@@ -15,8 +15,21 @@ namespace Krypton.Analysis.Ast.Declarations
                                          int index) : base(identifierNode, lineNumber, index)
         {
             ParameterNodes = parameters.MakeReadOnly();
+            
+            foreach (ParameterDeclarationNode parameter in ParameterNodes)
+            {
+                parameter.ParentNode = this;
+            }
+
             ReturnTypeNode = returnType;
+
+            if (ReturnTypeNode != null)
+            {
+                ReturnTypeNode.ParentNode = this;
+            }
+
             BodyNode = body;
+            BodyNode.ParentNode = this;
         }
 
         public StatementCollectionNode BodyNode { get; }
