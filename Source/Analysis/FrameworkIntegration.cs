@@ -13,6 +13,9 @@ namespace Krypton.Analysis
 {
     public static class FrameworkIntegration
     {
+        private static FrameworkVersion? frameworkVersion = null;
+        private static TypeIdentifierMap? typeIdentifierMap = null;
+
         public static void PopulateWithFrameworkSymbols(HoistedIdentifierMap globalIdentifierMap, TypeIdentifierMap typeIdentifierMap)
         {
             FrameworkVersion frameworkVersion = FrameworkProvider.GetFrameworkVersion0();
@@ -20,6 +23,23 @@ namespace Krypton.Analysis
             PopulateWithTypes(typeIdentifierMap, frameworkVersion);
             PopulateWithFunctions(globalIdentifierMap, typeIdentifierMap, frameworkVersion);
             PopulateWithConstants(globalIdentifierMap, frameworkVersion, typeIdentifierMap);
+        }
+
+        public static void PopulateWithFrameworkSymbols(HoistedIdentifierMap globalIdentifierMap)
+        {
+            Debug.Assert(typeIdentifierMap != null);
+            Debug.Assert(frameworkVersion != null);
+
+            PopulateWithFunctions(globalIdentifierMap, typeIdentifierMap, frameworkVersion);
+            PopulateWithFunctions(globalIdentifierMap, typeIdentifierMap, frameworkVersion);
+        }
+
+        public static void PopulateWithFrameworkTypes(TypeIdentifierMap typeIdentifierMap)
+        {
+            frameworkVersion = FrameworkProvider.GetFrameworkVersion0();
+            FrameworkIntegration.typeIdentifierMap = typeIdentifierMap;
+
+            PopulateWithTypes(typeIdentifierMap, frameworkVersion);
         }
 
         private static BinaryOperationSymbolNode CreateBinaryOperationSymbolNode(BinaryOperationSymbol binaryOperationSymbol,

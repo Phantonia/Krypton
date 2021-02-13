@@ -1,20 +1,80 @@
 ﻿using Krypton.Analysis.Ast;
+using Krypton.Analysis.Ast.Declarations;
 using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Errors;
 using Krypton.Analysis.Semantical.IdentifierMaps;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Krypton.Analysis.Semantical
 {
     partial class Binder
     {
-        private (HoistedIdentifierMap, TypeIdentifierMap) GatherGlobalSymbols()
+        private FunctionSymbolNode? CreateFunctionSymbol(FunctionDeclarationNode functionDeclaration)
+        {
+            List<ParameterSymbolNode>? parameters = null;
+
+            if (functionDeclaration.ParameterNodes.Count > 0)
+            {
+                parameters = new List<ParameterSymbolNode>();
+
+                foreach (ParameterDeclarationNode parameterDeclaration in functionDeclaration.ParameterNodes)
+                {
+                    if (!typeManager.TryGetTypeSymbol(parameterDeclaration.Type,
+                                                      out TypeSymbolNode? parameterType))
+                    {
+                        return null;
+                    }
+
+                    Debug.Assert(parameterType != null);
+
+                    parameters.Add(new ParameterSymbolNode(parameterDeclaration.Identifier,
+                                                           parameterType,
+                                                           parameterDeclaration.LineNumber,
+                                                           parameterDeclaration.Index));
+                }
+            }
+
+
+            if (!typeManager.TryGetTypeSymbol(functionDeclaration.ReturnTypeNode,
+                                              out TypeSymbolNode? returnType))
+            {
+                return null;
+            }
+
+            return new FunctionSymbolNode(functionDeclaration.Identifier,
+                                          parameters,
+                                          returnType,
+                                          functionDeclaration.LineNumber,
+                                          functionDeclaration.Index);
+        }
+
+        private HoistedIdentifierMap? GatherGlobalSymbols()
         {
             HoistedIdentifierMap globalIdentifierMap = new();
+
+            FrameworkIntegration.PopulateWithFrameworkSymbols(globalIdentifierMap);
+
+            foreach (FunctionDeclarationNode functionDeclaration in Compilation.Program.Functions)
+            {
+                FunctionSymbolNode? functionSymbol = CreateFunctionSymbol(functionDeclaration);
+
+                if (functionSymbol == null)
+                {
+                    return default;
+                }
+
+                globalIdentifierMap.AddSymbol(functionDeclaration.Identifier, functionSymbol);
+            }
+
+            return globalIdentifierMap;
+        }
+
+        private TypeIdentifierMap GatherGlobalTypes()
+        {
             TypeIdentifierMap typeIdentifierMap = new();
-
-            FrameworkIntegration.PopulateWithFrameworkSymbols(globalIdentifierMap, typeIdentifierMap);
-
-            return (globalIdentifierMap, typeIdentifierMap);
+            FrameworkIntegration.PopulateWithFrameworkTypes(typeIdentifierMap);
+            return typeIdentifierMap;
         }
 
         private SymbolNode? GetExpressionSymbol(string identifier, VariableIdentifierMap variableIdentifierMap)

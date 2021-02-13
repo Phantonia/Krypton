@@ -90,10 +90,9 @@ namespace Krypton.Analysis.Semantical
 
                 if (symbol == null)
                 {
-                    ErrorProvider.ReportError(ErrorCode.NoVariableOfThisNameInScope,
+                    ErrorProvider.ReportError(ErrorCode.CantFindIdentifierInScope,
                                               Compilation,
-                                              forStatement.VariableIdentifierNode,
-                                              $"Identifier: {forStatement.VariableIdentifier}");
+                                              forStatement.VariableIdentifierNode);
                     return false;
                 }
 

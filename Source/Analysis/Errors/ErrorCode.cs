@@ -34,7 +34,7 @@
         CantAssignUndeclaredVariable = 401,
         CantRedeclareVariable = 402,
         ForNotVariable = 403,
-        NoVariableOfThisNameInScope = 404,
+        CantFindIdentifierInScope = 404, // 404, get it? This error code must stay
 
         // Semantic errors: types
         BinaryOperatorNotValidOnType = 601,

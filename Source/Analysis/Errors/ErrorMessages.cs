@@ -45,7 +45,7 @@ namespace Krypton.Analysis.Errors
             [ErrorCode.CantAssignUndeclaredVariable] = "This variable is not declared (at least not in scope)",
             [ErrorCode.CantRedeclareVariable] = "A variable with the same name is already declared in scope",
             [ErrorCode.ForNotVariable] = "The identifier does not refer to a local variable",
-            [ErrorCode.NoVariableOfThisNameInScope] = "There is no variable of the this name in scope",
+            [ErrorCode.CantFindIdentifierInScope] = "In this scope, this identifier is not declared",
 
             // Semantic errors: types
             [ErrorCode.BinaryOperatorNotValidOnType] = "This binary operator cannot be used on these two types",

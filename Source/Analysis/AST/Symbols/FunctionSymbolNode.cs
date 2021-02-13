@@ -7,7 +7,7 @@ namespace Krypton.Analysis.Ast.Symbols
     public class FunctionSymbolNode : SymbolNode
     {
         internal FunctionSymbolNode(string name,
-                                    IEnumerable<ParameterSymbolNode> parameters,
+                                    IEnumerable<ParameterSymbolNode>? parameters,
                                     TypeSymbolNode? returnType,
                                     int lineNumber,
                                     int index) : base(name, lineNumber, index)

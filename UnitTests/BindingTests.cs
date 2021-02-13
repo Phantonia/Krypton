@@ -5,9 +5,6 @@ using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Ast.TypeSpecs;
 using Krypton.Analysis.Errors;
-using Krypton.Analysis.Lexical;
-using Krypton.Analysis.Semantical;
-using Krypton.Analysis.Syntactical;
 using Krypton.Framework;
 using NUnit.Framework;
 
@@ -304,6 +301,59 @@ namespace UnitTests
                     }
                 }
             });
+        }
+
+        [Test]
+        public void UserDefinedFunctionSymbolTest()
+        {
+            const string Code = @"
+            Func Sin(x As Rational) As Rational
+            { }
+
+            Sin(3.14);
+            ";
+
+            Compilation comp = MyAssert.NoError(Code);
+
+            Assert.AreEqual(1, comp.Program.TopLevelStatementNodes.Count);
+            Assert.AreEqual(1, comp.Program.Functions.Count);
+
+            Assert.IsTrue(comp.Program.TopLevelStatementNodes[0] is FunctionCallStatementNode
+            {
+                UnderlyingFunctionCallExpressionNode:
+                {
+                    FunctionExpressionNode: IdentifierExpressionNode
+                    {
+                        IdentifierNode: BoundIdentifierNode
+                        {
+                            Symbol: FunctionSymbolNode
+                            {
+                                ReturnTypeNode: FrameworkTypeSymbolNode
+                                {
+                                    FrameworkType: FrameworkType.Rational
+                                },
+                                ParameterNodes:
+                                {
+                                    Count: 1
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        [Test]
+        public void UserDefinedFunctionDoesNotExistTest()
+        {
+            const string Code = @"
+            Func Sin(x As Rational) As Rational
+            { }
+
+            Cos(3.14);
+            ";
+
+            MyAssert.Error(Code, ErrorCode.CantFindIdentifierInScope);
         }
     }
 }

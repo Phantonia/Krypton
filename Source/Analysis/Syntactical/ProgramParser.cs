@@ -193,7 +193,20 @@ namespace Krypton.Analysis.Syntactical
                     error = false;
                     return false;
                 case KeywordLexeme { Keyword: ReservedKeyword.Func }:
-                    break;
+                    {
+                        FunctionDeclarationNode? function = ParseFunctionDeclaration();
+
+                        if (function == null)
+                        {
+                            error = true;
+                            node = null;
+                            return true;
+                        }
+
+                        node = function;
+                        error = false;
+                        return true;
+                    }
             }
 
             StatementNode? statementNode = statementParser.ParseNextStatement(ref index);

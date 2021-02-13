@@ -1,4 +1,5 @@
 ﻿using Krypton.Analysis.Semantical.IdentifierMaps;
+using System.Diagnostics;
 
 namespace Krypton.Analysis.Semantical
 {
@@ -18,9 +19,17 @@ namespace Krypton.Analysis.Semantical
 
         public bool PerformBinding()
         {
-            (HoistedIdentifierMap globalIdentifierMap, TypeIdentifierMap typeIdentifierMap) = GatherGlobalSymbols();
-            this.globalIdentifierMap = globalIdentifierMap;
+            TypeIdentifierMap typeIdentifierMap = GatherGlobalTypes();
             typeManager = new TypeManager(Compilation, typeIdentifierMap);
+
+            HoistedIdentifierMap? globalIdentifierMap = GatherGlobalSymbols();
+
+            if (globalIdentifierMap == null)
+            {
+                return false;
+            }
+
+            this.globalIdentifierMap = globalIdentifierMap;
 
             bool success = BindInTopLevelStatements();
             return success;

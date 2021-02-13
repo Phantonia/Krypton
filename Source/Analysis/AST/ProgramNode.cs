@@ -12,10 +12,10 @@ namespace Krypton.Analysis.Ast
                              int index) : base(lineNumber, index)
         {
             TopLevelStatementNodes = topLevelStatements;
-            FunctionSymbols = functions.MakeReadOnly();
+            Functions = functions.MakeReadOnly();
         }
 
-        public ReadOnlyList<FunctionDeclarationNode> FunctionSymbols { get; }
+        public ReadOnlyList<FunctionDeclarationNode> Functions { get; }
 
         public StatementCollectionNode TopLevelStatementNodes { get; }
 
@@ -24,7 +24,7 @@ namespace Krypton.Analysis.Ast
             list.Add(this);
             TopLevelStatementNodes.PopulateBranches(list);
 
-            foreach (FunctionDeclarationNode function in FunctionSymbols)
+            foreach (FunctionDeclarationNode function in Functions)
             {
                 function.PopulateBranches(list);
             }

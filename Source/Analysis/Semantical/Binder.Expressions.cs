@@ -95,6 +95,9 @@ namespace Krypton.Analysis.Semantical
 
             if (symbol == null)
             {
+                ErrorProvider.ReportError(ErrorCode.CantFindIdentifierInScope,
+                                          Compilation,
+                                          identifierExpression);
                 return (null, false);
             }
 
@@ -147,10 +150,9 @@ namespace Krypton.Analysis.Semantical
 
             if (symbol == null)
             {
-                ErrorProvider.ReportError(ErrorCode.NoVariableOfThisNameInScope,
+                ErrorProvider.ReportError(ErrorCode.CantFindIdentifierInScope,
                                           Compilation,
-                                          identifierExpression,
-                                          $"Name: {identifierExpression.Identifier}");
+                                          identifierExpression);
                 return null;
             }
 
