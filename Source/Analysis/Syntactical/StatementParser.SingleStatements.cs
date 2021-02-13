@@ -107,7 +107,7 @@ namespace Krypton.Analysis.Syntactical
             return new VariableAssignmentStatementNode(identifier, assignedValue, identifier.LineNumber, identifier.Index);
         }
 
-        private VariableDeclarationStatementNode? ParseVariableDeclarationStatement(ref int index)
+        private VariableDeclarationStatementNode? ParseVariableDeclarationStatement(ref int index, bool isReadOnly)
         {
             int lineNumber = lexemes[index].LineNumber;
             int nodeIndex = lexemes[index].Index;
@@ -132,6 +132,13 @@ namespace Krypton.Analysis.Syntactical
             if (current is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
             {
                 return HandleAssignedValue(type: null, ref index);
+            }
+
+            if (isReadOnly)
+            {
+                ErrorProvider.ReportError(ErrorCode.LetVariableMustBeInitialized,
+                                          code,
+                                          current ?? lexemes[^1]);
             }
 
             if (current is not KeywordLexeme { Keyword: ReservedKeyword.As })
@@ -166,6 +173,7 @@ namespace Krypton.Analysis.Syntactical
             return new VariableDeclarationStatementNode(new UnboundIdentifierNode(identifier, identifierLineNumber, identifierIndex),
                                                         type,
                                                         value: null,
+                                                        isReadOnly,
                                                         lineNumber,
                                                         nodeIndex);
 
@@ -192,6 +200,7 @@ namespace Krypton.Analysis.Syntactical
                 return new VariableDeclarationStatementNode(new UnboundIdentifierNode(identifier, identifierLineNumber, identifierIndex),
                                                             type,
                                                             assignedValue,
+                                                            isReadOnly,
                                                             lineNumber,
                                                             nodeIndex);
             }

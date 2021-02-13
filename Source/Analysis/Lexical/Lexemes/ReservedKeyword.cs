@@ -24,6 +24,7 @@ namespace Krypton.Analysis.Lexical.Lexemes
         For,
         Func,
         If,
+        Let,
         Return,
         Var,
         While,

@@ -379,5 +379,17 @@ namespace UnitTests
 
             MyAssert.Error(Code, ErrorCode.CantFindIdentifierInScope);
         }
+
+        [Test]
+        public void LetVariableReAssignmentTest()
+        {
+            const string Code = @"
+            Let name = ""Antonia"";
+            Output(name);
+            name = ""Sandra""; ... who wants to be called Sandra? Seriously
+            ";
+
+            MyAssert.Error(Code, ErrorCode.CantReAssignReadOnlyVariable);
+        }
     }
 }

@@ -1,9 +1,7 @@
-﻿using Krypton.Analysis;
-using Krypton.Analysis.Ast;
+﻿using Krypton.Analysis.Ast;
 using Krypton.Analysis.Ast.Declarations;
 using Krypton.Analysis.Ast.Expressions.Literals;
 using Krypton.Analysis.Ast.Statements;
-using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Syntactical;
 using NUnit.Framework;

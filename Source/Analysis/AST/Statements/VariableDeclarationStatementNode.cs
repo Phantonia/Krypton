@@ -10,7 +10,12 @@ namespace Krypton.Analysis.Ast.Statements
     [DebuggerDisplay("{GetType().Name}; VariableIdentifier = {VariableIdentifier}")]
     public sealed class VariableDeclarationStatementNode : StatementNode
     {
-        internal VariableDeclarationStatementNode(IdentifierNode identifier, TypeSpecNode? type, ExpressionNode? value, int lineNumber, int index) : base(lineNumber, index)
+        internal VariableDeclarationStatementNode(IdentifierNode identifier,
+                                                  TypeSpecNode? type,
+                                                  ExpressionNode? value,
+                                                  bool isReadOnly,
+                                                  int lineNumber,
+                                                  int index) : base(lineNumber, index)
         {
             VariableIdentifierNode = identifier;
             VariableIdentifierNode.ParentNode = this;
@@ -26,28 +31,28 @@ namespace Krypton.Analysis.Ast.Statements
             {
                 AssignedExpressionNode.ParentNode = this;
             }
+
+
+            IsReadOnly = isReadOnly;
         }
 
         public ExpressionNode? AssignedExpressionNode { get; }
 
-        public VariableSymbolNode? VariableNode
-        {
-            get
-            {
-                return (VariableIdentifierNode as BoundIdentifierNode)?.Symbol as VariableSymbolNode;
-            }
-        }
+        public bool IsReadOnly { get; }
+
+        public TypeSpecNode? TypeSpecNode { get; }
 
         public string VariableIdentifier => VariableIdentifierNode.Identifier;
 
         public IdentifierNode VariableIdentifierNode { get; private set; }
 
-        public TypeSpecNode? TypeSpecNode { get; }
+        public VariableSymbolNode? VariableNode => (VariableIdentifierNode as BoundIdentifierNode)?.Symbol as VariableSymbolNode;
 
         public VariableSymbolNode CreateVariable(TypeSymbolNode? typeSymbol)
         {
             VariableSymbolNode variable = new VariableSymbolNode(VariableIdentifier,
                                                                  typeSymbol,
+                                                                 IsReadOnly,
                                                                  VariableIdentifierNode.LineNumber,
                                                                  VariableIdentifierNode.Index);
             VariableIdentifierNode = new BoundIdentifierNode(VariableIdentifier,

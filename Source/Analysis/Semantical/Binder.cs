@@ -17,7 +17,7 @@ namespace Krypton.Analysis.Semantical
 #nullable restore
 
         public Compilation Compilation { get; }
-
+        
         public bool PerformBinding()
         {
             TypeIdentifierMap typeIdentifierMap = GatherGlobalTypes();
@@ -69,6 +69,7 @@ namespace Krypton.Analysis.Semantical
 
                 VariableSymbolNode parameterVariable = new(parameter.Identifier,
                                                            typeSymbol,
+                                                           isReadOnly: false,
                                                            parameter.LineNumber,
                                                            parameter.Index);
 

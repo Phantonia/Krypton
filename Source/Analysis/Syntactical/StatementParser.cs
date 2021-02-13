@@ -31,7 +31,8 @@ namespace Krypton.Analysis.Syntactical
             return lexemes[index] switch
             {
                 KeywordLexeme { Keyword: ReservedKeyword.Block } => ParseBlockStatement(ref index, lexemes[index].LineNumber),
-                KeywordLexeme { Keyword: ReservedKeyword.Var } => ParseVariableDeclarationStatement(ref index),
+                KeywordLexeme { Keyword: ReservedKeyword.Var } => ParseVariableDeclarationStatement(ref index, isReadOnly: false),
+                KeywordLexeme { Keyword: ReservedKeyword.Let } => ParseVariableDeclarationStatement(ref index, isReadOnly: true),
                 KeywordLexeme { Keyword: ReservedKeyword.While } => ParseWhileStatement(ref index),
                 KeywordLexeme { Keyword: ReservedKeyword.If } => ParseIfStatement(ref index),
                 KeywordLexeme { Keyword: ReservedKeyword.For } => ParseForStatement(ref index),

@@ -62,6 +62,7 @@ namespace Krypton.Analysis.Ast.Statements
         {
             VariableSymbolNode variable = new VariableSymbolNode(VariableIdentifier,
                                                                  type,
+                                                                 isReadOnly: true,
                                                                  VariableIdentifierNode.LineNumber,
                                                                  VariableIdentifierNode.Index);
             VariableIdentifierNode = new BoundIdentifierNode(VariableIdentifier,

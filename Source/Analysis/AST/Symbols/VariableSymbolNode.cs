@@ -6,11 +6,15 @@ namespace Krypton.Analysis.Ast.Symbols
     {
         internal VariableSymbolNode(string identifier,
                                     TypeSymbolNode? typeNode,
+                                    bool isReadOnly,
                                     int lineNumber,
                                     int index) : base(identifier, lineNumber, index)
         {
             TypeNode = typeNode;
+            IsReadOnly = isReadOnly;
         }
+
+        public bool IsReadOnly { get; }
 
         public TypeSymbolNode? TypeNode { get; private set; }
 

@@ -311,6 +311,14 @@ namespace Krypton.Analysis.Semantical
                 return false;
             }
 
+            if (variable.IsReadOnly)
+            {
+                ErrorProvider.ReportError(ErrorCode.CantReAssignReadOnlyVariable,
+                                          Compilation,
+                                          variableAssignment);
+                return false;
+            }
+
             if (!TypeIsCompatibleWith(assignedType, variable.TypeNode, possiblyOffendingNode: variableAssignment.AssignedExpressionNode))
             {
                 return false;

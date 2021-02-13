@@ -40,6 +40,8 @@ namespace Krypton.Analysis.Errors
                                                  "has to have one or both of them",
             [ErrorCode.ExpectedOpenParenthesis] = "An open parenthesis '(' was expected",
             [ErrorCode.ExpectedKeywordAs] = "The keyword 'As' was expected",
+            [ErrorCode.LetVariableMustBeInitialized] = "A variable declared with 'Let' must be immediately initialized",
+            [ErrorCode.CantReAssignReadOnlyVariable] = "The variable can't be assigned again because it is read only",
 
             // Semantic errors: binding
             [ErrorCode.CantAssignUndeclaredVariable] = "This variable is not declared (at least not in scope)",

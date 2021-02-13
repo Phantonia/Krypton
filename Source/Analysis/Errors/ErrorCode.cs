@@ -29,12 +29,14 @@
         ForNeitherWhileNorWith = 115,
         ExpectedOpenParenthesis = 116,
         ExpectedKeywordAs = 117,
+        LetVariableMustBeInitialized = 118,
 
         // Semantic errors: binding
         CantAssignUndeclaredVariable = 401,
         CantRedeclareVariable = 402,
         ForNotVariable = 403,
         CantFindIdentifierInScope = 404, // 404, get it? This error code must stay
+        CantReAssignReadOnlyVariable = 405,
 
         // Semantic errors: types
         BinaryOperatorNotValidOnType = 601,
