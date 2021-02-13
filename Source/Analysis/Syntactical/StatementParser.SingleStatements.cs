@@ -139,6 +139,7 @@ namespace Krypton.Analysis.Syntactical
                 ErrorProvider.ReportError(ErrorCode.LetVariableMustBeInitialized,
                                           code,
                                           current ?? lexemes[^1]);
+                return null;
             }
 
             if (current is not KeywordLexeme { Keyword: ReservedKeyword.As })

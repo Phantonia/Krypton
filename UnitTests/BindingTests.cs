@@ -391,5 +391,15 @@ namespace UnitTests
 
             MyAssert.Error(Code, ErrorCode.CantReAssignReadOnlyVariable);
         }
+
+        [Test]
+        public void ForVariableReAssignmentTest()
+        {
+            const string Code = @"
+            For Var i = 0 While i < 10 { i = 4; }
+            ";
+
+            MyAssert.Error(Code, ErrorCode.CantReAssignReadOnlyVariable);
+        }
     }
 }

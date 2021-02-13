@@ -1,5 +1,4 @@
-﻿using Krypton.Analysis;
-using Krypton.Analysis.Ast;
+﻿using Krypton.Analysis.Ast;
 using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Expressions.Literals;
 using Krypton.Analysis.Ast.Statements;
@@ -754,6 +753,16 @@ namespace UnitTests
             var forStmt = (ForStatementNode)program.TopLevelStatementNodes[1];
 
             Assert.IsFalse(forStmt.DeclaresNew);
+        }
+
+        [Test]
+        public void LetNoAssignmentTest()
+        {
+            const string Code = @"
+            Let i As Int;
+            ";
+
+            MyAssert.Error(Code, ErrorCode.LetVariableMustBeInitialized);
         }
     }
 }
