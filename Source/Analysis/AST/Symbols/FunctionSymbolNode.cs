@@ -3,20 +3,31 @@ using System.Collections.Generic;
 
 namespace Krypton.Analysis.Ast.Symbols
 {
-    public abstract class FunctionSymbolNode : SymbolNode
+    // Explicitly intended to be derived
+    public class FunctionSymbolNode : SymbolNode
     {
-        private protected FunctionSymbolNode(string name,
-                                             IEnumerable<ParameterNode> parameters,
-                                             TypeSymbolNode? returnType,
-                                             int lineNumber,
-                                             int index) : base(name, lineNumber, index)
+        internal FunctionSymbolNode(string name,
+                                    IEnumerable<ParameterSymbolNode> parameters,
+                                    TypeSymbolNode? returnType,
+                                    int lineNumber,
+                                    int index) : base(name, lineNumber, index)
         {
             ParameterNodes = parameters.MakeReadOnly();
             ReturnTypeNode = returnType;
         }
 
-        public ReadOnlyList<ParameterNode> ParameterNodes { get; }
+        public ReadOnlyList<ParameterSymbolNode> ParameterNodes { get; }
 
         public TypeSymbolNode? ReturnTypeNode { get; }
+
+        public override void PopulateBranches(List<Node> list)
+        {
+            list.Add(this);
+
+            foreach (ParameterSymbolNode parameter in ParameterNodes)
+            {
+                parameter.PopulateBranches(list);
+            }
+        }
     }
 }

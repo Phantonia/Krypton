@@ -9,6 +9,7 @@ using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Krypton.Analysis.Syntactical
 {
@@ -35,6 +36,7 @@ namespace Krypton.Analysis.Syntactical
         public ProgramNode? ParseWholeProgram()
         {
             List<StatementNode> statements = new();
+            List<FunctionDeclarationNode> functions = new();
 
             while (TryParseNextNode(out Node? node, out bool error))
             {
@@ -48,12 +50,17 @@ namespace Krypton.Analysis.Syntactical
                     case StatementNode statement:
                         statements.Add(statement);
                         break;
-                    default: throw new NotImplementedException("Should not happen");
+                    case FunctionDeclarationNode function:
+                        functions.Add(function);
+                        break;
+                    default:
+                        Debug.Fail("Should not have happened");
+                        return null;
                 }
             }
 
             StatementCollectionNode topLevelStatements = new(statements);
-            return new ProgramNode(topLevelStatements, lineNumber: 1, index: 0);
+            return new ProgramNode(topLevelStatements, functions, lineNumber: 1, index: 0);
         }
 
         internal FunctionDeclarationNode? ParseFunctionDeclaration()

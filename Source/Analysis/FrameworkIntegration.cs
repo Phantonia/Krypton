@@ -88,9 +88,9 @@ namespace Krypton.Analysis
                                                                    FrameworkVersion frameworkVersion,
                                                                    TypeIdentifierMap typeIdentifierMap)
         {
-            IEnumerable<ParameterNode>? parameters = functionSymbol.Parameters
-                                                   ?.Select(p => CreateParameterNode(p, frameworkVersion, typeIdentifierMap))
-                                                  ?? Array.Empty<ParameterNode>();
+            IEnumerable<ParameterSymbolNode>? parameters = functionSymbol.Parameters
+                                                         ?.Select(p => CreateParameterNode(p, frameworkVersion, typeIdentifierMap))
+                                                        ?? Array.Empty<ParameterSymbolNode>();
 
             TypeSymbolNode? returnType = null;
 
@@ -107,14 +107,14 @@ namespace Krypton.Analysis
                                                    index: -1);
         }
 
-        private static ParameterNode CreateParameterNode(ParameterSymbol parameterSymbol,
+        private static ParameterSymbolNode CreateParameterNode(ParameterSymbol parameterSymbol,
                                                          FrameworkVersion frameworkVersion,
                                                          TypeIdentifierMap typeIdentifierMap)
         {
-            return new ParameterNode(parameterSymbol.Name,
-                                     GetTypeSymbolNode(parameterSymbol.Type, typeIdentifierMap, frameworkVersion),
-                                     lineNumber: 0,
-                                     index: -1);
+            return new ParameterSymbolNode(parameterSymbol.Name,
+                                           GetTypeSymbolNode(parameterSymbol.Type, typeIdentifierMap, frameworkVersion),
+                                           lineNumber: 0,
+                                           index: -1);
         }
 
         private static TypeSymbolNode CreateTypeSymbolNode(TypeSymbol typeSymbol)

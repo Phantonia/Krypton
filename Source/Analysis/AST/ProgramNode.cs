@@ -1,13 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using Krypton.Analysis.Ast.Declarations;
+using Krypton.Utilities;
+using System.Collections.Generic;
 
 namespace Krypton.Analysis.Ast
 {
     public sealed class ProgramNode : Node
     {
-        internal ProgramNode(StatementCollectionNode statements, int lineNumber, int index) : base(lineNumber, index)
+        internal ProgramNode(StatementCollectionNode topLevelStatements,
+                             IList<FunctionDeclarationNode> functions,
+                             int lineNumber,
+                             int index) : base(lineNumber, index)
         {
-            TopLevelStatementNodes = statements;
+            TopLevelStatementNodes = topLevelStatements;
+            FunctionSymbols = functions.MakeReadOnly();
         }
+
+        public ReadOnlyList<FunctionDeclarationNode> FunctionSymbols { get; }
 
         public StatementCollectionNode TopLevelStatementNodes { get; }
 
@@ -15,6 +23,11 @@ namespace Krypton.Analysis.Ast
         {
             list.Add(this);
             TopLevelStatementNodes.PopulateBranches(list);
+
+            foreach (FunctionDeclarationNode function in FunctionSymbols)
+            {
+                function.PopulateBranches(list);
+            }
         }
     }
 }

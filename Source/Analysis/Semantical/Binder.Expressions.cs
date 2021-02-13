@@ -20,8 +20,8 @@ namespace Krypton.Analysis.Semantical
                 case FunctionCallExpressionNode functionCall:
                     {
                         (TypeSymbolNode? type, bool success) = BindInFunctionCall(functionCall,
-                                                                                variableIdentifierMap,
-                                                                                expressionContext: true);
+                                                                                  variableIdentifierMap,
+                                                                                  expressionContext: true);
 
                         if (!success)
                         {
@@ -81,8 +81,8 @@ namespace Krypton.Analysis.Semantical
         }
 
         private (TypeSymbolNode?, bool) BindInFunctionCall(FunctionCallExpressionNode functionCall,
-                                                   VariableIdentifierMap variableIdentifierMap,
-                                                   bool expressionContext)
+                                                           VariableIdentifierMap variableIdentifierMap,
+                                                           bool expressionContext)
         {
             if (functionCall.FunctionExpressionNode is not IdentifierExpressionNode identifierExpression)
             {
