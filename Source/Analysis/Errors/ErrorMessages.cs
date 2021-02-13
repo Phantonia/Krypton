@@ -57,6 +57,10 @@ namespace Krypton.Analysis.Errors
             [ErrorCode.FunctionNotValidInContext] = "A function is not valid in the current context",
             [ErrorCode.ForIterationVariableHasToBeNumberType] = "The iteration variable of a For statement has to be one " +
                                                                 "of the following types: Int, Rational, Complex",
+            [ErrorCode.ReturnedValueEvenThoughFunctionDoesNotHaveReturnType] = "A value is returned from the function even though " +
+                                                                               "it does not have a return type",
+            [ErrorCode.ReturnedNoValueEvenThoughFunctionShouldReturn] = "The function is declared to return a value but this Return " +
+                                                                        "statement doesn't return a value",
         };
 
         public static ReadOnlyDictionary<ErrorCode, string> Messages => messages.MakeReadOnly();

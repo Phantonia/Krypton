@@ -1,4 +1,5 @@
 ﻿using Krypton.Analysis.Ast;
+using Krypton.Analysis.Ast.Declarations;
 using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Errors;
@@ -28,6 +29,8 @@ namespace Krypton.Analysis.Semantical
                     return BindInForStatement(forStatement, variableIdentifierMap);
                 case IfStatementNode ifStatement:
                     return BindInIfStatement(ifStatement, variableIdentifierMap);
+                case ReturnStatementNode returnStatement:
+                    return BindInReturnStatement(returnStatement, variableIdentifierMap);
                 case VariableAssignmentStatementNode variableAssignment:
                     return BindInVariableAssignment(variableAssignment, variableIdentifierMap);
                 case VariableDeclarationStatementNode variableDeclaration:
@@ -225,6 +228,68 @@ namespace Krypton.Analysis.Semantical
             return success;
         }
 
+        private bool BindInReturnStatement(ReturnStatementNode returnStatement, VariableIdentifierMap variableIdentifierMap)
+        {
+            TypeSymbolNode? returnedType = null;
+
+            if (returnStatement.ReturnExpressionNode != null)
+            {
+                returnedType = BindInExpression(returnStatement.ReturnExpressionNode, variableIdentifierMap);
+
+                if (returnedType == null)
+                {
+                    return false;
+                }
+            }
+
+            IReturnableNode functionOrProgram = FindReturnableParent(returnStatement);
+
+            if (!typeManager.TryGetTypeSymbol(functionOrProgram.ReturnTypeNode,
+                                              out TypeSymbolNode? actualReturnType))
+            {
+                return false;
+            }
+
+            if (returnedType == null)
+            {
+                if (actualReturnType != null)
+                {
+                    string functionName = functionOrProgram is FunctionDeclarationNode declaration
+                                        ? declaration.Identifier
+                                        : "<Program>";
+
+                    ErrorProvider.ReportError(ErrorCode.ReturnedNoValueEvenThoughFunctionShouldReturn,
+                                              Compilation,
+                                              (Node?)returnStatement.ReturnExpressionNode ?? returnStatement,
+                                              $"Function: {functionName}");
+                    return false;
+                }
+
+                return true;
+            }
+            else if (actualReturnType == null)
+            {
+                string functionName = functionOrProgram is FunctionDeclarationNode declaration
+                                    ? declaration.Identifier
+                                    : "<Program>";
+
+                ErrorProvider.ReportError(ErrorCode.ReturnedValueEvenThoughFunctionDoesNotHaveReturnType,
+                                          Compilation,
+                                          (Node?)returnStatement.ReturnExpressionNode ?? returnStatement,
+                                          $"Function: {functionName}");
+                return false;
+            }
+
+            if (!TypeIsCompatibleWith(returnedType,
+                                      actualReturnType,
+                                      possiblyOffendingNode: returnStatement.ReturnExpressionNode!))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         private bool BindInVariableAssignment(VariableAssignmentStatementNode variableAssignment,
                                               VariableIdentifierMap variableIdentifierMap)
         {
@@ -335,6 +400,25 @@ namespace Krypton.Analysis.Semantical
 
             bool success = BindInStatementBlock(whileStatement.StatementNodes, variableIdentifierMap);
             return success;
+        }
+
+        private static IReturnableNode FindReturnableParent(StatementNode statement)
+        {
+            Node? parent = statement;
+
+            while (true)
+            {
+                parent = parent?.ParentNode;
+
+                Debug.Assert(parent is StatementCollectionNode);
+
+                parent = parent.ParentNode;
+
+                if (parent is IReturnableNode returnable)
+                {
+                    return returnable;
+                }
+            }
         }
     }
 }

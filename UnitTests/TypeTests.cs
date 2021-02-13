@@ -295,5 +295,70 @@ namespace UnitTests
 
             MyAssert.Error(Code, ErrorCode.CantConvertType);
         }
+
+        [Test]
+        public void LegalReturnTest()
+        {
+            const string Code = @"
+            Func X() As Int
+            {
+                Return 4096;
+            }
+            ";
+
+            MyAssert.NoError(Code);
+        }
+
+        [Test]
+        public void LegalNoReturnValueTest()
+        {
+            const string Code = @"
+            Func X()
+            {
+                Return;
+            }
+            ";
+
+            MyAssert.NoError(Code);
+        }
+
+        [Test]
+        public void IllegalNoReturnValueTest()
+        {
+            const string Code = @"
+            Func X() As String
+            {
+                Return;
+            }
+            ";
+
+            MyAssert.Error(Code, ErrorCode.ReturnedNoValueEvenThoughFunctionShouldReturn);
+        }
+
+        [Test]
+        public void IllegalReturnValueTest()
+        {
+            const string Code = @"
+            Func X()
+            {
+                Return 'x';
+            }
+            ";
+
+            MyAssert.Error(Code, ErrorCode.ReturnedValueEvenThoughFunctionDoesNotHaveReturnType);
+        }
+
+        [Test]
+        public void IllegalReturnCantConvertTest()
+        {
+            const string Code = @"
+            Func X() As Complex
+            {
+                Return 'x';
+            }
+            ";
+
+            MyAssert.Error(Code, ErrorCode.CantConvertType);
+        }
     }
 }
