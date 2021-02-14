@@ -1,10 +1,16 @@
-﻿using Krypton.Analysis.Ast;
+﻿using Krypton.Analysis;
+using Krypton.Analysis.Ast;
 using Krypton.Analysis.Ast.Declarations;
+using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Expressions.Literals;
+using Krypton.Analysis.Ast.Identifiers;
 using Krypton.Analysis.Ast.Statements;
+using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Ast.TypeSpecs;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Syntactical;
+using Krypton.Framework.Literals;
+using Krypton.Framework.Symbols;
 using NUnit.Framework;
 
 namespace UnitTests
@@ -243,6 +249,174 @@ namespace UnitTests
             ";
 
             MyAssert.Error(Code, Krypton.Analysis.Errors.ErrorCode.LetVariableAndConstMustBeInitialized);
+        }
+
+        [Test]
+        public void ComplexConstantTest()
+        {
+            const string Code = @"
+            Const Z = 3 + 4i;
+            Var z = Z;
+            ";
+
+            var c = MyAssert.NoError(Code);
+
+            Assert.IsTrue(c.Program.TopLevelStatementNodes[0] is VariableDeclarationStatementNode
+            {
+                AssignedExpressionNode: IdentifierExpressionNode
+                {
+                    IdentifierNode: BoundIdentifierNode
+                    {
+                        Symbol: ConstantSymbolNode<Complex>
+                        {
+                            Value:
+                            {
+                                Real:
+                                {
+                                    Numerator: 3,
+                                    Denominator: 1
+                                },
+                                Imaginary:
+                                {
+                                    Numerator: 4,
+                                    Denominator: 1
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        [Test]
+        public void ComplexConstantMinusTest()
+        {
+            const string Code = @"
+            Const Z = 3 - 4i;
+            Var z = Z;
+            ";
+
+            var c = MyAssert.NoError(Code);
+
+            Assert.IsTrue(c.Program.TopLevelStatementNodes[0] is VariableDeclarationStatementNode
+            {
+                AssignedExpressionNode: IdentifierExpressionNode
+                {
+                    IdentifierNode: BoundIdentifierNode
+                    {
+                        Symbol: ConstantSymbolNode<Complex>
+                        {
+                            Value:
+                            {
+                                Real:
+                                {
+                                    Numerator: 3,
+                                    Denominator: 1
+                                },
+                                Imaginary:
+                                {
+                                    Numerator: -4,
+                                    Denominator: 1
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        [Test]
+        public void NegativeComplexConstantTest()
+        {
+            const string Code = @"
+            Const Z = -3 + 4i;
+            Var z = Z;
+            ";
+
+            var c = MyAssert.NoError(Code);
+
+            Assert.IsTrue(c.Program.TopLevelStatementNodes[0] is VariableDeclarationStatementNode
+            {
+                AssignedExpressionNode: IdentifierExpressionNode
+                {
+                    IdentifierNode: BoundIdentifierNode
+                    {
+                        Symbol: ConstantSymbolNode<Complex>
+                        {
+                            Value:
+                            {
+                                Real:
+                                {
+                                    Numerator: -3,
+                                    Denominator: 1
+                                },
+                                Imaginary:
+                                {
+                                    Numerator: 4,
+                                    Denominator: 1
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        [Test]
+        public void NegativeComplexConstantMinusTest()
+        {
+            const string Code = @"
+            Const Z = -3 - 4i;
+            Var z = Z;
+            ";
+
+            var c = MyAssert.NoError(Code);
+
+            Assert.IsTrue(c.Program.TopLevelStatementNodes[0] is VariableDeclarationStatementNode
+            {
+                AssignedExpressionNode: IdentifierExpressionNode
+                {
+                    IdentifierNode: BoundIdentifierNode
+                    {
+                        Symbol: ConstantSymbolNode<Complex>
+                        {
+                            Value:
+                            {
+                                Real:
+                                {
+                                    Numerator: -3,
+                                    Denominator: 1
+                                },
+                                Imaginary:
+                                {
+                                    Numerator: -4,
+                                    Denominator: 1
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        [Test]
+        public void OtherComplexConstantTest()
+        {
+            const string Code = @"
+            Const Z = -3 ** 4i;
+            ";
+
+            MyAssert.Error(Code, Krypton.Analysis.Errors.ErrorCode.ConstantValueMustBeLiteralOrComplex);
+        }
+
+        [Test]
+        public void ConstantIllegalInitTest()
+        {
+            const string Code = @"
+            Const Y = 4 ** 5;
+            ";
+
+            MyAssert.Error(Code, Krypton.Analysis.Errors.ErrorCode.ConstantValueMustBeLiteralOrComplex);
         }
     }
 }

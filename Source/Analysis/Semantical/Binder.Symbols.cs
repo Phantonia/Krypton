@@ -15,50 +15,78 @@ namespace Krypton.Analysis.Semantical
 {
     partial class Binder
     {
+        private ConstantSymbolNode<Complex>? CreateComplexConstantSymbol(ConstantDeclarationNode constantDeclaration)
+        {
+            if (constantDeclaration.ValueNode is not BinaryOperationExpressionNode
+                {
+                    Operator: (Operator.Plus or Operator.Minus) and Operator @operator,
+                    LeftOperandNode: ExpressionNode leftExpression and (LiteralExpressionNode or UnaryOperationExpressionNode
+                    {
+                        Operator: Operator.Minus
+                    }),
+                    RightOperandNode: LiteralExpressionNode rightLiteral
+                })
+            {
+                ErrorProvider.ReportError(ErrorCode.ConstantValueMustBeLiteralOrComplex,
+                                          Compilation,
+                                          constantDeclaration.ValueNode);
+                return null;
+            }
+
+            bool realNegative = false;
+            bool imagNegative = @operator == Operator.Minus;
+
+            if (leftExpression is UnaryOperationExpressionNode unaryOperation)
+            {
+                realNegative = true;
+                leftExpression = unaryOperation.OperandNode;
+            }
+
+            if (leftExpression is not RationalLiteralExpressionNode { Value: Rational real })
+            {
+                if (leftExpression is IntegerLiteralExpressionNode { Value: long realInt })
+                {
+                    real = new Rational(realInt, 1);
+                }
+                else
+                {
+                    ErrorProvider.ReportError(ErrorCode.ConstantValueMustBeLiteralOrComplex,
+                                              Compilation,
+                                              constantDeclaration.ValueNode);
+                    return null;
+                }
+            }
+
+            if (rightLiteral is not ImaginaryLiteralExpressionNode { Value: Rational imag })
+            {
+                ErrorProvider.ReportError(ErrorCode.ConstantValueMustBeLiteralOrComplex,
+                                          Compilation,
+                                          constantDeclaration.ValueNode);
+                return null;
+            }
+
+            if (realNegative)
+            {
+                real = real.Negate();
+            }
+
+            if (imagNegative)
+            {
+                imag = imag.Negate();
+            }
+
+            return new ConstantSymbolNode<Complex>(constantDeclaration.Identifier,
+                                                   new Complex(real, imag),
+                                                   typeManager[FrameworkType.Complex],
+                                                   constantDeclaration.LineNumber,
+                                                   constantDeclaration.Index);
+        }
+
         private ConstantSymbolNode? CreateConstantSymbol(ConstantDeclarationNode constantDeclaration)
         {
             if (constantDeclaration.ValueNode is not LiteralExpressionNode literal)
             {
-                if (constantDeclaration.ValueNode is not BinaryOperationExpressionNode
-                    {
-                        LeftOperandNode: LiteralExpressionNode leftLiteral,
-                        RightOperandNode: LiteralExpressionNode rightLiteral
-                    })
-                {
-                    ErrorProvider.ReportError(ErrorCode.ConstantValueMustBeLiteralOrComplex,
-                                              Compilation,
-                                              constantDeclaration.ValueNode);
-                    return null;
-                }
-
-                if (leftLiteral is not RationalLiteralExpressionNode { Value: Rational real })
-                {
-                    if (leftLiteral is IntegerLiteralExpressionNode { Value: long realInt })
-                    {
-                        real = new Rational(realInt, 1);
-                    }
-                    else
-                    {
-                        ErrorProvider.ReportError(ErrorCode.ConstantValueMustBeLiteralOrComplex,
-                                                  Compilation,
-                                                  constantDeclaration.ValueNode);
-                        return null;
-                    }
-                }
-
-                if (rightLiteral is not ImaginaryLiteralExpressionNode { Value: Rational imag })
-                {
-                    ErrorProvider.ReportError(ErrorCode.ConstantValueMustBeLiteralOrComplex,
-                                              Compilation,
-                                              constantDeclaration.ValueNode);
-                    return null;
-                }
-
-                return new ConstantSymbolNode<Complex>(constantDeclaration.Identifier,
-                                                       new Complex(real, imag),
-                                                       typeManager[FrameworkType.Complex],
-                                                       constantDeclaration.LineNumber,
-                                                       constantDeclaration.Index);
+                return CreateComplexConstantSymbol(constantDeclaration);
             }
 
             if (constantDeclaration.TypeSpecNode == null)

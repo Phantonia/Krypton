@@ -52,6 +52,8 @@ namespace Krypton.Framework.Literals
             }
         }
 
+        public Rational Negate() => new(-numerator, unchecked(denominator + 1));
+
         public override string ToString()
         {
             return $"{Numerator}/{Denominator}";
