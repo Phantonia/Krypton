@@ -48,6 +48,33 @@ namespace Krypton.Analysis.Syntactical
             }
         }
 
+        private LoopControlStatementNode? ParseLoopControlStatement(ref int index, LoopControlStatementKind kind)
+        {
+            int lineNumber = lexemes[index].LineNumber;
+            int nodeIndex = lexemes[index].Index;
+
+            index++;
+
+            if (lexemes[index] is not IntegerLiteralLexeme { Value: > 0 and < 50 and long level })
+            {
+                level = 1;
+            }
+            else
+            {
+                index++;
+            }
+
+            if (lexemes[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
+            {
+                ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, lexemes[index]);
+                return null;
+            }
+
+            index++;
+
+            return new LoopControlStatementNode((ushort)level, kind, lineNumber, nodeIndex);
+        }
+
         private ReturnStatementNode? ParseReturnStatement(ref int index)
         {
             int lineNumber = lexemes[index].LineNumber;

@@ -454,5 +454,153 @@ namespace UnitTests
                 Assert.Fail();
             }
         }
+
+        [Test]
+        public void LeaveImplicitLevelTest()
+        {
+            const string Code = @"
+            While True
+            {
+                If 4 == 4
+                {
+                    Leave;
+                }
+            }
+            ";
+
+            Compilation? comp = MyAssert.NoError(Code);
+
+            var whileStmt = (WhileStatementNode)comp.Program.TopLevelStatementNodes[0];
+            var ifStmt = (IfStatementNode)whileStmt.StatementNodes[0];
+            var leaveStmt = (LoopControlStatementNode)ifStmt.StatementNodes[0];
+
+            Assert.AreEqual((ushort)1, leaveStmt.Level);
+            Assert.AreEqual(LoopControlStatementKind.Leave, leaveStmt.Kind);
+            Assert.AreSame(whileStmt, leaveStmt.ControlledLoopNode);
+        }
+
+        [Test]
+        public void LeaveExplicitLevelTest()
+        {
+            const string Code = @"
+            While True
+            {
+                If 4 == 4
+                {
+                    Leave 1;
+                }
+            }
+            ";
+
+            Compilation? comp = MyAssert.NoError(Code);
+
+            var whileStmt = (WhileStatementNode)comp.Program.TopLevelStatementNodes[0];
+            var ifStmt = (IfStatementNode)whileStmt.StatementNodes[0];
+            var leaveStmt = (LoopControlStatementNode)ifStmt.StatementNodes[0];
+
+            Assert.AreEqual((ushort)1, leaveStmt.Level);
+            Assert.AreEqual(LoopControlStatementKind.Leave, leaveStmt.Kind);
+            Assert.AreSame(whileStmt, leaveStmt.ControlledLoopNode);
+        }
+
+        [Test]
+        public void LeaveExplicitLevelNestedTest()
+        {
+            const string Code = @"
+            While True
+            {
+                While True
+                {
+                    Leave 2;
+                }
+            }
+            ";
+
+            Compilation? comp = MyAssert.NoError(Code);
+
+            var whileStmt1 = (WhileStatementNode)comp.Program.TopLevelStatementNodes[0];
+            var whileStmt2 = (WhileStatementNode)whileStmt1.StatementNodes[0];
+            var leaveStmt = (LoopControlStatementNode)whileStmt2.StatementNodes[0];
+
+            Assert.AreEqual((ushort)2, leaveStmt.Level);
+            Assert.AreEqual(LoopControlStatementKind.Leave, leaveStmt.Kind);
+            Assert.AreSame(whileStmt1, leaveStmt.ControlledLoopNode);
+        }
+
+        [Test]
+        public void LeaveExplicitLevelNested2Test()
+        {
+            const string Code = @"
+            While True
+            {
+                While True
+                {
+                    Leave 1;
+                }
+            }
+            ";
+
+            Compilation? comp = MyAssert.NoError(Code);
+
+            var whileStmt1 = (WhileStatementNode)comp.Program.TopLevelStatementNodes[0];
+            var whileStmt2 = (WhileStatementNode)whileStmt1.StatementNodes[0];
+            var leaveStmt = (LoopControlStatementNode)whileStmt2.StatementNodes[0];
+
+            Assert.AreEqual((ushort)1, leaveStmt.Level);
+            Assert.AreEqual(LoopControlStatementKind.Leave, leaveStmt.Kind);
+            Assert.AreSame(whileStmt2, leaveStmt.ControlledLoopNode);
+        }
+
+        [Test]
+        public void LeaveHighNestingLevelTest()
+        {
+            const string Code = @"
+            While True
+            {
+                While True
+                {
+                    For Var i = 0 While True
+                    {
+                        While i > 0
+                        {
+                            Leave 4;
+                        }
+                    }
+                }
+            }
+            ";
+
+            Compilation? comp = MyAssert.NoError(Code);
+
+            var whileStmt1 = (WhileStatementNode)comp.Program.TopLevelStatementNodes[0];
+            var whileStmt2 = (WhileStatementNode)whileStmt1.StatementNodes[0];
+            var whileStmt3 = (ILoopNode)whileStmt2.StatementNodes[0];
+            var whileStmt4 = (ILoopNode)whileStmt3.StatementNodes[0];
+            var leaveStmt = (LoopControlStatementNode)whileStmt4.StatementNodes[0];
+
+            Assert.AreEqual((ushort)4, leaveStmt.Level);
+            Assert.AreEqual(LoopControlStatementKind.Leave, leaveStmt.Kind);
+            Assert.AreSame(whileStmt1, leaveStmt.ControlledLoopNode);
+        }
+
+        [Test]
+        public void LeaveHighNestingLevelNoLoopTest()
+        {
+            const string Code = @"
+            Block { If True { Block { Leave; } } }
+            ";
+
+            MyAssert.Error(Code, ErrorCode.LoopControlStatementNotThatDeep);
+        }
+
+        [Test]
+        public void ContinueTest()
+        {
+            const string Code = @"
+            While True { Continue; }
+            ";
+
+            MyAssert.NoError(Code);
+        }
     }
 }

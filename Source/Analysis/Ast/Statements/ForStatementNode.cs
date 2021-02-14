@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace Krypton.Analysis.Ast.Statements
 {
-    public sealed class ForStatementNode : StatementNode
+    public sealed class ForStatementNode : StatementNode, ILoopNode
     {
         internal ForStatementNode(IdentifierNode identifier,
                                   bool declaresNew,
@@ -37,11 +37,13 @@ namespace Krypton.Analysis.Ast.Statements
             }
 
             WithExpressionNode = withValue;
-            StatementNodes = statements;
             if (withValue != null)
             {
                 withValue.ParentNode = this;
             }
+
+            StatementNodes = statements;
+            StatementNodes.ParentNode = this;
         }
 
         public ExpressionNode? ConditionNode { get; }

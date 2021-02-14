@@ -9,6 +9,7 @@ namespace Krypton.Analysis.Ast.Statements
         internal BlockStatementNode(StatementCollectionNode statements, int lineNumber, int index) : base(lineNumber, index)
         {
             StatementNodes = statements;
+            StatementNodes.ParentNode = this;
         }
 
         public StatementCollectionNode StatementNodes { get; }

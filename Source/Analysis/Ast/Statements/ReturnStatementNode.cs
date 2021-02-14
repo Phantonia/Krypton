@@ -12,6 +12,11 @@ namespace Krypton.Analysis.Ast.Statements
                                    int index) : base(lineNumber, index)
         {
             ReturnExpressionNode = returnExpression;
+
+            if (ReturnExpressionNode != null)
+            {
+                ReturnExpressionNode.ParentNode = this;
+            }
         }
 
         public ExpressionNode? ReturnExpressionNode { get; } = null;

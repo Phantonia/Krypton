@@ -24,9 +24,22 @@ namespace Krypton.Analysis.Ast.Statements
                                  int index) : base(lineNumber, index)
         {
             ConditionNode = condition;
+            ConditionNode.ParentNode = this;
+
             ElseIfPartNodes = elseIfParts.MakeReadOnly();
+            foreach (ElseIfPartNode elseIf in ElseIfPartNodes)
+            {
+                elseIf.ParentNode = this;
+            }
+
             ElsePartNode = elsePart;
+            if (ElsePartNode != null)
+            {
+                ElsePartNode.ParentNode = this;
+            }
+
             StatementNodes = statements;
+            StatementNodes.ParentNode = this;
         }
 
         public ExpressionNode ConditionNode { get; }

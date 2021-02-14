@@ -29,6 +29,8 @@ namespace Krypton.Analysis.Semantical
                     return BindInForStatement(forStatement, variableIdentifierMap);
                 case IfStatementNode ifStatement:
                     return BindInIfStatement(ifStatement, variableIdentifierMap);
+                case LoopControlStatementNode loopControlStatement:
+                    return BindInLoopControlStatement(loopControlStatement);
                 case ReturnStatementNode returnStatement:
                     return BindInReturnStatement(returnStatement, variableIdentifierMap);
                 case VariableAssignmentStatementNode variableAssignment:
@@ -226,6 +228,37 @@ namespace Krypton.Analysis.Semantical
             }
 
             return success;
+        }
+
+        private bool BindInLoopControlStatement(LoopControlStatementNode loopControlStatement)
+        {
+            ushort level = loopControlStatement.Level;
+
+            Node? parent = loopControlStatement;
+
+            while (level > 0)
+            {
+                parent = parent.ParentNode;
+
+                switch (parent)
+                {
+                    case null:
+                        ErrorProvider.ReportError(ErrorCode.LoopControlStatementNotThatDeep,
+                                                  Compilation,
+                                                  loopControlStatement);
+                        return false;
+                    case ILoopNode:
+                        level--;
+                        break;
+                }
+            }
+
+            ILoopNode? loop = parent as ILoopNode;
+            Debug.Assert(loop != null);
+
+            loopControlStatement.SetControlledLoop(loop);
+
+            return true;
         }
 
         private bool BindInReturnStatement(ReturnStatementNode returnStatement, VariableIdentifierMap variableIdentifierMap)

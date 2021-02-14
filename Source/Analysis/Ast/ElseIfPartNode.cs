@@ -11,7 +11,10 @@ namespace Krypton.Analysis.Ast
                                 int index) : base(lineNumber, index)
         {
             ConditionNode = condition;
+            ConditionNode.ParentNode = this;
+
             StatementNodes = statements;
+            StatementNodes.ParentNode = this;
         }
 
         public ExpressionNode ConditionNode { get; }

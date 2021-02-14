@@ -52,6 +52,7 @@ namespace Krypton.Analysis.Errors
             [ErrorCode.CantFindIdentifierInScope] = "In this scope, this identifier is not declared",
             [ErrorCode.CantReAssignReadOnlyVariable] = "The variable can't be assigned again because it is read only",
             [ErrorCode.CantFindType] = "This type does not exist",
+            [ErrorCode.LoopControlStatementNotThatDeep] = "There are not that many nested loops",
 
             // Semantic errors: types
             [ErrorCode.BinaryOperatorNotValidOnType] = "This binary operator cannot be used on these two types",
