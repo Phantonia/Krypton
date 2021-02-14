@@ -1,9 +1,13 @@
 ﻿using Krypton.Analysis.Ast;
 using Krypton.Analysis.Ast.Declarations;
+using Krypton.Analysis.Ast.Expressions;
+using Krypton.Analysis.Ast.Expressions.Literals;
 using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Ast.TypeSpecs;
 using Krypton.Analysis.Errors;
 using Krypton.Analysis.Semantical.IdentifierMaps;
+using Krypton.Framework;
+using Krypton.Framework.Literals;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -11,6 +15,114 @@ namespace Krypton.Analysis.Semantical
 {
     partial class Binder
     {
+        private ConstantSymbolNode? CreateConstantSymbol(ConstantDeclarationNode constantDeclaration)
+        {
+            if (constantDeclaration.ValueNode is not LiteralExpressionNode literal)
+            {
+                if (constantDeclaration.ValueNode is not BinaryOperationExpressionNode
+                    {
+                        LeftOperandNode: LiteralExpressionNode leftLiteral,
+                        RightOperandNode: LiteralExpressionNode rightLiteral
+                    })
+                {
+                    ErrorProvider.ReportError(ErrorCode.ConstantValueMustBeLiteralOrComplex,
+                                              Compilation,
+                                              constantDeclaration.ValueNode);
+                    return null;
+                }
+
+                if (leftLiteral is not RationalLiteralExpressionNode { Value: Rational real })
+                {
+                    if (leftLiteral is IntegerLiteralExpressionNode { Value: long realInt })
+                    {
+                        real = new Rational(realInt, 1);
+                    }
+                    else
+                    {
+                        ErrorProvider.ReportError(ErrorCode.ConstantValueMustBeLiteralOrComplex,
+                                                  Compilation,
+                                                  constantDeclaration.ValueNode);
+                        return null;
+                    }
+                }
+
+                if (rightLiteral is not ImaginaryLiteralExpressionNode { Value: Rational imag })
+                {
+                    ErrorProvider.ReportError(ErrorCode.ConstantValueMustBeLiteralOrComplex,
+                                              Compilation,
+                                              constantDeclaration.ValueNode);
+                    return null;
+                }
+
+                return new ConstantSymbolNode<Complex>(constantDeclaration.Identifier,
+                                                       new Complex(real, imag),
+                                                       typeManager[FrameworkType.Complex],
+                                                       constantDeclaration.LineNumber,
+                                                       constantDeclaration.Index);
+            }
+
+            if (constantDeclaration.TypeSpecNode == null)
+            {
+                return CreateSymbol();
+            }
+            else
+            {
+                TypeSymbolNode? declaredType = GetTypeSymbol(constantDeclaration.TypeSpecNode);
+
+                if (declaredType == null)
+                {
+                    ErrorProvider.ReportError(ErrorCode.CantFindType,
+                                              Compilation,
+                                              constantDeclaration.TypeSpecNode);
+                    return null;
+                }
+
+                TypeSymbolNode? literalType = typeManager[literal.AssociatedType];
+
+                if (!literalType.Equals(declaredType))
+                {
+                    ErrorProvider.ReportError(ErrorCode.ConstTypeHasToMatchLiteralTypeExactly,
+                                              Compilation,
+                                              constantDeclaration.ValueNode,
+                                              $"Literal type: {literalType.Identifier}");
+                    return null;
+                }
+
+                return CreateSymbol();
+            }
+
+            ConstantSymbolNode CreateSymbol()
+            {
+                switch (literal)
+                {
+                    case IntegerLiteralExpressionNode integerLiteral:
+                        return CreateSymbolCore(integerLiteral.Value, FrameworkType.Int);
+                    case RationalLiteralExpressionNode rationalLiteral:
+                        return CreateSymbolCore(rationalLiteral.Value, FrameworkType.Rational);
+                    case ImaginaryLiteralExpressionNode imaginaryLiteral:
+                        return CreateSymbolCore(new Complex(default, imaginaryLiteral.Value), FrameworkType.Complex);
+                    case BooleanLiteralExpressionNode booleanLiteral:
+                        return CreateSymbolCore(booleanLiteral.Value, FrameworkType.Bool);
+                    case CharLiteralExpressionNode charLiteral:
+                        return CreateSymbolCore(charLiteral.Value, FrameworkType.Char);
+                    case StringLiteralExpressionNode stringLiteral:
+                        return CreateSymbolCore(stringLiteral.Value, FrameworkType.String);
+                    default:
+                        Debug.Fail(message: null);
+                        return null;
+                }
+
+                ConstantSymbolNode<T> CreateSymbolCore<T>(T value, FrameworkType frameworkType)
+                {
+                    return new ConstantSymbolNode<T>(constantDeclaration.Identifier,
+                                                     value,
+                                                     typeManager[frameworkType],
+                                                     constantDeclaration.LineNumber,
+                                                     constantDeclaration.Index);
+                }
+            }
+        }
+
         private FunctionSymbolNode? CreateFunctionSymbol(FunctionDeclarationNode functionDeclaration)
         {
             List<ParameterSymbolNode>? parameters = null;
@@ -62,10 +174,22 @@ namespace Krypton.Analysis.Semantical
 
                 if (functionSymbol == null)
                 {
-                    return default;
+                    return null;
                 }
 
                 globalIdentifierMap.AddSymbol(functionDeclaration.Identifier, functionSymbol);
+            }
+
+            foreach (ConstantDeclarationNode constantDeclaration in Compilation.Program.Constants)
+            {
+                ConstantSymbolNode? constantSymbol = CreateConstantSymbol(constantDeclaration);
+
+                if (constantSymbol == null)
+                {
+                    return null;
+                }
+
+                globalIdentifierMap.AddSymbol(constantDeclaration.Identifier, constantSymbol);
             }
 
             return globalIdentifierMap;

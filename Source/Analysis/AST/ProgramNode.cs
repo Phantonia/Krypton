@@ -8,13 +8,17 @@ namespace Krypton.Analysis.Ast
     public sealed class ProgramNode : Node, IReturnableNode
     {
         internal ProgramNode(StatementCollectionNode topLevelStatements,
+                             IList<ConstantDeclarationNode> constants,
                              IList<FunctionDeclarationNode> functions,
                              int lineNumber,
                              int index) : base(lineNumber, index)
         {
             TopLevelStatementNodes = topLevelStatements;
+            Constants = constants.MakeReadOnly();
             Functions = functions.MakeReadOnly();
         }
+
+        public ReadOnlyList<ConstantDeclarationNode> Constants { get; }
 
         public ReadOnlyList<FunctionDeclarationNode> Functions { get; }
 

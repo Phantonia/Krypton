@@ -360,5 +360,29 @@ namespace UnitTests
 
             MyAssert.Error(Code, ErrorCode.CantConvertType);
         }
+
+        [Test]
+        public void ConstTypeTest()
+        {
+            const string Code = @"
+            Const X = 4;
+
+            Var x As Int = X;
+            ";
+
+            MyAssert.NoError(Code);
+        }
+
+        [Test]
+        public void ConstTypeErrorTest()
+        {
+            const string Code = @"
+            Const X = 4;
+
+            Var x As Char = X;
+            ";
+
+            MyAssert.Error(Code, ErrorCode.CantConvertType);
+        }
     }
 }

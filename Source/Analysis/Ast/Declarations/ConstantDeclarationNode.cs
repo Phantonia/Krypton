@@ -8,7 +8,7 @@ namespace Krypton.Analysis.Ast.Declarations
     {
         internal ConstantDeclarationNode(IdentifierNode identifierNode,
                                          TypeSpecNode? type,
-                                         ExpressionNode? value,
+                                         ExpressionNode value,
                                          int lineNumber,
                                          int index) : base(identifierNode, lineNumber, index)
         {
@@ -18,6 +18,6 @@ namespace Krypton.Analysis.Ast.Declarations
 
         public TypeSpecNode? TypeSpecNode { get; }
 
-        public ExpressionNode? ValueNode { get; }
+        public ExpressionNode ValueNode { get; }
     }
 }

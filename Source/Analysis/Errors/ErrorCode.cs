@@ -37,6 +37,8 @@
         ForNotVariable = 403,
         CantFindIdentifierInScope = 404, // 404, get it? This error code must stay
         CantReAssignReadOnlyVariable = 405,
+        ConstantValueMustBeLiteralOrComplex = 406,
+        CantFindType = 407,
 
         // Semantic errors: types
         BinaryOperatorNotValidOnType = 601,
@@ -49,5 +51,6 @@
         ForIterationVariableHasToBeNumberType = 608,
         ReturnedValueEvenThoughFunctionDoesNotHaveReturnType = 609,
         ReturnedNoValueEvenThoughFunctionShouldReturn = 610,
+        ConstTypeHasToMatchLiteralTypeExactly = 611,
     }
 }

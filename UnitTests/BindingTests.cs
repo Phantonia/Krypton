@@ -401,5 +401,58 @@ namespace UnitTests
 
             MyAssert.Error(Code, ErrorCode.CantReAssignReadOnlyVariable);
         }
+
+        [Test]
+        public void ConstantReAssignmentTest()
+        {
+            const string Code = @"
+            Const Name = ""Antonia"";
+            Output(Name);
+            ";
+
+            MyAssert.NoError(Code);
+        }
+
+        [Test]
+        public void ConstantBindingTest()
+        {
+            const string Code = @"
+            Const Name = ""Antonia"";
+            Output(Name);
+            Name = ""Sandra"";
+            ";
+
+            MyAssert.Error(Code, ErrorCode.CantAssignUndeclaredVariable);
+        }
+
+        [Test]
+        public void ConstantVsVariableTest()
+        {
+            const string Code = @"
+            Const Name = ""Antonia"";
+            Var Name = ""Antonia"";
+            Output(Name);
+            ";
+
+            Compilation? comp = MyAssert.NoError(Code);
+
+            if (comp.Program.TopLevelStatementNodes[1] is FunctionCallStatementNode
+                {
+                    ArgumentNodes: var arguments
+                })
+            {
+                Assert.IsTrue(arguments?[0] is IdentifierExpressionNode
+                {
+                    IdentifierNode: BoundIdentifierNode
+                    {
+                        Symbol: VariableSymbolNode
+                    }
+                });
+            }
+            else
+            {
+                Assert.Fail();
+            }
+        }
     }
 }

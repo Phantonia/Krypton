@@ -42,6 +42,8 @@ namespace Krypton.Analysis.Errors
             [ErrorCode.ExpectedKeywordAs] = "The keyword 'As' was expected",
             [ErrorCode.LetVariableAndConstMustBeInitialized] = "A variable declared with 'Let' and a constant " +
                                                                "must be immediately initialized",
+            [ErrorCode.ConstantValueMustBeLiteralOrComplex] = "A constant must be initialized by a literal or " +
+                                                              "a complex value in the form a + bi, e.g. '3 + 4i'",
 
             // Semantic errors: binding
             [ErrorCode.CantAssignUndeclaredVariable] = "This variable is not declared (at least not in scope)",
@@ -49,6 +51,7 @@ namespace Krypton.Analysis.Errors
             [ErrorCode.ForNotVariable] = "The identifier does not refer to a local variable",
             [ErrorCode.CantFindIdentifierInScope] = "In this scope, this identifier is not declared",
             [ErrorCode.CantReAssignReadOnlyVariable] = "The variable can't be assigned again because it is read only",
+            [ErrorCode.CantFindType] = "This type does not exist",
 
             // Semantic errors: types
             [ErrorCode.BinaryOperatorNotValidOnType] = "This binary operator cannot be used on these two types",
@@ -64,6 +67,7 @@ namespace Krypton.Analysis.Errors
                                                                                "it does not have a return type",
             [ErrorCode.ReturnedNoValueEvenThoughFunctionShouldReturn] = "The function is declared to return a value but this Return " +
                                                                         "statement doesn't return a value",
+            [ErrorCode.ConstTypeHasToMatchLiteralTypeExactly] = "The type of the constant has to be exactly the type of the literal that is assigned to it",
         };
 
         public static ReadOnlyDictionary<ErrorCode, string> Messages => messages.MakeReadOnly();

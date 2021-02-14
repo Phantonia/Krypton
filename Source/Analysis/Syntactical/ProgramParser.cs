@@ -64,7 +64,7 @@ namespace Krypton.Analysis.Syntactical
             }
 
             StatementCollectionNode topLevelStatements = new(statements);
-            return new ProgramNode(topLevelStatements, functions, lineNumber: 1, index: 0);
+            return new ProgramNode(topLevelStatements, constants, functions, lineNumber: 1, index: 0);
         }
 
         internal ConstantDeclarationNode? ParseConstantDeclaration()
