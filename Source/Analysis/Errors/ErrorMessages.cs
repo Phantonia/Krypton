@@ -40,14 +40,15 @@ namespace Krypton.Analysis.Errors
                                                  "has to have one or both of them",
             [ErrorCode.ExpectedOpenParenthesis] = "An open parenthesis '(' was expected",
             [ErrorCode.ExpectedKeywordAs] = "The keyword 'As' was expected",
-            [ErrorCode.LetVariableMustBeInitialized] = "A variable declared with 'Let' must be immediately initialized",
-            [ErrorCode.CantReAssignReadOnlyVariable] = "The variable can't be assigned again because it is read only",
+            [ErrorCode.LetVariableAndConstMustBeInitialized] = "A variable declared with 'Let' and a constant " +
+                                                               "must be immediately initialized",
 
             // Semantic errors: binding
             [ErrorCode.CantAssignUndeclaredVariable] = "This variable is not declared (at least not in scope)",
             [ErrorCode.CantRedeclareVariable] = "A variable with the same name is already declared in scope",
             [ErrorCode.ForNotVariable] = "The identifier does not refer to a local variable",
             [ErrorCode.CantFindIdentifierInScope] = "In this scope, this identifier is not declared",
+            [ErrorCode.CantReAssignReadOnlyVariable] = "The variable can't be assigned again because it is read only",
 
             // Semantic errors: types
             [ErrorCode.BinaryOperatorNotValidOnType] = "This binary operator cannot be used on these two types",

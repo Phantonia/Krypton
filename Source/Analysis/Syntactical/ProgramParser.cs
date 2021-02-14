@@ -1,5 +1,6 @@
 ﻿using Krypton.Analysis.Ast;
 using Krypton.Analysis.Ast.Declarations;
+using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Identifiers;
 using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Ast.TypeSpecs;
@@ -7,7 +8,6 @@ using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -21,7 +21,7 @@ namespace Krypton.Analysis.Syntactical
 
             this.code = code;
             expressionParser = new ExpressionParser(lexemes, code);
-            typeParser = new TypeParser(lexemes);
+            typeParser = new TypeParser(lexemes, code);
             statementParser = new StatementParser(lexemes, expressionParser, typeParser, code);
         }
 
@@ -37,6 +37,7 @@ namespace Krypton.Analysis.Syntactical
         {
             List<StatementNode> statements = new();
             List<FunctionDeclarationNode> functions = new();
+            List<ConstantDeclarationNode> constants = new();
 
             while (TryParseNextNode(out Node? node, out bool error))
             {
@@ -53,6 +54,9 @@ namespace Krypton.Analysis.Syntactical
                     case FunctionDeclarationNode function:
                         functions.Add(function);
                         break;
+                    case ConstantDeclarationNode constant:
+                        constants.Add(constant);
+                        break;
                     default:
                         Debug.Fail("Should not have happened");
                         return null;
@@ -61,6 +65,68 @@ namespace Krypton.Analysis.Syntactical
 
             StatementCollectionNode topLevelStatements = new(statements);
             return new ProgramNode(topLevelStatements, functions, lineNumber: 1, index: 0);
+        }
+
+        internal ConstantDeclarationNode? ParseConstantDeclaration()
+        {
+            int lineNumber = Lexemes[index].LineNumber;
+            int nodeIndex = Lexemes[index].Index;
+
+            index++;
+
+            if (Lexemes[index] is not IdentifierLexeme identifier)
+            {
+                ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier,
+                                          code,
+                                          Lexemes[index]);
+                return null;
+            }
+
+            index++;
+
+            TypeSpecNode? type = null;
+
+            if (Lexemes[index] is KeywordLexeme { Keyword: ReservedKeyword.As })
+            {
+                index++;
+
+                type = typeParser.ParseNextType(ref index);
+
+                if (type == null)
+                {
+                    return null;
+                }
+            }
+
+            if (Lexemes[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
+            {
+                ErrorProvider.ReportError(ErrorCode.LetVariableAndConstMustBeInitialized,
+                                          code,
+                                          Lexemes[index]);
+                return null;
+            }
+
+            index++;
+
+            ExpressionNode? value = expressionParser.ParseNextExpression(ref index);
+
+            if (value == null)
+            {
+                return null;
+            }
+
+            if (Lexemes[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
+            {
+                ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon,
+                                          code,
+                                          Lexemes[index]);
+                return null;
+            }
+
+            index++;
+
+            UnboundIdentifierNode identifierNode = new(identifier.Content, identifier.LineNumber, identifier.Index);
+            return new ConstantDeclarationNode(identifierNode, type, value, lineNumber, nodeIndex);
         }
 
         internal FunctionDeclarationNode? ParseFunctionDeclaration()
@@ -204,6 +270,21 @@ namespace Krypton.Analysis.Syntactical
                         }
 
                         node = function;
+                        error = false;
+                        return true;
+                    }
+                case KeywordLexeme { Keyword: ReservedKeyword.Const }:
+                    {
+                        ConstantDeclarationNode? constant = ParseConstantDeclaration();
+
+                        if (constant == null)
+                        {
+                            error = true;
+                            node = null;
+                            return true;
+                        }
+
+                        node = constant;
                         error = false;
                         return true;
                     }

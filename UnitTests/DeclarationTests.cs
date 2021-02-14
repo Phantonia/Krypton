@@ -2,13 +2,14 @@
 using Krypton.Analysis.Ast.Declarations;
 using Krypton.Analysis.Ast.Expressions.Literals;
 using Krypton.Analysis.Ast.Statements;
+using Krypton.Analysis.Ast.TypeSpecs;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Syntactical;
 using NUnit.Framework;
 
 namespace UnitTests
 {
-    class FunctionTests
+    class DeclarationTests
     {
         [Test]
         public void FunctionDeclarationNoParametersNoReturnTest()
@@ -194,5 +195,54 @@ namespace UnitTests
 
         //    Assert.AreEqual(ErrorCode.ExpectedSemicolon, e.ErrorCode);
         //}
+
+        [Test]
+        public void ConstDeclarationImplicitTypeTest()
+        {
+            const string Code = @"
+            Const BEST_NUMBER = 4;
+            ";
+
+            ConstantDeclarationNode? cnst = MyAssert.NoError(() =>
+            {
+                var lexemes = new Lexer(Code).LexAll();
+                var parser = new ProgramParser(lexemes, Code);
+                return parser.ParseConstantDeclaration();
+            });
+
+            Assert.NotNull(cnst);
+            Assert.AreEqual("BEST_NUMBER", cnst!.Identifier);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(cnst.ValueNode);
+        }
+
+        [Test]
+        public void ConstDeclarationExplicitTypeTest()
+        {
+            const string Code = @"
+            Const BEST_NUMBER As Int = 4;
+            ";
+
+            ConstantDeclarationNode? cnst = MyAssert.NoError(() =>
+            {
+                var lexemes = new Lexer(Code).LexAll();
+                var parser = new ProgramParser(lexemes, Code);
+                return parser.ParseConstantDeclaration();
+            });
+
+            Assert.NotNull(cnst);
+            Assert.AreEqual("BEST_NUMBER", cnst!.Identifier);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(cnst.ValueNode);
+            Assert.IsTrue(cnst.TypeSpecNode is IdentifierTypeSpecNode { Identifier: "Int" });
+        }
+
+        [Test]
+        public void ConstDeclarationNoInitTest()
+        {
+            const string Code = @"
+            Const BEST_NUMBER;
+            ";
+
+            MyAssert.Error(Code, Krypton.Analysis.Errors.ErrorCode.LetVariableAndConstMustBeInitialized);
+        }
     }
 }

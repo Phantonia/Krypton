@@ -30,7 +30,7 @@ namespace UnitTests
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes), Code);
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
             Node? root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
@@ -57,7 +57,7 @@ namespace UnitTests
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes), Code);
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
             Node? root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
@@ -83,7 +83,7 @@ namespace UnitTests
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes), Code);
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
             Node? root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
@@ -105,7 +105,7 @@ namespace UnitTests
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes), Code);
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
             Node? root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
@@ -127,7 +127,7 @@ namespace UnitTests
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes), Code);
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
 
             var e = MyAssert.Error(() => parser.ParseNextStatement(ref index));
             Assert.AreEqual(ErrorCode.ExpectedEqualsOrSemicolon, e.ErrorCode);
@@ -141,7 +141,7 @@ namespace UnitTests
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes), Code);
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
             Node? root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
@@ -161,7 +161,7 @@ namespace UnitTests
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes), Code);
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
 
             StatementNode? node = parser.ParseNextStatement(ref index);
 
@@ -181,7 +181,7 @@ namespace UnitTests
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes), Code);
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
 
             List<StatementNode> statements = new();
 
@@ -217,7 +217,7 @@ namespace UnitTests
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes), Code);
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
             StatementNode? statement = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(statement);
@@ -238,7 +238,7 @@ namespace UnitTests
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes), Code);
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
             StatementNode? statement = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(statement);
@@ -266,7 +266,7 @@ namespace UnitTests
 
             int index = 0;
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes), Code);
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
             StatementNode? statement = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(statement);
@@ -296,7 +296,7 @@ namespace UnitTests
                 }";
             LexemeCollection lexemes = new Lexer(Code).LexAll();
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes), Code);
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
             int index = 0;
             StatementNode? statement = parser.ParseNextStatement(ref index);
 
@@ -328,7 +328,7 @@ namespace UnitTests
                 }";
             LexemeCollection lexemes = new Lexer(Code).LexAll();
 
-            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes), Code);
+            StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
             int index = 0;
             StatementNode? statement = parser.ParseNextStatement(ref index);
 
@@ -762,7 +762,7 @@ namespace UnitTests
             Let i As Int;
             ";
 
-            MyAssert.Error(Code, ErrorCode.LetVariableMustBeInitialized);
+            MyAssert.Error(Code, ErrorCode.LetVariableAndConstMustBeInitialized);
         }
     }
 }

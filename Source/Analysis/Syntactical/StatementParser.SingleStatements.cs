@@ -136,7 +136,7 @@ namespace Krypton.Analysis.Syntactical
 
             if (isReadOnly)
             {
-                ErrorProvider.ReportError(ErrorCode.LetVariableMustBeInitialized,
+                ErrorProvider.ReportError(ErrorCode.LetVariableAndConstMustBeInitialized,
                                           code,
                                           current ?? lexemes[^1]);
                 return null;

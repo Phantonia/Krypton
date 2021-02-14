@@ -19,8 +19,9 @@ namespace Krypton.Analysis.Ast.Declarations
         {
             list.Add(this);
             IdentifierNode.PopulateBranches(list);
+            PopulateBranchesInternal(list);
         }
 
-        protected abstract void PopulateBranchesInternal(List<Node> list);
+        protected virtual void PopulateBranchesInternal(List<Node> list) { }
     }
 }

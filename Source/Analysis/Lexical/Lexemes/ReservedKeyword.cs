@@ -20,6 +20,7 @@ namespace Krypton.Analysis.Lexical.Lexemes
         // remaining keywords are counted upwards from 100
         As = 100,
         Block,
+        Const,
         Else,
         For,
         Func,

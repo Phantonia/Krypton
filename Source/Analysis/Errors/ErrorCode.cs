@@ -29,7 +29,7 @@
         ForNeitherWhileNorWith = 115,
         ExpectedOpenParenthesis = 116,
         ExpectedKeywordAs = 117,
-        LetVariableMustBeInitialized = 118,
+        LetVariableAndConstMustBeInitialized = 118,
 
         // Semantic errors: binding
         CantAssignUndeclaredVariable = 401,
