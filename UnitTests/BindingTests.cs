@@ -602,5 +602,25 @@ namespace UnitTests
 
             MyAssert.NoError(Code);
         }
+
+        [Test]
+        public void PropertyTest()
+        {
+            const string Code = @"
+            Var i = ""xyz"".Length;
+            ";
+
+            MyAssert.NoError(Code);
+        }
+
+        [Test]
+        public void PropertyDoesNotExistTest()
+        {
+            const string Code = @"
+            Var i = ""xyz"".Lenght; ... oops, typo
+            ";
+
+            MyAssert.Error(Code, ErrorCode.PropertyDoesNotExistInType);
+        }
     }
 }

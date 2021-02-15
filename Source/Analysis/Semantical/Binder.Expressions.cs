@@ -35,6 +35,8 @@ namespace Krypton.Analysis.Semantical
                     return BindIdentifierExpression(identifierExpression, variableIdentifierMap);
                 case LiteralExpressionNode literal:
                     return typeManager[literal.AssociatedType];
+                case PropertyGetExpressionNode propertyGet:
+                    return BindInPropertyGet(propertyGet, variableIdentifierMap);
                 case UnaryOperationExpressionNode unaryOperation:
                     return BindInUnaryOperation(unaryOperation, variableIdentifierMap);
                 default:
@@ -177,6 +179,28 @@ namespace Krypton.Analysis.Semantical
                     Debug.Fail(message: "A type was forgotten...");
                     return null;
             }
+        }
+
+        private TypeSymbolNode? BindInPropertyGet(PropertyGetExpressionNode propertyGet,
+                                                  VariableIdentifierMap variableIdentifierMap)
+        {
+            TypeSymbolNode? expressionType = BindInExpression(propertyGet.ExpressionNode, variableIdentifierMap);
+
+            if (expressionType == null)
+            {
+                return null;
+            }
+
+            if (!expressionType.PropertyNodes.TryGetValue(propertyGet.PropertyIdentifier, out PropertySymbolNode? property))
+            {
+                ErrorProvider.ReportError(ErrorCode.PropertyDoesNotExistInType,
+                                          Compilation,
+                                          propertyGet.PropertyIdentifierNode,
+                                          $"Type: {expressionType.Identifier}");
+                return null;
+            }
+
+            return property.TypeNode;
         }
 
         private TypeSymbolNode? BindInUnaryOperation(UnaryOperationExpressionNode unaryOperation,

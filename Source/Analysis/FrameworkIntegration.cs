@@ -128,13 +128,23 @@ namespace Krypton.Analysis
         }
 
         private static ParameterSymbolNode CreateParameterNode(ParameterSymbol parameterSymbol,
-                                                         FrameworkVersion frameworkVersion,
-                                                         TypeIdentifierMap typeIdentifierMap)
+                                                               FrameworkVersion frameworkVersion,
+                                                               TypeIdentifierMap typeIdentifierMap)
         {
             return new ParameterSymbolNode(parameterSymbol.Name,
                                            GetTypeSymbolNode(parameterSymbol.Type, typeIdentifierMap, frameworkVersion),
                                            lineNumber: 0,
                                            index: -1);
+        }
+
+        private static PropertySymbolNode CreatePropertySymbolNode(PropertySymbol propertySymbol,
+                                                                   TypeIdentifierMap typeIdentifierMap,
+                                                                   FrameworkVersion frameworkVersion)
+        {
+            return new PropertySymbolNode(propertySymbol.Name,
+                                          GetTypeSymbolNode(propertySymbol.ReturnType, typeIdentifierMap, frameworkVersion),
+                                          lineNumber: 0,
+                                          index: -1);
         }
 
         private static TypeSymbolNode CreateTypeSymbolNode(TypeSymbol typeSymbol)
@@ -209,6 +219,17 @@ namespace Krypton.Analysis
 
                 GetTypeSymbolNode(typeSymbol.FrameworkType, typeIdentifierMap, frameworkVersion)
                     .SetBinaryOperations(binaryOperationMapping);
+
+                Dictionary<string, PropertySymbolNode> propertyNameMapping = new();
+
+                foreach (PropertySymbol propertySymbol in typeSymbol.Properties)
+                {
+                    propertyNameMapping[propertySymbol.Name]
+                        = CreatePropertySymbolNode(propertySymbol, typeIdentifierMap, frameworkVersion);
+                }
+
+                GetTypeSymbolNode(typeSymbol.FrameworkType, typeIdentifierMap, frameworkVersion)
+                    .SetProperties(propertyNameMapping);
 
                 Dictionary<Operator, UnaryOperationSymbolNode> unaryOperationMapping = new();
 

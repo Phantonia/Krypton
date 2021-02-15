@@ -1,12 +1,12 @@
 ﻿using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Expressions.Literals;
+using Krypton.Analysis.Ast.Identifiers;
 using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
 using Krypton.Framework;
 using Krypton.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -55,7 +55,7 @@ namespace Krypton.Analysis.Syntactical
         {
             while (true)
             {
-                switch (Lexemes[index + 1])
+                switch (Lexemes.TryGet(index + 1))
                 {
                     case IOperatorLexeme operatorLexeme when includeOperations:
                         index++;
@@ -64,6 +64,10 @@ namespace Krypton.Analysis.Syntactical
                     case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisOpening }:
                         index++;
                         ParseFunctionCall(ref expression, ref index);
+                        continue;
+                    case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Dot }:
+                        index++;
+                        ParsePropertyGet(ref expression, ref index);
                         continue;
                     default:
                         return;
@@ -161,6 +165,32 @@ namespace Krypton.Analysis.Syntactical
             }
         }
 
+        private void ParsePropertyGet(ref ExpressionNode? expression, ref int index)
+        {
+            if (expression == null)
+            {
+                return;
+            }
+
+            int lineNumber = Lexemes[index].LineNumber;
+            int nodeIndex = Lexemes[index].Index;
+
+            index++;
+
+            if (Lexemes[index] is not IdentifierLexeme identifierLexeme)
+            {
+                ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier, code, Lexemes[index]);
+                expression = null;
+                return;
+            }
+
+            UnboundIdentifierNode identifierNode = new(identifierLexeme.Content,
+                                                       identifierLexeme.LineNumber,
+                                                       identifierLexeme.Index);
+
+            expression = new PropertyGetExpressionNode(expression, identifierNode, lineNumber, nodeIndex);
+        }
+
         private ExpressionNode? ParseSubExpression(ref int index)
         {
             switch (Lexemes[index])
@@ -171,7 +201,7 @@ namespace Krypton.Analysis.Syntactical
                     return new IntegerLiteralExpressionNode(integerLiteral.Value, integerLiteral.LineNumber, integerLiteral.Index);
                 case StringLiteralLexeme stringLiteral:
                     return new StringLiteralExpressionNode(stringLiteral.Value, stringLiteral.LineNumber, stringLiteral.Index);
-                case CharLiteralLexeme charLiteral: 
+                case CharLiteralLexeme charLiteral:
                     return new CharLiteralExpressionNode(charLiteral.Value, charLiteral.LineNumber, charLiteral.Index);
                 case ImaginaryLiteralLexeme imaginaryLiteral:
                     return new ImaginaryLiteralExpressionNode(imaginaryLiteral.Value, imaginaryLiteral.LineNumber, imaginaryLiteral.Index);

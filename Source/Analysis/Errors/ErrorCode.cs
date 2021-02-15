@@ -40,6 +40,7 @@
         ConstantValueMustBeLiteralOrComplex = 406,
         CantFindType = 407,
         LoopControlStatementNotThatDeep = 408,
+        PropertyDoesNotExistInType = 409,
 
         // Semantic errors: types
         BinaryOperatorNotValidOnType = 601,

@@ -384,5 +384,25 @@ namespace UnitTests
 
             MyAssert.Error(Code, ErrorCode.CantConvertType);
         }
+
+        [Test]
+        public void PropertyTypeCorrectTest()
+        {
+            const string Code = @"
+            Var x As Rational = 5i.Imaginary;
+            ";
+
+            MyAssert.NoError(Code);
+        }
+
+        [Test]
+        public void PropertyTypeErrorTest()
+        {
+            const string Code = @"
+            Var x As Bool = 3.14.Denominator;
+            ";
+
+            MyAssert.Error(Code, ErrorCode.CantConvertType);
+        }
     }
 }

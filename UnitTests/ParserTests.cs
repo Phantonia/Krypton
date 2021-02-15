@@ -661,5 +661,34 @@ namespace UnitTests
             Assert.IsTrue(exp.LeftOperandNode is BinaryOperationExpressionNode { Operator: Operator.Asterisk });
             Assert.IsInstanceOf<IdentifierExpressionNode>(exp.RightOperandNode);
         }
+
+        [Test]
+        public void PropertyGetTest()
+        {
+            const string Code = @"""x"".Length";
+
+            var r = MyAssert.NoError(() =>
+            {
+                Lexer lxr = new(Code);
+                LexemeCollection lxms = lxr.LexAll();
+                ExpressionParser prsr = new(lxms, Code);
+
+                int index = 0;
+
+                return prsr.ParseNextExpression(ref index);
+            });
+
+            Assert.IsTrue(r is PropertyGetExpressionNode
+            {
+                ExpressionNode: StringLiteralExpressionNode
+                {
+                    Value: "x"
+                },
+                PropertyIdentifierNode:
+                {
+                    Identifier: "Length"
+                }
+            });
+        }
     }
 }
