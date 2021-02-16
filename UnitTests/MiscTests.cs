@@ -1,6 +1,8 @@
 ﻿using Krypton.Analysis;
 using Krypton.Analysis.Errors;
+using Krypton.Utilities;
 using NUnit.Framework;
+using System;
 
 namespace UnitTests
 {
@@ -46,6 +48,19 @@ Line 3";
 
                 Assert.AreEqual(3, column);
             }
+        }
+
+        [Test]
+        public void SingleTest()
+        {
+            Assert.IsTrue((new[] { 4 }).IsSingle(out int x));
+            Assert.AreEqual(4, x);
+
+            Assert.IsFalse((new[] { 2, 4 }).IsSingle(out x));
+            Assert.AreEqual(0, x);
+
+            Assert.IsFalse(Array.Empty<int>().IsSingle(out x));
+            Assert.AreEqual(0, x);
         }
     }
 }

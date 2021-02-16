@@ -164,7 +164,7 @@ namespace UnitTests
             Var x = ""y"" / 4;
             ";
 
-            MyAssert.Throws<NotImplementedException>(() => Analyser.Analyse(Code));
+            MyAssert.Error(Code, ErrorCode.OperatorNotAvailableForTypes);
         }
 
         [Test]
@@ -174,7 +174,7 @@ namespace UnitTests
             Var x = 4 ** (""a"" + ""b"");
             ";
 
-            MyAssert.Throws<NotImplementedException>(() => Analyser.Analyse(Code));
+            MyAssert.Error(Code, ErrorCode.OperatorNotAvailableForTypes);
         }
 
         [Test]
@@ -403,6 +403,56 @@ namespace UnitTests
             ";
 
             MyAssert.Error(Code, ErrorCode.CantConvertType);
+        }
+
+        [Test]
+        public void RationalDivisionOperatorTest()
+        {
+            const string Code = @"
+            Var x As Rational = 4 / 5;
+            ";
+
+            MyAssert.NoError(Code);
+        }
+
+        [Test]
+        public void ComplexExponOperatorTest()
+        {
+            const string Code = @"
+            Var x As Complex = 3 ** 1i;
+            ";
+
+            MyAssert.NoError(Code);
+        }
+
+        [Test]
+        public void ImplicitConversionTest()
+        {
+            const string Code = @"
+            Var x As Int = 'a';
+            ";
+
+            MyAssert.NoError(Code);
+        }
+
+        [Test]
+        public void NoImplicitConversionTest()
+        {
+            const string Code = @"
+            Var x As Complex = 'a';
+            ";
+
+            MyAssert.Error(Code, ErrorCode.CantConvertType);
+        }
+
+        [Test]
+        public void ImplicitConversionOperator()
+        {
+            const string Code = @"
+            Var x As Int = 'a' - 5;
+            ";
+
+            MyAssert.NoError(Code);
         }
     }
 }

@@ -150,7 +150,17 @@ namespace Krypton.Analysis.Semantical
             {
                 TypeSymbolNode? conditionType = BindInExpression(forStatement.ConditionNode, variableIdentifierMap);
 
-                Debug.Assert(conditionType == typeManager[FrameworkType.Bool]);
+                if (conditionType == null)
+                {
+                    return false;
+                }
+
+                TypeSymbolNode? boolType = typeManager[FrameworkType.Bool];
+
+                if (!TypeIsCompatibleWith(conditionType, boolType, possiblyOffendingNode: forStatement.ConditionNode))
+                {
+                    return false;
+                }
             }
 
             if (forStatement.WithExpressionNode != null)

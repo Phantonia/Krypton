@@ -8,8 +8,10 @@ using Krypton.Analysis.Errors;
 using Krypton.Analysis.Semantical.IdentifierMaps;
 using Krypton.Framework;
 using Krypton.Framework.Literals;
+using Krypton.Utilities;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Krypton.Analysis.Semantical
 {
@@ -190,6 +192,37 @@ namespace Krypton.Analysis.Semantical
                                           functionDeclaration.Index);
         }
 
+        private BinaryOperationSymbolNode? FindBestBinaryOperation(Operator @operator, TypeSymbolNode leftType, TypeSymbolNode rightType)
+        {
+            ReadOnlyList<BinaryOperationSymbolNode> allOperations = FrameworkIntegration.GetBinaryOperations();
+
+            var candidates = allOperations.Where(op => op.Operator == @operator
+                                                    && TypeIsCompatibleWithNoError(leftType, op.LeftOperandTypeNode)
+                                                    && TypeIsCompatibleWithNoError(rightType, op.RightOperandTypeNode));
+            
+            if (candidates.IsSingle(out BinaryOperationSymbolNode? operationSymbol))
+            {
+                return operationSymbol;
+            }
+
+            return candidates.SingleOrDefault(ExactOverload);
+
+            bool ExactOverload(BinaryOperationSymbolNode op)
+            {
+                return op.LeftOperandTypeNode.Equals(leftType)
+                    || op.RightOperandTypeNode.Equals(rightType);
+            }
+        }
+
+        private UnaryOperationSymbolNode? FindBestUnaryOperation(Operator @operator, TypeSymbolNode operandType)
+        {
+            // pretty sure for each combination there should only be one operation that fulfills all criteria
+            return FrameworkIntegration.GetUnaryOperations()
+                                       .Where(op => op.Operator == @operator
+                                                 && TypeIsCompatibleWithNoError(operandType, op.OperandTypeNode))
+                                       .SingleOrDefault();
+        }
+
         private HoistedIdentifierMap? GatherGlobalSymbols()
         {
             HoistedIdentifierMap globalIdentifierMap = new();
@@ -263,8 +296,7 @@ namespace Krypton.Analysis.Semantical
                 return true;
             }
 
-            // this is where we would check for implicit conversions
-            if (!object.ReferenceEquals(sourceType, targetType))
+            if (!TypeIsCompatibleWithNoError(sourceType, targetType))
             {
                 ErrorProvider.ReportError(ErrorCode.CantConvertType,
                                           Compilation,
@@ -275,6 +307,17 @@ namespace Krypton.Analysis.Semantical
             }
 
             return true;
+        }
+
+        private static bool TypeIsCompatibleWithNoError(TypeSymbolNode sourceType,
+                                                 TypeSymbolNode targetType)
+        {
+            if (sourceType.ImplicitConversions.Any(c => c.TargetTypeNode.Equals(targetType)))
+            {
+                return true;
+            }
+
+            return sourceType.Equals(targetType);
         }
     }
 }

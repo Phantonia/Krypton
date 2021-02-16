@@ -1,9 +1,9 @@
-﻿using Krypton.Analysis.Ast;
-using Krypton.Analysis.Ast.Symbols;
+﻿using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Semantical.IdentifierMaps;
 using Krypton.Framework;
 using Krypton.Framework.Literals;
 using Krypton.Framework.Symbols;
+using Krypton.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,8 +13,38 @@ namespace Krypton.Analysis
 {
     public static class FrameworkIntegration
     {
+        private static ReadOnlyList<BinaryOperationSymbolNode>? binaryOperations = null;
         private static FrameworkVersion? frameworkVersion = null;
         private static TypeIdentifierMap? typeIdentifierMap = null;
+        private static ReadOnlyList<UnaryOperationSymbolNode>? unaryOperations = null;
+
+        public static ReadOnlyList<BinaryOperationSymbolNode> GetBinaryOperations()
+        {
+            Debug.Assert(frameworkVersion != null);
+            Debug.Assert(typeIdentifierMap != null);
+
+            binaryOperations ??= frameworkVersion.BinaryOperations
+                                                 .Select(op => CreateBinaryOperationSymbolNode(op,
+                                                                                               typeIdentifierMap,
+                                                                                               frameworkVersion))
+                                                 .MakeReadOnly();
+
+            return binaryOperations.GetValueOrDefault();
+        }
+
+        public static ReadOnlyList<UnaryOperationSymbolNode> GetUnaryOperations()
+        {
+            Debug.Assert(frameworkVersion != null);
+            Debug.Assert(typeIdentifierMap != null);
+
+            unaryOperations ??= frameworkVersion.UnaryOperations
+                                                .Select(op => CreateUnaryOperationSymbolNode(op,
+                                                                                             typeIdentifierMap,
+                                                                                             frameworkVersion))
+                                                .MakeReadOnly();
+
+            return unaryOperations.GetValueOrDefault();
+        }
 
         public static void PopulateWithFrameworkSymbols(HoistedIdentifierMap globalIdentifierMap, TypeIdentifierMap typeIdentifierMap)
         {
@@ -40,6 +70,11 @@ namespace Krypton.Analysis
             FrameworkIntegration.typeIdentifierMap = typeIdentifierMap;
 
             PopulateWithTypes(typeIdentifierMap, frameworkVersion);
+        }
+
+        public static void Reset()
+        {
+            (binaryOperations, frameworkVersion, typeIdentifierMap, unaryOperations) = (default, default, default, default);
         }
 
         private static BinaryOperationSymbolNode CreateBinaryOperationSymbolNode(BinaryOperationSymbol binaryOperationSymbol,
@@ -125,6 +160,15 @@ namespace Krypton.Analysis
                                                    functionSymbol.Generator,
                                                    lineNumber: 0,
                                                    index: -1);
+        }
+
+        private static ImplicitConversionSymbolNode CreateImplicitConversionSymbolNode(ImplicitConversionSymbol conversionSymbol,
+                                                                                   FrameworkVersion frameworkVersion,
+                                                                                   TypeIdentifierMap typeIdentifierMap)
+        {
+            return new ImplicitConversionSymbolNode(GetTypeSymbolNode(conversionSymbol.ReturnType, typeIdentifierMap, frameworkVersion),
+                                                    lineNumber: 0,
+                                                    index: -1);
         }
 
         private static ParameterSymbolNode CreateParameterNode(ParameterSymbol parameterSymbol,
@@ -219,6 +263,18 @@ namespace Krypton.Analysis
 
                 GetTypeSymbolNode(typeSymbol.FrameworkType, typeIdentifierMap, frameworkVersion)
                     .SetProperties(propertyNameMapping);
+
+                List<ImplicitConversionSymbolNode> implicitConversions = new();
+
+                foreach (ImplicitConversionSymbol implicitConversion in typeSymbol.ImplicitConversions)
+                {
+                    implicitConversions.Add(CreateImplicitConversionSymbolNode(implicitConversion,
+                                                                               frameworkVersion,
+                                                                               typeIdentifierMap));
+                }
+
+                GetTypeSymbolNode(typeSymbol.FrameworkType, typeIdentifierMap, frameworkVersion)
+                    .SetImplicitConversion(implicitConversions);
             }
         }
     }

@@ -64,22 +64,19 @@ namespace Krypton.Analysis.Semantical
 
             Operator @operator = binaryOperation.Operator;
 
-            if (!leftType.BinaryOperationNodes.TryGetValue(@operator, out BinaryOperationSymbolNode? declaredOperation))
-            {
-                throw new NotImplementedException("Notim: can't consider implicit conversions here yet");
-            }
+            BinaryOperationSymbolNode? operationSymbol = FindBestBinaryOperation(@operator, leftType, rightType);
 
-            if (!TypeIsCompatibleWith(leftType, declaredOperation.LeftOperandTypeNode, possiblyOffendingNode: binaryOperation))
+            if (operationSymbol == null)
             {
+                ErrorProvider.ReportError(ErrorCode.OperatorNotAvailableForTypes,
+                                          Compilation,
+                                          binaryOperation,
+                                          $"Left type: {leftType.Identifier}",
+                                          $"Right type: {rightType.Identifier}");
                 return null;
             }
 
-            if (!TypeIsCompatibleWith(rightType, declaredOperation.RightOperandTypeNode, possiblyOffendingNode: binaryOperation))
-            {
-                return null;
-            }
-
-            return declaredOperation.ReturnTypeNode;
+            return operationSymbol.ReturnTypeNode;
         }
 
         private (TypeSymbolNode?, bool) BindInFunctionCall(FunctionCallExpressionNode functionCall,
@@ -215,17 +212,14 @@ namespace Krypton.Analysis.Semantical
 
             Operator @operator = unaryOperation.Operator;
 
-            if (!operandType.UnaryOperationNodes.TryGetValue(@operator, out UnaryOperationSymbolNode? declaredOperation))
-            {
-                throw new NotImplementedException("Notim: can't consider implicit conversions here yet");
-            }
+            UnaryOperationSymbolNode? operationSymbol = FindBestUnaryOperation(@operator, operandType);
 
-            if (!TypeIsCompatibleWith(operandType, declaredOperation.OperandTypeNode, possiblyOffendingNode: unaryOperation))
+            if (operationSymbol == null)
             {
                 return null;
             }
 
-            return declaredOperation.ReturnTypeNode;
+            return operationSymbol.ReturnTypeNode;
         }
     }
 }

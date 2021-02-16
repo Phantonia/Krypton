@@ -70,6 +70,7 @@ namespace Krypton.Analysis.Errors
             [ErrorCode.ReturnedNoValueEvenThoughFunctionShouldReturn] = "The function is declared to return a value but this Return " +
                                                                         "statement doesn't return a value",
             [ErrorCode.ConstTypeHasToMatchLiteralTypeExactly] = "The type of the constant has to be exactly the type of the literal that is assigned to it",
+            [ErrorCode.OperatorNotAvailableForTypes] = "This operator cannot be applied to two operands of those type",
         };
 
         public static ReadOnlyDictionary<ErrorCode, string> Messages => messages.MakeReadOnly();

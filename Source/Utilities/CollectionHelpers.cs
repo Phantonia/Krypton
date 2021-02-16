@@ -1,10 +1,41 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Krypton.Utilities
 {
     public static class CollectionHelpers
     {
+        public static bool IsSingle<T>(this IEnumerable<T> source, [NotNullWhen(true)] out T? single)
+            where T : notnull
+        {
+            if (source is IList<T> list)
+            {
+                if (list.Count == 1)
+                {
+                    single = list[0];
+                    return true;
+                }
+            }
+            else
+            {
+                using IEnumerator<T> enumerator = source.GetEnumerator();
+
+                if (enumerator.MoveNext())
+                {
+                    single = enumerator.Current;
+
+                    if (!enumerator.MoveNext())
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            single = default;
+            return false;
+        }
+
         public static ReadOnlyList<T> MakeReadOnly<T>(this IEnumerable<T>? enumerable)
             where T : class
         {

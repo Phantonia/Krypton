@@ -54,5 +54,6 @@
         ReturnedValueEvenThoughFunctionDoesNotHaveReturnType = 609,
         ReturnedNoValueEvenThoughFunctionShouldReturn = 610,
         ConstTypeHasToMatchLiteralTypeExactly = 611,
+        OperatorNotAvailableForTypes = 612,
     }
 }

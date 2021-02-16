@@ -49,7 +49,6 @@ namespace UnitTests
         {
             Assert.AreEqual(6, frw.Types.Count);
             Assert.AreEqual(FrameworkType.String, frw.Types[FrameworkType.String].FrameworkType);
-            Assert.AreEqual(3, frw.Types[FrameworkType.String].BinaryOperations.Count);
         }
 
         [Test]
@@ -100,19 +99,6 @@ namespace UnitTests
                 Assert.IsTrue(gl.TryGet(c, out var sym));
                 Assert.IsInstanceOf<ConstantSymbolNode<Rational>>(sym);
             }
-        }
-
-        [Test]
-        public void OperationsTest()
-        {
-            TypeIdentifierMap tp = new();
-
-            FrameworkIntegration.PopulateWithFrameworkSymbols(new HoistedIdentifierMap(), tp);
-
-            Assert.IsTrue(tp.TryGet("String", out TypeSymbolNode? stringType));
-            Assert.AreEqual(3, stringType!.BinaryOperationNodes.Count);
-            Assert.IsTrue(stringType.BinaryOperationNodes.ContainsKey(Operator.Plus));
-            Assert.IsTrue(ReferenceEquals(stringType.BinaryOperationNodes[Operator.Plus].LeftOperandTypeNode, stringType));
         }
     }
 }

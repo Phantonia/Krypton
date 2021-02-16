@@ -7,7 +7,12 @@ namespace Krypton.Analysis.Ast.Symbols
     {
         private protected TypeSymbolNode(string name, int lineNumber, int index) : base(name, lineNumber, index) { }
 
+        public ReadOnlyList<ImplicitConversionSymbolNode> ImplicitConversions { get; private set; }
+
         public ReadOnlyDictionary<string, PropertySymbolNode> PropertyNodes { get; private set; }
+
+        internal void SetImplicitConversion(IList<ImplicitConversionSymbolNode> implicitConversions)
+            => ImplicitConversions = implicitConversions.MakeReadOnly();
 
         internal void SetProperties(IDictionary<string, PropertySymbolNode> properties)
             => PropertyNodes = properties.MakeReadOnly();

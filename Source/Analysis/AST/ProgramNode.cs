@@ -1,4 +1,5 @@
 ﻿using Krypton.Analysis.Ast.Declarations;
+using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Ast.TypeSpecs;
 using Krypton.Utilities;
 using System.Collections.Generic;

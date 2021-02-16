@@ -11,6 +11,9 @@ namespace Krypton.Analysis
     {
         public static Compilation? Analyse(string code)
         {
+            // For unit tests
+            FrameworkIntegration.Reset();
+
             Lexer lexer = new(code);
             LexemeCollection lexemes = lexer.LexAll();
 

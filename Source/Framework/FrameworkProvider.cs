@@ -47,7 +47,7 @@ namespace Krypton.Framework
 
         private static List<BinaryOperationSymbol> GetBinaryOperations()
         {
-            return new List<BinaryOperationSymbol>(capacity: 43)
+            return new List<BinaryOperationSymbol>(capacity: 45)
             {
                 // Bool operators
                 MakeOperationWithJsOperator(Operator.DoubleEquals, "===", FrameworkType.Bool, FrameworkType.Bool, FrameworkType.Bool),
@@ -66,9 +66,13 @@ namespace Krypton.Framework
                 MakeOperationWithMethod(Operator.ExclamationEquals, "neq", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Bool),
 
                 // Int operators
+                new BinaryOperationSymbol(Operator.DoubleAsterisk, FrameworkType.Int, FrameworkType.Int, FrameworkType.Rational,
+                    (x, y) => $"(new Rational(({x}),1)).$op_expon(new Rational(({y}),1))"),
                 MakeOperationWithJsOperator(Operator.Asterisk, "*", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
                 new BinaryOperationSymbol(Operator.DivKeyword, FrameworkType.Int, FrameworkType.Int, FrameworkType.Int,
                     (x, y) => $"Math.floor(({x})/({y}))"),
+                new BinaryOperationSymbol(Operator.ForeSlash, FrameworkType.Int, FrameworkType.Int, FrameworkType.Rational,
+                    (x, y) => $"new Rational(({x}),({y}))"),
                 MakeOperationWithJsOperator(Operator.ModKeyword, "%", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
                 MakeOperationWithJsOperator(Operator.Plus, "+", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
                 MakeOperationWithJsOperator(Operator.Minus, "-", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
