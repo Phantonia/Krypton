@@ -454,5 +454,15 @@ namespace UnitTests
 
             MyAssert.NoError(Code);
         }
+
+        [Test]
+        public void ComplexTest()
+        {
+            const string Code = @"
+            Var z = 3 + 4i;
+            ";
+
+            MyAssert.NoError(Code);
+        }
     }
 }
