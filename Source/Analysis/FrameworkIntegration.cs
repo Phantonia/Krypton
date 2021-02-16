@@ -209,17 +209,6 @@ namespace Krypton.Analysis
             // This loop depends on the TypeIdentifierMap to be fully filled
             foreach (TypeSymbol typeSymbol in allTypeSymbols)
             {
-                Dictionary<Operator, BinaryOperationSymbolNode> binaryOperationMapping = new();
-
-                foreach (BinaryOperationSymbol binaryOperationSymbol in typeSymbol.BinaryOperations)
-                {
-                    binaryOperationMapping[binaryOperationSymbol.Operator]
-                        = CreateBinaryOperationSymbolNode(binaryOperationSymbol, typeIdentifierMap, frameworkVersion);
-                }
-
-                GetTypeSymbolNode(typeSymbol.FrameworkType, typeIdentifierMap, frameworkVersion)
-                    .SetBinaryOperations(binaryOperationMapping);
-
                 Dictionary<string, PropertySymbolNode> propertyNameMapping = new();
 
                 foreach (PropertySymbol propertySymbol in typeSymbol.Properties)
@@ -230,17 +219,6 @@ namespace Krypton.Analysis
 
                 GetTypeSymbolNode(typeSymbol.FrameworkType, typeIdentifierMap, frameworkVersion)
                     .SetProperties(propertyNameMapping);
-
-                Dictionary<Operator, UnaryOperationSymbolNode> unaryOperationMapping = new();
-
-                foreach (UnaryOperationSymbol binaryOperationSymbol in typeSymbol.UnaryOperations)
-                {
-                    unaryOperationMapping[binaryOperationSymbol.Operator]
-                        = CreateUnaryOperationSymbolNode(binaryOperationSymbol, typeIdentifierMap, frameworkVersion);
-                }
-
-                GetTypeSymbolNode(typeSymbol.FrameworkType, typeIdentifierMap, frameworkVersion)
-                    .SetUnaryOperations(unaryOperationMapping);
             }
         }
     }

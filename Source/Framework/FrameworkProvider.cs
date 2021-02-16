@@ -16,7 +16,7 @@ namespace Krypton.Framework
                 [FrameworkType.Int] = GetIntType(),
                 [FrameworkType.Rational] = GetRationalType(),
                 [FrameworkType.Complex] = GetComplexType(),
-                [FrameworkType.Bool] = GetBoolType(),
+                [FrameworkType.Bool] = new TypeSymbol("Bool", FrameworkType.Bool),
                 [FrameworkType.Char] = GetCharType(),
             };
             
@@ -39,30 +39,89 @@ namespace Krypton.Framework
                 new ConstantSymbol<Rational>("PHI", new Rational(1618033988749894848, denom))
             };
 
-            return new FrameworkVersion(minimalLanguageVersion: 0, types, functions, constants);
+            List<BinaryOperationSymbol> binaryOperations = GetBinaryOperations();
+            List<UnaryOperationSymbol> unaryOperations = GetUnaryOperations();
+
+            return new FrameworkVersion(minimalLanguageVersion: 0, types, functions, constants, binaryOperations, unaryOperations);
         }
 
-        private static TypeSymbol GetBoolType()
+        private static List<BinaryOperationSymbol> GetBinaryOperations()
         {
-            return new TypeSymbol("Bool", FrameworkType.Bool,
-                binaryOperations: new[]
-                {
-                    MakeOperation(Operator.DoubleEquals, "===", FrameworkType.Bool),
-                    MakeOperation(Operator.ExclamationEquals, "!==", FrameworkType.Bool),
-                    MakeOperation(Operator.AndKeyword, "&&", FrameworkType.Bool),
-                    MakeOperation(Operator.OrKeyword, "||", FrameworkType.Bool),
-                    MakeOperation(Operator.XorKeyword, "^", FrameworkType.Bool)
-                },
-                unaryOperations: new[]
-                {
-                    new UnaryOperationSymbol(Operator.NotKeyword, FrameworkType.Bool, FrameworkType.Bool,
-                        exp => $"!({exp})")
-                });
-
-            BinaryOperationSymbol MakeOperation(Operator op, string jsOperator, FrameworkType returnType)
+            return new List<BinaryOperationSymbol>(capacity: 43)
             {
-                return new BinaryOperationSymbol(op, FrameworkType.Bool, FrameworkType.Bool, returnType,
+                // Bool operators
+                MakeOperationWithJsOperator(Operator.DoubleEquals, "===", FrameworkType.Bool, FrameworkType.Bool, FrameworkType.Bool),
+                MakeOperationWithJsOperator(Operator.ExclamationEquals, "!==", FrameworkType.Bool, FrameworkType.Bool, FrameworkType.Bool),
+                MakeOperationWithJsOperator(Operator.AndKeyword, "&&", FrameworkType.Bool, FrameworkType.Bool, FrameworkType.Bool),
+                MakeOperationWithJsOperator(Operator.OrKeyword, "||", FrameworkType.Bool, FrameworkType.Bool, FrameworkType.Bool),
+                MakeOperationWithJsOperator(Operator.XorKeyword, "^", FrameworkType.Bool, FrameworkType.Bool, FrameworkType.Bool),
+
+                // Complex operators
+                MakeOperationWithMethod(Operator.DoubleAsterisk, "expon", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Complex),
+                MakeOperationWithMethod(Operator.Asterisk, "mul", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Complex),
+                MakeOperationWithMethod(Operator.ForeSlash, "rdiv", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Complex),
+                MakeOperationWithMethod(Operator.Plus, "plus", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Complex),
+                MakeOperationWithMethod(Operator.Minus, "minus", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Complex),
+                MakeOperationWithMethod(Operator.DoubleEquals, "eq", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Bool),
+                MakeOperationWithMethod(Operator.ExclamationEquals, "neq", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Bool),
+
+                // Int operators
+                MakeOperationWithJsOperator(Operator.Asterisk, "*", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
+                new BinaryOperationSymbol(Operator.DivKeyword, FrameworkType.Int, FrameworkType.Int, FrameworkType.Int,
+                    (x, y) => $"Math.floor(({x})/({y}))"),
+                MakeOperationWithJsOperator(Operator.ModKeyword, "%", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
+                MakeOperationWithJsOperator(Operator.Plus, "+", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
+                MakeOperationWithJsOperator(Operator.Minus, "-", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
+                MakeOperationWithJsOperator(Operator.Ampersand, "&", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
+                MakeOperationWithJsOperator(Operator.Caret, "^", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
+                MakeOperationWithJsOperator(Operator.Pipe, "|", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
+                MakeOperationWithJsOperator(Operator.SingleRightArrow, ">>", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
+                MakeOperationWithJsOperator(Operator.SingleLeftArrow, "<<", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
+                MakeOperationWithJsOperator(Operator.LessThan, "<", FrameworkType.Int, FrameworkType.Int, FrameworkType.Bool),
+                MakeOperationWithJsOperator(Operator.LessThanEquals, "<=", FrameworkType.Int, FrameworkType.Int, FrameworkType.Bool),
+                MakeOperationWithJsOperator(Operator.GreaterThanEquals, ">=", FrameworkType.Int, FrameworkType.Int, FrameworkType.Bool),
+                MakeOperationWithJsOperator(Operator.GreaterThan, ">", FrameworkType.Int, FrameworkType.Int, FrameworkType.Bool),
+                MakeOperationWithJsOperator(Operator.DoubleEquals, "===", FrameworkType.Int, FrameworkType.Int, FrameworkType.Bool),
+                MakeOperationWithJsOperator(Operator.ExclamationEquals, "!==", FrameworkType.Int, FrameworkType.Int, FrameworkType.Bool),
+
+                // Rational operators
+                MakeOperationWithMethod(Operator.DoubleAsterisk, "expon", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Rational),
+                MakeOperationWithMethod(Operator.Asterisk, "mul", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Rational),
+                MakeOperationWithMethod(Operator.ForeSlash, "rdiv", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Rational),
+                MakeOperationWithMethod(Operator.ModKeyword, "mod", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Rational),
+                MakeOperationWithMethod(Operator.Plus, "plus", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Rational),
+                MakeOperationWithMethod(Operator.Minus, "minus", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Rational),
+                MakeOperationWithMethod(Operator.LessThan, "less", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Bool),
+                MakeOperationWithMethod(Operator.LessThanEquals, "leq", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Bool),
+                MakeOperationWithMethod(Operator.GreaterThanEquals, "geq", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Bool),
+                MakeOperationWithMethod(Operator.GreaterThan, "gre", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Bool),
+                MakeOperationWithMethod(Operator.DoubleEquals, "eq", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Bool),
+                MakeOperationWithMethod(Operator.ExclamationEquals, "neq", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Bool),
+
+                // String operators
+                MakeOperationWithJsOperator(Operator.Plus, "+", FrameworkType.String, FrameworkType.String, FrameworkType.String),
+                MakeOperationWithJsOperator(Operator.DoubleEquals, "===", FrameworkType.String, FrameworkType.String, FrameworkType.Bool),
+                MakeOperationWithJsOperator(Operator.ExclamationEquals, "!==", FrameworkType.String, FrameworkType.String, FrameworkType.Bool),
+            };
+
+            static BinaryOperationSymbol MakeOperationWithJsOperator(Operator op,
+                                                                     string jsOperator,
+                                                                     FrameworkType leftType,
+                                                                     FrameworkType rightType,
+                                                                     FrameworkType returnType)
+            {
+                return new BinaryOperationSymbol(op, leftType, rightType, returnType,
                     (x, y) => $"({x}){jsOperator}({y})");
+            }
+
+            static BinaryOperationSymbol MakeOperationWithMethod(Operator op,
+                                                                 string jsMethodName,
+                                                                 FrameworkType leftType,
+                                                                 FrameworkType rightType,
+                                                                 FrameworkType returnType)
+            {
+                return new BinaryOperationSymbol(op, leftType, rightType, returnType,
+                    (x, y) => $"({x}).$op_{jsMethodName}({y})"); // for example looks like this: z1.$op_add(z2)
             }
         }
 
@@ -81,34 +140,13 @@ namespace Krypton.Framework
         {
             return new LiteralTypeSymbol<Complex>("Complex", FrameworkType.Complex,
                 default(JsLiteralConversion).ConvertComplexLiteral,
-                binaryOperations: new[]
-                {
-                    MakeBinaryOperator(Operator.DoubleAsterisk, "expon"),
-                    MakeBinaryOperator(Operator.Asterisk, "mul"),
-                    MakeBinaryOperator(Operator.ForeSlash, "rdiv"),
-                    MakeBinaryOperator(Operator.Plus, "plus"),
-                    MakeBinaryOperator(Operator.Minus, "minus"),
-                    MakeBinaryOperator(Operator.DoubleEquals, "eq", returnType: FrameworkType.Bool),
-                    MakeBinaryOperator(Operator.ExclamationEquals, "neq", returnType: FrameworkType.Bool),
-                },
-                unaryOperations: new[]
-                {
-                    new UnaryOperationSymbol(Operator.Minus, FrameworkType.Complex, FrameworkType.Complex,
-                        exp => $"({exp}).$op_neg()"),
-                },
                 properties: new[]
                 {
                     MakeProperty("Real"),
                     MakeProperty("Imaginary"),
                 });
 
-            BinaryOperationSymbol MakeBinaryOperator(Operator op, string jsMethodName, FrameworkType returnType = FrameworkType.Complex)
-            {
-                return new BinaryOperationSymbol(op, FrameworkType.Complex, FrameworkType.Complex, returnType,
-                    (x, y) => $"({x}).$op_{jsMethodName}({y})"); // for example looks like this: z1.$op_add(z2)
-            }
-
-            PropertySymbol MakeProperty(string name)
+            static PropertySymbol MakeProperty(string name)
             {
                 return new PropertySymbol(name, FrameworkType.Rational,
                         exp => $"({exp}).$get_{name}");
@@ -119,49 +157,13 @@ namespace Krypton.Framework
         {
             return new LiteralTypeSymbol<long>("Int", FrameworkType.Int,
                 default(JsLiteralConversion).ConvertIntLiteral,
-                binaryOperations: new[]
-                {
-                    MakeBinaryOperator(Operator.Asterisk, jsOperator: "*"),
-                    MakeBinaryOperator(Operator.DivKeyword, generator: (x, y) => $"Math.floor(({x}) / ({y}))"),
-                    MakeBinaryOperator(Operator.ModKeyword, jsOperator: "%"),
-                    MakeBinaryOperator(Operator.Plus, jsOperator: "+"),
-                    MakeBinaryOperator(Operator.Minus, jsOperator: "-"),
-                    MakeBinaryOperator(Operator.Ampersand, jsOperator: "&"),
-                    MakeBinaryOperator(Operator.Caret, jsOperator: "^"),
-                    MakeBinaryOperator(Operator.Pipe, jsOperator: "|"),
-                    MakeBinaryOperator(Operator.SingleRightArrow, jsOperator: ">>"),
-                    MakeBinaryOperator(Operator.SingleLeftArrow, jsOperator: "<<"),
-                    MakeBinaryOperator(Operator.LessThan, jsOperator: "<", returnType : FrameworkType.Bool),
-                    MakeBinaryOperator(Operator.LessThanEquals, jsOperator: "<=", returnType : FrameworkType.Bool),
-                    MakeBinaryOperator(Operator.GreaterThanEquals, jsOperator: ">=", returnType : FrameworkType.Bool),
-                    MakeBinaryOperator(Operator.GreaterThan, jsOperator: ">", returnType : FrameworkType.Bool),
-                    MakeBinaryOperator(Operator.DoubleEquals, jsOperator: "===", returnType: FrameworkType.Bool),
-                    MakeBinaryOperator(Operator.ExclamationEquals, jsOperator: "!==", returnType: FrameworkType.Bool),
-                },
-                unaryOperations: new[]
-                {
-                    MakeUnaryOperator(Operator.Tilde, "~"),
-                    MakeUnaryOperator(Operator.Minus, "-")
-                },
                 implicitConversions: new[]
                 {
                     MakeConversion(FrameworkType.Rational, exp => $"new Rational(({exp}),1)"),
                     MakeConversion(FrameworkType.Complex, exp => $"new Complex(new Rational(({exp}),1),0)")
                 });
 
-            BinaryOperationSymbol MakeBinaryOperator(Operator op, string jsOperator = "", FrameworkType returnType = FrameworkType.Int, BinaryGenerator? generator = null)
-            {
-                return new BinaryOperationSymbol(op, FrameworkType.Int, FrameworkType.Int, returnType,
-                    generator ?? ((x, y) => $"({x}){jsOperator}({y})"));
-            }
-
-            UnaryOperationSymbol MakeUnaryOperator(Operator op, string jsOperator)
-            {
-                return new UnaryOperationSymbol(op, FrameworkType.Int, FrameworkType.Int,
-                    exp => $"{jsOperator}({exp})");
-            }
-
-            ImplicitConversionSymbol MakeConversion(FrameworkType returnType, UnaryGenerator generator)
+            static ImplicitConversionSymbol MakeConversion(FrameworkType returnType, UnaryGenerator generator)
             {
                 return new ImplicitConversionSymbol(FrameworkType.Int, returnType, generator);
             }
@@ -171,26 +173,6 @@ namespace Krypton.Framework
         {
             return new LiteralTypeSymbol<Rational>("Rational", FrameworkType.Rational,
                 default(JsLiteralConversion).ConvertRationalLiteral,
-                binaryOperations: new[]
-                {
-                    MakeBinaryOperator(Operator.DoubleAsterisk, "expon"),
-                    MakeBinaryOperator(Operator.Asterisk, "mul"),
-                    MakeBinaryOperator(Operator.ForeSlash, "rdiv"),
-                    MakeBinaryOperator(Operator.ModKeyword, "mod"),
-                    MakeBinaryOperator(Operator.Plus, "plus"),
-                    MakeBinaryOperator(Operator.Minus, "minus"),
-                    MakeBinaryOperator(Operator.LessThan, "less", returnType : FrameworkType.Bool),
-                    MakeBinaryOperator(Operator.LessThanEquals, "leq", returnType : FrameworkType.Bool),
-                    MakeBinaryOperator(Operator.GreaterThanEquals, "geq", returnType : FrameworkType.Bool),
-                    MakeBinaryOperator(Operator.GreaterThan, "gre", returnType : FrameworkType.Bool),
-                    MakeBinaryOperator(Operator.DoubleEquals, "eq", returnType : FrameworkType.Bool),
-                    MakeBinaryOperator(Operator.ExclamationEquals, "neq", returnType : FrameworkType.Bool),
-                },
-                unaryOperations: new[]
-                {
-                    new UnaryOperationSymbol(Operator.Minus, FrameworkType.Rational, FrameworkType.Rational,
-                        exp => $"({exp}).$op_neg()"),
-                },
                 implicitConversions: new[]
                 {
                     new ImplicitConversionSymbol(FrameworkType.Rational, FrameworkType.Complex,
@@ -202,16 +184,10 @@ namespace Krypton.Framework
                     MakeProperty("Denominator"),
                 });
 
-            BinaryOperationSymbol MakeBinaryOperator(Operator op, string jsMethodName, FrameworkType returnType = FrameworkType.Rational)
-            {
-                return new BinaryOperationSymbol(op, FrameworkType.Rational, FrameworkType.Rational, returnType,
-                    (x, y) => $"({x}).$op_{jsMethodName}({y})"); // for example looks like this: r1.$op_add(r2)
-            }
-
-            PropertySymbol MakeProperty(string name)
+            static PropertySymbol MakeProperty(string name)
             {
                 return new PropertySymbol(name, FrameworkType.Int,
-                        exp => $"({exp}).$get_{name}");
+                    exp => $"({exp}).$get_{name}");
             }
         }
 
@@ -220,19 +196,28 @@ namespace Krypton.Framework
             PropertySymbol lengthProp = new("Length", FrameworkType.Int,
                 exp => $"({exp}).length");
 
-            BinaryOperationSymbol concatOp = new(Operator.Plus, FrameworkType.String, FrameworkType.String, FrameworkType.String,
-                (x, y) => $"({x}) + ({y})");
-
-            BinaryOperationSymbol equalsOp = new(Operator.DoubleEquals, FrameworkType.String, FrameworkType.String, FrameworkType.Bool,
-                (x, y) => $"({x}) === ({y})");
-
-            BinaryOperationSymbol notEqualsOp = new(Operator.ExclamationEquals, FrameworkType.String, FrameworkType.String, FrameworkType.Bool,
-                (x, y) => $"({x}) !== ({y})");
-
             return new LiteralTypeSymbol<string>("String", FrameworkType.String,
                 default(JsLiteralConversion).ConvertStringLiteral,
-                binaryOperations: new[] { concatOp, equalsOp, notEqualsOp },
-                properties: new[] { lengthProp });
+                properties: new[]
+                {
+                    new PropertySymbol("Length", FrameworkType.Int,
+                        exp => $"({exp}).length")
+                });
+        }
+
+        private static List<UnaryOperationSymbol> GetUnaryOperations()
+        {
+            return new List<UnaryOperationSymbol>(capacity: 4)
+            {
+                new UnaryOperationSymbol(Operator.NotKeyword, FrameworkType.Bool, FrameworkType.Bool,
+                    exp => $"!({exp})"),
+                new UnaryOperationSymbol(Operator.Tilde, FrameworkType.Int, FrameworkType.Int,
+                    exp => $"~({exp})"),
+                new UnaryOperationSymbol(Operator.Minus, FrameworkType.Int, FrameworkType.Int,
+                    exp => $"-({exp})"),
+                new UnaryOperationSymbol(Operator.Minus, FrameworkType.Rational, FrameworkType.Rational,
+                    exp => $"({exp}).$op_neg()"),
+            };
         }
     }
 }

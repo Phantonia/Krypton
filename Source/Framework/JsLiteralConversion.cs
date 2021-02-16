@@ -7,7 +7,7 @@ namespace Krypton.Utilities
     {
         public string ConvertBoolLiteral(bool literal) => literal ? "true" : "false";
 
-        public string ConvertCharLiteral(char literal) => ConvertStringLiteral(((int)literal).ToString());
+        public string ConvertCharLiteral(char literal) => ((int)literal).ToString();
 
         public string ConvertComplexLiteral(Complex literal) => $"new Complex({ConvertRationalLiteral(literal.Real)}, {ConvertRationalLiteral(literal.Imaginary)})";
 
