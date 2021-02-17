@@ -1,4 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿using Krypton.Utilities;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace Krypton.Analysis.Lexical
 {
@@ -6,28 +8,23 @@ namespace Krypton.Analysis.Lexical
     {
         static EscapeSequences()
         {
-            var builder = ImmutableDictionary.CreateBuilder<char, char>();
-            builder.Add('a', '\a');
-            builder.Add('f', '\f');
-            builder.Add('n', '\n');
-            builder.Add('r', '\r');
-            builder.Add('s', '\b'); // b is used for binary char literals
-            builder.Add('t', '\t');
-            builder.Add('0', '\0');
-            builder.Add('\'', '\'');
-            builder.Add('"', '"');
-            builder.Add('\\', '\\');
-            EscapeCharacters = builder.ToImmutable();
+            Dictionary<char, char> dict = new()
+            {
+                { 'a', '\a' },
+                { 'f', '\f' },
+                { 'n', '\n' },
+                { 'r', '\r' },
+                { 'b', '\b' },
+                { 't', '\t' },
+                { '0', '\0' },
+                { '\'', '\'' },
+                { '"', '"' },
+                { '\\', '\\' }
+            };
+            EscapeCharacters = dict.MakeReadOnly();
         }
 
-        public static ImmutableDictionary<char, char> EscapeCharacters { get; }
-
-        public static ImmutableArray<char> UnicodeSpecifiers { get; } = new[]
-        {
-            'b',
-            'd',
-            'x'
-        }.ToImmutableArray();
+        public static ReadOnlyDictionary<char, char> EscapeCharacters { get; }
 
         public static bool TryParse(string input, out char output)
         {
@@ -53,35 +50,9 @@ namespace Krypton.Analysis.Lexical
             {
                 switch (input[1])
                 {
-                    case 'd':
-                        {
-                            if (NumberLiteralParser.TryParseDecimal(input[2..], out long num))
-                            {
-                                output = (char)num;
-                                return true;
-                            }
-                            else
-                            {
-                                output = '\0';
-                                return true;
-                            }
-                        }
-                    case 'x':
+                    case 'u':
                         {
                             if (NumberLiteralParser.TryParseHexadecimal(input[2..], out long num))
-                            {
-                                output = (char)num;
-                                return true;
-                            }
-                            else
-                            {
-                                output = '\0';
-                                return true;
-                            }
-                        }
-                    case 'b':
-                        {
-                            if (NumberLiteralParser.TryParseBinary(input[2..], out uint num))
                             {
                                 output = (char)num;
                                 return true;

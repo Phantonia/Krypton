@@ -245,7 +245,17 @@ namespace Krypton.Analysis.Lexical
                 {
                     int endIndex = index;
                     index++;
-                    return new StringLiteralLexeme(Code[startIndex..endIndex], lineNumber, lexemeIndex);
+
+                    string stringCode = Code[startIndex..endIndex];
+
+                    if (StringLiteralParser.TryParse(stringCode, out string value))
+                    {
+                        return new StringLiteralLexeme(Code[startIndex..endIndex], lineNumber, lexemeIndex);
+                    }
+                    else
+                    {
+                        return new InvalidLexeme($"\"{stringCode}\"", ErrorCode.UnclosedStringLiteral, lineNumber, lexemeIndex);
+                    }
                 }
                 else if (Code[index] == '\\')
                 {

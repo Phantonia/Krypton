@@ -1,3 +1,4 @@
+using Krypton.Analysis;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
@@ -123,6 +124,45 @@ namespace UnitTests
             Assert.IsInstanceOf<KeywordLexeme>(lxms[1]);
             Assert.IsInstanceOf<KeywordLexeme>(lxms[2]);
             Assert.IsInstanceOf<KeywordLexeme>(lxms[3]);
+        }
+
+        [Test]
+        public void StringLiteralNoEscapeTest()
+        {
+            Assert.IsTrue(StringLiteralParser.TryParse("abc", out string output));
+            Assert.AreEqual("abc", output);
+
+            Assert.IsTrue(StringLiteralParser.TryParse("", out output));
+            Assert.AreEqual("", output);
+
+            Assert.IsTrue(StringLiteralParser.TryParse("Hello, that's a test uwu", out output));
+            Assert.AreEqual("Hello, that's a test uwu", output);
+        }
+
+        [Test]
+        public void StringLiteralEscapeCharactersTest()
+        {
+            Assert.IsTrue(StringLiteralParser.TryParse("abc\\nxyz", out string output));
+            Assert.AreEqual("abc\nxyz", output);
+
+            Assert.IsTrue(StringLiteralParser.TryParse("\\\"Hello\\\"", out output));
+            Assert.AreEqual(@"""Hello""", output);
+
+            Assert.IsTrue(StringLiteralParser.TryParse("That's a backslash: \\\\", out output));
+            Assert.AreEqual("That's a backslash: \\", output);
+        }
+
+        [Test]
+        public void StringLiteralEscapeUnicodeTest()
+        {
+            Assert.IsTrue(StringLiteralParser.TryParse("\\u0020", out string output));
+            Assert.AreEqual("\u0020", output);
+
+            Assert.IsTrue(StringLiteralParser.TryParse("\\u1ff2", out output));
+            Assert.AreEqual("\u1ff2", output);
+
+            Assert.IsTrue(StringLiteralParser.TryParse("That's some text with a random \\u0041 in it", out output));
+            Assert.AreEqual("That's some text with a random \u0041 in it", output);
         }
     }
 }

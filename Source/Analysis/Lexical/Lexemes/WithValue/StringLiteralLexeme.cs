@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Krypton.Analysis.Lexical.Lexemes.WithValue
+﻿namespace Krypton.Analysis.Lexical.Lexemes.WithValue
 {
     internal sealed class StringLiteralLexeme : Lexeme
     {
@@ -12,10 +10,5 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
         public override string Content => Value;
 
         public string Value { get; }
-
-        public string Parse()
-        {
-            throw new NotImplementedException("Notim: Can't parse string literals yet");
-        }
     }
 }

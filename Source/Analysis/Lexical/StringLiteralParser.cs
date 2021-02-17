@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using Krypton.Utilities;
+using System.Text;
 
 namespace Krypton.Analysis.Lexical
 {
@@ -6,7 +7,7 @@ namespace Krypton.Analysis.Lexical
     {
         public static bool TryParse(string input, out string output)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new(capacity: input.Length);
 
             for (int i = 0; i < input.Length; i++)
             {
@@ -19,31 +20,43 @@ namespace Krypton.Analysis.Lexical
                     i++;
                     sb.Append(escapeCharacter);
                 }
+                else if (input.TryGet(i + 1) == 'u')
+                {
+                    i += 2;
+
+                    if (input.TryGet(i + 3) == null)
+                    {
+                        output = string.Empty;
+                        return false;
+                    }
+
+                    string numberString = input[i..(i + 4)];
+                    if (numberString.Contains('_'))
+                    {
+                        output = string.Empty;
+                        return false;
+                    }
+
+                    if (!NumberLiteralParser.TryParseHexadecimal(input[i..(i + 4)], out long number))
+                    {
+                        output = string.Empty;
+                        return false;
+                    }
+
+                    if (number > char.MaxValue || number < char.MinValue)
+                    {
+                        output = string.Empty;
+                        return false;
+                    }
+
+                    sb.Append((char)number);
+
+                    i += 3;
+                }
                 else
                 {
-                    for (int j = i; j <= input.Length; j++)
-                    {
-                        if (j == input.Length)
-                        {
-                            output = string.Empty;
-                            return false;
-                        }
-
-                        if (input[j] == ';')
-                        {
-                            if (EscapeSequences.TryParse(input[i..j], out escapeCharacter))
-                            {
-                                sb.Append(escapeCharacter);
-                                i = j;
-                                break;
-                            }
-                            else
-                            {
-                                output = string.Empty;
-                                return false;
-                            }
-                        }
-                    }
+                    output = string.Empty;
+                    return false;
                 }
             }
 
