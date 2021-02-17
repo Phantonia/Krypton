@@ -22,7 +22,7 @@ namespace Krypton.Analysis.Lexical.Lexemes.WithValue
             }
             else
             {
-                return new InvalidLexeme(value, ErrorCode.UnknownEscapeSequence, lineNumber, index);
+                return new InvalidLexeme(value, ErrorCode.EscapeSequenceError, lineNumber, index);
             }
         }
     }

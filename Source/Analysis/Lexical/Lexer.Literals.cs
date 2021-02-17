@@ -254,7 +254,7 @@ namespace Krypton.Analysis.Lexical
                     }
                     else
                     {
-                        return new InvalidLexeme($"\"{stringCode}\"", ErrorCode.UnclosedStringLiteral, lineNumber, lexemeIndex);
+                        return new InvalidLexeme($"\"{stringCode}\"", ErrorCode.EscapeSequenceError, lineNumber, lexemeIndex);
                     }
                 }
                 else if (Code[index] == '\\')
@@ -264,6 +264,10 @@ namespace Krypton.Analysis.Lexical
                 else if (Code[index] == '\n')
                 {
                     return new InvalidLexeme(Code[startIndex..index], ErrorCode.UnclosedStringLiteral, lineNumber, lexemeIndex);
+                }
+                else
+                {
+                    escaped = false;
                 }
             }
 

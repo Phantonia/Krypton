@@ -57,7 +57,7 @@ namespace Krypton.Analysis.Errors
                 }
             }
 
-            return index;
+            return index + 1;
         }
 
         internal static string GetOffendingLine(string code, int lineNumber, ref int column)

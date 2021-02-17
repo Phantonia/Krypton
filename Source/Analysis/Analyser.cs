@@ -15,7 +15,12 @@ namespace Krypton.Analysis
             FrameworkIntegration.Reset();
 
             Lexer lexer = new(code);
-            LexemeCollection lexemes = lexer.LexAll();
+            LexemeCollection? lexemes = lexer.LexAll();
+
+            if (lexemes == null)
+            {
+                return null;
+            }
 
             ProgramParser parser = new(lexemes, code);
             ProgramNode? program = parser.ParseWholeProgram();

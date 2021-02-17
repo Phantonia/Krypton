@@ -1,4 +1,5 @@
 using Krypton.Analysis;
+using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
@@ -166,6 +167,41 @@ namespace UnitTests
 
             Assert.IsTrue(StringLiteralParser.TryParse("That's some text with a random \\u0041 in it", out output));
             Assert.AreEqual("That's some text with a random \u0041 in it", output);
+        }
+
+        [Test]
+        public void UnclosedStringLiteralTest()
+        {
+            const string Code = @"Var x = ""oops";
+            MyAssert.Error(Code, ErrorCode.UnclosedStringLiteral);
+        }
+
+        [Test]
+        public void UnclosedCharLiteralTest()
+        {
+            const string Code = @"Var x = 'b";
+            MyAssert.Error(Code, ErrorCode.UnclosedCharLiteral);
+        }
+
+        [Test]
+        public void UnrecognizedLexemeTest()
+        {
+            const string Code = @"Var x §";
+            MyAssert.Error(Code, ErrorCode.UnknownLexeme);
+        }
+
+        [Test]
+        public void HexLiteralMixedCaseTest()
+        {
+            const string Code = @"0x1aBc";
+            MyAssert.Error(Code, ErrorCode.HexLiteralWithMixedCase);
+        }
+
+        [Test]
+        public void UnknownEscapeSequence()
+        {
+            const string Code = @"""\x""";
+            MyAssert.Error(Code, ErrorCode.EscapeSequenceError);
         }
     }
 }

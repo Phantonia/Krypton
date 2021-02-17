@@ -30,7 +30,7 @@ namespace UnitTests
             Compilation tree = new(parser.ParseWholeProgram()!, Code);
 
             Assert.NotNull(tree);
-            Assert.IsInstanceOf<ProgramNode>(tree!.Program);
+            Assert.IsInstanceOf<ProgramNode>(tree.Program);
 
             ProgramNode programNode = tree.Program;
 

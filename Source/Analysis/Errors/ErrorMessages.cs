@@ -13,6 +13,8 @@ namespace Krypton.Analysis.Errors
             [ErrorCode.UnclosedCharLiteral] = "Character literal is not closed on the same line",
             [ErrorCode.HexLiteralWithMixedCase] = "Hexadecimal literals can not have letters a-f " +
                                                   "that are sometimes uppercase and sometimes lowercase",
+            [ErrorCode.EscapeSequenceError] = "There is an error with one of the escape sequences in this " +
+                                              "string literal",
 
             // Syntax errors
             [ErrorCode.ExpectedSemicolon] = "This statement has to be ended by a semicolon ';'",

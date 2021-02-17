@@ -8,7 +8,7 @@
         UnknownLexeme = 1,
         UnclosedStringLiteral = 2,
         UnclosedCharLiteral = 3,
-        UnknownEscapeSequence = 4,
+        EscapeSequenceError = 4,
         HexLiteralWithMixedCase = 5,
 
         // Syntax errors
