@@ -1,10 +1,9 @@
 ﻿using Krypton.Analysis.Ast.Declarations;
 using Krypton.Analysis.Ast.Symbols;
-using Krypton.Analysis.Semantical.IdentifierMaps;
 
 namespace Krypton.Analysis.Semantical
 {
-    public sealed partial class Binder
+    internal sealed partial class Binder
     {
         public Binder(Compilation compilation)
         {

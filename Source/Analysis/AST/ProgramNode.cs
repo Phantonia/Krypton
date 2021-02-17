@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Krypton.Analysis.Ast
 {
-    public sealed class ProgramNode : Node, IReturnableNode
+    public sealed class ProgramNode : Node, IExecutableNode
     {
         internal ProgramNode(StatementCollectionNode topLevelStatements,
                              IList<ConstantDeclarationNode> constants,
@@ -36,8 +36,8 @@ namespace Krypton.Analysis.Ast
             }
         }
 
-        StatementCollectionNode IReturnableNode.BodyNode => TopLevelStatementNodes;
+        StatementCollectionNode IExecutableNode.BodyNode => TopLevelStatementNodes;
 
-        TypeSpecNode? IReturnableNode.ReturnTypeNode => null;
+        TypeSpecNode? IExecutableNode.ReturnTypeNode => null;
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Krypton.Analysis.Lexical
 {
-    public enum IntegerStyle : byte
+    internal enum IntegerStyle : byte
     {
         None,
         Base2,

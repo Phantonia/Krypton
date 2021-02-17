@@ -1,13 +1,12 @@
 ﻿using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Ast.TypeSpecs;
-using Krypton.Analysis.Semantical.IdentifierMaps;
 using Krypton.Framework;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Krypton.Analysis.Semantical
 {
-    public sealed class TypeManager
+    internal sealed class TypeManager
     {
         public TypeManager(Compilation compilation, TypeIdentifierMap typeIdentifierMap)
         {

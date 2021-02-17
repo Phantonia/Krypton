@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Krypton.Utilities
 {
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public readonly struct ReadOnlyDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
         where TKey : notnull
     {
@@ -49,6 +51,11 @@ namespace Krypton.Utilities
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        private string GetDebuggerDisplay()
+        {
+            return $"[{typeof(TKey).Name} = {typeof(TValue).Name}]; Count = {Count}";
         }
     }
 }

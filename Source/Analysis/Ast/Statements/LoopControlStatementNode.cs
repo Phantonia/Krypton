@@ -11,7 +11,7 @@ namespace Krypton.Analysis.Ast.Statements
             Kind = kind;
         }
 
-        public ILoopNode? ControlledLoopNode { get; private set; }
+        public ILoopStatementNode? ControlledLoopNode { get; private set; }
 
         public LoopControlStatementKind Kind { get; }
 
@@ -22,7 +22,7 @@ namespace Krypton.Analysis.Ast.Statements
             list.Add(this);
         }
 
-        public void SetControlledLoop(ILoopNode? loop)
+        public void SetControlledLoop(ILoopStatementNode? loop)
         {
             Debug.Assert(ControlledLoopNode == null);
             ControlledLoopNode = loop;

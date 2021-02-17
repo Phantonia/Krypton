@@ -1,6 +1,6 @@
 ﻿namespace Krypton.Analysis.Lexical.Lexemes
 {
-    public interface ILexeme
+    internal interface ILexeme
     {
         string Content { get; }
 

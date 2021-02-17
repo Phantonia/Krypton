@@ -6,7 +6,6 @@ namespace Krypton.Utilities
 {
     [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public readonly struct ReadOnlyList<T> : IReadOnlyList<T>, IEnumerable<T>, IIndexedEnumerable<T>
-        where T : class
     {
         public ReadOnlyList(IList<T>? list)
         {
@@ -17,7 +16,18 @@ namespace Krypton.Utilities
 
         public int Count => (list?.Count).GetValueOrDefault();
 
-        public T this[int index] => list?[index] ?? throw new ArgumentOutOfRangeException(nameof(index));
+        public T this[int index]
+        {
+            get
+            {
+                if (list == null)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(index));
+                }
+
+                return list[index];
+            }
+        }
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -31,7 +41,7 @@ namespace Krypton.Utilities
 
         private string GetDebuggerDisplay()
         {
-            return $"Count = {Count}";
+            return $"{typeof(T).Name}[]; Count = {Count}";
         }
     }
 }

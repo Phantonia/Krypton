@@ -15,7 +15,7 @@ namespace Krypton.Analysis.Syntactical
     // base class's name and only adding words in front.
     // No instance of this class should survive syntactical analysis,
     // else there's a bug.
-    public sealed class BinaryOperationChain : ExpressionNode
+    internal sealed class BinaryOperationChain : ExpressionNode
     {
         internal BinaryOperationChain(int lineNumber, int index) : base(lineNumber, index) { }
 

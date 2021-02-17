@@ -5,7 +5,7 @@ using Krypton.Utilities;
 
 namespace Krypton.Analysis.Lexical
 {
-    public sealed partial class Lexer
+    internal sealed partial class Lexer
     {
         public Lexer(string code)
         {
@@ -30,7 +30,7 @@ namespace Krypton.Analysis.Lexical
                 nextLexeme = NextLexeme();
             }
 
-            collection.Seal(lineNumber, Code.Length);
+            collection.Add(new EndOfFileLexeme(lineNumber, Code.Length));
 
             return collection;
         }

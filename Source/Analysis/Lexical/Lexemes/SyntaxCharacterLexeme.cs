@@ -2,7 +2,7 @@
 
 namespace Krypton.Analysis.Lexical.Lexemes
 {
-    public sealed class SyntaxCharacterLexeme : Lexeme
+    internal sealed class SyntaxCharacterLexeme : Lexeme
     {
         public SyntaxCharacterLexeme(SyntaxCharacter syntaxCharacter, int lineNumber, int index) : base(lineNumber, index)
         {

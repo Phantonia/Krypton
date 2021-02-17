@@ -2,8 +2,8 @@
 
 namespace Krypton.Analysis.Lexical.Lexemes
 {
-    [DebuggerDisplay("{DebuggerDisplay()}")]
-    public abstract class Lexeme : ILexeme
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
+    internal abstract class Lexeme : ILexeme
     {
         protected Lexeme(int lineNumber, int index)
         {
@@ -17,6 +17,9 @@ namespace Krypton.Analysis.Lexical.Lexemes
 
         public int LineNumber { get; }
 
-        private string DebuggerDisplay() => $"{GetType().Name}: {Content}";
+        private string GetDebuggerDisplay()
+        {
+            return $"{GetType().Name}: {Content}";
+        }
     }
 }

@@ -13,7 +13,7 @@ using System.Diagnostics;
 
 namespace Krypton.Analysis.Syntactical
 {
-    public sealed class ProgramParser
+    internal sealed class ProgramParser
     {
         public ProgramParser(LexemeCollection lexemes, string code)
         {

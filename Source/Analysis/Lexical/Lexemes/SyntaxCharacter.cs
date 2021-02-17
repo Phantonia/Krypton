@@ -1,6 +1,6 @@
 ﻿namespace Krypton.Analysis.Lexical.Lexemes
 {
-    public enum SyntaxCharacter
+    internal enum SyntaxCharacter
     {
         None = 0,
 

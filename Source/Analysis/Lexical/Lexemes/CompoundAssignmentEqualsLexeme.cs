@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Krypton.Analysis.Lexical.Lexemes
 {
-    public sealed class CompoundAssignmentEqualsLexeme : Lexeme
+    internal sealed class CompoundAssignmentEqualsLexeme : Lexeme
     {
         public CompoundAssignmentEqualsLexeme(Operator @operator, int lineNumber, int index) : base(lineNumber, index)
         {

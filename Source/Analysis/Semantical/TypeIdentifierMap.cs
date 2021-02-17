@@ -1,11 +1,13 @@
 ﻿using Krypton.Analysis.Ast.Symbols;
 using Krypton.Framework;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Krypton.Analysis.Semantical.IdentifierMaps
+namespace Krypton.Analysis.Semantical
 {
-    public sealed class TypeIdentifierMap
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
+    internal sealed class TypeIdentifierMap
     {
         public TypeIdentifierMap() { }
 
@@ -37,6 +39,11 @@ namespace Krypton.Analysis.Semantical.IdentifierMaps
         {
             type = null;
             return frameworkTypes.TryGetValue(frameworkType, out string? key) && typeNodes.TryGetValue(key, out type);
+        }
+
+        private string GetDebuggerDisplay()
+        {
+            return $"{GetType().Name}; Count = {typeNodes.Count}";
         }
     }
 }

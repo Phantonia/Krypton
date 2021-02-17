@@ -1,6 +1,6 @@
 ﻿namespace Krypton.Analysis.Lexical.Lexemes.WithValue
 {
-    public sealed class BooleanLiteralLexeme : Lexeme
+    internal sealed class BooleanLiteralLexeme : Lexeme
     {
         public BooleanLiteralLexeme(bool value, int lineNumber, int index) : base(lineNumber, index)
         {

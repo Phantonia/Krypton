@@ -1,9 +1,7 @@
 ﻿using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Errors;
-using Krypton.Analysis.Semantical.IdentifierMaps;
 using Krypton.Framework;
-using System;
 using System.Diagnostics;
 
 namespace Krypton.Analysis.Semantical

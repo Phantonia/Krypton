@@ -6,7 +6,7 @@ using Krypton.Utilities;
 
 namespace Krypton.Analysis.Syntactical
 {
-    public sealed class TypeParser
+    internal sealed class TypeParser
     {
         public TypeParser(LexemeCollection lexemes, string code)
         {

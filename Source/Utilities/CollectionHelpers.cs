@@ -59,11 +59,6 @@ namespace Krypton.Utilities
             return new ReadOnlyDictionary<TKey, TValue>(dict);
         }
 
-        public static ReadOnlySet<T> MakeReadOnly<T>(this ISet<T>? set)
-        {
-            return new ReadOnlySet<T>(set);
-        }
-
         public static T? TryGet<T>(this IList<T> list, int index)
             where T : class
         {

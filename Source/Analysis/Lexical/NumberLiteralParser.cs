@@ -3,7 +3,7 @@ using System;
 
 namespace Krypton.Analysis.Lexical
 {
-    public static class NumberLiteralParser
+    internal static class NumberLiteralParser
     {
         public static uint ParseBinary(string input)
         {

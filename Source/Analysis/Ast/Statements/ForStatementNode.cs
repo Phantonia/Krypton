@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace Krypton.Analysis.Ast.Statements
 {
-    public sealed class ForStatementNode : StatementNode, ILoopNode
+    public sealed class ForStatementNode : StatementNode, ILoopStatementNode
     {
         internal ForStatementNode(IdentifierNode identifier,
                                   bool declaresNew,

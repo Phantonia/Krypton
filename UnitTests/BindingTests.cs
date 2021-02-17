@@ -574,8 +574,8 @@ namespace UnitTests
 
             var whileStmt1 = (WhileStatementNode)comp.Program.TopLevelStatementNodes[0];
             var whileStmt2 = (WhileStatementNode)whileStmt1.StatementNodes[0];
-            var whileStmt3 = (ILoopNode)whileStmt2.StatementNodes[0];
-            var whileStmt4 = (ILoopNode)whileStmt3.StatementNodes[0];
+            var whileStmt3 = (ILoopStatementNode)whileStmt2.StatementNodes[0];
+            var whileStmt4 = (ILoopStatementNode)whileStmt3.StatementNodes[0];
             var leaveStmt = (LoopControlStatementNode)whileStmt4.StatementNodes[0];
 
             Assert.AreEqual((ushort)4, leaveStmt.Level);

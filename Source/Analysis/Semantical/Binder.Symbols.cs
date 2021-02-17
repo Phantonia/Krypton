@@ -5,7 +5,6 @@ using Krypton.Analysis.Ast.Expressions.Literals;
 using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Ast.TypeSpecs;
 using Krypton.Analysis.Errors;
-using Krypton.Analysis.Semantical.IdentifierMaps;
 using Krypton.Framework;
 using Krypton.Framework.Literals;
 using Krypton.Utilities;

@@ -3,7 +3,6 @@ using Krypton.Analysis.Ast.Declarations;
 using Krypton.Analysis.Ast.Statements;
 using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Errors;
-using Krypton.Analysis.Semantical.IdentifierMaps;
 using Krypton.Framework;
 using System.Diagnostics;
 
@@ -257,13 +256,13 @@ namespace Krypton.Analysis.Semantical
                                                   Compilation,
                                                   loopControlStatement);
                         return false;
-                    case ILoopNode:
+                    case ILoopStatementNode:
                         level--;
                         break;
                 }
             }
 
-            ILoopNode? loop = parent as ILoopNode;
+            ILoopStatementNode? loop = parent as ILoopStatementNode;
             Debug.Assert(loop != null);
 
             loopControlStatement.SetControlledLoop(loop);
@@ -285,7 +284,7 @@ namespace Krypton.Analysis.Semantical
                 }
             }
 
-            IReturnableNode functionOrProgram = FindReturnableParent(returnStatement);
+            IExecutableNode functionOrProgram = FindReturnableParent(returnStatement);
 
             if (!typeManager.TryGetTypeSymbol(functionOrProgram.ReturnTypeNode,
                                               out TypeSymbolNode? actualReturnType))
@@ -453,7 +452,7 @@ namespace Krypton.Analysis.Semantical
             return success;
         }
 
-        private static IReturnableNode FindReturnableParent(StatementNode statement)
+        private static IExecutableNode FindReturnableParent(StatementNode statement)
         {
             Node? parent = statement;
 
@@ -465,7 +464,7 @@ namespace Krypton.Analysis.Semantical
 
                 parent = parent.ParentNode;
 
-                if (parent is IReturnableNode returnable)
+                if (parent is IExecutableNode returnable)
                 {
                     return returnable;
                 }

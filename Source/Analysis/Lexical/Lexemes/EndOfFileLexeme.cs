@@ -1,6 +1,6 @@
 ﻿namespace Krypton.Analysis.Lexical.Lexemes
 {
-    public sealed class EndOfFileLexeme : Lexeme
+    internal sealed class EndOfFileLexeme : Lexeme
     {
         public EndOfFileLexeme(int lineNumber, int index) : base(lineNumber, index) { }
 

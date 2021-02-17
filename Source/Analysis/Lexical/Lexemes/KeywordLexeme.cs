@@ -2,7 +2,7 @@
 
 namespace Krypton.Analysis.Lexical.Lexemes
 {
-    public class KeywordLexeme : Lexeme
+    internal class KeywordLexeme : Lexeme
     {
         private KeywordLexeme(ReservedKeyword keyword, int lineNumber, int index) : base(lineNumber, index)
         {

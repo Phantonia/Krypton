@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Krypton.Analysis.Ast.Declarations
 {
-    public sealed class FunctionDeclarationNode : DeclarationNode, IReturnableNode
+    public sealed class FunctionDeclarationNode : DeclarationNode, IExecutableNode
     {
         internal FunctionDeclarationNode(IdentifierNode identifierNode,
                                          IList<ParameterDeclarationNode>? parameters,

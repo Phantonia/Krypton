@@ -2,7 +2,7 @@
 
 namespace Krypton.Analysis.Lexical.Lexemes.WithValue
 {
-    public sealed class IntegerLiteralLexeme : Lexeme
+    internal sealed class IntegerLiteralLexeme : Lexeme
     {
         public IntegerLiteralLexeme(string value, IntegerStyle style, int lineNumber, int index) : base(lineNumber, index)
         {

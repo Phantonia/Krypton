@@ -1,5 +1,4 @@
 ﻿using Krypton.Analysis.Ast.Symbols;
-using Krypton.Analysis.Semantical.IdentifierMaps;
 using Krypton.Framework;
 using Krypton.Framework.Literals;
 using Krypton.Framework.Symbols;
@@ -9,9 +8,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Krypton.Analysis
+namespace Krypton.Analysis.Semantical
 {
-    public static class FrameworkIntegration
+    internal static class FrameworkIntegration
     {
         private static ReadOnlyList<BinaryOperationSymbolNode>? binaryOperations = null;
         private static FrameworkVersion? frameworkVersion = null;

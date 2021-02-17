@@ -1,10 +1,12 @@
 ﻿using Krypton.Analysis.Ast.Symbols;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Krypton.Analysis.Semantical.IdentifierMaps
+namespace Krypton.Analysis.Semantical
 {
-    public sealed class HoistedIdentifierMap
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
+    internal sealed class HoistedIdentifierMap
     {
         public HoistedIdentifierMap() { }
 
@@ -20,6 +22,11 @@ namespace Krypton.Analysis.Semantical.IdentifierMaps
         public bool TryGet(string identifier, [NotNullWhen(true)] out SymbolNode? symbol)
         {
             return symbolNodes.TryGetValue(identifier, out symbol);
+        }
+
+        private string GetDebuggerDisplay()
+        {
+            return $"{GetType().Name}; Count = {symbolNodes.Count}";
         }
     }
 }

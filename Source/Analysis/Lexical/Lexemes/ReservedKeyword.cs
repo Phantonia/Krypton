@@ -4,7 +4,7 @@ namespace Krypton.Analysis.Lexical.Lexemes
 {
     // Except for NoKeyword these have to be the exact Krypton keyword.
     // Adding a new member will reserve new keywords.
-    public enum ReservedKeyword
+    internal enum ReservedKeyword
     {
         NoKeyword = 0, // this is not a Krypton keyword, this is the default value of the type ReservedKeyword
 

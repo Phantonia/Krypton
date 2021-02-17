@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace Krypton.Analysis.Syntactical
 {
-    public sealed partial class StatementParser
+    internal sealed partial class StatementParser
     {
         public StatementParser(LexemeCollection lexemes,
                                ExpressionParser expressionParser,

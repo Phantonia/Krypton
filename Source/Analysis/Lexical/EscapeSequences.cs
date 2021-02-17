@@ -2,7 +2,7 @@
 
 namespace Krypton.Analysis.Lexical
 {
-    public static class EscapeSequences
+    internal static class EscapeSequences
     {
         static EscapeSequences()
         {

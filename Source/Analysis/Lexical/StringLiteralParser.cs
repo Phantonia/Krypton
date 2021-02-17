@@ -2,7 +2,7 @@
 
 namespace Krypton.Analysis.Lexical
 {
-    public static class StringLiteralParser
+    internal static class StringLiteralParser
     {
         public static bool TryParse(string input, out string output)
         {

@@ -3,7 +3,7 @@
     // The order matters. If you need to add a new group,
     // do it so that order is preserved and (if possible)
     // no group changes its number.
-    public enum OperatorPrecedenceGroup
+    internal enum OperatorPrecedenceGroup
     {
         None = 0,
         LogicalOr = 10,

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Krypton.Analysis.Errors
 {
-    public static class ErrorMessages
+    internal static class ErrorMessages
     {
         private static readonly Dictionary<ErrorCode, string> messages = new()
         {

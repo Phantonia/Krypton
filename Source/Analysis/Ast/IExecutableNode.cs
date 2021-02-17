@@ -2,7 +2,7 @@
 
 namespace Krypton.Analysis.Ast
 {
-    public interface IReturnableNode : INode
+    public interface IExecutableNode : INode
     {
         StatementCollectionNode BodyNode { get; }
 

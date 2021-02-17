@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Krypton.Analysis.Lexical.Lexemes.WithValue
 {
-    public sealed class ImaginaryLiteralLexeme : Lexeme
+    internal sealed class ImaginaryLiteralLexeme : Lexeme
     {
         public ImaginaryLiteralLexeme(string value, int lineNumber, int index) : base(lineNumber, index)
         {

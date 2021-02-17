@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Krypton.Analysis.Semantical.IdentifierMaps
+namespace Krypton.Analysis.Semantical
 {
-    public sealed class VariableIdentifierMap
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
+    internal sealed class VariableIdentifierMap
     {
         public VariableIdentifierMap() { }
 
@@ -68,6 +69,11 @@ namespace Krypton.Analysis.Semantical.IdentifierMaps
 
             public readonly int level;
             public readonly VariableSymbolNode variable;
+        }
+
+        private string GetDebuggerDisplay()
+        {
+            return $"{GetType().Name}; Count = {variables.Count}";
         }
     }
 }

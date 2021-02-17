@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace Krypton.Analysis.Ast.Statements
 {
     [DebuggerDisplay("{GetType().Name}; StatementCount = {StatementNodes.Count}")]
-    public sealed class WhileStatementNode : StatementNode, ILoopNode
+    public sealed class WhileStatementNode : StatementNode, ILoopStatementNode
     {
         internal WhileStatementNode(ExpressionNode condition, StatementCollectionNode statements, int lineNumber, int index) : base(lineNumber, index)
         {

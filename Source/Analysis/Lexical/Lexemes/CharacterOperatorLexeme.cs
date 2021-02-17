@@ -4,7 +4,7 @@ using System;
 
 namespace Krypton.Analysis.Lexical.Lexemes
 {
-    public sealed class CharacterOperatorLexeme : Lexeme, IOperatorLexeme
+    internal sealed class CharacterOperatorLexeme : Lexeme, IOperatorLexeme
     {
         public CharacterOperatorLexeme(Operator @operator, int lineNumber, int index) : base(lineNumber, index)
         {
