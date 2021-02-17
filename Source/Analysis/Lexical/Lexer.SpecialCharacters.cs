@@ -106,6 +106,12 @@ namespace Krypton.Analysis.Lexical
             return new SyntaxCharacterLexeme(syntaxCharacter, lineNumber, index - 1);
         }
 
+        private Lexeme LexSpecificLexeme(Operator @operator)
+        {
+            index++;
+            return new CharacterOperatorLexeme(@operator, lineNumber, index - 1);
+        }
+
         private Lexeme LexWithPossibleEquals(Operator @operator)
         {
             int lexemeIndex = index;

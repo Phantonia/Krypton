@@ -690,5 +690,31 @@ namespace UnitTests
                 }
             });
         }
+
+        [Test]
+        public void NotTest()
+        {
+            const string Code = @"Not (x == y)";
+
+            var r = MyAssert.NoError(() =>
+            {
+                Lexer lxr = new(Code);
+                LexemeCollection lxms = lxr.LexAll();
+                ExpressionParser prsr = new(lxms, Code);
+
+                int index = 0;
+
+                return prsr.ParseNextExpression(ref index);
+            });
+
+            Assert.IsTrue(r is UnaryOperationExpressionNode
+            {
+                Operator: Operator.NotKeyword,
+                OperandNode: BinaryOperationExpressionNode
+                {
+                    Operator: Operator.DoubleEquals
+                }
+            });
+        }
     }
 }

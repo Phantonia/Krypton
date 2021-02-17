@@ -63,6 +63,7 @@ namespace Krypton.Analysis.Lexical
                 '|' => LexWithPossibleEquals(Operator.Pipe),
                 '^' => LexWithPossibleEquals(Operator.Caret),
                 '!' => LexExlamationMark(),
+                '~' => LexSpecificLexeme(Operator.Tilde),
 
                 '"' => LexStringLiteralLexeme(),
                 '\'' => LexCharLiteralLexeme(),

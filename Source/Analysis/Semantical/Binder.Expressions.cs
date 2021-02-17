@@ -214,6 +214,10 @@ namespace Krypton.Analysis.Semantical
 
             if (operationSymbol == null)
             {
+                ErrorProvider.ReportError(ErrorCode.OperatorNotAvailableForTypes,
+                                          Compilation,
+                                          unaryOperation,
+                                          $"Operand type: {operandType.Identifier}");
                 return null;
             }
 

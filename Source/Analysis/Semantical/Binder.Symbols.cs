@@ -204,22 +204,23 @@ namespace Krypton.Analysis.Semantical
                 return operationSymbol;
             }
 
-            return candidates.SingleOrDefault(ExactOverload);
-
-            bool ExactOverload(BinaryOperationSymbolNode op)
-            {
-                return op.LeftOperandTypeNode.Equals(leftType)
-                    || op.RightOperandTypeNode.Equals(rightType);
-            }
+            return candidates.SingleOrDefault(op => op.LeftOperandTypeNode.Equals(leftType)
+                                                 || op.RightOperandTypeNode.Equals(rightType));
         }
 
         private UnaryOperationSymbolNode? FindBestUnaryOperation(Operator @operator, TypeSymbolNode operandType)
         {
-            // pretty sure for each combination there should only be one operation that fulfills all criteria
-            return FrameworkIntegration.GetUnaryOperations()
-                                       .Where(op => op.Operator == @operator
-                                                 && TypeIsCompatibleWithNoError(operandType, op.OperandTypeNode))
-                                       .SingleOrDefault();
+            ReadOnlyList<UnaryOperationSymbolNode> allOperations = FrameworkIntegration.GetUnaryOperations();
+
+            var candidates = allOperations.Where(op => op.Operator == @operator
+                                                    && TypeIsCompatibleWithNoError(operandType, op.OperandTypeNode));
+
+            if (candidates.IsSingle(out UnaryOperationSymbolNode? operationSymbol))
+            {
+                return operationSymbol;
+            }
+
+            return candidates.SingleOrDefault(op => op.OperandTypeNode.Equals(operandType));
         }
 
         private HoistedIdentifierMap? GatherGlobalSymbols()

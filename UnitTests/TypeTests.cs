@@ -464,5 +464,37 @@ namespace UnitTests
 
             MyAssert.NoError(Code);
         }
+
+        [Test]
+        public void UnaryOperationTest()
+        {
+            string[] codes = new[]
+            {
+                "Var x = -4;",
+                "Var x = ~4;",
+                "Var x = Not True;",
+            };
+
+            foreach (string code in codes)
+            {
+                MyAssert.NoError(code);
+            }
+        }
+
+        [Test]
+        public void UnaryOperationErrorTest()
+        {
+            string[] codes = new[]
+            {
+                "Var x = -True;",
+                "Var x = ~4.4;",
+                @"Var x = Not ""ugly"";",
+            };
+
+            foreach (string code in codes)
+            {
+                MyAssert.Error(code, ErrorCode.OperatorNotAvailableForTypes);
+            }
+        }
     }
 }

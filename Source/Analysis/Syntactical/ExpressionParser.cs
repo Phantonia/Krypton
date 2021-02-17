@@ -237,32 +237,11 @@ namespace Krypton.Analysis.Syntactical
                         return expression;
                     }
                 case CharacterOperatorLexeme { Operator: Operator.Tilde }:
-                    {
-                        index++;
-
-                        ExpressionNode? operand = ParseNextExpressionInternal(ref index);
-
-                        if (operand != null)
-                        {
-                            return new UnaryOperationExpressionNode(operand, Operator.Tilde, Lexemes[index].LineNumber, Lexemes[index].LineNumber);
-                        }
-
-                        return null;
-                    }
+                    return ParseUnaryOperation(ref index, Operator.Tilde);
                 case CharacterOperatorLexeme { Operator: Operator.Minus }:
-                    {
-                        index++;
-
-                        ExpressionNode? operand = ParseSubExpression(ref index);
-                        ParseAfterSubExpression(ref operand, ref index, includeOperations: false);
-
-                        if (operand == null)
-                        {
-                            return null;
-                        }
-
-                        return new UnaryOperationExpressionNode(operand, Operator.Minus, Lexemes[index].LineNumber, Lexemes[index].Index);
-                    }
+                    return ParseUnaryOperation(ref index, Operator.Minus);
+                case KeywordLexeme { Keyword: ReservedKeyword.Not }:
+                    return ParseUnaryOperation(ref index, Operator.NotKeyword);
                 case EndOfFileLexeme endOfFileLexeme:
                     ErrorProvider.ReportError(ErrorCode.ExpectedExpressionTerm, code, endOfFileLexeme);
                     return null;
@@ -270,6 +249,30 @@ namespace Krypton.Analysis.Syntactical
                     ErrorProvider.ReportError(ErrorCode.UnexpectedExpressionTerm, code, lexeme);
                     return null;
             }
+        }
+
+        private UnaryOperationExpressionNode? ParseUnaryOperation(ref int index, Operator @operator)
+        {
+            int lineNumber = Lexemes[index].LineNumber;
+            int nodeIndex = Lexemes[index].Index;
+
+            index++;
+
+            ExpressionNode? operand = ParseSubExpression(ref index);
+
+            if (operand == null)
+            {
+                return null;
+            }
+
+            ParseAfterSubExpression(ref operand, ref index, includeOperations: false);
+
+            if (operand == null)
+            {
+                return null;
+            }
+
+            return new UnaryOperationExpressionNode(operand, @operator, lineNumber, nodeIndex);
         }
     }
 }
