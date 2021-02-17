@@ -18,7 +18,7 @@ namespace UnitTests
             Var x As Int = 4;
             ";
 
-            Compilation? tree = Analyser.Analyse(Code);
+            Compilation tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
         }
@@ -51,7 +51,7 @@ namespace UnitTests
             {
                 string code = $"Var x = {literal.code};";
 
-                Compilation? tree = Analyser.Analyse(code);
+                Compilation tree = Analyser.Analyse(code);
 
                 Assert.NotNull(tree);
                 Assert.IsTrue(tree!.Program.TopLevelStatementNodes[0] is VariableDeclarationStatementNode
@@ -77,7 +77,7 @@ namespace UnitTests
             Output(""Hello world"");
             ";
 
-            Compilation? tree = Analyser.Analyse(Code);
+            Compilation tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
         }
@@ -116,7 +116,7 @@ namespace UnitTests
             x = False;
             ";
 
-            Compilation? tree = Analyser.Analyse(Code);
+            Compilation tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
         }
@@ -139,7 +139,7 @@ namespace UnitTests
             Var x = (4 + 5) * 6;
             ";
 
-            Compilation? tree = Analyser.Analyse(Code);
+            Compilation tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
             Assert.IsTrue(tree!.Program.TopLevelStatementNodes[0] is VariableDeclarationStatementNode

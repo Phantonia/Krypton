@@ -27,7 +27,7 @@ namespace UnitTests
             }
             ";
 
-            FunctionDeclarationNode? func = MyAssert.NoError(() =>
+            FunctionDeclarationNode func = MyAssert.NoError(() =>
             {
                 var lexemes = new Lexer(Code).LexAll();
                 var parser = new ProgramParser(lexemes, Code);
@@ -51,7 +51,7 @@ namespace UnitTests
             }
             ";
 
-            FunctionDeclarationNode? func = MyAssert.NoError(() =>
+            FunctionDeclarationNode func = MyAssert.NoError(() =>
             {
                 var lexemes = new Lexer(Code).LexAll();
                 var parser = new ProgramParser(lexemes, Code);
@@ -75,7 +75,7 @@ namespace UnitTests
             }
             ";
 
-            FunctionDeclarationNode? func = MyAssert.NoError(() =>
+            FunctionDeclarationNode func = MyAssert.NoError(() =>
             {
                 var lexemes = new Lexer(Code).LexAll();
                 var parser = new ProgramParser(lexemes, Code);
@@ -99,7 +99,7 @@ namespace UnitTests
             }
             ";
 
-            FunctionDeclarationNode? func = MyAssert.NoError(() =>
+            FunctionDeclarationNode func = MyAssert.NoError(() =>
             {
                 var lexemes = new Lexer(Code).LexAll();
                 var parser = new ProgramParser(lexemes, Code);
@@ -123,7 +123,7 @@ namespace UnitTests
             }
             ";
 
-            FunctionDeclarationNode? func = MyAssert.NoError(() =>
+            FunctionDeclarationNode func = MyAssert.NoError(() =>
             {
                 var lexemes = new Lexer(Code).LexAll();
                 var parser = new ProgramParser(lexemes, Code);
@@ -144,7 +144,7 @@ namespace UnitTests
             Return;
             ";
 
-            ProgramNode? program = MyAssert.NoError(() =>
+            ProgramNode program = MyAssert.NoError(() =>
             {
                 var lexemes = new Lexer(Code).LexAll();
                 var parser = new ProgramParser(lexemes, Code);
@@ -166,7 +166,7 @@ namespace UnitTests
             Return 4;
             ";
 
-            ProgramNode? program = MyAssert.NoError(() =>
+            ProgramNode program = MyAssert.NoError(() =>
             {
                 var lexemes = new Lexer(Code).LexAll();
                 var parser = new ProgramParser(lexemes, Code);
@@ -209,7 +209,7 @@ namespace UnitTests
             Const BEST_NUMBER = 4;
             ";
 
-            ConstantDeclarationNode? cnst = MyAssert.NoError(() =>
+            ConstantDeclarationNode cnst = MyAssert.NoError(() =>
             {
                 var lexemes = new Lexer(Code).LexAll();
                 var parser = new ProgramParser(lexemes, Code);
@@ -228,7 +228,7 @@ namespace UnitTests
             Const BEST_NUMBER As Int = 4;
             ";
 
-            ConstantDeclarationNode? cnst = MyAssert.NoError(() =>
+            ConstantDeclarationNode cnst = MyAssert.NoError(() =>
             {
                 var lexemes = new Lexer(Code).LexAll();
                 var parser = new ProgramParser(lexemes, Code);

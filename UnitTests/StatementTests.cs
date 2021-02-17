@@ -31,7 +31,7 @@ namespace UnitTests
             int index = 0;
 
             StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
-            Node? root = parser.ParseNextStatement(ref index);
+            Node root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
             Assert.IsInstanceOf<VariableDeclarationStatementNode>(root);
@@ -58,7 +58,7 @@ namespace UnitTests
             int index = 0;
 
             StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
-            Node? root = parser.ParseNextStatement(ref index);
+            Node root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
             Assert.IsInstanceOf<VariableDeclarationStatementNode>(root);
@@ -84,7 +84,7 @@ namespace UnitTests
             int index = 0;
 
             StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
-            Node? root = parser.ParseNextStatement(ref index);
+            Node root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
             Assert.IsInstanceOf<VariableDeclarationStatementNode>(root);
@@ -106,7 +106,7 @@ namespace UnitTests
             int index = 0;
 
             StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
-            Node? root = parser.ParseNextStatement(ref index);
+            Node root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
             Assert.IsInstanceOf<VariableDeclarationStatementNode>(root);
@@ -142,7 +142,7 @@ namespace UnitTests
             int index = 0;
 
             StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
-            Node? root = parser.ParseNextStatement(ref index);
+            Node root = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(root);
             Assert.IsInstanceOf<FunctionCallStatementNode>(root);
@@ -163,7 +163,7 @@ namespace UnitTests
 
             StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
 
-            StatementNode? node = parser.ParseNextStatement(ref index);
+            StatementNode node = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(node);
             Assert.IsInstanceOf<VariableAssignmentStatementNode>(node);
@@ -192,7 +192,7 @@ namespace UnitTests
                     break;
                 }
 
-                StatementNode? nextStatement = parser.ParseNextStatement(ref index);
+                StatementNode nextStatement = parser.ParseNextStatement(ref index);
 
                 if (nextStatement == null)
                 {
@@ -218,7 +218,7 @@ namespace UnitTests
             int index = 0;
 
             StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
-            StatementNode? statement = parser.ParseNextStatement(ref index);
+            StatementNode statement = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(statement);
             Assert.IsInstanceOf<BlockStatementNode>(statement);
@@ -239,7 +239,7 @@ namespace UnitTests
             int index = 0;
 
             StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
-            StatementNode? statement = parser.ParseNextStatement(ref index);
+            StatementNode statement = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(statement);
             Assert.IsInstanceOf<WhileStatementNode>(statement);
@@ -267,7 +267,7 @@ namespace UnitTests
             int index = 0;
 
             StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
-            StatementNode? statement = parser.ParseNextStatement(ref index);
+            StatementNode statement = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(statement);
             Assert.IsInstanceOf<BlockStatementNode>(statement);
@@ -298,7 +298,7 @@ namespace UnitTests
 
             StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
             int index = 0;
-            StatementNode? statement = parser.ParseNextStatement(ref index);
+            StatementNode statement = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(statement);
             Assert.IsInstanceOf<WhileStatementNode>(statement);
@@ -330,7 +330,7 @@ namespace UnitTests
 
             StatementParser parser = new(lexemes, new ExpressionParser(lexemes, Code), new TypeParser(lexemes, Code), Code);
             int index = 0;
-            StatementNode? statement = parser.ParseNextStatement(ref index);
+            StatementNode statement = parser.ParseNextStatement(ref index);
 
             Assert.NotNull(statement);
             Assert.IsInstanceOf<BlockStatementNode>(statement);
@@ -361,7 +361,7 @@ namespace UnitTests
 
             LexemeCollection lexemes = new Lexer(Code).LexAll();
             ProgramParser parser = new ProgramParser(lexemes, Code);
-            ProgramNode? program = parser.ParseWholeProgram();
+            ProgramNode program = parser.ParseWholeProgram();
 
             Assert.NotNull(program);
             Assert.AreEqual(2, program!.TopLevelStatementNodes.Count);
@@ -387,12 +387,12 @@ namespace UnitTests
             }
             Else
             {
-                Output(""time space continuum broken; 4 != 4??? owo"");
+                Output(""time space continuum broken; 4 != 4 owo"");
             }";
 
             LexemeCollection lexemes = new Lexer(Code).LexAll();
             ProgramParser parser = new ProgramParser(lexemes, Code);
-            ProgramNode? program = parser.ParseWholeProgram();
+            ProgramNode program = parser.ParseWholeProgram();
 
             Assert.NotNull(program);
             Assert.AreEqual(2, program!.TopLevelStatementNodes.Count);
@@ -415,12 +415,12 @@ namespace UnitTests
             }
             Else If x == 5
             {
-                Output(""time space continuum broken; 4 != 4??? owo"");
+                Output(""time space continuum broken; 4 != 4 owo"");
             }";
 
             LexemeCollection lexemes = new Lexer(Code).LexAll();
             ProgramParser parser = new ProgramParser(lexemes, Code);
-            ProgramNode? program = parser.ParseWholeProgram();
+            ProgramNode program = parser.ParseWholeProgram();
 
             Assert.NotNull(program);
             Assert.AreEqual(2, program!.TopLevelStatementNodes.Count);
@@ -443,7 +443,7 @@ namespace UnitTests
             }
             Else If x == 5
             {
-                Output(""time space continuum broken; 4 != 4??? owo"");
+                Output(""time space continuum broken; 4 != 4 owo"");
             }
             Else
             {
@@ -452,7 +452,7 @@ namespace UnitTests
 
             LexemeCollection lexemes = new Lexer(Code).LexAll();
             ProgramParser parser = new ProgramParser(lexemes, Code);
-            ProgramNode? program = parser.ParseWholeProgram();
+            ProgramNode program = parser.ParseWholeProgram();
 
             Assert.NotNull(program);
             Assert.AreEqual(2, program!.TopLevelStatementNodes.Count);
@@ -475,7 +475,7 @@ namespace UnitTests
             }
             Else If x == 5
             {
-                Output(""time space continuum broken; 4 != 4??? owo"");
+                Output(""time space continuum broken; 4 != 4 owo"");
             }
             Else If x == 6
             {
@@ -484,7 +484,7 @@ namespace UnitTests
 
             LexemeCollection lexemes = new Lexer(Code).LexAll();
             ProgramParser parser = new ProgramParser(lexemes, Code);
-            ProgramNode? program = parser.ParseWholeProgram();
+            ProgramNode program = parser.ParseWholeProgram();
 
             Assert.NotNull(program);
             Assert.AreEqual(2, program!.TopLevelStatementNodes.Count);
@@ -507,7 +507,7 @@ namespace UnitTests
             }
             Else If x == 5
             {
-                Output(""time space continuum broken; 4 != 4??? owo"");
+                Output(""time space continuum broken; 4 != 4 owo"");
             }
             Else
             {
@@ -517,7 +517,7 @@ namespace UnitTests
 
             LexemeCollection lexemes = new Lexer(Code).LexAll();
             ProgramParser parser = new ProgramParser(lexemes, Code);
-            ProgramNode? program = parser.ParseWholeProgram();
+            ProgramNode program = parser.ParseWholeProgram();
 
             Assert.NotNull(program);
             Assert.AreEqual(3, program!.TopLevelStatementNodes.Count);
@@ -540,14 +540,14 @@ namespace UnitTests
             }
             Else x == 5
             {
-                Output(""time space continuum broken; 4 != 4??? owo"");
+                Output(""time space continuum broken; 4 != 4 owo"");
             }";
 
             var e = MyAssert.Error(() =>
             {
                 LexemeCollection lexemes = new Lexer(Code).LexAll();
                 ProgramParser parser = new ProgramParser(lexemes, Code);
-                ProgramNode? program = parser.ParseWholeProgram();
+                ProgramNode program = parser.ParseWholeProgram();
 
                 Assert.IsNull(program);
             });
@@ -567,7 +567,7 @@ namespace UnitTests
 
             LexemeCollection lexemes = new Lexer(Code).LexAll();
             ProgramParser parser = new ProgramParser(lexemes, Code);
-            ProgramNode? program = parser.ParseWholeProgram();
+            ProgramNode program = parser.ParseWholeProgram();
 
             Assert.NotNull(program);
             Assert.AreEqual(1, program!.TopLevelStatementNodes.Count);
@@ -596,7 +596,7 @@ namespace UnitTests
 
             LexemeCollection lexemes = new Lexer(Code).LexAll();
             ProgramParser parser = new ProgramParser(lexemes, Code);
-            ProgramNode? program = parser.ParseWholeProgram();
+            ProgramNode program = parser.ParseWholeProgram();
 
             Assert.NotNull(program);
             Assert.AreEqual(1, program!.TopLevelStatementNodes.Count);
@@ -625,7 +625,7 @@ namespace UnitTests
 
             LexemeCollection lexemes = new Lexer(Code).LexAll();
             ProgramParser parser = new ProgramParser(lexemes, Code);
-            ProgramNode? program = parser.ParseWholeProgram();
+            ProgramNode program = parser.ParseWholeProgram();
 
             Assert.NotNull(program);
             Assert.AreEqual(1, program!.TopLevelStatementNodes.Count);
@@ -657,7 +657,7 @@ namespace UnitTests
             {
                 LexemeCollection lexemes = new Lexer(Code).LexAll();
                 ProgramParser parser = new ProgramParser(lexemes, Code);
-                ProgramNode? program = parser.ParseWholeProgram();
+                ProgramNode program = parser.ParseWholeProgram();
 
                 Assert.IsNull(program);
             });
@@ -679,7 +679,7 @@ namespace UnitTests
             {
                 LexemeCollection lexemes = new Lexer(Code).LexAll();
                 ProgramParser parser = new ProgramParser(lexemes, Code);
-                ProgramNode? program = parser.ParseWholeProgram();
+                ProgramNode program = parser.ParseWholeProgram();
 
                 Assert.IsNull(program);
             });
@@ -701,7 +701,7 @@ namespace UnitTests
             {
                 LexemeCollection lexemes = new Lexer(Code).LexAll();
                 ProgramParser parser = new ProgramParser(lexemes, Code);
-                ProgramNode? program = parser.ParseWholeProgram();
+                ProgramNode program = parser.ParseWholeProgram();
 
                 Assert.IsNull(program);
             });
@@ -723,7 +723,7 @@ namespace UnitTests
             {
                 LexemeCollection lexemes = new Lexer(Code).LexAll();
                 ProgramParser parser = new ProgramParser(lexemes, Code);
-                ProgramNode? program = parser.ParseWholeProgram();
+                ProgramNode program = parser.ParseWholeProgram();
 
                 Assert.IsNull(program);
             });
@@ -744,7 +744,7 @@ namespace UnitTests
 
             LexemeCollection lexemes = new Lexer(Code).LexAll();
             ProgramParser parser = new ProgramParser(lexemes, Code);
-            ProgramNode? program = parser.ParseWholeProgram();
+            ProgramNode program = parser.ParseWholeProgram();
 
             Assert.NotNull(program);
             Assert.AreEqual(2, program!.TopLevelStatementNodes.Count);

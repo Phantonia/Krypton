@@ -23,7 +23,8 @@ namespace UnitTests
         {
             LexemeCollection lexemes = LexCode("Var number As Int = 4 + Sin(PI)");
 
-            Assert.IsTrue(lexemes[0] is KeywordLexeme { Keyword: ReservedKeyword.Var });
+            Assert.NotNull(lexemes);
+            Assert.IsTrue(lexemes![0] is KeywordLexeme { Keyword: ReservedKeyword.Var });
             Assert.IsTrue(lexemes[1] is IdentifierLexeme { Content: "number" });
             Assert.IsTrue(lexemes[2] is KeywordLexeme { Keyword: ReservedKeyword.As });
             Assert.IsTrue(lexemes[3] is IdentifierLexeme { Content: "Int" });
@@ -43,12 +44,13 @@ namespace UnitTests
             // Integer literal base 10
             LexemeCollection lexemes = LexCode("1 10 100 1_ 1_0 10_ 100_000 1_000_000 1__0");
 
+            Assert.NotNull(lexemes);
             List<IntegerLiteralLexeme> lexemes2 = null!;
             Assert.DoesNotThrow(() =>
             {
-                lexemes2 = lexemes.Take(lexemes.Count - 1)
-                                  .Cast<IntegerLiteralLexeme>()
-                                  .ToList();
+                lexemes2 = lexemes!.Take(lexemes.Count - 1)
+                                   .Cast<IntegerLiteralLexeme>()
+                                   .ToList();
             }, "At least one of the lexemes is not an integer literal");
 
             long[] expected = new[] { 1L, 10L, 100L, 1L, 10L, 10L, 100_000L, 1_000_000L, 10L };
@@ -66,7 +68,8 @@ namespace UnitTests
         {
             LexemeCollection lexemes = new Lexer("4 & 7 -> 9 | 2 <- 11 ^ 1").LexAll();
 
-            Assert.AreEqual(12, lexemes.Count);
+            Assert.NotNull(lexemes);
+            Assert.AreEqual(12, lexemes!.Count);
 
             Assert.IsTrue(lexemes[1] is CharacterOperatorLexeme { Operator: Operator.Ampersand });
             Assert.IsTrue(lexemes[3] is CharacterOperatorLexeme { Operator: Operator.SingleRightArrow });

@@ -17,12 +17,12 @@ namespace UnitTests
         {
             public AssertFailTraceListener() { }
 
-            public override void Fail(string? message)
+            public override void Fail(string message)
             {
                 Assert.Fail(message);
             }
 
-            public override void Fail(string? message, string? detailMessage)
+            public override void Fail(string message, string detailMessage)
             {
                 if (!string.IsNullOrWhiteSpace(detailMessage))
                 {

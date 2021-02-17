@@ -2,6 +2,7 @@
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Framework;
 using Krypton.Utilities;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Krypton.Analysis.Lexical
 {
@@ -17,7 +18,7 @@ namespace Krypton.Analysis.Lexical
 
         public string Code { get; }
 
-        public LexemeCollection LexAll()
+        public LexemeCollection? LexAll()
         {
             LexemeCollection collection = new();
 
@@ -25,6 +26,12 @@ namespace Krypton.Analysis.Lexical
 
             while (nextLexeme != null)
             {
+                if (nextLexeme is InvalidLexeme invalidLexeme)
+                {
+                    ErrorProvider.ReportError(invalidLexeme.ErrorCode, Code, invalidLexeme);
+                    return null;
+                }
+
                 collection.Add(nextLexeme);
 
                 nextLexeme = NextLexeme();

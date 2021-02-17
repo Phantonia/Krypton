@@ -21,7 +21,7 @@ namespace UnitTests
             x = 2;
             ";
 
-            Compilation? tree = Analyser.Analyse(Code);
+            Compilation tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
             Assert.IsInstanceOf<VariableDeclarationStatementNode>(tree!.Program.TopLevelStatementNodes[0]);
@@ -71,7 +71,7 @@ namespace UnitTests
             Var y = x; ... decl2
             ";
 
-            Compilation? tree = Analyser.Analyse(Code);
+            Compilation tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
 
@@ -123,7 +123,7 @@ namespace UnitTests
             Var x As String;
             ";
 
-            Compilation? tree = Analyser.Analyse(Code);
+            Compilation tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
             Assert.AreEqual(1, tree!.Program.TopLevelStatementNodes.Count);
@@ -155,7 +155,7 @@ namespace UnitTests
             Output(""4"");
             ";
 
-            Compilation? tree = Analyser.Analyse(Code);
+            Compilation tree = Analyser.Analyse(Code);
 
             Assert.NotNull(tree);
             Assert.AreEqual(1, tree!.Program.TopLevelStatementNodes.Count);
@@ -274,7 +274,7 @@ namespace UnitTests
             }
             ";
 
-            Compilation? tree = MyAssert.NoError(Code);
+            Compilation tree = MyAssert.NoError(Code);
 
             Assert.AreEqual(1, tree!.Program.TopLevelStatementNodes.Count);
 
@@ -386,7 +386,7 @@ namespace UnitTests
             const string Code = @"
             Let name = ""Antonia"";
             Output(name);
-            name = ""Sandra""; ... who wants to be called Sandra? Seriously
+            name = ""Sandra""; ... who wants to be called Sandra Seriously
             ";
 
             MyAssert.Error(Code, ErrorCode.CantReAssignReadOnlyVariable);
@@ -434,7 +434,7 @@ namespace UnitTests
             Output(Name);
             ";
 
-            Compilation? comp = MyAssert.NoError(Code);
+            Compilation comp = MyAssert.NoError(Code);
 
             if (comp.Program.TopLevelStatementNodes[1] is FunctionCallStatementNode
                 {
@@ -468,7 +468,7 @@ namespace UnitTests
             }
             ";
 
-            Compilation? comp = MyAssert.NoError(Code);
+            Compilation comp = MyAssert.NoError(Code);
 
             var whileStmt = (WhileStatementNode)comp.Program.TopLevelStatementNodes[0];
             var ifStmt = (IfStatementNode)whileStmt.StatementNodes[0];
@@ -492,7 +492,7 @@ namespace UnitTests
             }
             ";
 
-            Compilation? comp = MyAssert.NoError(Code);
+            Compilation comp = MyAssert.NoError(Code);
 
             var whileStmt = (WhileStatementNode)comp.Program.TopLevelStatementNodes[0];
             var ifStmt = (IfStatementNode)whileStmt.StatementNodes[0];
@@ -516,7 +516,7 @@ namespace UnitTests
             }
             ";
 
-            Compilation? comp = MyAssert.NoError(Code);
+            Compilation comp = MyAssert.NoError(Code);
 
             var whileStmt1 = (WhileStatementNode)comp.Program.TopLevelStatementNodes[0];
             var whileStmt2 = (WhileStatementNode)whileStmt1.StatementNodes[0];
@@ -540,7 +540,7 @@ namespace UnitTests
             }
             ";
 
-            Compilation? comp = MyAssert.NoError(Code);
+            Compilation comp = MyAssert.NoError(Code);
 
             var whileStmt1 = (WhileStatementNode)comp.Program.TopLevelStatementNodes[0];
             var whileStmt2 = (WhileStatementNode)whileStmt1.StatementNodes[0];
@@ -570,7 +570,7 @@ namespace UnitTests
             }
             ";
 
-            Compilation? comp = MyAssert.NoError(Code);
+            Compilation comp = MyAssert.NoError(Code);
 
             var whileStmt1 = (WhileStatementNode)comp.Program.TopLevelStatementNodes[0];
             var whileStmt2 = (WhileStatementNode)whileStmt1.StatementNodes[0];

@@ -9,7 +9,7 @@ namespace UnitTests
     {
         // For some reason, the original Assert.Throws<> method does not catch the exception.
         // This makes debugging the tests a horror, so I wrote my own method.
-        public static TException? Throws<TException>(Action action)
+        public static TException Throws<TException>(Action action)
             where TException : Exception
         {
             try
@@ -27,7 +27,7 @@ namespace UnitTests
 
         public static ErrorEventArgs Error(Action action)
         {
-            ErrorEventArgs? result = null;
+            ErrorEventArgs result = null;
 
             ErrorEventHandler handler = e =>
             {
@@ -50,7 +50,7 @@ namespace UnitTests
         {
             return Error(() =>
             {
-                Compilation? compilation = Analyser.Analyse(code);
+                Compilation compilation = Analyser.Analyse(code);
                 Assert.IsNull(compilation);
             });
         }
@@ -82,7 +82,7 @@ namespace UnitTests
         {
             return NoError(() =>
             {
-                Compilation? compilation = Analyser.Analyse(code);
+                Compilation compilation = Analyser.Analyse(code);
                 Assert.NotNull(compilation);
                 return compilation!;
             });

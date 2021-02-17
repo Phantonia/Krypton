@@ -28,7 +28,7 @@ namespace UnitTests
             Assert.IsInstanceOf<EndOfFileLexeme>(lexemes[1]);
 
             int index = 0;
-            ExpressionNode? root = new ExpressionParser(lexemes, Code).ParseNextExpression(ref index);
+            ExpressionNode root = new ExpressionParser(lexemes, Code).ParseNextExpression(ref index);
             Assert.IsNotNull(root);
             Assert.IsInstanceOf<IntegerLiteralExpressionNode>(root);
             Assert.AreEqual(3, ((IntegerLiteralExpressionNode)root!).Value);
@@ -48,7 +48,7 @@ namespace UnitTests
             Assert.IsInstanceOf<EndOfFileLexeme>(lexemes[3]);
 
             int index = 0;
-            ExpressionNode? root = new ExpressionParser(lexemes, Code).ParseNextExpression(ref index);
+            ExpressionNode root = new ExpressionParser(lexemes, Code).ParseNextExpression(ref index);
             Assert.IsNotNull(root);
             Assert.IsInstanceOf<IntegerLiteralExpressionNode>(root);
             Assert.AreEqual(4, ((IntegerLiteralExpressionNode)root!).Value);
@@ -64,7 +64,7 @@ namespace UnitTests
 
             var e = MyAssert.Error(() =>
                                    {
-                                       ExpressionNode? exp = new ExpressionParser(lexemes, Code).ParseNextExpression(ref index);
+                                       ExpressionNode exp = new ExpressionParser(lexemes, Code).ParseNextExpression(ref index);
                                        Assert.IsNull(exp);
                                    });
             Assert.AreEqual(ErrorCode.ExpectedClosingParenthesis, e.ErrorCode);
@@ -76,7 +76,7 @@ namespace UnitTests
             LexemeCollection lexemes = new Lexer("((6))").LexAll();
 
             int index = 0;
-            ExpressionNode? root = new ExpressionParser(lexemes, "((6))").ParseNextExpression(ref index);
+            ExpressionNode root = new ExpressionParser(lexemes, "((6))").ParseNextExpression(ref index);
             Assert.IsNotNull(root);
             Assert.IsInstanceOf<IntegerLiteralExpressionNode>(root);
             Assert.AreEqual(6, ((IntegerLiteralExpressionNode)root!).Value);
@@ -111,7 +111,7 @@ namespace UnitTests
 
             int index = 0;
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Plus });
@@ -134,7 +134,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "(3 + 4)";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Plus });
@@ -157,7 +157,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "(3) + (4)";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Plus });
@@ -180,7 +180,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "3 + 4 * 5";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Plus });
@@ -200,7 +200,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "(3 + 4 * 5)";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Plus });
@@ -220,7 +220,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "(3 + 4) * 5";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Asterisk });
@@ -248,7 +248,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "(3 + 4) / (5 - 6)";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.ForeSlash });
@@ -265,7 +265,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "(3 + 4) Div (5 - 6)";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.DivKeyword });
@@ -282,7 +282,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "3 & 4 + 5";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Ampersand });
@@ -296,7 +296,7 @@ namespace UnitTests
             //                   0   1 2 3 4 5 6 7 8
             const string Code = "Var x = 5 | 8 + 9;";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Pipe });
@@ -310,7 +310,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "True And False Or False";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.OrKeyword });
@@ -330,7 +330,7 @@ namespace UnitTests
             LexemeCollection lexemes = new Lexer(Code).LexAll();
 
             ExpressionParser parser = new(lexemes, Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsInstanceOf<StringLiteralExpressionNode>(root);
@@ -343,7 +343,7 @@ namespace UnitTests
 
             const string Code = "x * 4";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Asterisk });
@@ -364,7 +364,7 @@ namespace UnitTests
 
             const string Code = "x * y & (z - 1)";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Ampersand });
@@ -387,7 +387,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "(hello)";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsInstanceOf<IdentifierExpressionNode>(root);
@@ -422,7 +422,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "Output()";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsInstanceOf<FunctionCallExpressionNode>(root);
@@ -439,7 +439,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "Output(4)";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsInstanceOf<FunctionCallExpressionNode>(root);
@@ -458,7 +458,7 @@ namespace UnitTests
             int index = 0;
             const string Code = @"Output(4, ""xyz"")";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsInstanceOf<FunctionCallExpressionNode>(root);
@@ -490,7 +490,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "Output(4 + 5 * 6)";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsInstanceOf<FunctionCallExpressionNode>(root);
@@ -510,7 +510,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "Output(4) + 8";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Plus });
@@ -526,7 +526,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "Output(4)(True)";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsInstanceOf<FunctionCallExpressionNode>(root);
@@ -542,7 +542,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "x And y";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.AndKeyword });
@@ -554,7 +554,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "-4";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is UnaryOperationExpressionNode { Operator: Operator.Minus });
@@ -572,7 +572,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "-(4 + 6)";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is UnaryOperationExpressionNode { Operator: Operator.Minus });
@@ -587,7 +587,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "-4 + 6";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Plus });
@@ -602,7 +602,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "-Sin(4)";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is UnaryOperationExpressionNode { Operator: Operator.Minus });
@@ -617,7 +617,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "x -> y + z";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code);
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.SingleRightArrow });
@@ -634,7 +634,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "x ** y ** z";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code); // x ** (y ** z)
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.DoubleAsterisk });
@@ -651,7 +651,7 @@ namespace UnitTests
             int index = 0;
             const string Code = "x * y * z";
             ExpressionParser parser = new(new Lexer(Code).LexAll(), Code); // (x * y) * z
-            ExpressionNode? root = parser.ParseNextExpression(ref index);
+            ExpressionNode root = parser.ParseNextExpression(ref index);
 
             Assert.NotNull(root);
             Assert.IsTrue(root is BinaryOperationExpressionNode { Operator: Operator.Asterisk });
