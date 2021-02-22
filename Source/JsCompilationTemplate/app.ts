@@ -249,6 +249,7 @@ function abs(num: Rational): Rational {
     return num;
 }
 
+// CUT HERE ... everything from here on will be cut in the final template
 // Complex test *
 {
     let r1 = new Rational(1, 1);

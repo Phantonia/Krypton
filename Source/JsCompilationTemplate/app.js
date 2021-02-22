@@ -188,6 +188,7 @@ function abs(num) {
     }
     return num;
 }
+// CUT HERE ... everything from here on will be cut in the final template
 // Complex test *
 {
     let r1 = new Rational(1, 1);
@@ -245,5 +246,5 @@ function abs(num) {
     let z2 = new Complex(r2, i2);
     console.log(z2.getMagnitude().toString());
 }
-"";
+""; // used to break in visual studio
 //# sourceMappingURL=app.js.map

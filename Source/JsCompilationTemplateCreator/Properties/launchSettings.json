@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "JsCompilationTemplateCreator": {
+      "commandName": "Project",
+      "commandLineArgs": "E:\\Documents\\Projects\\Software\\Krypton\\KryptonV5\\Source\\JsCompilationTemplate\\app.js"
+    }
+  }
+}
