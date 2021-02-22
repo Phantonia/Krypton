@@ -57,13 +57,13 @@ namespace Krypton.Framework
                 MakeOperationWithJsOperator(Operator.XorKeyword, "^", FrameworkType.Bool, FrameworkType.Bool, FrameworkType.Bool),
 
                 // Complex operators
-                MakeOperationWithMethod(Operator.DoubleAsterisk, "expon", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Complex),
-                MakeOperationWithMethod(Operator.Asterisk, "mul", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Complex),
-                MakeOperationWithMethod(Operator.ForeSlash, "rdiv", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Complex),
-                MakeOperationWithMethod(Operator.Plus, "plus", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Complex),
-                MakeOperationWithMethod(Operator.Minus, "minus", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Complex),
-                MakeOperationWithMethod(Operator.DoubleEquals, "eq", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Bool),
-                MakeOperationWithMethod(Operator.ExclamationEquals, "neq", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Bool),
+                MakeOperationWithMethod(Operator.DoubleAsterisk, "exponentiate", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Complex),
+                MakeOperationWithMethod(Operator.Asterisk, "multiply", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Complex),
+                MakeOperationWithMethod(Operator.ForeSlash, "divide", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Complex),
+                MakeOperationWithMethod(Operator.Plus, "add", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Complex),
+                MakeOperationWithMethod(Operator.Minus, "subtract", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Complex),
+                MakeOperationWithMethod(Operator.DoubleEquals, "equals", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Bool),
+                MakeOperationWithMethod(Operator.ExclamationEquals, "notEquals", FrameworkType.Complex, FrameworkType.Complex, FrameworkType.Bool),
 
                 // Int operators
                 new BinaryOperationSymbol(Operator.DoubleAsterisk, FrameworkType.Int, FrameworkType.Int, FrameworkType.Rational,
@@ -89,18 +89,18 @@ namespace Krypton.Framework
                 MakeOperationWithJsOperator(Operator.ExclamationEquals, "!==", FrameworkType.Int, FrameworkType.Int, FrameworkType.Bool),
 
                 // Rational operators
-                MakeOperationWithMethod(Operator.DoubleAsterisk, "expon", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Rational),
-                MakeOperationWithMethod(Operator.Asterisk, "mul", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Rational),
-                MakeOperationWithMethod(Operator.ForeSlash, "rdiv", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Rational),
+                MakeOperationWithMethod(Operator.DoubleAsterisk, "exponentiate", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Rational),
+                MakeOperationWithMethod(Operator.Asterisk, "multiply", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Rational),
+                MakeOperationWithMethod(Operator.ForeSlash, "divide", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Rational),
                 MakeOperationWithMethod(Operator.ModKeyword, "mod", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Rational),
-                MakeOperationWithMethod(Operator.Plus, "plus", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Rational),
-                MakeOperationWithMethod(Operator.Minus, "minus", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Rational),
-                MakeOperationWithMethod(Operator.LessThan, "less", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Bool),
-                MakeOperationWithMethod(Operator.LessThanEquals, "leq", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Bool),
-                MakeOperationWithMethod(Operator.GreaterThanEquals, "geq", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Bool),
-                MakeOperationWithMethod(Operator.GreaterThan, "gre", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Bool),
-                MakeOperationWithMethod(Operator.DoubleEquals, "eq", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Bool),
-                MakeOperationWithMethod(Operator.ExclamationEquals, "neq", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Bool),
+                MakeOperationWithMethod(Operator.Plus, "add", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Rational),
+                MakeOperationWithMethod(Operator.Minus, "subtract", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Rational),
+                MakeOperationWithMethod(Operator.LessThan, "isLessThan", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Bool),
+                MakeOperationWithMethod(Operator.LessThanEquals, "isLessThanOrEquals", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Bool),
+                MakeOperationWithMethod(Operator.GreaterThanEquals, "isGreaterThanOrEquals", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Bool),
+                MakeOperationWithMethod(Operator.GreaterThan, "isGreaterThan", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Bool),
+                MakeOperationWithMethod(Operator.DoubleEquals, "equals", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Bool),
+                MakeOperationWithMethod(Operator.ExclamationEquals, "notEquals", FrameworkType.Rational, FrameworkType.Rational, FrameworkType.Bool),
 
                 // String operators
                 MakeOperationWithJsOperator(Operator.Plus, "+", FrameworkType.String, FrameworkType.String, FrameworkType.String),
@@ -125,7 +125,7 @@ namespace Krypton.Framework
                                                                  FrameworkType returnType)
             {
                 return new BinaryOperationSymbol(op, leftType, rightType, returnType,
-                    (x, y) => $"({x}).$op_{jsMethodName}({y})"); // for example looks like this: z1.$op_add(z2)
+                    (x, y) => $"({x}).{jsMethodName}({y})"); // for example looks like this: z1.add(z2)
             }
         }
 
@@ -153,7 +153,7 @@ namespace Krypton.Framework
             static PropertySymbol MakeProperty(string name)
             {
                 return new PropertySymbol(name, FrameworkType.Rational,
-                        exp => $"({exp}).$get_{name}");
+                        exp => $"({exp}).get{name}()");
             }
         }
 
@@ -191,7 +191,7 @@ namespace Krypton.Framework
             static PropertySymbol MakeProperty(string name)
             {
                 return new PropertySymbol(name, FrameworkType.Int,
-                    exp => $"({exp}).$get_{name}");
+                    exp => $"({exp}).get{name}()");
             }
         }
 
