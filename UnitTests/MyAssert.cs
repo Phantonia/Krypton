@@ -87,5 +87,10 @@ namespace UnitTests
                 return compilation!;
             });
         }
+
+        public static void EmittedCorrectTopLevelStatement(string expected, string actual)
+        {
+            Assert.AreEqual($"function $main(){{{expected}}}$main();", actual);
+        }
     }
 }
