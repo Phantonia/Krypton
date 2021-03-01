@@ -15,6 +15,9 @@ namespace Krypton.CodeGeneration
                 case ForStatementNode forStatement:
                     EmitForStatement(forStatement);
                     break;
+                case VariableDeclarationStatementNode variableDeclaration:
+                    EmitVariableDeclaration(variableDeclaration);
+                    break;
             }
         }
 
@@ -66,6 +69,20 @@ namespace Krypton.CodeGeneration
             output.Append(')');
 
             EmitStatementBlock(forStatement.StatementNodes);
+        }
+
+        private void EmitVariableDeclaration(VariableDeclarationStatementNode variableDeclaration)
+        {
+            output.Append("let ");
+            output.Append(variableDeclaration.VariableIdentifier);
+
+            if (variableDeclaration.AssignedExpressionNode != null)
+            {
+                output.Append('=');
+                EmitExpression(variableDeclaration.AssignedExpressionNode);
+            }
+
+            output.Append(';');
         }
     }
 }

@@ -2,16 +2,20 @@
 {
     public sealed class BinaryOperationSymbol : FrameworkSymbol
     {
-        internal BinaryOperationSymbol(Operator @operator, FrameworkType leftType, FrameworkType rightType, FrameworkType returnType, BinaryGenerator generator)
+        internal BinaryOperationSymbol(Operator @operator,
+                                       FrameworkType leftType,
+                                       FrameworkType rightType,
+                                       FrameworkType returnType,
+                                       BinaryOperationCodeGenerationInformation codeGenerationInfo)
         {
             Operator = @operator;
             LeftType = leftType;
             RightType = rightType;
             ReturnType = returnType;
-            Generator = generator;
+            CodeGenerationInfo = codeGenerationInfo;
         }
 
-        public BinaryGenerator Generator { get; }
+        public BinaryOperationCodeGenerationInformation CodeGenerationInfo { get; }
 
         public FrameworkType LeftType { get; }
 

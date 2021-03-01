@@ -67,12 +67,13 @@ namespace Krypton.Framework
 
                 // Int operators
                 new BinaryOperationSymbol(Operator.DoubleAsterisk, FrameworkType.Int, FrameworkType.Int, FrameworkType.Rational,
-                    (x, y) => $"(new Rational(({x}),1)).$op_expon(new Rational(({y}),1))"),
+                    new SpecialBinaryOperationCodeGenerationInformation(SpecialOperationGenerationKind.IntPowerInt)),
+                    //(x, y) => $"(new Rational(({x}),1)).$op_expon(new Rational(({y}),1))"),
                 MakeOperationWithJsOperator(Operator.Asterisk, "*", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
                 new BinaryOperationSymbol(Operator.DivKeyword, FrameworkType.Int, FrameworkType.Int, FrameworkType.Int,
-                    (x, y) => $"Math.floor(({x})/({y}))"),
+                    new SpecialBinaryOperationCodeGenerationInformation(SpecialOperationGenerationKind.IntegerDivision)),
                 new BinaryOperationSymbol(Operator.ForeSlash, FrameworkType.Int, FrameworkType.Int, FrameworkType.Rational,
-                    (x, y) => $"new Rational(({x}),({y}))"),
+                    new SpecialBinaryOperationCodeGenerationInformation(SpecialOperationGenerationKind.IntToRationalDivision)),
                 MakeOperationWithJsOperator(Operator.ModKeyword, "%", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
                 MakeOperationWithJsOperator(Operator.Plus, "+", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
                 MakeOperationWithJsOperator(Operator.Minus, "-", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
@@ -114,8 +115,11 @@ namespace Krypton.Framework
                                                                      FrameworkType rightType,
                                                                      FrameworkType returnType)
             {
-                return new BinaryOperationSymbol(op, leftType, rightType, returnType,
-                    (x, y) => $"({x}){jsOperator}({y})");
+                return new BinaryOperationSymbol(op,
+                                                 leftType,
+                                                 rightType,
+                                                 returnType,
+                                                 new JsOperatorBinaryOperationCodeGenerationInformation(jsOperator));
             }
 
             static BinaryOperationSymbol MakeOperationWithMethod(Operator op,
@@ -124,8 +128,12 @@ namespace Krypton.Framework
                                                                  FrameworkType rightType,
                                                                  FrameworkType returnType)
             {
-                return new BinaryOperationSymbol(op, leftType, rightType, returnType,
-                    (x, y) => $"({x}).{jsMethodName}({y})"); // for example looks like this: z1.add(z2)
+                // for example looks like this: z1.add(z2)
+                return new BinaryOperationSymbol(op,
+                                                 leftType,
+                                                 rightType,
+                                                 returnType,
+                                                 new MethodCallBinaryOperationCodeGenerationInformation(jsMethodName));
             }
         }
 

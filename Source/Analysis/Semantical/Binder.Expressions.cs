@@ -74,6 +74,8 @@ namespace Krypton.Analysis.Semantical
                 return null;
             }
 
+            binaryOperation.Bind(operationSymbol);
+
             return operationSymbol.ReturnTypeNode;
         }
 

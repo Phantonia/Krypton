@@ -87,7 +87,7 @@ namespace Krypton.Analysis.Semantical
                                                  leftType,
                                                  rightType,
                                                  returnType,
-                                                 binaryOperationSymbol.Generator,
+                                                 binaryOperationSymbol.CodeGenerationInfo,
                                                  lineNumber: 0,
                                                  index: -1);
         }
