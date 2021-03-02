@@ -2,13 +2,15 @@
 {
     public sealed class PropertySymbol : NamedFrameworkSymbol
     {
-        internal PropertySymbol(string name, FrameworkType returnType, UnaryGenerator generator) : base(name)
+        internal PropertySymbol(string name,
+                                FrameworkType returnType,
+                                CodeGenerationInformation codeGenerationInfo) : base(name)
         {
             ReturnType = returnType;
-            Generator = generator;
+            CodeGenerationInfo = codeGenerationInfo;
         }
 
-        public UnaryGenerator Generator { get; }
+        public CodeGenerationInformation CodeGenerationInfo { get; }
 
         public FrameworkType ReturnType { get; }
     }

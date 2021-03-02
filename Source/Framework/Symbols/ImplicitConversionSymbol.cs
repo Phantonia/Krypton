@@ -2,14 +2,16 @@
 {
     public sealed class ImplicitConversionSymbol : FrameworkSymbol
     {
-        internal ImplicitConversionSymbol(FrameworkType sourceType, FrameworkType returnType, UnaryGenerator generator)
+        internal ImplicitConversionSymbol(FrameworkType sourceType,
+                                          FrameworkType returnType,
+                                          CodeGenerationInformation codeGenerationInfo)
         {
             SourceType = sourceType;
             ReturnType = returnType;
-            Generator = generator;
+            CodeGenerationInfo = codeGenerationInfo;
         }
 
-        public UnaryGenerator Generator { get; }
+        public CodeGenerationInformation CodeGenerationInfo { get; }
 
         public FrameworkType ReturnType { get; }
 

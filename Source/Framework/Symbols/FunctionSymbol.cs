@@ -5,14 +5,17 @@ namespace Krypton.Framework.Symbols
 {
     public sealed class FunctionSymbol : NamedFrameworkSymbol
     {
-        internal FunctionSymbol(string name, FrameworkType returnType, FunctionCallGenerator generator, IList<ParameterSymbol>? parameters = null) : base(name)
+        internal FunctionSymbol(string name,
+                                FrameworkType returnType,
+                                CodeGenerationInformation codeGenerationInfo,
+                                IList<ParameterSymbol>? parameters = null) : base(name)
         {
             ReturnType = returnType;
-            Generator = generator;
+            CodeGenerationInfo = codeGenerationInfo;
             Parameters = parameters.MakeReadOnly();
         }
 
-        public FunctionCallGenerator Generator { get; }
+        public CodeGenerationInformation CodeGenerationInfo { get; }
 
         public ReadOnlyList<ParameterSymbol>? Parameters { get; }
 

@@ -22,12 +22,13 @@ namespace Krypton.Framework
             
             List<FunctionSymbol> functions = new(capacity: 1)
             {
-                new FunctionSymbol("Output", FrameworkType.None,
-                    p => $"console.log({p[0]})",
-                    parameters: new[]
-                    {
-                        new ParameterSymbol("text", FrameworkType.String)
-                    })
+                new FunctionSymbol("Output",
+                                   FrameworkType.None,
+                                   new SpecialCodeGenerationInformation(SpecialCodeGenerationKind.ConsoleLog),
+                                   parameters: new[]
+                                   {
+                                       new ParameterSymbol("text", FrameworkType.String)
+                                   })
             };
 
             long denom = (long)Math.Pow(10, 18);
@@ -139,19 +140,18 @@ namespace Krypton.Framework
 
         private static TypeSymbol GetCharType()
         {
-            return new LiteralTypeSymbol<char>("Char", FrameworkType.Char,
-                default(JsLiteralConversion).ConvertCharLiteral,
+            return new TypeSymbol("Char", FrameworkType.Char,
                 implicitConversions: new[]
                 {
-                    new ImplicitConversionSymbol(FrameworkType.Char, FrameworkType.Int,
-                        exp => exp)
+                    new ImplicitConversionSymbol(FrameworkType.Char,
+                                                 FrameworkType.Int,
+                                                 CodeGenerationInformation.Identity)
                 });
         }
 
         private static TypeSymbol GetComplexType()
         {
-            return new LiteralTypeSymbol<Complex>("Complex", FrameworkType.Complex,
-                default(JsLiteralConversion).ConvertComplexLiteral,
+            return new TypeSymbol("Complex", FrameworkType.Complex,
                 properties: new[]
                 {
                     MakeProperty("Real"),
@@ -160,35 +160,36 @@ namespace Krypton.Framework
 
             static PropertySymbol MakeProperty(string name)
             {
-                return new PropertySymbol(name, FrameworkType.Rational,
-                        exp => $"({exp}).get{name}()");
+                return new PropertySymbol(name,
+                                          FrameworkType.Rational,
+                                          new MethodCallCodeGenerationInformation("get" + name));
             }
         }
 
         private static TypeSymbol GetIntType()
         {
-            return new LiteralTypeSymbol<long>("Int", FrameworkType.Int,
-                default(JsLiteralConversion).ConvertIntLiteral,
+            return new TypeSymbol("Int", FrameworkType.Int,
                 implicitConversions: new[]
                 {
-                    MakeConversion(FrameworkType.Rational, exp => $"new Rational(({exp}),1)"),
-                    MakeConversion(FrameworkType.Complex, exp => $"new Complex(new Rational(({exp}),1),0)")
+                    MakeConversion(FrameworkType.Rational, new SpecialCodeGenerationInformation(SpecialCodeGenerationKind.IntToRational)),
+                    MakeConversion(FrameworkType.Complex, new SpecialCodeGenerationInformation(SpecialCodeGenerationKind.IntToComplex)),
                 });
 
-            static ImplicitConversionSymbol MakeConversion(FrameworkType returnType, UnaryGenerator generator)
+            static ImplicitConversionSymbol MakeConversion(FrameworkType returnType,
+                                                           CodeGenerationInformation codeGenerationInfo)
             {
-                return new ImplicitConversionSymbol(FrameworkType.Int, returnType, generator);
+                return new ImplicitConversionSymbol(FrameworkType.Int, returnType, codeGenerationInfo);
             }
         }
 
         private static TypeSymbol GetRationalType()
         {
-            return new LiteralTypeSymbol<Rational>("Rational", FrameworkType.Rational,
-                default(JsLiteralConversion).ConvertRationalLiteral,
+            return new TypeSymbol("Rational", FrameworkType.Rational,
                 implicitConversions: new[]
                 {
-                    new ImplicitConversionSymbol(FrameworkType.Rational, FrameworkType.Complex,
-                        exp => $"new Complex(({exp}), 0)"),
+                    new ImplicitConversionSymbol(FrameworkType.Rational,
+                                                 FrameworkType.Complex,
+                                                 new SpecialCodeGenerationInformation(SpecialCodeGenerationKind.RationalToComplex)),
                 },
                 properties: new[]
                 {
@@ -198,22 +199,20 @@ namespace Krypton.Framework
 
             static PropertySymbol MakeProperty(string name)
             {
-                return new PropertySymbol(name, FrameworkType.Int,
-                    exp => $"({exp}).get{name}()");
+                return new PropertySymbol(name,
+                                          FrameworkType.Int,
+                                          new MethodCallCodeGenerationInformation("get" + name));
             }
         }
 
         private static TypeSymbol GetStringType()
         {
-            PropertySymbol lengthProp = new("Length", FrameworkType.Int,
-                exp => $"({exp}).length");
-
-            return new LiteralTypeSymbol<string>("String", FrameworkType.String,
-                default(JsLiteralConversion).ConvertStringLiteral,
+            return new TypeSymbol("String", FrameworkType.String,
                 properties: new[]
                 {
-                    new PropertySymbol("Length", FrameworkType.Int,
-                        exp => $"({exp}).length")
+                    new PropertySymbol("Length",
+                                       FrameworkType.Int,
+                                       new SpecialCodeGenerationInformation(SpecialCodeGenerationKind.GetLengthProp)),
                 });
         }
 

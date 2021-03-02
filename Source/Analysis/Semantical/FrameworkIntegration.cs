@@ -156,7 +156,7 @@ namespace Krypton.Analysis.Semantical
             return new FrameworkFunctionSymbolNode(functionSymbol.Name,
                                                    parameters,
                                                    returnType,
-                                                   functionSymbol.Generator,
+                                                   functionSymbol.CodeGenerationInfo,
                                                    lineNumber: 0,
                                                    index: -1);
         }

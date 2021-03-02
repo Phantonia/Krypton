@@ -8,13 +8,13 @@ namespace Krypton.Analysis.Ast.Symbols
         internal FrameworkFunctionSymbolNode(string name,
                                              IEnumerable<ParameterSymbolNode> parameters,
                                              TypeSymbolNode? returnType,
-                                             FunctionCallGenerator generator,
+                                             CodeGenerationInformation codeGenerationInfo,
                                              int lineNumber,
                                              int index) : base(name, parameters, returnType, lineNumber, index)
         {
-            Generator = generator;
+            CodeGenerationInfo = codeGenerationInfo;
         }
 
-        public FunctionCallGenerator Generator { get; }
+        public CodeGenerationInformation CodeGenerationInfo { get; }
     }
 }

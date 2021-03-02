@@ -176,7 +176,6 @@ namespace UnitTests
             var func = (FrameworkFunctionSymbolNode)bdid.Symbol;
 
             Assert.AreEqual("Output", func.Identifier);
-            Assert.AreEqual("console.log(uwu)", func.Generator(new[] { "uwu" }));
         }
 
         [Test]
