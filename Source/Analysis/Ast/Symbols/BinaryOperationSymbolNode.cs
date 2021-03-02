@@ -9,7 +9,7 @@ namespace Krypton.Analysis.Ast.Symbols
                                            TypeSymbolNode leftType,
                                            TypeSymbolNode rightType,
                                            TypeSymbolNode returnType,
-                                           BinaryOperationCodeGenerationInformation codeGenerationInfo,
+                                           CodeGenerationInformation codeGenerationInfo,
                                            int lineNumber,
                                            int index) : base(identifier: string.Empty, lineNumber, index)
         {
@@ -20,7 +20,7 @@ namespace Krypton.Analysis.Ast.Symbols
             CodeGenerationInfo = codeGenerationInfo;
         }
 
-        public BinaryOperationCodeGenerationInformation CodeGenerationInfo { get; }
+        public CodeGenerationInformation CodeGenerationInfo { get; }
 
         public TypeSymbolNode LeftOperandTypeNode { get; }
 

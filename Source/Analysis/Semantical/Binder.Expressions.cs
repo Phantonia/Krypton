@@ -223,6 +223,8 @@ namespace Krypton.Analysis.Semantical
                 return null;
             }
 
+            unaryOperation.Bind(operationSymbol);
+
             return operationSymbol.ReturnTypeNode;
         }
     }

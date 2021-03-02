@@ -6,7 +6,7 @@
                                        FrameworkType leftType,
                                        FrameworkType rightType,
                                        FrameworkType returnType,
-                                       BinaryOperationCodeGenerationInformation codeGenerationInfo)
+                                       CodeGenerationInformation codeGenerationInfo)
         {
             Operator = @operator;
             LeftType = leftType;
@@ -15,7 +15,7 @@
             CodeGenerationInfo = codeGenerationInfo;
         }
 
-        public BinaryOperationCodeGenerationInformation CodeGenerationInfo { get; }
+        public CodeGenerationInformation CodeGenerationInfo { get; }
 
         public FrameworkType LeftType { get; }
 

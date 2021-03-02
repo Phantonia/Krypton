@@ -28,7 +28,7 @@ namespace UnitTests
                 ("Var x = 9 Div 4;", "let x=Math.floor((9)/(4));"),
                 ("Var x = 9 ** 4;", "let x=new Rational(9,1).exponentiate(new Rational(4,1);"),
                 ("Var x = 3 / 4;", "let x=new Rational(3,4);"),
-                ("Var x = 3.14 + 4.9;", "let x=(new Rational(157, 50)).add(new Rational(49, 10));"),
+                ("Var x = 3.14 + 4.9;", "let x=(new Rational(157,50)).add(new Rational(49,10));"),
             };
 
             foreach (var (expected, actual) in from c in cases
@@ -102,6 +102,45 @@ namespace UnitTests
             var o = CodeGenerator.GenerateCode(c, template: "");
 
             MyAssert.EmittedCorrectTopLevelStatement("while(true){let x=4;}", o);
+        }
+
+        [Test]
+        public void UnaryOperationIntNegateTest()
+        {
+            const string Code = @"
+            Var x = -5;
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            MyAssert.EmittedCorrectTopLevelStatement("let x=-(5);", o);
+        }
+
+        [Test]
+        public void UnaryOperationBoolNotTest()
+        {
+            const string Code = @"
+            Var x = Not True;
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            MyAssert.EmittedCorrectTopLevelStatement("let x=!(true);", o);
+        }
+
+        [Test]
+        public void UnaryOperationRationalNegateTest()
+        {
+            const string Code = @"
+            Var x = -5.6;
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            MyAssert.EmittedCorrectTopLevelStatement("let x=(new Rational(28,5)).negate();", o);
         }
     }
 }

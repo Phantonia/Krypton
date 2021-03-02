@@ -207,7 +207,7 @@ namespace Krypton.Analysis.Semantical
             return new UnaryOperationSymbolNode(unaryOperationSymbol.Operator,
                                                 operandType,
                                                 returnType,
-                                                unaryOperationSymbol.Generator,
+                                                unaryOperationSymbol.CodeGenerationInfo,
                                                 lineNumber: 0,
                                                 index: -1);
         }

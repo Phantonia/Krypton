@@ -12,25 +12,28 @@ namespace Krypton.CodeGeneration
             switch (expression)
             {
                 case BooleanLiteralExpressionNode booleanLiteral:
-                    output.Append(LiteralGenerator.ConvertBoolLiteral(booleanLiteral.Value));
+                    LiteralGenerator.EmitBoolLiteral(booleanLiteral.Value, output);
                     break;
                 case CharLiteralExpressionNode charLiteral:
-                    output.Append(LiteralGenerator.ConvertCharLiteral(charLiteral.Value));
+                    LiteralGenerator.EmitCharLiteral(charLiteral.Value, output);
                     break;
                 case ImaginaryLiteralExpressionNode imaginaryLiteral:
-                    output.Append(LiteralGenerator.ConvertImaginaryLiteral(imaginaryLiteral.Value));
+                    LiteralGenerator.EmitImaginaryLiteral(imaginaryLiteral.Value, output);
                     break;
                 case IntegerLiteralExpressionNode integerLiteral:
-                    output.Append(LiteralGenerator.ConvertIntLiteral(integerLiteral.Value));
+                    LiteralGenerator.EmitIntLiteral(integerLiteral.Value, output);
                     break;
                 case RationalLiteralExpressionNode rationalLiteral:
-                    output.Append(LiteralGenerator.ConvertRationalLiteral(rationalLiteral.Value));
+                    LiteralGenerator.EmitRationalLiteral(rationalLiteral.Value, output);
                     break;
                 case StringLiteralExpressionNode stringLiteral:
-                    output.Append(LiteralGenerator.ConvertStringLiteral(stringLiteral.Value));
+                    output.Append(LiteralGenerator.EmitStringLiteral(stringLiteral.Value));
                     break;
                 case BinaryOperationExpressionNode binaryOperation:
                     EmitBinaryOperation(binaryOperation);
+                    break;
+                case UnaryOperationExpressionNode unaryOperation:
+                    EmitUnaryOperation(unaryOperation);
                     break;
                 default:
                     Debug.Fail(message: null);
@@ -44,7 +47,7 @@ namespace Krypton.CodeGeneration
 
             switch (binaryOperation.Operation.CodeGenerationInfo)
             {
-                case JsOperatorBinaryOperationCodeGenerationInformation operatorInfo:
+                case JsOperatorCodeGenerationInformation operatorInfo:
                     output.Append('(');
                     EmitExpression(binaryOperation.LeftOperandNode);
                     output.Append(')');
@@ -53,7 +56,7 @@ namespace Krypton.CodeGeneration
                     EmitExpression(binaryOperation.RightOperandNode);
                     output.Append(')');
                     break;
-                case MethodCallBinaryOperationCodeGenerationInformation methodInfo:
+                case MethodCallCodeGenerationInformation methodInfo:
                     output.Append('(');
                     EmitExpression(binaryOperation.LeftOperandNode);
                     output.Append(").");
@@ -62,27 +65,52 @@ namespace Krypton.CodeGeneration
                     EmitExpression(binaryOperation.RightOperandNode);
                     output.Append(')');
                     break;
-                case SpecialBinaryOperationCodeGenerationInformation
-                { Kind: SpecialOperationGenerationKind.IntegerDivision }:
+                case SpecialCodeGenerationInformation
+                { Kind: SpecialCodeGenerationKind.IntegerDivision }:
                     output.Append("Math.floor((");
                     EmitExpression(binaryOperation.LeftOperandNode);
                     output.Append(")/(");
                     EmitExpression(binaryOperation.RightOperandNode);
                     output.Append("))");
                     break;
-                case SpecialBinaryOperationCodeGenerationInformation { Kind: SpecialOperationGenerationKind.IntPowerInt }:
+                case SpecialCodeGenerationInformation { Kind: SpecialCodeGenerationKind.IntPowerInt }:
                     output.Append("new Rational(");
                     EmitExpression(binaryOperation.LeftOperandNode);
                     output.Append(",1).exponentiate(new Rational(");
                     EmitExpression(binaryOperation.RightOperandNode);
                     output.Append(",1)");
                     break;
-                case SpecialBinaryOperationCodeGenerationInformation { Kind: SpecialOperationGenerationKind.IntToRationalDivision }:
+                case SpecialCodeGenerationInformation { Kind: SpecialCodeGenerationKind.IntToRationalDivision }:
                     output.Append("new Rational(");
                     EmitExpression(binaryOperation.LeftOperandNode);
                     output.Append(',');
                     EmitExpression(binaryOperation.RightOperandNode);
                     output.Append(')');
+                    break;
+                default:
+                    Debug.Fail(message: null);
+                    return;
+            }
+        }
+
+        private void EmitUnaryOperation(UnaryOperationExpressionNode unaryOperation)
+        {
+            Debug.Assert(unaryOperation.Operation != null);
+
+            switch (unaryOperation.Operation.CodeGenerationInfo)
+            {
+                case JsOperatorCodeGenerationInformation operatorInfo: // e.g. -(x)
+                    output.Append(operatorInfo.Operator);
+                    output.Append('(');
+                    EmitExpression(unaryOperation.OperandNode);
+                    output.Append(')');
+                    break;
+                case MethodCallCodeGenerationInformation methodInfo: // e.g. (x).negate()
+                    output.Append('(');
+                    EmitExpression(unaryOperation.OperandNode);
+                    output.Append(").");
+                    output.Append(methodInfo.MethodName);
+                    output.Append("()");
                     break;
                 default:
                     Debug.Fail(message: null);

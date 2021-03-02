@@ -67,13 +67,13 @@ namespace Krypton.Framework
 
                 // Int operators
                 new BinaryOperationSymbol(Operator.DoubleAsterisk, FrameworkType.Int, FrameworkType.Int, FrameworkType.Rational,
-                    new SpecialBinaryOperationCodeGenerationInformation(SpecialOperationGenerationKind.IntPowerInt)),
+                    new SpecialCodeGenerationInformation(SpecialCodeGenerationKind.IntPowerInt)),
                     //(x, y) => $"(new Rational(({x}),1)).$op_expon(new Rational(({y}),1))"),
                 MakeOperationWithJsOperator(Operator.Asterisk, "*", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
                 new BinaryOperationSymbol(Operator.DivKeyword, FrameworkType.Int, FrameworkType.Int, FrameworkType.Int,
-                    new SpecialBinaryOperationCodeGenerationInformation(SpecialOperationGenerationKind.IntegerDivision)),
+                    new SpecialCodeGenerationInformation(SpecialCodeGenerationKind.IntegerDivision)),
                 new BinaryOperationSymbol(Operator.ForeSlash, FrameworkType.Int, FrameworkType.Int, FrameworkType.Rational,
-                    new SpecialBinaryOperationCodeGenerationInformation(SpecialOperationGenerationKind.IntToRationalDivision)),
+                    new SpecialCodeGenerationInformation(SpecialCodeGenerationKind.IntToRationalDivision)),
                 MakeOperationWithJsOperator(Operator.ModKeyword, "%", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
                 MakeOperationWithJsOperator(Operator.Plus, "+", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
                 MakeOperationWithJsOperator(Operator.Minus, "-", FrameworkType.Int, FrameworkType.Int, FrameworkType.Int),
@@ -119,7 +119,7 @@ namespace Krypton.Framework
                                                  leftType,
                                                  rightType,
                                                  returnType,
-                                                 new JsOperatorBinaryOperationCodeGenerationInformation(jsOperator));
+                                                 new JsOperatorCodeGenerationInformation(jsOperator));
             }
 
             static BinaryOperationSymbol MakeOperationWithMethod(Operator op,
@@ -133,7 +133,7 @@ namespace Krypton.Framework
                                                  leftType,
                                                  rightType,
                                                  returnType,
-                                                 new MethodCallBinaryOperationCodeGenerationInformation(jsMethodName));
+                                                 new MethodCallCodeGenerationInformation(jsMethodName));
             }
         }
 
@@ -221,14 +221,25 @@ namespace Krypton.Framework
         {
             return new List<UnaryOperationSymbol>(capacity: 4)
             {
-                new UnaryOperationSymbol(Operator.NotKeyword, FrameworkType.Bool, FrameworkType.Bool,
-                    exp => $"!({exp})"),
-                new UnaryOperationSymbol(Operator.Tilde, FrameworkType.Int, FrameworkType.Int,
-                    exp => $"~({exp})"),
-                new UnaryOperationSymbol(Operator.Minus, FrameworkType.Int, FrameworkType.Int,
-                    exp => $"-({exp})"),
-                new UnaryOperationSymbol(Operator.Minus, FrameworkType.Rational, FrameworkType.Rational,
-                    exp => $"({exp}).$op_neg()"),
+                new UnaryOperationSymbol(Operator.NotKeyword,
+                                         FrameworkType.Bool,
+                                         FrameworkType.Bool,
+                                         new JsOperatorCodeGenerationInformation("!")),
+
+                new UnaryOperationSymbol(Operator.Tilde,
+                                         FrameworkType.Int,
+                                         FrameworkType.Int,
+                                         new JsOperatorCodeGenerationInformation("~")),
+
+                new UnaryOperationSymbol(Operator.Minus,
+                                         FrameworkType.Int,
+                                         FrameworkType.Int,
+                                         new JsOperatorCodeGenerationInformation("-")),
+
+                new UnaryOperationSymbol(Operator.Minus,
+                                         FrameworkType.Rational,
+                                         FrameworkType.Rational,
+                                         new MethodCallCodeGenerationInformation("negate")),
             };
         }
     }

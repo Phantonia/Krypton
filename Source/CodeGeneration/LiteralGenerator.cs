@@ -1,25 +1,43 @@
 ﻿using Krypton.Framework.Literals;
 using System;
-using System.Runtime.CompilerServices;
+using System.Text;
 
-[assembly: InternalsVisibleTo("UnitTests")]
 namespace Krypton.CodeGeneration
 {
     internal static class LiteralGenerator
     {
-        public static string ConvertBoolLiteral(bool literal) => literal ? "true" : "false";
+        public static void EmitBoolLiteral(bool literal, StringBuilder output)
+        {
+            output.Append(literal ? "true" : "false");
+        }
 
-        public static string ConvertCharLiteral(char literal) => ((int)literal).ToString();
+        public static void EmitCharLiteral(char literal, StringBuilder output)
+        {
+            output.Append((int)literal);
+        }
 
-        public static string ConvertComplexLiteral(Complex literal) => $"new Complex({ConvertRationalLiteral(literal.Real)}, {ConvertRationalLiteral(literal.Imaginary)})";
+        public static void EmitImaginaryLiteral(Rational literal, StringBuilder output)
+        {
+            output.Append("new Complex(new Rational(0,1),");
+            EmitRationalLiteral(literal, output);
+            output.Append(')');
+        }
 
-        public static string ConvertImaginaryLiteral(Rational literal) => $"new Complex(new Rational(0, 1), {ConvertRationalLiteral(literal)})";
+        public static void EmitIntLiteral(long literal, StringBuilder output)
+        {
+            output.Append(literal);
+        }
 
-        public static string ConvertIntLiteral(long literal) => literal.ToString();
+        public static void EmitRationalLiteral(Rational literal, StringBuilder output)
+        {
+            output.Append("new Rational(");
+            EmitIntLiteral(literal.Numerator, output);
+            output.Append(',');
+            EmitIntLiteral(literal.Denominator, output);
+            output.Append(')');
+        }
 
-        public static string ConvertRationalLiteral(Rational literal) => $"new Rational({ConvertIntLiteral(literal.Numerator)}, {ConvertIntLiteral(literal.Denominator)})";
-
-        public static string ConvertStringLiteral(string literal)
+        public static string EmitStringLiteral(string literal)
         {
             throw new NotImplementedException();
         }

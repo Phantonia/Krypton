@@ -2,15 +2,18 @@
 {
     public sealed class UnaryOperationSymbol : FrameworkSymbol
     {
-        internal UnaryOperationSymbol(Operator @operator, FrameworkType operandType, FrameworkType returnType, UnaryGenerator generator)
+        internal UnaryOperationSymbol(Operator @operator,
+                                      FrameworkType operandType,
+                                      FrameworkType returnType,
+                                      CodeGenerationInformation codeGenerationInfo)
         {
             Operator = @operator;
             OperandType = operandType;
             ReturnType = returnType;
-            Generator = generator;
+            CodeGenerationInfo = codeGenerationInfo;
         }
 
-        public UnaryGenerator Generator { get; }
+        public CodeGenerationInformation CodeGenerationInfo { get; }
 
         public FrameworkType OperandType { get; }
 

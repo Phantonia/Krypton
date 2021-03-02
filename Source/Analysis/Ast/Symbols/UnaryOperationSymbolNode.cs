@@ -10,19 +10,21 @@ namespace Krypton.Analysis.Ast.Symbols
         internal UnaryOperationSymbolNode(Operator @operator,
                                           TypeSymbolNode operandType,
                                           TypeSymbolNode returnType,
-                                          UnaryGenerator generator,
+                                          CodeGenerationInformation codeGenerationInfo,
                                           int lineNumber,
                                           int index) : base(string.Empty, lineNumber, index)
         {
             Operator = @operator;
             OperandTypeNode = operandType;
             ReturnTypeNode = returnType;
-            Generator = generator;
+            CodeGenerationInfo = codeGenerationInfo;
         }
 
-        public UnaryGenerator Generator { get; }
+        public CodeGenerationInformation CodeGenerationInfo { get; }
 
         public TypeSymbolNode OperandTypeNode { get; }
+
+        public UnaryOperationSymbolNode? Operation { get; }
 
         public Operator Operator { get; }
 

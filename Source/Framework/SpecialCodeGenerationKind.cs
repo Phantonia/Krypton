@@ -1,6 +1,6 @@
 ﻿namespace Krypton.Framework
 {
-    public enum SpecialOperationGenerationKind
+    public enum SpecialCodeGenerationKind
     {
         None = 0,
         IntPowerInt, // (new Rational({exp}, 1).exponentiate(new Rational({exp}, 1)
