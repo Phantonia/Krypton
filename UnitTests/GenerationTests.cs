@@ -39,5 +39,69 @@ namespace UnitTests
                 MyAssert.EmittedCorrectTopLevelStatement(expected, actual);
             }
         }
+
+        [Test]
+        public void IfTest()
+        {
+            const string Code = @"
+            If 4 == 4
+            {
+
+            }
+            Else If 5 == 5
+            {
+
+            }
+            Else
+            {
+
+            }
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            MyAssert.EmittedCorrectTopLevelStatement("if((4)===(4)){}else if((5)===(5)){}else{}", o);
+        }
+
+        [Test]
+        public void ReturnTest()
+        {
+            const string Code = @"
+            Return;
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            MyAssert.EmittedCorrectTopLevelStatement("return;", o);
+        }
+
+        [Test]
+        public void AssignmentTest()
+        {
+            const string Code = @"
+            Var x = 5;
+            x = 4;
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            MyAssert.EmittedCorrectTopLevelStatement("let x=5;x=4;", o);
+        }
+
+        [Test]
+        public void WhileTest()
+        {
+            const string Code = @"
+            While True { Var x = 4; }
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            MyAssert.EmittedCorrectTopLevelStatement("while(true){let x=4;}", o);
+        }
     }
 }
