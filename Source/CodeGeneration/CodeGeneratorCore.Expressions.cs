@@ -1,6 +1,8 @@
 ﻿using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Expressions.Literals;
+using Krypton.Analysis.Ast.Symbols;
 using Krypton.Framework;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Krypton.CodeGeneration
@@ -31,6 +33,12 @@ namespace Krypton.CodeGeneration
                     break;
                 case BinaryOperationExpressionNode binaryOperation:
                     EmitBinaryOperation(binaryOperation);
+                    break;
+                case FunctionCallExpressionNode functionCall:
+                    EmitFunctionCallExpression(functionCall);
+                    break;
+                case IdentifierExpressionNode identifierExpression:
+                    output.Append(identifierExpression.Identifier);
                     break;
                 case UnaryOperationExpressionNode unaryOperation:
                     EmitUnaryOperation(unaryOperation);
@@ -91,6 +99,49 @@ namespace Krypton.CodeGeneration
                     Debug.Fail(message: null);
                     return;
             }
+        }
+
+        private void EmitFunctionCallExpression(FunctionCallExpressionNode functionCall)
+        {
+            if (functionCall.SymbolNode is FrameworkFunctionSymbolNode frameworkFunction)
+            {
+                switch (frameworkFunction.CodeGenerationInfo)
+                {
+                    case SpecialCodeGenerationInformation { Kind: SpecialCodeGenerationKind.ConsoleLog }:
+                        output.Append("console.log(");
+                        EmitExpression(functionCall.ArgumentNodes[0]);
+                        output.Append(')');
+                        return;
+                }
+            }
+
+            // at this point this should only be identifiers, so it's okay
+            // to not put the expression in parentheses
+            EmitExpression(functionCall.FunctionExpressionNode);
+
+            output.Append('(');
+
+            using IEnumerator<ExpressionNode> enumerator
+                = functionCall.ArgumentNodes.GetEnumerator();
+
+            if (enumerator.MoveNext())
+            {
+                while (true)
+                {
+                    EmitExpression(enumerator.Current);
+
+                    if (enumerator.MoveNext())
+                    {
+                        output.Append(',');
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            output.Append(')');
         }
 
         private void EmitUnaryOperation(UnaryOperationExpressionNode unaryOperation)

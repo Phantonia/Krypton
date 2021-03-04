@@ -440,7 +440,7 @@ namespace UnitTests
                     ArgumentNodes: var arguments
                 })
             {
-                Assert.IsTrue(arguments?[0] is IdentifierExpressionNode
+                Assert.IsTrue(arguments[0] is IdentifierExpressionNode
                 {
                     IdentifierNode: BoundIdentifierNode
                     {

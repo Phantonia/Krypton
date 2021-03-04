@@ -16,6 +16,9 @@ namespace Krypton.CodeGeneration
                 case ForStatementNode forStatement:
                     EmitForStatement(forStatement);
                     break;
+                case FunctionCallStatementNode functionCall:
+                    EmitFunctionCallStatement(functionCall);
+                    break;
                 case IfStatementNode ifStatement:
                     EmitIfStatement(ifStatement);
                     break;
@@ -85,6 +88,12 @@ namespace Krypton.CodeGeneration
             output.Append(')');
 
             EmitStatementBlock(forStatement.StatementNodes);
+        }
+
+        private void EmitFunctionCallStatement(FunctionCallStatementNode functionCall)
+        {
+            EmitFunctionCallExpression(functionCall.UnderlyingFunctionCallExpressionNode);
+            output.Append(';');
         }
 
         private void EmitIfStatement(IfStatementNode ifStatement)

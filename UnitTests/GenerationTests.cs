@@ -1,4 +1,5 @@
-﻿using Krypton.CodeGeneration;
+﻿using Krypton.Analysis.Semantical;
+using Krypton.CodeGeneration;
 using NUnit.Framework;
 using System.Linq;
 
@@ -141,6 +142,60 @@ namespace UnitTests
             var o = CodeGenerator.GenerateCode(c, template: "");
 
             MyAssert.EmittedCorrectTopLevelStatement("let x=(new Rational(28,5)).negate();", o);
+        }
+
+        [Test]
+        public void FunctionDeclarationTest()
+        {
+            const string Code = @"
+            Func HelloWorld() { }
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            MyAssert.EmittedCorrectFunctionDeclaration("function HelloWorld(){}", o);
+        }
+
+        [Test]
+        public void FunctionDeclarationParamTest()
+        {
+            const string Code = @"
+            Func SomeFunc(x As Int) { Var y = 4; }
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            MyAssert.EmittedCorrectFunctionDeclaration("function SomeFunc(x){let y=4;}", o);
+        }
+
+        [Test]
+        public void OutputTest()
+        {
+            const string Code = @"
+            Var s As String;
+            Output(s);
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            MyAssert.EmittedCorrectTopLevelStatement("let s;console.log(s);", o);
+        }
+
+        [Test]
+        public void UdfTest()
+        {
+            const string Code = @"
+            Func Sin(x As Rational) As Rational { }
+            Sin(4);
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            Assert.AreEqual("function Sin(x){}function $main(){Sin(4);}$main();", o);
         }
     }
 }

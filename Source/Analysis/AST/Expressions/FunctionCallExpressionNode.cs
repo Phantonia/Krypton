@@ -1,4 +1,5 @@
-﻿using Krypton.Utilities;
+﻿using Krypton.Analysis.Ast.Symbols;
+using Krypton.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,13 +7,18 @@ namespace Krypton.Analysis.Ast.Expressions
 {
     public sealed class FunctionCallExpressionNode : ExpressionNode
     {
-        internal FunctionCallExpressionNode(ExpressionNode functionExpression, int lineNumber, int index) : base(lineNumber, index)
+        internal FunctionCallExpressionNode(ExpressionNode functionExpression,
+                                            int lineNumber,
+                                            int index) : base(lineNumber, index)
         {
             FunctionExpressionNode = functionExpression;
             FunctionExpressionNode.ParentNode = this;
         }
 
-        internal FunctionCallExpressionNode(ExpressionNode functionExpression, IEnumerable<ExpressionNode>? arguments, int lineNumber, int index) : base(lineNumber, index)
+        internal FunctionCallExpressionNode(ExpressionNode functionExpression,
+                                            IEnumerable<ExpressionNode>? arguments,
+                                            int lineNumber,
+                                            int index) : base(lineNumber, index)
         {
             FunctionExpressionNode = functionExpression;
             ArgumentNodes = ((arguments as IList<ExpressionNode>) ?? arguments?.ToList())?.MakeReadOnly() ?? new ReadOnlyList<ExpressionNode>();
@@ -29,6 +35,13 @@ namespace Krypton.Analysis.Ast.Expressions
         public ReadOnlyList<ExpressionNode> ArgumentNodes { get; } = default;
 
         public ExpressionNode FunctionExpressionNode { get; }
+
+        public FunctionSymbolNode? SymbolNode { get; private set; }
+
+        public void Bind(FunctionSymbolNode symbol)
+        {
+            SymbolNode = symbol;
+        }
 
         public override void PopulateBranches(List<Node> list)
         {

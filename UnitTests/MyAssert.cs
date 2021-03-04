@@ -92,5 +92,10 @@ namespace UnitTests
         {
             Assert.AreEqual($"function $main(){{{expected}}}$main();", actual);
         }
+
+        public static void EmittedCorrectFunctionDeclaration(string expected, string actual)
+        {
+            Assert.AreEqual($"{expected}function $main(){{}}$main();", actual);
+        }
     }
 }

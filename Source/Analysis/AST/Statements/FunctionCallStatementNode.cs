@@ -1,7 +1,7 @@
 ﻿using Krypton.Analysis.Ast.Expressions;
+using Krypton.Analysis.Ast.Symbols;
 using Krypton.Utilities;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Krypton.Analysis.Ast.Statements
 {
@@ -13,9 +13,11 @@ namespace Krypton.Analysis.Ast.Statements
             UnderlyingFunctionCallExpressionNode.ParentNode = this;
         }
 
-        public ReadOnlyList<ExpressionNode>? ArgumentNodes => UnderlyingFunctionCallExpressionNode.ArgumentNodes;
+        public ReadOnlyList<ExpressionNode> ArgumentNodes => UnderlyingFunctionCallExpressionNode.ArgumentNodes;
 
         public ExpressionNode FunctionExpressionNode => UnderlyingFunctionCallExpressionNode.FunctionExpressionNode;
+
+        public FunctionSymbolNode? SymbolNode => UnderlyingFunctionCallExpressionNode.SymbolNode;
 
         public FunctionCallExpressionNode UnderlyingFunctionCallExpressionNode { get; }
 

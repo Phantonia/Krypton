@@ -150,7 +150,7 @@ namespace UnitTests
             FunctionCallStatementNode fcsn = (FunctionCallStatementNode)root!;
 
             Assert.IsInstanceOf<IdentifierExpressionNode>(fcsn.FunctionExpressionNode);
-            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(fcsn.ArgumentNodes?[0]);
+            Assert.IsInstanceOf<IntegerLiteralExpressionNode>(fcsn.ArgumentNodes[0]);
         }
 
         [Test]

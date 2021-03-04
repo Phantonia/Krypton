@@ -139,6 +139,8 @@ namespace Krypton.Analysis.Semantical
                 }
             }
 
+            functionCall.Bind(functionSymbol);
+
             return (functionSymbol.ReturnTypeNode, true);
         }
 

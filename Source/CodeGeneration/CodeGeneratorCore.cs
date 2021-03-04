@@ -1,5 +1,6 @@
 ﻿using Krypton.Analysis;
 using Krypton.Analysis.Ast;
+using Krypton.Analysis.Ast.Declarations;
 using Krypton.Analysis.Ast.Statements;
 using System.Collections.Generic;
 using System.Text;
@@ -15,7 +16,6 @@ namespace Krypton.CodeGeneration
         }
 
         private readonly Compilation compilation;
-        private readonly Dictionary<string, string> constants = new();
         private int globalLoopCount = 0;
         private readonly Dictionary<ILoopStatementNode, int> associatedLoopIds = new();
         private readonly StringBuilder output = new();
@@ -24,8 +24,47 @@ namespace Krypton.CodeGeneration
         public string GenerateCode()
         {
             output.Append(template);
+
+            foreach (FunctionDeclarationNode functionDeclaration in compilation.Program.Functions)
+            {
+                EmitFunctionDeclaration(functionDeclaration);
+            }
+
             EmitTopLevelStatements();
+
             return output.ToString();
+        }
+
+        private void EmitFunctionDeclaration(FunctionDeclarationNode functionDeclaration)
+        {
+            output.Append("function ");
+            output.Append(functionDeclaration.Identifier);
+
+            output.Append('(');
+
+            using IEnumerator<ParameterDeclarationNode> enumerator
+                = functionDeclaration.ParameterNodes.GetEnumerator();
+
+            if (enumerator.MoveNext())
+            {
+                while (true)
+                {
+                    output.Append(enumerator.Current.Identifier);
+
+                    if (enumerator.MoveNext())
+                    {
+                        output.Append(',');
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            output.Append(')');
+
+            EmitStatementBlock(functionDeclaration.BodyNode);
         }
 
         private void EmitStatementBlock(StatementCollectionNode statements)
