@@ -250,7 +250,7 @@ namespace Krypton.Analysis.Lexical
 
                     if (StringLiteralParser.TryParse(stringCode, out string value))
                     {
-                        return new StringLiteralLexeme(Code[startIndex..endIndex], lineNumber, lexemeIndex);
+                        return new StringLiteralLexeme(value, lineNumber, lexemeIndex);
                     }
                     else
                     {

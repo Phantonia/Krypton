@@ -197,5 +197,29 @@ namespace UnitTests
 
             Assert.AreEqual("function Sin(x){}function $main(){Sin(4);}$main();", o);
         }
+
+        [Test]
+        public void StringLiteralTest()
+        {
+            const string Code = @"
+            Output(""xyz"");
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            MyAssert.EmittedCorrectTopLevelStatement(@"console.log(""xyz"");", o);
+        }
+
+        [Test]
+        public void MoreComplexStringLiteralTest()
+        {
+            const string Code = "Output(\"xyz\\nabc$\");";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            MyAssert.EmittedCorrectTopLevelStatement("console.log(\"xyz\\u000aabc\\u0024\");", o);
+        }
     }
 }

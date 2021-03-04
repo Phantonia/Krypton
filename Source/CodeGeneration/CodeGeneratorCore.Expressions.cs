@@ -29,7 +29,7 @@ namespace Krypton.CodeGeneration
                     LiteralGenerator.EmitRationalLiteral(rationalLiteral.Value, output);
                     break;
                 case StringLiteralExpressionNode stringLiteral:
-                    output.Append(LiteralGenerator.EmitStringLiteral(stringLiteral.Value));
+                    LiteralGenerator.EmitStringLiteral(stringLiteral.Value, output);
                     break;
                 case BinaryOperationExpressionNode binaryOperation:
                     EmitBinaryOperation(binaryOperation);

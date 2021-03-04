@@ -37,9 +37,24 @@ namespace Krypton.CodeGeneration
             output.Append(')');
         }
 
-        public static string EmitStringLiteral(string literal)
+        public static void EmitStringLiteral(string literal, StringBuilder output)
         {
-            throw new NotImplementedException();
+            output.Append('"');
+
+            foreach (char c in literal)
+            {
+                if (char.IsDigit(c) || char.IsLetter(c))
+                {
+                    output.Append(c);
+                }
+                else
+                {
+                    output.Append("\\u");
+                    output.Append(Convert.ToString(c, toBase: 16).PadLeft(4, '0'));
+                }
+            }
+
+            output.Append('"');
         }
     }
 }
