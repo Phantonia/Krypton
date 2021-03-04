@@ -43,7 +43,7 @@ namespace Krypton.CodeGeneration
 
             foreach (char c in literal)
             {
-                if (char.IsDigit(c) || char.IsLetter(c))
+                if ((char.IsDigit(c) || char.IsLetter(c)) && c <= 'z')
                 {
                     output.Append(c);
                 }
