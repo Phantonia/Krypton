@@ -272,5 +272,19 @@ namespace UnitTests
 
             MyAssert.EmittedCorrectTopLevelStatement("$loop_0:while(true){while(true){continue $loop_0;}}", o);
         }
+
+        [Test]
+        public void ConstantTest()
+        {
+            const string Code = @"
+            Const Four = 4;
+            Var x = Four;
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            Assert.AreEqual("const Four=4;function $main(){let x=Four;}$main();", o);
+        }
     }
 }

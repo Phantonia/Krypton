@@ -25,6 +25,11 @@ namespace Krypton.CodeGeneration
         {
             output.Append(template);
 
+            foreach (ConstantDeclarationNode constantDeclaration in compilation.Program.Constants)
+            {
+                EmitConstantDeclaration(constantDeclaration);
+            }
+
             foreach (FunctionDeclarationNode functionDeclaration in compilation.Program.Functions)
             {
                 EmitFunctionDeclaration(functionDeclaration);
@@ -33,6 +38,15 @@ namespace Krypton.CodeGeneration
             EmitTopLevelStatements();
 
             return output.ToString();
+        }
+
+        private void EmitConstantDeclaration(ConstantDeclarationNode constantDeclaration)
+        {
+            output.Append("const ");
+            output.Append(constantDeclaration.Identifier);
+            output.Append('=');
+            EmitExpression(constantDeclaration.ValueNode);
+            output.Append(';');
         }
 
         private void EmitFunctionDeclaration(FunctionDeclarationNode functionDeclaration)
