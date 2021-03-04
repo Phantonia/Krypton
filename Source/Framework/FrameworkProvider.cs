@@ -1,6 +1,5 @@
 ﻿using Krypton.Framework.Literals;
 using Krypton.Framework.Symbols;
-using Krypton.Utilities;
 using System;
 using System.Collections.Generic;
 
@@ -19,7 +18,7 @@ namespace Krypton.Framework
                 [FrameworkType.Bool] = new TypeSymbol("Bool", FrameworkType.Bool),
                 [FrameworkType.Char] = GetCharType(),
             };
-            
+
             List<FunctionSymbol> functions = new(capacity: 1)
             {
                 new FunctionSymbol("Output",

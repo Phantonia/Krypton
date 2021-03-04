@@ -286,5 +286,22 @@ namespace UnitTests
 
             Assert.AreEqual("const Four=4;function $main(){let x=Four;}$main();", o);
         }
+
+        [Test]
+        public void PropertyTest()
+        {
+            const string Code = @"
+            Var x = 3.14.Numerator;
+            Var y = 4i.Real;
+            Var z = ""abc"".Length;
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            MyAssert.EmittedCorrectTopLevelStatement("let x=(new Rational(157,50)).getNumerator();" +
+                                                     "let y=(new Complex(new Rational(0,1),new Rational(4,1))).getReal();" +
+                                                    @"let z=(""abc"").length;", o);
+        }
     }
 }

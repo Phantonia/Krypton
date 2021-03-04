@@ -186,6 +186,7 @@ namespace Krypton.Analysis.Semantical
         {
             return new PropertySymbolNode(propertySymbol.Name,
                                           GetTypeSymbolNode(propertySymbol.ReturnType, typeIdentifierMap, frameworkVersion),
+                                          propertySymbol.CodeGenerationInfo,
                                           lineNumber: 0,
                                           index: -1);
         }

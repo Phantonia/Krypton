@@ -13,11 +13,20 @@ namespace Krypton.CodeGeneration
         {
             switch (expression)
             {
+                case BinaryOperationExpressionNode binaryOperation:
+                    EmitBinaryOperation(binaryOperation);
+                    break;
                 case BooleanLiteralExpressionNode booleanLiteral:
                     LiteralGenerator.EmitBoolLiteral(booleanLiteral.Value, output);
                     break;
                 case CharLiteralExpressionNode charLiteral:
                     LiteralGenerator.EmitCharLiteral(charLiteral.Value, output);
+                    break;
+                case FunctionCallExpressionNode functionCall:
+                    EmitFunctionCallExpression(functionCall);
+                    break;
+                case IdentifierExpressionNode identifierExpression:
+                    output.Append(identifierExpression.Identifier);
                     break;
                 case ImaginaryLiteralExpressionNode imaginaryLiteral:
                     LiteralGenerator.EmitImaginaryLiteral(imaginaryLiteral.Value, output);
@@ -25,20 +34,14 @@ namespace Krypton.CodeGeneration
                 case IntegerLiteralExpressionNode integerLiteral:
                     LiteralGenerator.EmitIntLiteral(integerLiteral.Value, output);
                     break;
+                case PropertyGetExpressionNode propertyGet:
+                    EmitPropertyGet(propertyGet);
+                    break;
                 case RationalLiteralExpressionNode rationalLiteral:
                     LiteralGenerator.EmitRationalLiteral(rationalLiteral.Value, output);
                     break;
                 case StringLiteralExpressionNode stringLiteral:
                     LiteralGenerator.EmitStringLiteral(stringLiteral.Value, output);
-                    break;
-                case BinaryOperationExpressionNode binaryOperation:
-                    EmitBinaryOperation(binaryOperation);
-                    break;
-                case FunctionCallExpressionNode functionCall:
-                    EmitFunctionCallExpression(functionCall);
-                    break;
-                case IdentifierExpressionNode identifierExpression:
-                    output.Append(identifierExpression.Identifier);
                     break;
                 case UnaryOperationExpressionNode unaryOperation:
                     EmitUnaryOperation(unaryOperation);
@@ -142,6 +145,30 @@ namespace Krypton.CodeGeneration
             }
 
             output.Append(')');
+        }
+
+        private void EmitPropertyGet(PropertyGetExpressionNode propertyGet)
+        {
+            Debug.Assert(propertyGet.PropertySymbolNode != null);
+
+            switch (propertyGet.PropertySymbolNode.CodeGenerationInfo)
+            {
+                case MethodCallCodeGenerationInformation methodCallInfo:
+                    output.Append('(');
+                    EmitExpression(propertyGet.ExpressionNode);
+                    output.Append(").");
+                    output.Append(methodCallInfo.MethodName);
+                    output.Append("()");
+                    break;
+                case SpecialCodeGenerationInformation { Kind: SpecialCodeGenerationKind.GetLengthProp }:
+                    output.Append('(');
+                    EmitExpression(propertyGet.ExpressionNode);
+                    output.Append(").length");
+                    break;
+                default:
+                    Debug.Fail(message: null);
+                    break;
+            }
         }
 
         private void EmitUnaryOperation(UnaryOperationExpressionNode unaryOperation)

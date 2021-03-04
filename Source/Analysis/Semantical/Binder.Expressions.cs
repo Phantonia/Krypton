@@ -199,6 +199,8 @@ namespace Krypton.Analysis.Semantical
                 return null;
             }
 
+            propertyGet.Bind(property);
+
             return property.TypeNode;
         }
 
