@@ -22,6 +22,9 @@ namespace Krypton.CodeGeneration
                 case IfStatementNode ifStatement:
                     EmitIfStatement(ifStatement);
                     break;
+                case LoopControlStatementNode loopControlStatement:
+                    EmitLoopControlStatement(loopControlStatement);
+                    break;
                 case ReturnStatementNode returnStatement:
                     EmitReturnStatement(returnStatement);
                     break;
@@ -116,6 +119,53 @@ namespace Krypton.CodeGeneration
                 output.Append("else");
                 EmitStatementBlock(ifStatement.ElsePartNode.StatementNodes);
             }
+        }
+
+        private void EmitLoopControlStatement(LoopControlStatementNode loopControlStatement)
+        {
+            switch (loopControlStatement.Kind)
+            {
+                case LoopControlStatementKind.Continue:
+                    output.Append("continue");
+                    break;
+                case LoopControlStatementKind.Leave:
+                    output.Append("break");
+                    break;
+            }
+
+            if (loopControlStatement.Level > 1)
+            {
+                Node? parent = loopControlStatement;
+
+                int level = loopControlStatement.Level;
+
+                while (true)
+                {
+                    parent = parent.ParentNode;
+
+                    Debug.Assert(parent is StatementCollectionNode);
+
+                    parent = parent.ParentNode;
+
+                    if (parent is ILoopStatementNode loop)
+                    {
+                        if (level == 1)
+                        {
+                            int loopId = associatedLoopIds[loop];
+                            output.Append(" $loop_");
+                            output.Append(loopId);
+                            output.Append(';');
+                            return;
+                        }
+
+                        level--;
+                    }
+
+                    Debug.Assert(parent != null);
+                }
+            }
+
+            output.Append(';');
         }
 
         private void EmitReturnStatement(ReturnStatementNode returnStatement)

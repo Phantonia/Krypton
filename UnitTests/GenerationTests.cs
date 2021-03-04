@@ -221,5 +221,56 @@ namespace UnitTests
 
             MyAssert.EmittedCorrectTopLevelStatement("console.log(\"xyz\\u000aabc\\u0024\");", o);
         }
+
+        [Test]
+        public void SimpleLoopLeaveTest()
+        {
+            const string Code = @"
+            While True { Leave; }
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            MyAssert.EmittedCorrectTopLevelStatement("$loop_0:while(true){break;}", o);
+        }
+
+        [Test]
+        public void NestedLoopLeaveTest()
+        {
+            const string Code = @"
+            While True
+            {
+                While True
+                {
+                    Leave 2;
+                }
+            }
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            MyAssert.EmittedCorrectTopLevelStatement("$loop_0:while(true){while(true){break $loop_0;}}", o);
+        }
+
+        [Test]
+        public void NestedLoopContinueTest()
+        {
+            const string Code = @"
+            While True
+            {
+                While True
+                {
+                    Continue 2;
+                }
+            }
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            MyAssert.EmittedCorrectTopLevelStatement("$loop_0:while(true){while(true){continue $loop_0;}}", o);
+        }
     }
 }
