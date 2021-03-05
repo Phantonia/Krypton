@@ -195,7 +195,7 @@ namespace UnitTests
             var c = MyAssert.NoError(Code);
             var o = CodeGenerator.GenerateCode(c, template: "");
 
-            Assert.AreEqual("function Sin(x){}function $main(){Sin(4);}$main();", o);
+            Assert.AreEqual("function Sin(x){}function $main(){Sin(new Rational(4,1));}$main();", o);
         }
 
         [Test]
