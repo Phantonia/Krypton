@@ -191,36 +191,54 @@ namespace Krypton.Analysis.Semantical
                                           functionDeclaration.Index);
         }
 
-        private BinaryOperationSymbolNode? FindBestBinaryOperation(Operator @operator, TypeSymbolNode leftType, TypeSymbolNode rightType)
+        private BinaryOperationSymbolNode? FindBestBinaryOperation(Operator @operator,
+                                                                   TypeSymbolNode leftType,
+                                                                   TypeSymbolNode rightType,
+                                                                   out ImplicitConversionSymbolNode? choseImplicitConversionLeft,
+                                                                   out ImplicitConversionSymbolNode? choseImplicitConversionRight)
         {
             ReadOnlyList<BinaryOperationSymbolNode> allOperations = FrameworkIntegration.GetBinaryOperations();
 
-            var candidates = allOperations.Where(op => op.Operator == @operator
-                                                    && TypeIsCompatibleWithNoError(leftType, op.LeftOperandTypeNode)
-                                                    && TypeIsCompatibleWithNoError(rightType, op.RightOperandTypeNode));
-            
-            if (candidates.IsSingle(out BinaryOperationSymbolNode? operationSymbol))
+            var candidates = from op in allOperations
+                             where op.Operator == @operator
+                             let resultLeft = TypeIsCompatibleWithNoError(leftType, op.LeftOperandTypeNode)
+                             let resultRight = TypeIsCompatibleWithNoError(rightType, op.RightOperandTypeNode)
+                             where resultLeft.isCompatible && resultRight.isCompatible
+                             select (operation: op,
+                                     choseImplicitConversionLeft: resultLeft.implicitConversion,
+                                     choseImplicitConversionRight: resultRight.implicitConversion);
+
+            if (!candidates.IsSingle(out var tuple))
             {
-                return operationSymbol;
+                tuple = candidates.SingleOrDefault(t => t.operation.LeftOperandTypeNode.Equals(leftType)
+                                                     && t.operation.RightOperandTypeNode.Equals(rightType));
             }
 
-            return candidates.SingleOrDefault(op => op.LeftOperandTypeNode.Equals(leftType)
-                                                 || op.RightOperandTypeNode.Equals(rightType));
+            BinaryOperationSymbolNode operationSymbol;
+            (operationSymbol, choseImplicitConversionLeft, choseImplicitConversionRight) = tuple;
+            return operationSymbol;
         }
 
-        private UnaryOperationSymbolNode? FindBestUnaryOperation(Operator @operator, TypeSymbolNode operandType)
+        private UnaryOperationSymbolNode? FindBestUnaryOperation(Operator @operator,
+                                                                 TypeSymbolNode operandType,
+                                                                 out ImplicitConversionSymbolNode? implicitConversion)
         {
             ReadOnlyList<UnaryOperationSymbolNode> allOperations = FrameworkIntegration.GetUnaryOperations();
 
-            var candidates = allOperations.Where(op => op.Operator == @operator
-                                                    && TypeIsCompatibleWithNoError(operandType, op.OperandTypeNode));
+            var candidates = from op in allOperations
+                             where op.Operator == @operator
+                             let result = TypeIsCompatibleWithNoError(operandType, op.OperandTypeNode)
+                             where result.isCompatible
+                             select (operation: op, result.implicitConversion);
 
-            if (candidates.IsSingle(out UnaryOperationSymbolNode? operationSymbol))
+            if (!candidates.IsSingle(out var tuple))
             {
-                return operationSymbol;
+                tuple = candidates.SingleOrDefault(t => t.operation.OperandTypeNode.Equals(operandType));
             }
 
-            return candidates.SingleOrDefault(op => op.OperandTypeNode.Equals(operandType));
+            UnaryOperationSymbolNode operationSymbol;
+            (operationSymbol, implicitConversion) = tuple;
+            return operationSymbol;
         }
 
         private HoistedIdentifierMap? GatherGlobalSymbols()
@@ -286,17 +304,19 @@ namespace Krypton.Analysis.Semantical
 
         private bool TypeIsCompatibleWith(TypeSymbolNode sourceType,
                                           TypeSymbolNode? targetType,
-                                          Node possiblyOffendingNode)
+                                          Node possiblyOffendingNode,
+                                          out ImplicitConversionSymbolNode? implicitConversion)
         {
             // targetType is null when we consider if an expression is assignable to an implicitly
             // typed variable, which is always okay if sourceType is not a pseudo type (which are
             // not implemented yet)
             if (targetType == null)
             {
+                implicitConversion = null;
                 return true;
             }
 
-            if (!TypeIsCompatibleWithNoError(sourceType, targetType))
+            if (!TypeIsCompatibleWithNoError(sourceType, targetType, out implicitConversion))
             {
                 ErrorProvider.ReportError(ErrorCode.CantConvertType,
                                           Compilation,
@@ -309,15 +329,27 @@ namespace Krypton.Analysis.Semantical
             return true;
         }
 
-        private static bool TypeIsCompatibleWithNoError(TypeSymbolNode sourceType,
-                                                 TypeSymbolNode targetType)
+        private static (bool isCompatible, ImplicitConversionSymbolNode? implicitConversion) TypeIsCompatibleWithNoError(
+            TypeSymbolNode sourceType,
+            TypeSymbolNode targetType)
         {
-            if (sourceType.ImplicitConversions.Any(c => c.TargetTypeNode.Equals(targetType)))
+            return TypeIsCompatibleWithNoError(sourceType, targetType, out ImplicitConversionSymbolNode? implicitConversion)
+                ? (true, implicitConversion)
+                : (false, implicitConversion);
+        }
+
+        private static bool TypeIsCompatibleWithNoError(TypeSymbolNode sourceType,
+                                                        TypeSymbolNode targetType,
+                                                        out ImplicitConversionSymbolNode? implicitConversion)
+        {
+            implicitConversion = sourceType.ImplicitConversions.SingleOrDefault(c => c.TargetTypeNode.Equals(targetType));
+
+            if (implicitConversion == null)
             {
-                return true;
+                return sourceType.Equals(targetType);
             }
 
-            return sourceType.Equals(targetType);
+            return true;
         }
     }
 }

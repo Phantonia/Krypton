@@ -62,7 +62,21 @@ namespace Krypton.Analysis.Semantical
 
             Operator @operator = binaryOperation.Operator;
 
-            BinaryOperationSymbolNode? operationSymbol = FindBestBinaryOperation(@operator, leftType, rightType);
+            BinaryOperationSymbolNode? operationSymbol = FindBestBinaryOperation(@operator,
+                                                                                 leftType,
+                                                                                 rightType,
+                                                                                 out ImplicitConversionSymbolNode? implicitConversionLeft,
+                                                                                 out ImplicitConversionSymbolNode? implicitConversionRight);
+
+            if (implicitConversionLeft != null)
+            {
+                binaryOperation.LeftOperandNode.SpecifyImplicitConversion(implicitConversionLeft);
+            }
+
+            if (implicitConversionRight != null)
+            {
+                binaryOperation.RightOperandNode.SpecifyImplicitConversion(implicitConversionRight);
+            }
 
             if (operationSymbol == null)
             {
@@ -133,9 +147,17 @@ namespace Krypton.Analysis.Semantical
                     return (null, false);
                 }
 
-                if (!TypeIsCompatibleWith(argumentType, functionSymbol.ParameterNodes[i].TypeNode, functionCall))
+                if (!TypeIsCompatibleWith(argumentType,
+                                          functionSymbol.ParameterNodes[i].TypeNode,
+                                          functionCall,
+                                          out ImplicitConversionSymbolNode? conversion))
                 {
                     return (null, false);
+                }
+
+                if (conversion != null)
+                {
+                    functionCall.ArgumentNodes[i].SpecifyImplicitConversion(conversion);
                 }
             }
 
@@ -216,7 +238,9 @@ namespace Krypton.Analysis.Semantical
 
             Operator @operator = unaryOperation.Operator;
 
-            UnaryOperationSymbolNode? operationSymbol = FindBestUnaryOperation(@operator, operandType);
+            UnaryOperationSymbolNode? operationSymbol = FindBestUnaryOperation(@operator,
+                                                                               operandType,
+                                                                               out ImplicitConversionSymbolNode? conversion);
 
             if (operationSymbol == null)
             {
@@ -225,6 +249,11 @@ namespace Krypton.Analysis.Semantical
                                           unaryOperation,
                                           $"Operand type: {operandType.Identifier}");
                 return null;
+            }
+
+            if (conversion != null)
+            {
+                unaryOperation.OperandNode.SpecifyImplicitConversion(conversion);
             }
 
             unaryOperation.Bind(operationSymbol);

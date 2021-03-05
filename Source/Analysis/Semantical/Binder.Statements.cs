@@ -121,8 +121,16 @@ namespace Krypton.Analysis.Semantical
                         return false;
                     }
 
-                    if (!TypeIsCompatibleWith(assignedValueType, iterationVariableType, possiblyOffendingNode: forStatement.InitialValueNode))
+                    if (!TypeIsCompatibleWith(assignedValueType,
+                                              iterationVariableType,
+                                              possiblyOffendingNode: forStatement.InitialValueNode,
+                                              out ImplicitConversionSymbolNode? implicitConversion))
                     {
+                        if (implicitConversion != null)
+                        {
+                            forStatement.InitialValueNode.SpecifyImplicitConversion(implicitConversion);
+                        }
+
                         return false;
                     }
                 }
@@ -156,9 +164,17 @@ namespace Krypton.Analysis.Semantical
 
                 TypeSymbolNode? boolType = typeManager[FrameworkType.Bool];
 
-                if (!TypeIsCompatibleWith(conditionType, boolType, possiblyOffendingNode: forStatement.ConditionNode))
+                if (!TypeIsCompatibleWith(conditionType,
+                                          boolType,
+                                          possiblyOffendingNode: forStatement.ConditionNode,
+                                          out ImplicitConversionSymbolNode? conversion))
                 {
                     return false;
+                }
+
+                if (conversion != null)
+                {
+                    forStatement.ConditionNode.SpecifyImplicitConversion(conversion);
                 }
             }
 
@@ -171,9 +187,17 @@ namespace Krypton.Analysis.Semantical
                     return false;
                 }
 
-                if (!TypeIsCompatibleWith(withType, iterationVariableType, possiblyOffendingNode: forStatement.WithExpressionNode))
+                if (!TypeIsCompatibleWith(withType,
+                                          iterationVariableType,
+                                          possiblyOffendingNode: forStatement.WithExpressionNode,
+                                          out ImplicitConversionSymbolNode? conversion))
                 {
                     return false;
+                }
+
+                if (conversion != null)
+                {
+                    forStatement.WithExpressionNode.SpecifyImplicitConversion(conversion);
                 }
             }
 
@@ -200,9 +224,17 @@ namespace Krypton.Analysis.Semantical
 
             TypeSymbolNode boolType = typeManager[FrameworkType.Bool];
 
-            if (!TypeIsCompatibleWith(ifConditionType, boolType, possiblyOffendingNode: ifStatement.ConditionNode))
+            if (!TypeIsCompatibleWith(ifConditionType,
+                                      boolType,
+                                      possiblyOffendingNode: ifStatement.ConditionNode,
+                                      out ImplicitConversionSymbolNode? conversion))
             {
                 return false;
+            }
+
+            if (conversion != null)
+            {
+                ifStatement.ConditionNode.SpecifyImplicitConversion(conversion);
             }
 
             bool success = BindInStatementBlock(ifStatement.StatementNodes, variableIdentifierMap);
@@ -324,9 +356,15 @@ namespace Krypton.Analysis.Semantical
 
             if (!TypeIsCompatibleWith(returnedType,
                                       actualReturnType,
-                                      possiblyOffendingNode: returnStatement.ReturnExpressionNode!))
+                                      possiblyOffendingNode: returnStatement.ReturnExpressionNode!,
+                                      out ImplicitConversionSymbolNode? conversion))
             {
                 return false;
+            }
+
+            if (conversion != null)
+            {
+                returnStatement.ReturnExpressionNode.SpecifyImplicitConversion(conversion);
             }
 
             return true;
@@ -361,12 +399,20 @@ namespace Krypton.Analysis.Semantical
                 return false;
             }
 
-            if (!TypeIsCompatibleWith(assignedType, variable.TypeNode, possiblyOffendingNode: variableAssignment.AssignedExpressionNode))
+            if (!TypeIsCompatibleWith(assignedType,
+                                      variable.TypeNode,
+                                      possiblyOffendingNode: variableAssignment.AssignedExpressionNode,
+                                      out ImplicitConversionSymbolNode? conversion))
             {
                 return false;
             }
 
             variableAssignment.Bind(variable);
+
+            if (conversion != null)
+            {
+                variableAssignment.AssignedExpressionNode.SpecifyImplicitConversion(conversion);
+            }
 
             return true;
         }
@@ -404,12 +450,20 @@ namespace Krypton.Analysis.Semantical
                     {
                         return false;
                     }
-                    else if (!TypeIsCompatibleWith(assignedType, variableType, variableDeclaration.AssignedExpressionNode))
+                    else if (!TypeIsCompatibleWith(assignedType,
+                                                   variableType,
+                                                   variableDeclaration.AssignedExpressionNode,
+                                                   out ImplicitConversionSymbolNode? conversion))
                     {
                         return false;
                     }
                     else
                     {
+                        if (conversion != null)
+                        {
+                            variableDeclaration.AssignedExpressionNode.SpecifyImplicitConversion(conversion);
+                        }
+
                         variable = variableDeclaration.CreateVariable(variableType);
                     }
                 }
@@ -443,9 +497,17 @@ namespace Krypton.Analysis.Semantical
 
             TypeSymbolNode? boolType = typeManager[FrameworkType.Bool];
 
-            if (!TypeIsCompatibleWith(conditionType, boolType, possiblyOffendingNode: whileStatement.ConditionNode))
+            if (!TypeIsCompatibleWith(conditionType,
+                                      boolType,
+                                      possiblyOffendingNode: whileStatement.ConditionNode,
+                                      out ImplicitConversionSymbolNode? conversion))
             {
                 return false;
+            }
+
+            if (conversion != null)
+            {
+                whileStatement.ConditionNode.SpecifyImplicitConversion(conversion);
             }
 
             bool success = BindInStatementBlock(whileStatement.StatementNodes, variableIdentifierMap);
