@@ -4,7 +4,14 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>9.0</LangVersion>
-    <WarningLevel>9999</WarningLevel>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Analysis\Krypton.Analysis.csproj" />
+    <ProjectReference Include="..\CodeGeneration\Krypton.CodeGeneration.csproj" />
+    <ProjectReference Include="..\Framework\Krypton.Framework.csproj" />
+    <ProjectReference Include="..\Utilities\Krypton.Utilities.csproj" />
+  </ItemGroup>
 
 </Project>
