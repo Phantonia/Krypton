@@ -9,8 +9,41 @@ namespace Krypton.CodeGeneration
 {
     partial class CodeGeneratorCore
     {
-        private void EmitExpression(ExpressionNode expression)
+        private void EmitExpression(ExpressionNode expression, bool considerConversion = true)
         {
+            if (considerConversion && expression.ImplicitConversionNodeIfAny != null)
+            {
+                CodeGenerationInformation info = expression.ImplicitConversionNodeIfAny.CodeGenerationInfo;
+
+                if (info != CodeGenerationInformation.Identity)
+                {
+                    SpecialCodeGenerationInformation? specialInfo = info as SpecialCodeGenerationInformation;
+
+                    Debug.Assert(specialInfo != null);
+
+                    switch (specialInfo.Kind)
+                    {
+                        case SpecialCodeGenerationKind.IntToRational:
+                            output.Append("new Rational(");
+                            EmitExpression(expression, considerConversion: false);
+                            output.Append(",1)");
+                            break;
+                        case SpecialCodeGenerationKind.IntToComplex:
+                            output.Append("new Complex(new Rational(");
+                            EmitExpression(expression, considerConversion: false);
+                            output.Append(",1),new Rational(0,1))");
+                            break;
+                        case SpecialCodeGenerationKind.RationalToComplex:
+                            output.Append("new Complex(");
+                            EmitExpression(expression, considerConversion: false);
+                            output.Append(",new Rational(0,1))");
+                            break;
+                    }
+
+                    return;
+                }
+            }
+
             switch (expression)
             {
                 case BinaryOperationExpressionNode binaryOperation:

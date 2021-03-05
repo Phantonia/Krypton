@@ -303,5 +303,25 @@ namespace UnitTests
                                                      "let y=(new Complex(new Rational(0,1),new Rational(4,1))).getReal();" +
                                                     @"let z=(""abc"").length;", o);
         }
+
+        [Test]
+        public void ImplicitConversionTest()
+        {
+            const string Code = @"
+            Var x As Complex = 5;
+            Var y As Int = 'a';
+            Var z As Rational = 4;
+            Var a As Complex = 4.1;
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "");
+
+            MyAssert.EmittedCorrectTopLevelStatement(
+                $"let x=new Complex(new Rational(5,1),new Rational(0,1));" +
+                $"let y={(int)'a'};" +
+                $"let z=new Rational(4,1);" +
+                $"let a=new Complex(new Rational(41,10),new Rational(0,1));", o);
+        }
     }
 }

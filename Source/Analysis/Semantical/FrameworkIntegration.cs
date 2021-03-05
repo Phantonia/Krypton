@@ -166,6 +166,7 @@ namespace Krypton.Analysis.Semantical
                                                                                    TypeIdentifierMap typeIdentifierMap)
         {
             return new ImplicitConversionSymbolNode(GetTypeSymbolNode(conversionSymbol.ReturnType, typeIdentifierMap, frameworkVersion),
+                                                    conversionSymbol.CodeGenerationInfo,
                                                     lineNumber: 0,
                                                     index: -1);
         }
