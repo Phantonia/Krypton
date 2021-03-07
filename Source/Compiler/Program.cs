@@ -1,12 +1,13 @@
-﻿using Krypton.Analysis;
+﻿using Jering.Javascript.NodeJS;
+using Krypton.Analysis;
 using Krypton.Analysis.Errors;
 using Krypton.CodeGeneration;
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using ErrorEventArgs = Krypton.Analysis.Errors.ErrorEventArgs;
 
 [assembly: InternalsVisibleTo("UnitTests")]
@@ -15,7 +16,13 @@ namespace Krypton.Compiler
     internal static class Program
     {
         private const string Code = @"
-        Output(3.14159);
+        Func HelloWorld()
+        {
+            Output(""Hello world"");
+        }
+
+        HelloWorld();
+        HelloWorld();
         ";
 
         private static void Main(string[] args)
@@ -48,11 +55,13 @@ namespace Krypton.Compiler
                 return;
             }
 
+            string template = File.ReadAllText("template.js");
+
             Console.WriteLine("The code is valid. Enter a command (Help for help)");
 
-            HandleCommands(compilation, location);
+            HandleCommands(compilation, location, template);
 #if RELEASE
-        }
+            }
             catch (Exception ex)
             {
                 Console.WriteLine("An error occurred:");
@@ -62,14 +71,13 @@ namespace Krypton.Compiler
 #endif
         }
 
-        private static void HandleCommands(Compilation compilation, string originalLocation)
+        private static void HandleCommands(Compilation compilation, string originalLocation, string template)
         {
             string? code = null;
-            string? tempLocation = null;
 
             while (true)
             {
-                string? command = Console.ReadLine();
+                string? command = Console.ReadLine()?.Trim();
 
                 if (command == null)
                 {
@@ -77,43 +85,7 @@ namespace Krypton.Compiler
                 }
                 else if (command.Equals("Run", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    InitCode();
-                    InitTempLocation();
-
-                    Debug.Assert(code != null);
-                    Debug.Assert(tempLocation != null);
-
-                    using StreamWriter file = File.CreateText(tempLocation);
-                    file.Write(code);
-
-                    try
-                    {
-                        Console.WriteLine();
-
-                        Process nodeJs = new Process
-                        {
-                            StartInfo = new ProcessStartInfo
-                            {
-                                FileName = "node.exe",
-                                Arguments = tempLocation,
-                                //RedirectStandardOutput = true,
-                                //CreateNoWindow = true
-                            }
-                        };
-
-                        nodeJs.Start();
-
-                        //while (!nodeJs.StandardOutput.EndOfStream)
-                        //{
-                        //    Console.WriteLine(nodeJs.StandardOutput.ReadLine());
-                        //}
-
-                        //Console.WriteLine("Program finished successfully!");
-                    }
-                    catch (Win32Exception)
-                    {
-                        Console.WriteLine("It appears that node.js is not installed. The Run command is not available then.");
-                    }
+                    RunAsync(compilation, template).GetAwaiter().GetResult();
                 }
                 else if (command.Equals("Compile", StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -159,23 +131,25 @@ namespace Krypton.Compiler
 
             void InitCode()
             {
-                code ??= CodeGenerator.GenerateCode(compilation, template: "");
-            }
-
-            void InitTempLocation()
-            {
-                if (tempLocation == null)
-                {
-                    string assemblyLocation = Assembly.GetExecutingAssembly().Location;
-                    string? newLocation = Path.GetDirectoryName(assemblyLocation);
-                    tempLocation = newLocation + @"\tmp.js";
-                }
+                code ??= CodeGenerator.GenerateCode(compilation, template: "", CodeGenerationMode.ToFile);
             }
         }
 
         private static void OnError(ErrorEventArgs e)
         {
             Console.WriteLine(e.GetFullMessage());
+        }
+
+        private static async Task RunAsync(Compilation compilation, string template)
+        {
+            Console.WriteLine();
+
+            string code = await Task.Run(() => CodeGenerator.GenerateCode(compilation, template, CodeGenerationMode.Run));
+            string output = await StaticNodeJSService.InvokeFromStringAsync<string>(code);
+
+            Console.WriteLine(output);
+            Console.WriteLine("Program finished successfully!");
+            Console.WriteLine();
         }
     }
 }

@@ -3,16 +3,18 @@ using Krypton.Analysis.Ast;
 using Krypton.Analysis.Ast.Declarations;
 using Krypton.Analysis.Ast.Statements;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace Krypton.CodeGeneration
 {
     internal sealed partial class CodeGeneratorCore
     {
-        public CodeGeneratorCore(Compilation compilation, string template)
+        public CodeGeneratorCore(Compilation compilation, string template, CodeGenerationMode mode)
         {
             this.compilation = compilation;
             this.template = template;
+            this.mode = mode;
         }
 
         private readonly Compilation compilation;
@@ -20,6 +22,7 @@ namespace Krypton.CodeGeneration
         private readonly Dictionary<ILoopStatementNode, int> associatedLoopIds = new();
         private readonly StringBuilder output = new();
         private readonly string template;
+        private readonly CodeGenerationMode mode;
 
         public string GenerateCode()
         {
@@ -93,9 +96,23 @@ namespace Krypton.CodeGeneration
 
         private void EmitTopLevelStatements()
         {
-            output.Append("function $main()");
-            EmitStatementBlock(compilation.Program.TopLevelStatementNodes);
-            output.Append("$main();");
+            switch (mode)
+            {
+                case CodeGenerationMode.None:
+                    Debug.Fail(message: null);
+                    break;
+                case CodeGenerationMode.ToFile:
+                    output.Append("function $main()");
+                    EmitStatementBlock(compilation.Program.TopLevelStatementNodes);
+                    output.Append("$main();function Output(s){console.log(s)};");
+                    break;
+                case CodeGenerationMode.Run:
+                    output.Append(@"var o="""";function Output(s){o+=s+""\r\n"";}");
+                    output.Append("module.exports=callback=>{");
+                    EmitStatementBlock(compilation.Program.TopLevelStatementNodes);
+                    output.Append("callback(null,o);}");
+                    break;
+            }
         }
     }
 }

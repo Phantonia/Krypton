@@ -149,7 +149,7 @@ namespace Krypton.Analysis.Semantical
 
                 if (!TypeIsCompatibleWith(argumentType,
                                           functionSymbol.ParameterNodes[i].TypeNode,
-                                          functionCall,
+                                          functionCall.ArgumentNodes[i],
                                           out ImplicitConversionSymbolNode? conversion))
                 {
                     return (null, false);
