@@ -323,5 +323,29 @@ namespace UnitTests
                 $"let z=new Rational(4,1);" +
                 $"let a=new Complex(new Rational(41,10),new Rational(0,1));", o);
         }
+
+        [Test]
+        public void ImplicitStringConversionTest()
+        {
+            const string Code = @"
+            Output(4);
+            Output(2.56);
+            Output(5i);
+            Output('y');
+            Output(True);
+            Output(False);
+            ";
+
+            var c = MyAssert.NoError(Code);
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
+
+            MyAssert.EmittedCorrectTopLevelStatement(
+                "Output((4).toString());" +
+                "Output((new Rational(64,25)).toString());" +
+                "Output((new Complex(new Rational(0,1),new Rational(5,1))).toString());" +
+                $"Output(String.fromCharCode({(int)'y'}));" +
+                "Output((true).toString());" +
+                "Output((false).toString());", o);
+        }
     }
 }

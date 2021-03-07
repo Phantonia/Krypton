@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace Krypton.Framework
 {
+    // I know that this file is a mess, no need to tell me >.<
     public static class FrameworkProvider
     {
         public static FrameworkVersion GetFrameworkVersion0()
@@ -15,7 +16,10 @@ namespace Krypton.Framework
                 [FrameworkType.Int] = GetIntType(),
                 [FrameworkType.Rational] = GetRationalType(),
                 [FrameworkType.Complex] = GetComplexType(),
-                [FrameworkType.Bool] = new TypeSymbol("Bool", FrameworkType.Bool),
+                [FrameworkType.Bool] = new TypeSymbol("Bool", FrameworkType.Bool, implicitConversions: new[]
+                { 
+                    new ImplicitConversionSymbol(FrameworkType.Bool, FrameworkType.String, new MethodCallCodeGenerationInformation("toString"))
+                }),
                 [FrameworkType.Char] = GetCharType(),
             };
 
@@ -144,7 +148,10 @@ namespace Krypton.Framework
                 {
                     new ImplicitConversionSymbol(FrameworkType.Char,
                                                  FrameworkType.Int,
-                                                 CodeGenerationInformation.Identity)
+                                                 new IdentityCodeGenerationInformation()),
+                    new ImplicitConversionSymbol(FrameworkType.Char,
+                                                 FrameworkType.String,
+                                                 new FunctionCallCodeGenerationInformation("String.fromCharCode")),
                 });
         }
 
@@ -155,6 +162,12 @@ namespace Krypton.Framework
                 {
                     MakeProperty("Real"),
                     MakeProperty("Imaginary"),
+                },
+                implicitConversions: new[]
+                {
+                    new ImplicitConversionSymbol(FrameworkType.Complex,
+                                                 FrameworkType.String,
+                                                 new MethodCallCodeGenerationInformation("toString"))
                 });
 
             static PropertySymbol MakeProperty(string name)
@@ -172,6 +185,7 @@ namespace Krypton.Framework
                 {
                     MakeConversion(FrameworkType.Rational, new SpecialCodeGenerationInformation(SpecialCodeGenerationKind.IntToRational)),
                     MakeConversion(FrameworkType.Complex, new SpecialCodeGenerationInformation(SpecialCodeGenerationKind.IntToComplex)),
+                    MakeConversion(FrameworkType.String, new MethodCallCodeGenerationInformation("toString")),
                 });
 
             static ImplicitConversionSymbol MakeConversion(FrameworkType returnType,
@@ -189,6 +203,9 @@ namespace Krypton.Framework
                     new ImplicitConversionSymbol(FrameworkType.Rational,
                                                  FrameworkType.Complex,
                                                  new SpecialCodeGenerationInformation(SpecialCodeGenerationKind.RationalToComplex)),
+                    new ImplicitConversionSymbol(FrameworkType.Rational,
+                                                 FrameworkType.String,
+                                                 new MethodCallCodeGenerationInformation("toString")),
                 },
                 properties: new[]
                 {

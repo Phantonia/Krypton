@@ -99,5 +99,20 @@ namespace UnitTests
                 Assert.IsInstanceOf<ConstantSymbolNode<Rational>>(sym);
             }
         }
+
+        [Test]
+        public void ImplicitStringConversionTest()
+        {
+            string[] literals = { @"""string""", "4", "'y'", "3.14", "4i", "True" };
+
+            foreach (string l in literals)
+            {
+                string code = $@"
+                Output({l});
+                ";
+
+                MyAssert.NoError(code);
+            }
+        }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Krypton.Analysis.Ast.Expressions;
 using Krypton.Analysis.Ast.Expressions.Literals;
-using Krypton.Analysis.Ast.Symbols;
 using Krypton.Framework;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,32 +14,38 @@ namespace Krypton.CodeGeneration
             {
                 CodeGenerationInformation info = expression.ImplicitConversionNodeIfAny.CodeGenerationInfo;
 
-                if (info != CodeGenerationInformation.Identity)
+                switch (info)
                 {
-                    SpecialCodeGenerationInformation? specialInfo = info as SpecialCodeGenerationInformation;
-
-                    Debug.Assert(specialInfo != null);
-
-                    switch (specialInfo.Kind)
-                    {
-                        case SpecialCodeGenerationKind.IntToRational:
-                            output.Append("new Rational(");
-                            EmitExpression(expression, considerConversion: false);
-                            output.Append(",1)");
-                            break;
-                        case SpecialCodeGenerationKind.IntToComplex:
-                            output.Append("new Complex(new Rational(");
-                            EmitExpression(expression, considerConversion: false);
-                            output.Append(",1),new Rational(0,1))");
-                            break;
-                        case SpecialCodeGenerationKind.RationalToComplex:
-                            output.Append("new Complex(");
-                            EmitExpression(expression, considerConversion: false);
-                            output.Append(",new Rational(0,1))");
-                            break;
-                    }
-
-                    return;
+                    case IdentityCodeGenerationInformation:
+                        break;
+                    case SpecialCodeGenerationInformation { Kind: SpecialCodeGenerationKind.IntToRational }:
+                        output.Append("new Rational(");
+                        EmitExpression(expression, considerConversion: false);
+                        output.Append(",1)");
+                        return;
+                    case SpecialCodeGenerationInformation { Kind: SpecialCodeGenerationKind.IntToComplex }:
+                        output.Append("new Complex(new Rational(");
+                        EmitExpression(expression, considerConversion: false);
+                        output.Append(",1),new Rational(0,1))");
+                        return;
+                    case SpecialCodeGenerationInformation { Kind: SpecialCodeGenerationKind.RationalToComplex }:
+                        output.Append("new Complex(");
+                        EmitExpression(expression, considerConversion: false);
+                        output.Append(",new Rational(0,1))");
+                        return;
+                    case FunctionCallCodeGenerationInformation functionCall:
+                        output.Append(functionCall.FunctionName);
+                        output.Append('(');
+                        EmitExpression(expression, considerConversion: false);
+                        output.Append(')');
+                        return;
+                    case MethodCallCodeGenerationInformation methodCall:
+                        output.Append('(');
+                        EmitExpression(expression, considerConversion: false);
+                        output.Append(").");
+                        output.Append(methodCall.MethodName);
+                        output.Append("()");
+                        return;
                 }
             }
 

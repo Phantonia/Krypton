@@ -1,10 +1,13 @@
 ﻿namespace Krypton.Framework
 {
-    public abstract record CodeGenerationInformation()
-    {
-        public static CodeGenerationInformation Identity { get; } = new IdentityRecord();
-        private sealed record IdentityRecord() : CodeGenerationInformation;
-    }
+    public abstract record CodeGenerationInformation;
+
+    public sealed record FunctionCallCodeGenerationInformation(
+        string FunctionName)
+        : CodeGenerationInformation;
+
+    public sealed record IdentityCodeGenerationInformation
+        : CodeGenerationInformation;
 
     public sealed record MethodCallCodeGenerationInformation(
         string MethodName)
