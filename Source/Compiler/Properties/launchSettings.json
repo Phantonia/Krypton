@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Krypton.Compiler": {
+      "commandName": "Project",
+      "commandLineArgs": "HelloWorld.krpt"
+    }
+  }
+}
