@@ -90,12 +90,12 @@ namespace UnitTests
 
         public static void EmittedCorrectTopLevelStatement(string expected, string actual)
         {
-            Assert.AreEqual($"function $main(){{{expected}}}$main();", actual);
+            Assert.AreEqual($"function $main(){{{expected}}}$main();function Output(s){{console.log(s)}};", actual);
         }
 
         public static void EmittedCorrectFunctionDeclaration(string expected, string actual)
         {
-            Assert.AreEqual($"{expected}function $main(){{}}$main();", actual);
+            Assert.AreEqual($"{expected}function $main(){{}}$main();function Output(s){{console.log(s)}};", actual);
         }
     }
 }

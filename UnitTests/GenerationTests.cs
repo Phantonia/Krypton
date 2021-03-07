@@ -15,7 +15,7 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
             MyAssert.EmittedCorrectTopLevelStatement("for(let i=0;true;i++){}", o);
         }
@@ -34,7 +34,7 @@ namespace UnitTests
 
             foreach (var (expected, actual) in from c in cases
                                                let comp = MyAssert.NoError(c.input)
-                                               let outp = CodeGenerator.GenerateCode(comp, template: "")
+                                               let outp = CodeGenerator.GenerateCode(comp, template: "", CodeGenerationMode.ToFile)
                                                select (c.output, outp))
             {
                 MyAssert.EmittedCorrectTopLevelStatement(expected, actual);
@@ -60,7 +60,7 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
             MyAssert.EmittedCorrectTopLevelStatement("if((4)===(4)){}else if((5)===(5)){}else{}", o);
         }
@@ -73,7 +73,7 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
             MyAssert.EmittedCorrectTopLevelStatement("return;", o);
         }
@@ -87,7 +87,7 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
             MyAssert.EmittedCorrectTopLevelStatement("let x=5;x=4;", o);
         }
@@ -100,7 +100,7 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
             MyAssert.EmittedCorrectTopLevelStatement("while(true){let x=4;}", o);
         }
@@ -113,7 +113,7 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
             MyAssert.EmittedCorrectTopLevelStatement("let x=-(5);", o);
         }
@@ -126,7 +126,7 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
             MyAssert.EmittedCorrectTopLevelStatement("let x=!(true);", o);
         }
@@ -139,7 +139,7 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
             MyAssert.EmittedCorrectTopLevelStatement("let x=(new Rational(28,5)).negate();", o);
         }
@@ -152,7 +152,7 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
             MyAssert.EmittedCorrectFunctionDeclaration("function HelloWorld(){}", o);
         }
@@ -165,7 +165,7 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
             MyAssert.EmittedCorrectFunctionDeclaration("function SomeFunc(x){let y=4;}", o);
         }
@@ -179,9 +179,9 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
-            MyAssert.EmittedCorrectTopLevelStatement("let s;console.log(s);", o);
+            MyAssert.EmittedCorrectTopLevelStatement("let s;Output(s);", o);
         }
 
         [Test]
@@ -193,9 +193,9 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
-            Assert.AreEqual("function Sin(x){}function $main(){Sin(new Rational(4,1));}$main();", o);
+            Assert.AreEqual("function Sin(x){}function $main(){Sin(new Rational(4,1));}$main();function Output(s){console.log(s)};", o);
         }
 
         [Test]
@@ -206,9 +206,9 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
-            MyAssert.EmittedCorrectTopLevelStatement(@"console.log(""xyz"");", o);
+            MyAssert.EmittedCorrectTopLevelStatement(@"Output(""xyz"");", o);
         }
 
         [Test]
@@ -217,9 +217,9 @@ namespace UnitTests
             const string Code = "Output(\"xyz\\nabc$\");";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
-            MyAssert.EmittedCorrectTopLevelStatement("console.log(\"xyz\\u000aabc\\u0024\");", o);
+            MyAssert.EmittedCorrectTopLevelStatement("Output(\"xyz\\u000aabc\\u0024\");", o);
         }
 
         [Test]
@@ -230,7 +230,7 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
             MyAssert.EmittedCorrectTopLevelStatement("$loop_0:while(true){break;}", o);
         }
@@ -249,7 +249,7 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
             MyAssert.EmittedCorrectTopLevelStatement("$loop_0:while(true){while(true){break $loop_0;}}", o);
         }
@@ -268,7 +268,7 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
             MyAssert.EmittedCorrectTopLevelStatement("$loop_0:while(true){while(true){continue $loop_0;}}", o);
         }
@@ -282,9 +282,9 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
-            Assert.AreEqual("const Four=4;function $main(){let x=Four;}$main();", o);
+            Assert.AreEqual("const Four=4;function $main(){let x=Four;}$main();function Output(s){console.log(s)};", o);
         }
 
         [Test]
@@ -297,7 +297,7 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
             MyAssert.EmittedCorrectTopLevelStatement("let x=(new Rational(157,50)).getNumerator();" +
                                                      "let y=(new Complex(new Rational(0,1),new Rational(4,1))).getReal();" +
@@ -315,7 +315,7 @@ namespace UnitTests
             ";
 
             var c = MyAssert.NoError(Code);
-            var o = CodeGenerator.GenerateCode(c, template: "");
+            var o = CodeGenerator.GenerateCode(c, template: "", CodeGenerationMode.ToFile);
 
             MyAssert.EmittedCorrectTopLevelStatement(
                 $"let x=new Complex(new Rational(5,1),new Rational(0,1));" +
