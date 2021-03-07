@@ -5,7 +5,6 @@ using Krypton.CodeGeneration;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using ErrorEventArgs = Krypton.Analysis.Errors.ErrorEventArgs;
