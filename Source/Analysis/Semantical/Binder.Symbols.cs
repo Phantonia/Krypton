@@ -210,11 +210,21 @@ namespace Krypton.Analysis.Semantical
 
             if (!candidates.IsSingle(out var tuple))
             {
-                tuple = candidates.SingleOrDefault(t => t.operation.LeftOperandTypeNode.Equals(leftType)
-                                                     && t.operation.RightOperandTypeNode.Equals(rightType));
+                // There are multiple candidates. Can we find a candidate where at least one of the operand types are exact?
+                candidates = candidates.Where(t => t.operation.LeftOperandTypeNode.Equals(leftType)
+                                                || t.operation.RightOperandTypeNode.Equals(rightType));
+
+                if (!candidates.IsSingle(out tuple))
+                {
+                    // We can, and there are multiple actually.
+                    // So the only true candidate is the one where both types are exact.
+                    // If there is none that fulfills that criteria, there is no best operator.
+                    tuple = candidates.SingleOrDefault(t => t.operation.LeftOperandTypeNode.Equals(leftType)
+                                                         && t.operation.RightOperandTypeNode.Equals(rightType));
+                }
             }
 
-            BinaryOperationSymbolNode operationSymbol;
+            BinaryOperationSymbolNode? operationSymbol;
             (operationSymbol, choseImplicitConversionLeft, choseImplicitConversionRight) = tuple;
             return operationSymbol;
         }

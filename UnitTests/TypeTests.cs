@@ -83,22 +83,6 @@ namespace UnitTests
         }
 
         [Test]
-        public void IllegalOutputCallTest()
-        {
-            string[] illegalCodes =
-            {
-                @"Output(True);",
-                @"Output();",
-                @"Output(""x"", ""y"");"
-            };
-
-            foreach (string code in illegalCodes)
-            {
-                MyAssert.Error(code);
-            }
-        }
-
-        [Test]
         public void IllegalOutputExpressionTest()
         {
             const string Code = @"
