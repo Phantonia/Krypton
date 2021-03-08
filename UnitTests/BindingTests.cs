@@ -621,5 +621,14 @@ namespace UnitTests
 
             MyAssert.Error(Code, ErrorCode.PropertyDoesNotExistInType);
         }
+
+        [Test]
+        public void DuplicateParameterTest()
+        {
+            const string Code = @"
+            Func X(x As Int, x As Int) { }
+            ";
+            MyAssert.Error(Code, ErrorCode.DuplicateParameter);
+        }
     }
 }

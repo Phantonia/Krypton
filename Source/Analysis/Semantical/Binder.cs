@@ -1,5 +1,7 @@
 ﻿using Krypton.Analysis.Ast.Declarations;
 using Krypton.Analysis.Ast.Symbols;
+using Krypton.Analysis.Errors;
+using System.Collections.Generic;
 
 namespace Krypton.Analysis.Semantical
 {
@@ -57,8 +59,16 @@ namespace Krypton.Analysis.Semantical
         {
             VariableIdentifierMap variableIdentifierMap = new();
 
+            HashSet<string> parameters = function.ParameterNodes.Count > 0 ? new() : null!;
+
             foreach (ParameterDeclarationNode parameter in function.ParameterNodes)
             {
+                if (!parameters.Add(parameter.Identifier))
+                {
+                    ErrorProvider.ReportError(ErrorCode.DuplicateParameter, Compilation, parameter);
+                    return false;
+                }
+
                 TypeSymbolNode? typeSymbol = GetTypeSymbol(parameter.TypeNode);
 
                 if (typeSymbol == null)
