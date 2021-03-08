@@ -51,7 +51,7 @@ namespace Krypton.Analysis.Semantical
 
             PopulateWithTypes(typeIdentifierMap, frameworkVersion);
             PopulateWithFunctions(globalIdentifierMap, typeIdentifierMap, frameworkVersion);
-            PopulateWithConstants(globalIdentifierMap, frameworkVersion, typeIdentifierMap);
+            PopulateWithConstants(globalIdentifierMap, typeIdentifierMap, frameworkVersion);
         }
 
         public static void PopulateWithFrameworkSymbols(HoistedIdentifierMap globalIdentifierMap)
@@ -60,7 +60,7 @@ namespace Krypton.Analysis.Semantical
             Debug.Assert(frameworkVersion != null);
 
             PopulateWithFunctions(globalIdentifierMap, typeIdentifierMap, frameworkVersion);
-            PopulateWithFunctions(globalIdentifierMap, typeIdentifierMap, frameworkVersion);
+            PopulateWithConstants(globalIdentifierMap, typeIdentifierMap, frameworkVersion);
         }
 
         public static void PopulateWithFrameworkTypes(TypeIdentifierMap typeIdentifierMap)
@@ -223,7 +223,7 @@ namespace Krypton.Analysis.Semantical
             return typeIdentifierMap[name];
         }
 
-        private static void PopulateWithConstants(HoistedIdentifierMap globalIdentifierMap, FrameworkVersion frameworkVersion, TypeIdentifierMap typeIdentifierMap)
+        private static void PopulateWithConstants(HoistedIdentifierMap globalIdentifierMap, TypeIdentifierMap typeIdentifierMap, FrameworkVersion frameworkVersion)
         {
             foreach (ConstantSymbol constantSymbol in frameworkVersion.Constants)
             {

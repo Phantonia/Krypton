@@ -249,6 +249,11 @@ function abs(num: Rational): Rational {
     return num;
 }
 
+const E: Rational = Rational.createFromFloatingPoint(Math.E);
+const PI: Rational = Rational.createFromFloatingPoint(Math.PI);
+const PHI: Rational = Rational.createFromFloatingPoint((1 + Math.sqrt(5)) / 2);
+const TAU: Rational = Rational.createFromFloatingPoint(2 * Math.PI);
+
 // CUT HERE ... everything from here on will be cut in the final template
 // Complex test *
 {
