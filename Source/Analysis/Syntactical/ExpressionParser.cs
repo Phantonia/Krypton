@@ -32,7 +32,8 @@ namespace Krypton.Analysis.Syntactical
             return expression;
         }
 
-        private ExpressionNode? ParseNextExpressionInternal(ref int index)
+        private ExpressionNode? ParseNextExpressionInternal(ref int index,
+                                                            bool includeOperations = true)
         {
             ExpressionNode? expression = ParseSubExpression(ref index);
 
@@ -41,7 +42,7 @@ namespace Krypton.Analysis.Syntactical
                 return null;
             }
 
-            ParseAfterSubExpression(ref expression, ref index);
+            ParseAfterSubExpression(ref expression, ref index, includeOperations);
 
             if (expression is BinaryOperationChain chain)
             {
@@ -51,7 +52,9 @@ namespace Krypton.Analysis.Syntactical
             return expression;
         }
 
-        private void ParseAfterSubExpression(ref ExpressionNode? expression, ref int index, bool includeOperations = true)
+        private void ParseAfterSubExpression(ref ExpressionNode? expression,
+                                             ref int index,
+                                             bool includeOperations = true)
         {
             while (true)
             {
@@ -146,7 +149,7 @@ namespace Krypton.Analysis.Syntactical
 
             index++;
 
-            ExpressionNode? nextOperand = ParseSubExpression(ref index);
+            ExpressionNode? nextOperand = ParseNextExpressionInternal(ref index, includeOperations: false);
 
             if (nextOperand == null)
             {
