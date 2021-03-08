@@ -107,7 +107,7 @@ namespace Krypton.CodeGeneration
                     output.Append("$main();function Output(s){console.log(s)};");
                     break;
                 case CodeGenerationMode.Run:
-                    output.Append(@"var o="""";function Output(s){o+=s+""\r\n"";}");
+                    output.Append(@"var o=[];function Output(s){o.push(s);}");
                     output.Append("module.exports=callback=>{");
                     EmitStatementBlock(compilation.Program.TopLevelStatementNodes);
                     output.Append("callback(null,o);}");

@@ -2,6 +2,7 @@
 using Krypton.Analysis;
 using Krypton.CodeGeneration;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Krypton.Compiler
@@ -19,15 +20,33 @@ namespace Krypton.Compiler
 
         private readonly Lazy<Task<string>> runnableCode;
 
+        public async Task<string> RunAndGetOutputAsync()
+        {
+            string[] output = await RunCoreAsync();
+            return string.Join("\n\r", output);
+        }
+
         public async Task RunAsync()
         {
-            string code = await runnableCode.Value;
-            string output = await StaticNodeJSService.InvokeFromStringAsync<string>(code);
+            string[] output = await RunCoreAsync();
 
             Console.WriteLine();
-            Console.WriteLine(output);
+
+            foreach (string line in output)
+            {
+                Console.WriteLine(line);
+            }
+
+            Console.WriteLine();
             Console.WriteLine("Program finished successfully!");
             Console.WriteLine();
+        }
+
+        private async Task<string[]> RunCoreAsync()
+        {
+            string code = await runnableCode.Value;
+            string[] output = await StaticNodeJSService.InvokeFromStringAsync<string[]>(code);
+            return output;
         }
     }
 }
