@@ -57,6 +57,7 @@ namespace Krypton.Analysis.Errors
             [ErrorCode.LoopControlStatementNotThatDeep] = "There are not that many nested loops",
             [ErrorCode.PropertyDoesNotExistInType] = "This type does not have this property",
             [ErrorCode.DuplicateParameter] = "There aready exists a parameter with this name",
+            [ErrorCode.CantRedeclareGlobalSymbol] = "A function or constant with this name already exists",
 
             // Semantic errors: types
             [ErrorCode.BinaryOperatorNotValidOnType] = "This binary operator cannot be used on these two types",

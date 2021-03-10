@@ -257,8 +257,16 @@ namespace Krypton.Analysis.Semantical
 
             FrameworkIntegration.PopulateWithFrameworkSymbols(globalIdentifierMap);
 
+            HashSet<string> declaredSymbols = (Compilation.Program.Functions.Count + Compilation.Program.Constants.Count > 0) ? new() : null!;
+
             foreach (FunctionDeclarationNode functionDeclaration in Compilation.Program.Functions)
             {
+                if (!declaredSymbols.Add(functionDeclaration.Identifier))
+                {
+                    ErrorProvider.ReportError(ErrorCode.CantRedeclareGlobalSymbol, Compilation, functionDeclaration);
+                    return null;
+                }
+
                 FunctionSymbolNode? functionSymbol = CreateFunctionSymbol(functionDeclaration);
 
                 if (functionSymbol == null)
@@ -271,6 +279,12 @@ namespace Krypton.Analysis.Semantical
 
             foreach (ConstantDeclarationNode constantDeclaration in Compilation.Program.Constants)
             {
+                if (!declaredSymbols.Add(constantDeclaration.Identifier))
+                {
+                    ErrorProvider.ReportError(ErrorCode.CantRedeclareGlobalSymbol, Compilation, constantDeclaration);
+                    return null;
+                }
+
                 ConstantSymbolNode? constantSymbol = CreateConstantSymbol(constantDeclaration);
 
                 if (constantSymbol == null)

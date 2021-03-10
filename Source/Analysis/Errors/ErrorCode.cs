@@ -42,6 +42,7 @@
         LoopControlStatementNotThatDeep = 408,
         PropertyDoesNotExistInType = 409,
         DuplicateParameter = 410,
+        CantRedeclareGlobalSymbol = 411,
 
         // Semantic errors: types
         BinaryOperatorNotValidOnType = 601,
