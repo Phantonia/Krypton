@@ -29,3 +29,6 @@ dotnet_diagnostic.CS8604.severity = error
 
 # CS8619: Nullability of reference types in value doesn't match target type.
 dotnet_diagnostic.CS8619.severity = error
+
+# IDE0034: Simplify 'default' expression
+dotnet_diagnostic.IDE0034.severity = silent
