@@ -123,6 +123,12 @@ class Complex {
             .add(r2.exponentiate(new Rational(2, 1)))
             .exponentiate(new Rational(1, 2));
     }
+    getReal() {
+        return this.real;
+    }
+    getImaginary() {
+        return this.imaginary;
+    }
     exponentiate(right) {
         let rho = this.getMagnitude();
         let theta = callWithRational2(Math.atan2, this.imaginary, this.real);

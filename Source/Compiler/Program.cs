@@ -1,6 +1,7 @@
 ﻿using Krypton.Analysis;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -36,7 +37,9 @@ namespace Krypton.Compiler
                 return;
             }
 
-            string template = await File.ReadAllTextAsync("template.js");
+            string templateLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\template.js";
+
+            string template = await File.ReadAllTextAsync(templateLocation);
 
             Console.WriteLine("The code is valid. Enter a command (Help for help)");
             Console.WriteLine();
@@ -49,6 +52,7 @@ namespace Krypton.Compiler
                 Console.WriteLine("An error occurred:");
                 Console.WriteLine(ex.GetType().FullName);
                 Console.WriteLine(ex.Message);
+                Console.ReadKey();
             }
 #endif
         }

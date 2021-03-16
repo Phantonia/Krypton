@@ -1,0 +1,42 @@
+Output("A pythagorean triple is a triple of integers a, b and c, where a^2 + b^2 = c^2 holds");
+Output("Let's find some, shall we? ^^\r\n");
+
+For Var i = 1 While i < 20
+{
+	For Var j = 1 While j < 20
+	{
+		FindAndOutputTriple(i, j);
+		Output("");
+	}
+}
+
+Func FindAndOutputTriple(x As Int, y As Int)
+{
+	Var z = x + y * 1i;
+	z = z * z;
+
+	Var a = z.Real;
+	Var b = z.Imaginary;
+	Var c = Sqrt(a ** 2 + b ** 2);
+
+	If a == 0 Or b == 0
+	{
+		Return;
+	}
+
+	If a < 0
+	{
+		a = -a;
+	}
+
+	If b < 0
+	{
+		b = -b;
+	}
+
+	Output("Ooooh, got one, look :3");
+
+	Output("a = " + a);
+	Output("b = " + b);
+	Output("c = " + c);
+}

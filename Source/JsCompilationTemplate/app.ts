@@ -171,6 +171,14 @@ class Complex {
             .exponentiate(new Rational(1, 2));
     }
 
+    public getReal(): Rational {
+        return this.real;
+    }
+
+    public getImaginary(): Rational {
+        return this.imaginary;
+    }
+
     public exponentiate(right: Complex): Complex {
         let rho = this.getMagnitude();
         let theta = callWithRational2(Math.atan2, this.imaginary, this.real);

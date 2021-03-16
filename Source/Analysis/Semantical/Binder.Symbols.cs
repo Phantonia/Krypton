@@ -26,7 +26,7 @@ namespace Krypton.Analysis.Semantical
                         Operator: Operator.Minus
                     }),
                     RightOperandNode: LiteralExpressionNode rightLiteral
-                })
+                } operationExpression)
             {
                 ErrorProvider.ReportError(ErrorCode.ConstantValueMustBeLiteralOrComplex,
                                           Compilation,
