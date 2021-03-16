@@ -188,6 +188,9 @@ function abs(num) {
     }
     return num;
 }
+function Sqrt(num) {
+    return num.exponentiate(new Rational(1, 2));
+}
 const E = Rational.createFromFloatingPoint(Math.E);
 const PI = Rational.createFromFloatingPoint(Math.PI);
 const PHI = Rational.createFromFloatingPoint((1 + Math.sqrt(5)) / 2);

@@ -364,7 +364,7 @@ namespace Krypton.Analysis.Semantical
 
             if (conversion != null)
             {
-                returnStatement.ReturnExpressionNode.SpecifyImplicitConversion(conversion);
+                returnStatement.ReturnExpressionNode!.SpecifyImplicitConversion(conversion);
             }
 
             return true;

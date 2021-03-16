@@ -249,6 +249,10 @@ function abs(num: Rational): Rational {
     return num;
 }
 
+function Sqrt(num: Rational): Rational {
+    return num.exponentiate(new Rational(1, 2));
+}
+
 const E: Rational = Rational.createFromFloatingPoint(Math.E);
 const PI: Rational = Rational.createFromFloatingPoint(Math.PI);
 const PHI: Rational = Rational.createFromFloatingPoint((1 + Math.sqrt(5)) / 2);

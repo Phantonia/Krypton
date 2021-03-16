@@ -144,18 +144,6 @@ namespace Krypton.CodeGeneration
 
         private void EmitFunctionCallExpression(FunctionCallExpressionNode functionCall)
         {
-            //if (functionCall.SymbolNode is FrameworkFunctionSymbolNode frameworkFunction)
-            //{
-            //    switch (frameworkFunction.CodeGenerationInfo)
-            //    {
-            //        case SpecialCodeGenerationInformation { Kind: SpecialCodeGenerationKind.ConsoleLog }:
-            //            output.Append("console.log(");
-            //            EmitExpression(functionCall.ArgumentNodes[0]);
-            //            output.Append(')');
-            //            return;
-            //    }
-            //}
-
             // at this point this should only be identifiers, so it's okay
             // to not put the expression in parentheses
             EmitExpression(functionCall.FunctionExpressionNode);

@@ -31,6 +31,13 @@ namespace Krypton.Framework
                                    parameters: new[]
                                    {
                                        new ParameterSymbol("text", FrameworkType.String)
+                                   }),
+                new FunctionSymbol("Sqrt",
+                                   returnType: FrameworkType.Rational,
+                                   null!, // actually the code generation info is not used, so we should fix that, but not now
+                                   new[]
+                                   {
+                                       new ParameterSymbol("number", FrameworkType.Rational)
                                    })
             };
 
