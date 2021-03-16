@@ -51,13 +51,6 @@ namespace UnitTests
         }
 
         [Test]
-        public void FuncTest()
-        {
-            Assert.AreEqual(1, frw.Functions.Count);
-            Assert.AreEqual(1, frw.Functions.First(f => f.Name == "Output").Parameters?.Count);
-        }
-
-        [Test]
         public void IntegrationTest()
         {
             HoistedIdentifierMap gl = new();
