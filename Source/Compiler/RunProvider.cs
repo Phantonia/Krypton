@@ -2,7 +2,6 @@
 using Krypton.Analysis;
 using Krypton.CodeGeneration;
 using System;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Krypton.Compiler
@@ -23,7 +22,7 @@ namespace Krypton.Compiler
         public async Task<string> RunAndGetOutputAsync()
         {
             string[] output = await RunCoreAsync();
-            return string.Join("\n\r", output);
+            return string.Join("\r\n", output);
         }
 
         public async Task RunAsync()

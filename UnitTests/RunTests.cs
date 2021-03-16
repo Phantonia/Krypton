@@ -44,5 +44,60 @@ namespace UnitTests
             const string Code = @"Output('a');";
             AssertCorrectOutput(Code, "a");
         }
+
+        [Test]
+        public void PrimeTest()
+        {
+            const string Code = @"
+            Func IsPrime(n As Int) As Bool
+            {
+                If n == 1
+                {
+                    Return False;
+                }
+
+                If n Mod 2 == 0
+                {
+                    Return n == 2;
+                }
+
+                For Var i = 3 While i <= Sqrt(n) With i = i + 2
+                {
+                    If n Mod i == 0
+                    {
+                        Return False;
+                    }
+                }
+
+                Return True;
+            }
+
+            For Var i = 1 While i < 50
+            {
+                If IsPrime(i)
+                {
+                    Output(i);
+                }
+            }
+            ";
+
+            const string Expected = @"2
+3
+5
+7
+11
+13
+17
+19
+23
+29
+31
+37
+41
+43
+47";
+
+            AssertCorrectOutput(Code, Expected);
+        }
     }
 }
