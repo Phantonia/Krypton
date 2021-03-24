@@ -1,9 +1,11 @@
 Output("A pythagorean triple is a triple of integers a, b and c, where a^2 + b^2 = c^2 holds");
 Output("Let's find some, shall we? ^^\r\n");
 
-For Var i = 1 While i < 20
+Const NumberOfRepetitions = 100;
+
+For Var i = 1 While i < Sqrt(NumberOfRepetitions)
 {
-	For Var j = 1 While j < 20
+	For Var j = 1 While j < Sqrt(NumberOfRepetitions)
 	{
 		FindAndOutputTriple(i, j);
 		Output("");
@@ -12,6 +14,11 @@ For Var i = 1 While i < 20
 
 Func FindAndOutputTriple(x As Int, y As Int)
 {
+	If (x == y)
+	{
+		Return;
+	}
+
 	Var z = x + y * 1i;
 	z = z * z;
 
