@@ -6,3 +6,5 @@ UnitTests/**/bin/
 UnitTests/**/obj/
 Source/JsCompilationTemplate/node_modules/
 *.odt\#
+*.pubxml
+*.user

@@ -64,5 +64,33 @@ namespace Krypton.Utilities
         {
             return list.Count > index & index >= 0 ? list[index] : null;
         }
+
+        public static ReadOnlyList<T> With<T>(this ReadOnlyList<T> original, params IndexWither<T>[]? withers)
+            where T : class
+        {
+            if ((withers?.Length ?? 0) == 0)
+            {
+                // withers is either empty or null
+                return original;
+            }
+
+            List<T> list = new(original.Count);
+
+            Dictionary<int, T> hashedWithers = withers!.ToDictionary(w => w.Index, w => w.NewValue);
+
+            for (int i = 0; i < original.Count; i++)
+            {
+                if (hashedWithers.TryGetValue(i, out T? newValue))
+                {
+                    list.Add(newValue);
+                }
+                else
+                {
+                    list.Add(original[i]);
+                }
+            }
+
+            return list.MakeReadOnly();
+        }
     }
 }

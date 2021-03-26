@@ -22,7 +22,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Krypton.Framework", "Source
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Krypton.Utilities", "Source\Utilities\Krypton.Utilities.csproj", "{27206C5E-E838-4FCA-9FC3-58B91F47C9EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsCompilationTemplateCreator", "Source\JsCompilationTemplateCreator\JsCompilationTemplateCreator.csproj", "{494B6217-51CB-4398-9DDC-B680FC149697}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsCompilationTemplateCreator", "Source\JsCompilationTemplateCreator\JsCompilationTemplateCreator.csproj", "{494B6217-51CB-4398-9DDC-B680FC149697}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krypton.CompilationData", "Source\Krypton.CompilationData\Krypton.CompilationData.csproj", "{B6C0BF5F-EBC3-43E6-8460-44FAD8FA3ACD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,6 +64,10 @@ Global
 		{494B6217-51CB-4398-9DDC-B680FC149697}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{494B6217-51CB-4398-9DDC-B680FC149697}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{494B6217-51CB-4398-9DDC-B680FC149697}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6C0BF5F-EBC3-43E6-8460-44FAD8FA3ACD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6C0BF5F-EBC3-43E6-8460-44FAD8FA3ACD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6C0BF5F-EBC3-43E6-8460-44FAD8FA3ACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6C0BF5F-EBC3-43E6-8460-44FAD8FA3ACD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
