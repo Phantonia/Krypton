@@ -4,7 +4,7 @@ using System.IO;
 namespace Krypton.CompilationData.Syntax.Tokens
 {
     [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-    public abstract class Token : IToken
+    public abstract class Token : IToken, IWritable
     {
         private protected Token(int lineNumber, Trivia leadingTrivia)
         {

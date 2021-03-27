@@ -5,6 +5,7 @@
         public LiteralToken(TLiteral value, int lineNumber, Trivia leadingTrivia)
             : base(lineNumber, leadingTrivia)
         {
+            LiteralHelper.AssertTypeIsLiteralType<TLiteral>();
             Value = value;
         }
 

@@ -4,17 +4,16 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Statements
 {
-    public sealed class ReturnStatementNode : StatementNode
+    public sealed class ReturnStatementNode : SingleStatementNode
     {
-        public ReturnStatementNode(ReservedKeywordToken returnKeywordToken,
-                                   ExpressionNode? returnedExpressionNode,
-                                   SyntaxCharacterToken semicolonToken,
+        public ReturnStatementNode(ReservedKeywordToken returnKeyword,
+                                   ExpressionNode? returnedExpression,
+                                   SyntaxCharacterToken semicolon,
                                    SyntaxNode? parent = null)
-            : base(parent)
+            : base(semicolon, parent)
         {
-            ReturnKeywordToken = returnKeywordToken;
-            ReturnedExpressionNode = returnedExpressionNode?.WithParent(this);
-            SemicolonToken = semicolonToken;
+            ReturnKeywordToken = returnKeyword;
+            ReturnedExpressionNode = returnedExpression?.WithParent(this);
         }
 
         public override bool IsLeaf => ReturnedExpressionNode == null;
@@ -23,7 +22,17 @@ namespace Krypton.CompilationData.Syntax.Statements
 
         public ReservedKeywordToken ReturnKeywordToken { get; }
 
-        public SyntaxCharacterToken SemicolonToken { get; }
+        public ReturnStatementNode WithChildren(ReservedKeywordToken? returnKeyword = null,
+                                                ExpressionNode? returnedExpression = null,
+                                                // null is valid on ReturnedExpressionNode,
+                                                // so do we want to ignore it or set it to null?
+                                                // if the param is non-null we always ignore
+                                                // overwriteReturnedExpression
+                                                bool overwriteReturnedExpression = false,
+                                                SyntaxCharacterToken? semicolon = null)
+            => new(returnKeyword ?? ReturnKeywordToken,
+                   returnedExpression ?? (overwriteReturnedExpression ? null : ReturnedExpressionNode),
+                   semicolon ?? SemicolonToken);
 
         public override ReturnStatementNode WithParent(SyntaxNode newParent)
             => new(ReturnKeywordToken, ReturnedExpressionNode, SemicolonToken, newParent);

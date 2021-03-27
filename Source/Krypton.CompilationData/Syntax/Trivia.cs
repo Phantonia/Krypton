@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax
 {
-    public readonly struct Trivia
+    public readonly struct Trivia : IWritable
     {
         public Trivia(int startIndex, int endIndex)
         {

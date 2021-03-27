@@ -1,4 +1,5 @@
-﻿using Krypton.CompilationData.Syntax.Tokens;
+﻿using Krypton.CompilationData.Symbols;
+using Krypton.CompilationData.Syntax.Tokens;
 using Krypton.Utilities;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,32 +10,19 @@ namespace Krypton.CompilationData.Syntax.Expressions
 {
     public sealed class InvocationExpressionNode : ExpressionNode
     {
-        public InvocationExpressionNode(ExpressionNode invokeeNode,
-                                        SyntaxCharacterToken openingParenthesisToken,
-                                        IEnumerable<ExpressionNode> argumentNodes,
-                                        IEnumerable<SyntaxCharacterToken> commaTokens,
-                                        SyntaxCharacterToken closingParenthesisToken)
-            : this(invokeeNode,
-                   openingParenthesisToken,
-                   argumentNodes,
-                   commaTokens,
-                   closingParenthesisToken,
-                   parent: null)
-        { }
-
-        public InvocationExpressionNode(ExpressionNode invokeeNode,
-                                        SyntaxCharacterToken openingParenthesisToken,
-                                        IEnumerable<ExpressionNode> argumentNodes,
-                                        IEnumerable<SyntaxCharacterToken> commaTokens,
-                                        SyntaxCharacterToken closingParenthesisToken,
-                                        SyntaxNode? parent)
+        public InvocationExpressionNode(ExpressionNode invokee,
+                                        SyntaxCharacterToken openingParenthesis,
+                                        IEnumerable<ExpressionNode>? arguments,
+                                        IEnumerable<SyntaxCharacterToken>? commas,
+                                        SyntaxCharacterToken closingParenthesis,
+                                        SyntaxNode? parent = null)
             : base(parent)
         {
-            InvokeeNode = invokeeNode;
-            OpeningParenthesisToken = openingParenthesisToken;
-            ArgumentNodes = argumentNodes.Select(n => n.WithParent(this)).MakeReadOnly();
-            CommaTokens = commaTokens.MakeReadOnly();
-            ClosingParenthesisToken = closingParenthesisToken;
+            InvokeeNode = invokee;
+            OpeningParenthesisToken = openingParenthesis;
+            ArgumentNodes = arguments?.Select(n => n.WithParent(this)).MakeReadOnly() ?? default;
+            CommaTokens = commas.MakeReadOnly();
+            ClosingParenthesisToken = closingParenthesis;
 
             Debug.Assert(CommaTokens.Count == ArgumentNodes.Count - 1);
         }
@@ -51,24 +39,21 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public SyntaxCharacterToken OpeningParenthesisToken { get; }
 
-        public InvocationExpressionNode WithChildren(ExpressionNode? invokeeNode = null,
-                                                     SyntaxCharacterToken? openingParenthesisToken = null,
-                                                     IEnumerable<ExpressionNode>? argumentNodes = null,
-                                                     IndexWither<ExpressionNode>[]? argumentNodeWithers = null,
-                                                     IEnumerable<SyntaxCharacterToken>? commaTokens = null,
-                                                     IndexWither<SyntaxCharacterToken>[]? commaTokenWithers = null,
-                                                     SyntaxCharacterToken? closingParenthesisToken = null)
-        {
-            Debug.Assert((argumentNodes == null) ^ (argumentNodeWithers == null));
-            Debug.Assert((commaTokens == null) ^ (commaTokenWithers == null));
+        public override TypedExpressionNode<InvocationExpressionNode> Bind(TypeSymbol type)
+            => new(this, type);
 
-            return new InvocationExpressionNode(invokeeNode ?? InvokeeNode,
-                                                openingParenthesisToken ?? OpeningParenthesisToken,
-                                                argumentNodes ?? ArgumentNodes.With(argumentNodeWithers),
-                                                commaTokens ?? CommaTokens.With(commaTokenWithers),
-                                                closingParenthesisToken ?? ClosingParenthesisToken);
-
-        }
+        public InvocationExpressionNode WithChildren(ExpressionNode? invokee = null,
+                                                     SyntaxCharacterToken? openingParenthesis = null,
+                                                     IEnumerable<ExpressionNode>? arguments = null,
+                                                     IndexWither<ExpressionNode>[]? argumentWithers = null,
+                                                     IEnumerable<SyntaxCharacterToken>? commas = null,
+                                                     IndexWither<SyntaxCharacterToken>[]? commaWithers = null,
+                                                     SyntaxCharacterToken? closingParenthesis = null)
+            => new(invokee ?? InvokeeNode,
+                   openingParenthesis ?? OpeningParenthesisToken,
+                   arguments ?? ArgumentNodes.With(argumentWithers),
+                   commas ?? CommaTokens.With(commaWithers),
+                   closingParenthesis ?? ClosingParenthesisToken);
 
         public override InvocationExpressionNode WithParent(SyntaxNode newParent)
             => new(InvokeeNode,

@@ -25,6 +25,7 @@
         Leave,
         Let,
         Return,
+        To,
         Var,
         While,
         With,

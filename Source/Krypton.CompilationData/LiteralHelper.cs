@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Numerics;
 
 namespace Krypton.CompilationData
 {
@@ -14,7 +13,7 @@ namespace Krypton.CompilationData
             Debug.Assert(type == typeof(string)
                       || type == typeof(char)
                       || type == typeof(bool)
-                      || type == typeof(BigInteger));
+                      || type == typeof(long));
 
             // still needs Complex and Rational...
         }

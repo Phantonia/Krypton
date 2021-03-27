@@ -1,14 +1,14 @@
 ﻿using Krypton.CompilationData.Syntax.Tokens;
 using System.IO;
 
-namespace Krypton.CompilationData.Syntax.TypeSpecs
+namespace Krypton.CompilationData.Syntax.Types
 {
-    public sealed class IdentifierTypeSpecNode : TypeSpecNode
+    public sealed class IdentifierTypeNode : TypeNode
     {
-        public IdentifierTypeSpecNode(IdentifierToken identifierToken)
-            : this(identifierToken, parent: null) { }
+        public IdentifierTypeNode(IdentifierToken identifier)
+            : this(identifier, parent: null) { }
 
-        public IdentifierTypeSpecNode(IdentifierToken identifierToken, SyntaxNode? parent)
+        public IdentifierTypeNode(IdentifierToken identifierToken, SyntaxNode? parent)
             : base(parent)
         {
             IdentifierToken = identifierToken;
@@ -18,7 +18,7 @@ namespace Krypton.CompilationData.Syntax.TypeSpecs
 
         public override bool IsLeaf => true;
 
-        public override IdentifierTypeSpecNode WithParent(SyntaxNode newParent)
+        public override IdentifierTypeNode WithParent(SyntaxNode newParent)
             => new(IdentifierToken, newParent);
 
         public override void WriteCode(TextWriter output)

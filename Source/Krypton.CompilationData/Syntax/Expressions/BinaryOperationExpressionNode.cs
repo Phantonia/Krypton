@@ -1,4 +1,5 @@
-﻿using Krypton.CompilationData.Syntax.Tokens;
+﻿using Krypton.CompilationData.Symbols;
+using Krypton.CompilationData.Syntax.Tokens;
 using System.Diagnostics;
 using System.IO;
 
@@ -6,22 +7,17 @@ namespace Krypton.CompilationData.Syntax.Expressions
 {
     public sealed class BinaryOperationExpressionNode : ExpressionNode
     {
-        public BinaryOperationExpressionNode(ExpressionNode leftOperandNode,
-                                             OperatorToken operatorToken,
-                                             ExpressionNode rightOperandNode)
-            : this(leftOperandNode, operatorToken, rightOperandNode, parent: null) { }
-
-        public BinaryOperationExpressionNode(ExpressionNode leftOperandNode,
-                                             OperatorToken operatorToken,
-                                             ExpressionNode rightOperandNode,
-                                             SyntaxNode? parent)
+        public BinaryOperationExpressionNode(ExpressionNode leftOperand,
+                                             OperatorToken @operator,
+                                             ExpressionNode rightOperand,
+                                             SyntaxNode? parent = null)
             : base(parent)
         {
-            Debug.Assert(operatorToken.IsBinary);
+            Debug.Assert(@operator.IsBinary);
 
-            LeftOperandNode = leftOperandNode.WithParent(this);
-            OperatorToken = operatorToken;
-            RightOperandNode = rightOperandNode.WithParent(this);
+            LeftOperandNode = leftOperand.WithParent(this);
+            OperatorToken = @operator;
+            RightOperandNode = rightOperand.WithParent(this);
         }
 
         public override bool IsLeaf => false;
@@ -32,12 +28,15 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public ExpressionNode RightOperandNode { get; }
 
-        public BinaryOperationExpressionNode WithChildren(ExpressionNode? leftOperandNode = null,
-                                                          OperatorToken? operatorToken = null,
-                                                          ExpressionNode? rightOperandNode = null)
-            => new(leftOperandNode ?? LeftOperandNode,
-                   operatorToken ?? OperatorToken,
-                   rightOperandNode ?? RightOperandNode);
+        public override TypedExpressionNode<BinaryOperationExpressionNode> Bind(TypeSymbol type)
+            => new(this, type);
+
+        public BinaryOperationExpressionNode WithChildren(ExpressionNode? leftOperand = null,
+                                                          OperatorToken? @operator = null,
+                                                          ExpressionNode? rightOperand = null)
+            => new(leftOperand ?? LeftOperandNode,
+                   @operator ?? OperatorToken,
+                   rightOperand ?? RightOperandNode);
 
         public override BinaryOperationExpressionNode WithParent(SyntaxNode newParent)
             => new(LeftOperandNode, OperatorToken, RightOperandNode, newParent);

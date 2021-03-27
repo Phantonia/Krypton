@@ -1,25 +1,24 @@
-﻿using Krypton.CompilationData.Syntax.Tokens;
-using Krypton.CompilationData.Syntax.TypeSpecs;
+﻿using Krypton.CompilationData.Symbols;
+using Krypton.CompilationData.Syntax.Tokens;
+using Krypton.CompilationData.Syntax.Types;
+using System.Diagnostics;
 using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Expressions
 {
     public sealed class ConversionExpressionNode : ExpressionNode
     {
-        public ConversionExpressionNode(ExpressionNode operandNode,
-                                        ReservedKeywordToken operatorKeywordToken,
-                                        TypeSpecNode typeNode)
-            : this(operandNode, operatorKeywordToken, typeNode, parent: null) { }
-
-        public ConversionExpressionNode(ExpressionNode operandNode,
-                                        ReservedKeywordToken operatorKeywordToken,
-                                        TypeSpecNode typeNode,
-                                        SyntaxNode? parent)
+        public ConversionExpressionNode(ExpressionNode operand,
+                                        ReservedKeywordToken operatorKeyword,
+                                        TypeNode type,
+                                        SyntaxNode? parent = null)
             : base(parent)
         {
-            OperandNode = operandNode.WithParent(this);
-            OperatorKeywordToken = operatorKeywordToken;
-            TypeNode = typeNode.WithParent(this);
+            Debug.Assert(operatorKeyword.Keyword is ReservedKeyword.As or ReservedKeyword.To);
+
+            OperandNode = operand.WithParent(this);
+            OperatorKeywordToken = operatorKeyword;
+            TypeNode = type.WithParent(this);
         }
 
         public override bool IsLeaf => false;
@@ -28,14 +27,17 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public ReservedKeywordToken OperatorKeywordToken { get; }
 
-        public TypeSpecNode TypeNode { get; }
+        public TypeNode TypeNode { get; }
 
-        public ConversionExpressionNode WithChildren(ExpressionNode? operandNode = null,
-                                                     ReservedKeywordToken? operatorKeywordToken = null,
-                                                     TypeSpecNode? typeNode = null)
-            => new(operandNode ?? OperandNode,
-                   operatorKeywordToken ?? OperatorKeywordToken,
-                   typeNode ?? TypeNode);
+        public override TypedExpressionNode<ConversionExpressionNode> Bind(TypeSymbol type)
+            => new(this, type);
+
+        public ConversionExpressionNode WithChildren(ExpressionNode? operand = null,
+                                                     ReservedKeywordToken? operatorKeyword = null,
+                                                     TypeNode? type = null)
+            => new(operand ?? OperandNode,
+                   operatorKeyword ?? OperatorKeywordToken,
+                   type ?? TypeNode);
 
         public override ConversionExpressionNode WithParent(SyntaxNode newParent)
             => new(OperandNode, OperatorKeywordToken, TypeNode, newParent);

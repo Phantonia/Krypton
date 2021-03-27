@@ -4,7 +4,7 @@ using System.IO;
 namespace Krypton.CompilationData.Syntax
 {
     [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-    public abstract class SyntaxNode : ISyntaxNode
+    public abstract class SyntaxNode : ISyntaxNode, IWritable
     {
         // New members have to be added to the interface as well!
 

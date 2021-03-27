@@ -1,4 +1,5 @@
-﻿using Krypton.CompilationData.Syntax.Tokens;
+﻿using Krypton.CompilationData.Symbols;
+using Krypton.CompilationData.Syntax.Tokens;
 using System.Diagnostics;
 using System.IO;
 
@@ -6,19 +7,15 @@ namespace Krypton.CompilationData.Syntax.Expressions
 {
     public sealed class UnaryOperationExpressionNode : ExpressionNode
     {
-        public UnaryOperationExpressionNode(OperatorToken operatorToken,
-                                            ExpressionNode operandNode)
-            : this(operatorToken, operandNode, parent: null) { }
-
-        public UnaryOperationExpressionNode(OperatorToken operatorToken,
-                                            ExpressionNode operandNode,
-                                            SyntaxNode? parent)
+        public UnaryOperationExpressionNode(OperatorToken @operator,
+                                            ExpressionNode operand,
+                                            SyntaxNode? parent = null)
             : base(parent)
         {
-            Debug.Assert(operatorToken.IsUnary);
+            Debug.Assert(@operator.IsUnary);
 
-            OperatorToken = operatorToken;
-            OperandNode = operandNode.WithParent(this);
+            OperatorToken = @operator;
+            OperandNode = operand.WithParent(this);
         }
 
         public override bool IsLeaf => false;
@@ -27,10 +24,13 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public OperatorToken OperatorToken { get; }
 
-        public UnaryOperationExpressionNode WithChildren(OperatorToken? operatorToken,
-                                                         ExpressionNode? operandNode)
-            => new(operatorToken ?? OperatorToken,
-                   operandNode ?? OperandNode);
+        public override TypedExpressionNode<UnaryOperationExpressionNode> Bind(TypeSymbol type)
+            => new(this, type);
+
+        public UnaryOperationExpressionNode WithChildren(OperatorToken? @operator = null,
+                                                         ExpressionNode? operand = null)
+            => new(@operator ?? OperatorToken,
+                   operand ?? OperandNode);
 
         public override UnaryOperationExpressionNode WithParent(SyntaxNode newParent)
             => new(OperatorToken, OperandNode, newParent);

@@ -5,7 +5,8 @@ namespace Krypton.CompilationData.Syntax.Expressions
 {
     public abstract class TypedExpressionNode : ExpressionNode
     {
-        private protected TypedExpressionNode(TypeSymbol typeSymbol, SyntaxNode? parent)
+        private protected TypedExpressionNode(TypeSymbol typeSymbol,
+                                              SyntaxNode? parent)
             : base(parent)
         {
             TypeSymbol = typeSymbol;
@@ -15,14 +16,12 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public TypeSymbol TypeSymbol { get; }
     }
-
     public sealed class TypedExpressionNode<TExpression> : TypedExpressionNode
         where TExpression : ExpressionNode
     {
-        public TypedExpressionNode(TExpression expression, TypeSymbol typeSymbol)
-            : this(expression, typeSymbol, parent: null) { }
-
-        public TypedExpressionNode(TExpression expression, TypeSymbol typeSymbol, SyntaxNode? parent)
+        public TypedExpressionNode(TExpression expression,
+                                   TypeSymbol typeSymbol,
+                                   SyntaxNode? parent = null)
             : base(typeSymbol, parent)
         {
             ExpressionNode = (TExpression)expression.WithParent(this);
@@ -32,9 +31,12 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public override bool IsLeaf => ExpressionNode.IsLeaf;
 
-        public TypedExpressionNode<TExpression> WithChildren(TExpression? expressionNode = null,
+        public override TypedExpressionNode<TExpression> Bind(TypeSymbol type)
+            => type == TypeSymbol ? this : new(ExpressionNode, type);
+
+        public TypedExpressionNode<TExpression> WithChildren(TExpression? expression = null,
                                                              TypeSymbol? typeSymbol = null)
-            => new(expressionNode ?? ExpressionNode,
+            => new(expression ?? ExpressionNode,
                    typeSymbol ?? TypeSymbol);
 
         public override TypedExpressionNode<TExpression> WithParent(SyntaxNode newParent)
