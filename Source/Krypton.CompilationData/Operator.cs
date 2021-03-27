@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Krypton.CompilationData.Syntax.Tokens
+namespace Krypton.CompilationData
 {
     // Feel free to add members, but NEVER
     // change the values of existing members
@@ -52,6 +52,12 @@ namespace Krypton.CompilationData.Syntax.Tokens
         {
             return int.MaxValue - (int)@operator / 10;
         }
+
+        public static bool IsBinary(this Operator @operator)
+            => !@operator.IsUnary();
+
+        public static bool IsUnary(this Operator @operator)
+            => @operator.GetPrecedence() == 0 || @operator == Operator.Minus;
 
         public static string ToText(this Operator @operator)
         {
