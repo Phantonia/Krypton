@@ -1,7 +1,20 @@
-﻿namespace Krypton.CompilationData.Symbols
+﻿using Krypton.Utilities;
+
+namespace Krypton.CompilationData.Symbols
 {
-    public abstract class TypeSymbol : Symbol
+    public sealed class TypeSymbol : Symbol
     {
-        private protected TypeSymbol() : base() { }
+        public TypeSymbol(string name,
+                          ReadOnlyList<ImplicitConversionSymbol> implicitConversionSymbols,
+                          ReadOnlyList<PropertySymbol> propertySymbols)
+            : base(name)
+        {
+            ImplicitConversionSymbols = implicitConversionSymbols;
+            PropertySymbols = propertySymbols;
+        }
+
+        public ReadOnlyList<ImplicitConversionSymbol> ImplicitConversionSymbols { get; }
+
+        public ReadOnlyList<PropertySymbol> PropertySymbols { get; }
     }
 }
