@@ -1,7 +1,9 @@
 ﻿using Krypton.CompilationData.Syntax;
 using Krypton.CompilationData.Syntax.Tokens;
 using System.IO;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("UnitTests")]
 namespace Krypton.CompilationData
 {
     public sealed record Diagnostic(DiagnosticsCode DiagnosticCode,
