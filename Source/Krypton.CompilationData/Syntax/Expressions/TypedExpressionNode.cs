@@ -15,7 +15,10 @@ namespace Krypton.CompilationData.Syntax.Expressions
         public abstract ExpressionNode ExpressionNode { get; }
 
         public TypeSymbol TypeSymbol { get; }
+
+        public abstract override TypedExpressionNode WithParent(SyntaxNode newParent);
     }
+
     public sealed class TypedExpressionNode<TExpression> : TypedExpressionNode
         where TExpression : ExpressionNode
     {
@@ -29,9 +32,9 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public override TExpression ExpressionNode { get; }
 
-        public override bool IsLeaf => ExpressionNode.IsLeaf;
+        public override bool IsLeaf => false;
 
-        public override TypedExpressionNode<TExpression> Bind(TypeSymbol type)
+        public override TypedExpressionNode<TExpression> Type(TypeSymbol type)
             => type == TypeSymbol ? this : new(ExpressionNode, type);
 
         public TypedExpressionNode<TExpression> WithChildren(TExpression? expression = null,

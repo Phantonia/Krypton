@@ -10,12 +10,14 @@ namespace Krypton.CompilationData.Syntax
 
         private protected SyntaxNode(SyntaxNode? parent)
         {
-            Parent = parent;
+            ParentNode = parent;
         }
 
         public abstract bool IsLeaf { get; }
 
-        public SyntaxNode? Parent { get; }
+        public SyntaxNode? ParentNode { get; }
+
+        protected virtual string GetDebuggerDisplay() => GetType().Name;
 
         public string ToCode()
         {
@@ -27,7 +29,5 @@ namespace Krypton.CompilationData.Syntax
         public abstract SyntaxNode WithParent(SyntaxNode newParent);
 
         public abstract void WriteCode(TextWriter output);
-
-        private string GetDebuggerDisplay() => GetType().Name;
     }
 }

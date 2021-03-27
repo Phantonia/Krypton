@@ -12,5 +12,7 @@
         public override string Text => LiteralHelper.LiteralToText(Value);
 
         public TLiteral Value { get; }
+
+        protected override string GetDebuggerDisplay() => $"{base.GetDebuggerDisplay()}; Value = {Value}";
     }
 }

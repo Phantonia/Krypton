@@ -1,4 +1,5 @@
-﻿using Krypton.CompilationData.Syntax.Clauses;
+﻿using Krypton.CompilationData.Symbols;
+using Krypton.CompilationData.Syntax.Clauses;
 using Krypton.CompilationData.Syntax.Tokens;
 using Krypton.Utilities;
 using System.Collections.Generic;
@@ -53,6 +54,9 @@ namespace Krypton.CompilationData.Syntax.Declarations
         public SyntaxCharacterToken OpeningParenthesisToken { get; }
 
         public ReadOnlyList<ParameterDeclarationNode> ParameterNodes { get; }
+
+        public override BoundDeclarationNode<FunctionDeclarationNode> Bind(Symbol symbol)
+            => new(this, symbol);
 
         public FunctionDeclarationNode WithChildren(ReservedKeywordToken? funcKeyword = null,
                                                     IdentifierToken? name = null,

@@ -39,7 +39,9 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public SyntaxCharacterToken OpeningParenthesisToken { get; }
 
-        public override TypedExpressionNode<InvocationExpressionNode> Bind(TypeSymbol type)
+        protected override string GetDebuggerDisplay() => $"{base.GetDebuggerDisplay()}; Number of arguments: {ArgumentNodes.Count}";
+
+        public override TypedExpressionNode<InvocationExpressionNode> Type(TypeSymbol type)
             => new(this, type);
 
         public InvocationExpressionNode WithChildren(ExpressionNode? invokee = null,

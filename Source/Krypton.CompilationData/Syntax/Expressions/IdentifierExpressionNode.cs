@@ -13,11 +13,16 @@ namespace Krypton.CompilationData.Syntax.Expressions
             IdentifierToken = identifier;
         }
 
+        public string Identifier => IdentifierToken.Text;
+
         public IdentifierToken IdentifierToken { get; }
 
         public override bool IsLeaf => true;
 
-        public override TypedExpressionNode<IdentifierExpressionNode> Bind(TypeSymbol type)
+        public BoundIdentifierExpressionNode Bind(Symbol symbol)
+            => new(this, symbol);
+
+        public override TypedExpressionNode<IdentifierExpressionNode> Type(TypeSymbol type)
             => new(this, type);
 
         public override IdentifierExpressionNode WithParent(SyntaxNode newParent)

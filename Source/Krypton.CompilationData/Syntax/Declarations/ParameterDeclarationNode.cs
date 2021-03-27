@@ -1,4 +1,5 @@
-﻿using Krypton.CompilationData.Syntax.Clauses;
+﻿using Krypton.CompilationData.Symbols;
+using Krypton.CompilationData.Syntax.Clauses;
 using Krypton.CompilationData.Syntax.Tokens;
 using System.IO;
 
@@ -17,6 +18,9 @@ namespace Krypton.CompilationData.Syntax.Declarations
         public AsClauseNode AsClauseNode { get; }
 
         public override bool IsLeaf => false;
+
+        public override BoundDeclarationNode<ParameterDeclarationNode> Bind(Symbol symbol)
+            => new(this, symbol);
 
         public override ParameterDeclarationNode WithParent(SyntaxNode newParent)
             => new(NameToken, AsClauseNode, newParent);

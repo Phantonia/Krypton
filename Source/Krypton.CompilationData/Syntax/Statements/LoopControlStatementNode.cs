@@ -31,6 +31,8 @@ namespace Krypton.CompilationData.Syntax.Statements
 
         public LiteralToken<long>? LevelToken { get; }
 
+        protected override string GetDebuggerDisplay() => $"{base.GetDebuggerDisplay()}; Level: {Level}";
+
         public LoopControlStatementNode WithChildren(ReservedKeywordToken? keyword = null,
                                                      LiteralToken<long>? level = null,
                                                      bool overwriteLevel = false,

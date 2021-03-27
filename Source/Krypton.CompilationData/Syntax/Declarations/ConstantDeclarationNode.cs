@@ -1,4 +1,5 @@
-﻿using Krypton.CompilationData.Syntax.Clauses;
+﻿using Krypton.CompilationData.Symbols;
+using Krypton.CompilationData.Syntax.Clauses;
 using Krypton.CompilationData.Syntax.Expressions;
 using Krypton.CompilationData.Syntax.Tokens;
 using System.Diagnostics;
@@ -39,6 +40,9 @@ namespace Krypton.CompilationData.Syntax.Declarations
         public SyntaxCharacterToken SemicolonToken { get; }
 
         public ExpressionNode ValueNode { get; }
+
+        public override BoundDeclarationNode<ConstantDeclarationNode> Bind(Symbol symbol)
+            => new(this, symbol);
 
         public ConstantDeclarationNode WithChildren(ReservedKeywordToken? constKeyword = null,
                                                     IdentifierToken? name = null,

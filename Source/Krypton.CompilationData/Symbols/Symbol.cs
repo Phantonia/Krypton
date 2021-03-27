@@ -4,9 +4,4 @@
     {
         private protected Symbol() { }
     }
-
-    public abstract class TypeSymbol : Symbol
-    {
-        private protected TypeSymbol() : base() { }
-    }
 }

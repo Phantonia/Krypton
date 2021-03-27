@@ -24,7 +24,7 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public OperatorToken OperatorToken { get; }
 
-        public override TypedExpressionNode<UnaryOperationExpressionNode> Bind(TypeSymbol type)
+        public override TypedExpressionNode<UnaryOperationExpressionNode> Type(TypeSymbol type)
             => new(this, type);
 
         public UnaryOperationExpressionNode WithChildren(OperatorToken? @operator = null,

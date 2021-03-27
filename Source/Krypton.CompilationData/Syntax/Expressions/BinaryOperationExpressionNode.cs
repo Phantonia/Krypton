@@ -28,7 +28,7 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public ExpressionNode RightOperandNode { get; }
 
-        public override TypedExpressionNode<BinaryOperationExpressionNode> Bind(TypeSymbol type)
+        public override TypedExpressionNode<BinaryOperationExpressionNode> Type(TypeSymbol type)
             => new(this, type);
 
         public BinaryOperationExpressionNode WithChildren(ExpressionNode? leftOperand = null,

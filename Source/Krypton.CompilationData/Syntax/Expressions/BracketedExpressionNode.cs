@@ -29,7 +29,7 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public SyntaxCharacterToken OpeningParenthesisToken { get; }
 
-        public override TypedExpressionNode<BracketedExpressionNode> Bind(TypeSymbol type)
+        public override TypedExpressionNode<BracketedExpressionNode> Type(TypeSymbol type)
             => new(this, type);
 
         public override BracketedExpressionNode WithParent(SyntaxNode newParent)

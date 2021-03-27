@@ -18,7 +18,9 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public LiteralToken<TLiteral> LiteralToken { get; }
 
-        public override TypedExpressionNode<LiteralExpressionNode<TLiteral>> Bind(TypeSymbol type)
+        protected override string GetDebuggerDisplay() => $"{base.GetDebuggerDisplay()}; Value = {LiteralToken.Value}";
+
+        public override TypedExpressionNode<LiteralExpressionNode<TLiteral>> Type(TypeSymbol type)
             => new(this, type);
 
         public override LiteralExpressionNode<TLiteral> WithParent(SyntaxNode newParent)

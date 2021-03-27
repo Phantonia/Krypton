@@ -29,7 +29,7 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public TypeNode TypeNode { get; }
 
-        public override TypedExpressionNode<ConversionExpressionNode> Bind(TypeSymbol type)
+        public override TypedExpressionNode<ConversionExpressionNode> Type(TypeSymbol type)
             => new(this, type);
 
         public ConversionExpressionNode WithChildren(ExpressionNode? operand = null,

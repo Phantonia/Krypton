@@ -32,6 +32,8 @@ namespace Krypton.CompilationData.Syntax
 
         public SyntaxCharacterToken OpeningBraceToken { get; }
 
+        protected override string GetDebuggerDisplay() => $"{base.GetDebuggerDisplay()}; Count = {StatementNodes.Count}";
+
         public BodyNode WithChildren(SyntaxCharacterToken? openingBraceToken = null,
                                      IEnumerable<StatementNode>? statementNodes = null,
                                      IndexWither<StatementNode>[]? statementNodeWithers = null,

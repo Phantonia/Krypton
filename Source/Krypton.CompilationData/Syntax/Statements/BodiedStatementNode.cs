@@ -10,6 +10,8 @@
 
         public BodyNode BodyNode { get; }
 
+        protected override string GetDebuggerDisplay() => $"{base.GetDebuggerDisplay()}; Number of statements: {BodyNode.StatementNodes.Count}";
+
         public abstract override BodiedStatementNode WithParent(SyntaxNode newParent);
     }
 }

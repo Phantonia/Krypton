@@ -6,7 +6,7 @@ namespace Krypton.CompilationData.Syntax
     {
         public abstract bool IsLeaf { get; }
 
-        public abstract SyntaxNode? Parent { get; }
+        public abstract SyntaxNode? ParentNode { get; }
 
         public abstract SyntaxNode WithParent(SyntaxNode newParent);
     }

@@ -5,5 +5,7 @@
         public EndOfFileToken(int lineNumber, Trivia leadingTrivia) : base(lineNumber, leadingTrivia) { }
 
         public override string Text => string.Empty;
+
+        protected override string GetDebuggerDisplay() => nameof(EndOfFileToken);
     }
 }

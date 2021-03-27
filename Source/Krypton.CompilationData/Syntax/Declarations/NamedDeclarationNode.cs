@@ -15,6 +15,8 @@ namespace Krypton.CompilationData.Syntax.Declarations
 
         public IdentifierToken NameToken { get; }
 
+        protected override string GetDebuggerDisplay() => $"{base.GetDebuggerDisplay()}; Name = {Name}";
+
         public abstract override NamedDeclarationNode WithParent(SyntaxNode newParent);
     }
 }

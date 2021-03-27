@@ -22,6 +22,9 @@ namespace Krypton.CompilationData.Syntax.Statements
 
         public ReservedKeywordToken ReturnKeywordToken { get; }
 
+        protected override string GetDebuggerDisplay()
+            => $"{base.GetDebuggerDisplay()}; {(ReturnedExpressionNode == null ? "Without" : "With")} value";
+
         public ReturnStatementNode WithChildren(ReservedKeywordToken? returnKeyword = null,
                                                 ExpressionNode? returnedExpression = null,
                                                 // null is valid on ReturnedExpressionNode,
