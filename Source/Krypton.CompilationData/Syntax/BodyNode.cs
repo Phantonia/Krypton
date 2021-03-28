@@ -10,9 +10,9 @@ namespace Krypton.CompilationData.Syntax
 {
     public sealed class BodyNode : SyntaxNode
     {
-        public BodyNode(SyntaxCharacterToken openingBraceToken,
+        public BodyNode(SyntaxCharacterToken? openingBraceToken,
                         IEnumerable<StatementNode> statementNodes,
-                        SyntaxCharacterToken closingBraceToken,
+                        SyntaxCharacterToken? closingBraceToken,
                         SyntaxNode? parent = null)
             : base(parent)
         {
@@ -20,17 +20,17 @@ namespace Krypton.CompilationData.Syntax
             StatementNodes = statementNodes.Select(s => s.WithParent(this)).MakeReadOnly();
             ClosingBraceToken = closingBraceToken;
 
-            Debug.Assert(OpeningBraceToken.SyntaxCharacter == SyntaxCharacter.BraceOpening);
-            Debug.Assert(ClosingBraceToken.SyntaxCharacter == SyntaxCharacter.BraceClosing);
+            Debug.Assert(OpeningBraceToken == null || OpeningBraceToken.SyntaxCharacter == SyntaxCharacter.BraceOpening);
+            Debug.Assert(ClosingBraceToken == null || ClosingBraceToken.SyntaxCharacter == SyntaxCharacter.BraceClosing);
         }
 
-        public SyntaxCharacterToken ClosingBraceToken { get; }
+        public SyntaxCharacterToken? ClosingBraceToken { get; }
 
         public override bool IsLeaf => StatementNodes.Count == 0; // { } is a leaf
 
         public ReadOnlyList<StatementNode> StatementNodes { get; }
 
-        public SyntaxCharacterToken OpeningBraceToken { get; }
+        public SyntaxCharacterToken? OpeningBraceToken { get; }
 
         protected override string GetDebuggerDisplay() => $"{base.GetDebuggerDisplay()}; Count = {StatementNodes.Count}";
 
@@ -47,14 +47,14 @@ namespace Krypton.CompilationData.Syntax
 
         public override void WriteCode(TextWriter output)
         {
-            OpeningBraceToken.WriteCode(output);
+            OpeningBraceToken?.WriteCode(output);
 
             foreach (StatementNode statement in StatementNodes)
             {
                 statement.WriteCode(output);
             }
 
-            ClosingBraceToken.WriteCode(output);
+            ClosingBraceToken?.WriteCode(output);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Krypton.CompilationData.Symbols;
 using Krypton.CompilationData.Syntax.Clauses;
 using Krypton.CompilationData.Syntax.Tokens;
+using Krypton.CompilationData.Syntax.Types;
 using Krypton.Utilities;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +10,7 @@ using System.Linq;
 
 namespace Krypton.CompilationData.Syntax.Declarations
 {
-    public sealed class FunctionDeclarationNode : NamedDeclarationNode
+    public sealed class FunctionDeclarationNode : NamedDeclarationNode, IExecutableNode
     {
         public FunctionDeclarationNode(ReservedKeywordToken funcKeyword,
                                        IdentifierToken name,
@@ -98,5 +99,7 @@ namespace Krypton.CompilationData.Syntax.Declarations
             ReturnTypeClauseNode?.WriteCode(output);
             BodyNode.WriteCode(output);
         }
+
+        TypeNode? IExecutableNode.ReturnTypeNode => ReturnTypeClauseNode?.TypeNode;
     }
 }
