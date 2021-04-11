@@ -1,63 +1,69 @@
 ﻿using Krypton.Analysis.Errors;
-using Krypton.Analysis.Lexical.Lexemes;
+using Krypton.CompilationData;
+using Krypton.CompilationData.Syntax;
+using Krypton.CompilationData.Syntax.Tokens;
 using Krypton.Framework;
 using Krypton.Utilities;
-using System.Diagnostics.CodeAnalysis;
+using System;
+using System.Collections.Generic;
 
 namespace Krypton.Analysis.Lexical
 {
     internal sealed partial class Lexer
     {
-        public Lexer(string code)
+        public Lexer(string code, Analyser analyser)
         {
-            Code = code;
+            this.analyser = analyser;
+            this.code = code;
         }
 
+        private readonly Analyser analyser;
+        private readonly string code;
         private int index = 0;
         private int lineNumber = 1;
+        private int triviaStartingIndex;
 
-        public string Code { get; }
-
-        public LexemeCollection? LexAll()
+        public ReadOnlyList<Token>? LexAll()
         {
+            List<Token> tokens = new();
             LexemeCollection collection = new();
 
-            Lexeme? nextLexeme = NextLexeme();
+            Token? nextToken = NextToken();
 
-            while (nextLexeme != null)
+            while (nextToken != null)
             {
-                if (nextLexeme is InvalidLexeme invalidLexeme)
+                if (nextToken is InvalidToken invalidToken)
                 {
-                    ErrorProvider.ReportError(invalidLexeme.ErrorCode, Code, invalidLexeme);
+                    analyser.ReportDiagnostic(new Diagnostic(invalidToken.DiagnosticsCode, IsError: true, invalidToken));
                     return null;
                 }
 
-                collection.Add(nextLexeme);
+                tokens.Add(nextToken);
 
-                nextLexeme = NextLexeme();
+                nextToken = NextToken();
             }
 
-            collection.Add(new EndOfFileLexeme(lineNumber, Code.Length));
+            collection.Add(new EndOfFileLexeme(lineNumber, code.Length));
 
-            return collection;
+            return tokens.MakeReadOnly();
         }
 
-        public Lexeme? NextLexeme()
+        public Token? NextToken()
         {
-            return Code.TryGet(index) switch
+            return code.TryGet(index) switch
             {
                 null => null,
 
-                ';' => LexSpecificLexeme(SyntaxCharacter.Semicolon),
-                ',' => LexSpecificLexeme(SyntaxCharacter.Comma),
-                ':' => LexSpecificLexeme(SyntaxCharacter.Colon),
+                ';' => LexSpecificToken(SyntaxCharacter.Semicolon),
+                ',' => LexSpecificToken(SyntaxCharacter.Comma),
+                ':' => LexSpecificToken(SyntaxCharacter.Colon),
                 '.' => LexDotOrSingleLineComment(),
-                '(' => LexSpecificLexeme(SyntaxCharacter.ParenthesisOpening),
-                ')' => LexSpecificLexeme(SyntaxCharacter.ParenthesisClosing),
-                '[' => LexSpecificLexeme(SyntaxCharacter.SquareBracketOpening),
-                ']' => LexSpecificLexeme(SyntaxCharacter.SquareBracketClosing),
-                '{' => LexSpecificLexeme(SyntaxCharacter.BraceOpening),
-                '}' => LexSpecificLexeme(SyntaxCharacter.BraceClosing),
+                '(' => LexSpecificToken(SyntaxCharacter.ParenthesisOpening),
+                ')' => LexSpecificToken(SyntaxCharacter.ParenthesisClosing),
+                '[' => LexSpecificToken(SyntaxCharacter.SquareBracketOpening),
+                ']' => LexSpecificToken(SyntaxCharacter.SquareBracketClosing),
+                '{' => LexSpecificToken(SyntaxCharacter.BraceOpening),
+                '}' => LexSpecificToken(SyntaxCharacter.BraceClosing),
                 '<' => LexLessThanOrLeftShift(),
                 '>' => LexGreaterThanOrMultilineComment(),
                 '=' => LexWithPossibleEquals(SyntaxCharacter.Equals, Operator.DoubleEquals),
@@ -82,19 +88,19 @@ namespace Krypton.Analysis.Lexical
         private Lexeme? LexOther()
         {
             int lexemeIndex = index;
-            char currentChar = Code[index];
+            char currentChar = code[index];
 
             if (char.IsWhiteSpace(currentChar))
             {
                 index++;
 
-                for (; index < Code.Length; index++)
+                for (; index < code.Length; index++)
                 {
-                    if (!char.IsWhiteSpace(Code[index]))
+                    if (!char.IsWhiteSpace(code[index]))
                     {
-                        return NextLexeme();
+                        return NextToken();
                     }
-                    else if (Code[index] == '\n')
+                    else if (code[index] == '\n')
                     {
                         lineNumber++;
                     }
@@ -104,9 +110,9 @@ namespace Krypton.Analysis.Lexical
             }
             else if (char.IsNumber(currentChar))
             {
-                if (Code.TryGet(index) == '0')
+                if (code.TryGet(index) == '0')
                 {
-                    switch (Code.TryGet(index + 1))
+                    switch (code.TryGet(index + 1))
                     {
                         case 'x':
                             index++;
@@ -133,6 +139,13 @@ namespace Krypton.Analysis.Lexical
 
                 return new InvalidLexeme(currentChar.ToString(), ErrorCode.UnknownLexeme, lineNumber, lexemeIndex);
             }
+        }
+
+        private Trivia GetTrivia(int triviaEndingIndex)
+        {
+            ReadOnlyMemory<char> text = code.AsMemory(triviaStartingIndex,
+                                                      triviaEndingIndex - triviaStartingIndex);
+            return new Trivia(text);
         }
     }
 }

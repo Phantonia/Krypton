@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Tokens
@@ -18,9 +19,12 @@ namespace Krypton.CompilationData.Syntax.Tokens
 
         public int LineNumber { get; }
 
-        public abstract string Text { get; }
+        public abstract ReadOnlyMemory<char> Text { get; }
 
         protected virtual string GetDebuggerDisplay() => $"{GetType().Name}: \"{Text}\"";
+
+        public sealed override string ToString()
+            => new(Text.Span);
 
         public void WriteCode(TextWriter textWriter)
         {

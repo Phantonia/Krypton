@@ -1,6 +1,5 @@
 ﻿using Krypton.Analysis.Errors;
-using Krypton.Analysis.Lexical.Lexemes;
-using Krypton.Analysis.Lexical.Lexemes.WithValue;
+using Krypton.CompilationData.Syntax.Tokens;
 using Krypton.Utilities;
 using System;
 
@@ -8,7 +7,7 @@ namespace Krypton.Analysis.Lexical
 {
     partial class Lexer
     {
-        private Lexeme LexBinaryInteger()
+        private Token LexBinaryInteger()
         {
             int lexemeIndex = index;
 
@@ -16,15 +15,15 @@ namespace Krypton.Analysis.Lexical
 
             int startIndex = index;
 
-            for (; index < Code.Length; index++)
+            for (; index < code.Length; index++)
             {
-                if (!Code[index].IsBinary() & Code[index] != '_')
+                if (!code[index].IsBinary() & code[index] != '_')
                 {
-                    return new IntegerLiteralLexeme(Code[startIndex..index], IntegerStyle.Base2, lineNumber, lexemeIndex);
+                    return new IntegerLiteralLexeme(code[startIndex..index], IntegerStyle.Base2, lineNumber, lexemeIndex);
                 }
             }
 
-            return new IntegerLiteralLexeme(Code[startIndex..], IntegerStyle.Base2, lineNumber, lexemeIndex);
+            return new IntegerLiteralLexeme(code[startIndex..], IntegerStyle.Base2, lineNumber, lexemeIndex);
         }
 
         private Lexeme LexCharLiteralLexeme()
@@ -36,9 +35,9 @@ namespace Krypton.Analysis.Lexical
             int startIndex = index;
             bool escaped = false;
 
-            for (; index < Code.Length; index++)
+            for (; index < code.Length; index++)
             {
-                if (Code[index] == '\\')
+                if (code[index] == '\\')
                 {
                     escaped = !escaped;
                 }
@@ -46,20 +45,20 @@ namespace Krypton.Analysis.Lexical
                 {
                     escaped = false;
 
-                    if (Code[index] == '\'' & !escaped)
+                    if (code[index] == '\'' & !escaped)
                     {
                         int endIndex = index;
                         index++;
-                        return CharLiteralLexeme.Create(Code[startIndex..endIndex], lineNumber, lexemeIndex);
+                        return CharLiteralLexeme.Create(code[startIndex..endIndex], lineNumber, lexemeIndex);
                     }
-                    else if (Code[index] == '\n')
+                    else if (code[index] == '\n')
                     {
-                        return new InvalidLexeme(Code[startIndex..index], ErrorCode.UnclosedCharLiteral, lineNumber, lexemeIndex);
+                        return new InvalidLexeme(code[startIndex..index], ErrorCode.UnclosedCharLiteral, lineNumber, lexemeIndex);
                     }
                 }
             }
 
-            return new InvalidLexeme(Code[startIndex..], ErrorCode.UnclosedCharLiteral, lineNumber, lexemeIndex);
+            return new InvalidLexeme(code[startIndex..], ErrorCode.UnclosedCharLiteral, lineNumber, lexemeIndex);
         }
 
         private Lexeme LexDecimalIntegerOrRational()
@@ -70,18 +69,18 @@ namespace Krypton.Analysis.Lexical
 
             index++;
 
-            for (; index < Code.Length; index++)
+            for (; index < code.Length; index++)
             {
-                if (Code[index] == '_')
+                if (code[index] == '_')
                 {
-                    if (Code[index - 1] == '.' || Code.TryGet(index + 1) == '.')
+                    if (code[index - 1] == '.' || code.TryGet(index + 1) == '.')
                     {
                         return Finished();
                     }
                 }
-                else if (Code[index] == '.')
+                else if (code[index] == '.')
                 {
-                    if (char.IsNumber(Code.TryGet(index + 1) ?? '\0'))
+                    if (char.IsNumber(code.TryGet(index + 1) ?? '\0'))
                     {
                         if (!alreadyHadDecimalPoint)
                         {
@@ -89,53 +88,53 @@ namespace Krypton.Analysis.Lexical
                         }
                         else
                         {
-                            return new RationalLiteralLexeme(Code[startIndex..index], lineNumber, lexemeIndex);
+                            return new RationalLiteralLexeme(code[startIndex..index], lineNumber, lexemeIndex);
                         }
                     }
                     else
                     {
                         if (!alreadyHadDecimalPoint)
                         {
-                            return new IntegerLiteralLexeme(Code[startIndex..index], IntegerStyle.Base10, lineNumber, lexemeIndex);
+                            return new IntegerLiteralLexeme(code[startIndex..index], IntegerStyle.Base10, lineNumber, lexemeIndex);
                         }
                         else
                         {
-                            return new RationalLiteralLexeme(Code[startIndex..index], lineNumber, lexemeIndex);
+                            return new RationalLiteralLexeme(code[startIndex..index], lineNumber, lexemeIndex);
                         }
                     }
                 }
-                else if (!char.IsDigit(Code[index]))
+                else if (!char.IsDigit(code[index]))
                 {
                     return Finished();
                 }
 
                 Lexeme Finished()
                 {
-                    if (Code[index] == 'i')
+                    if (code[index] == 'i')
                     {
                         index++;
 
-                        return new ImaginaryLiteralLexeme(Code[startIndex..index], lineNumber, lexemeIndex);
+                        return new ImaginaryLiteralLexeme(code[startIndex..index], lineNumber, lexemeIndex);
                     }
 
                     if (alreadyHadDecimalPoint)
                     {
-                        return new RationalLiteralLexeme(Code[startIndex..index], lineNumber, lexemeIndex);
+                        return new RationalLiteralLexeme(code[startIndex..index], lineNumber, lexemeIndex);
                     }
                     else
                     {
-                        return new IntegerLiteralLexeme(Code[startIndex..index], IntegerStyle.Base10, lineNumber, lexemeIndex);
+                        return new IntegerLiteralLexeme(code[startIndex..index], IntegerStyle.Base10, lineNumber, lexemeIndex);
                     }
                 }
             }
 
             if (alreadyHadDecimalPoint)
             {
-                return new RationalLiteralLexeme(Code[startIndex..], lineNumber, lexemeIndex);
+                return new RationalLiteralLexeme(code[startIndex..], lineNumber, lexemeIndex);
             }
             else
             {
-                return new IntegerLiteralLexeme(Code[startIndex..], IntegerStyle.Base10, lineNumber, lexemeIndex);
+                return new IntegerLiteralLexeme(code[startIndex..], IntegerStyle.Base10, lineNumber, lexemeIndex);
             }
         }
 
@@ -151,9 +150,9 @@ namespace Krypton.Analysis.Lexical
 
             bool willBeInvalid = false;
 
-            for (; index < Code.Length; index++)
+            for (; index < code.Length; index++)
             {
-                bool isHex = Code[index].IsHex(out bool? isUpperTmp);
+                bool isHex = code[index].IsHex(out bool? isUpperTmp);
 
                 isUpper ??= isUpperTmp;
 
@@ -162,26 +161,26 @@ namespace Krypton.Analysis.Lexical
                     willBeInvalid = true;
                 }
 
-                if (!isHex & Code[index] != '_')
+                if (!isHex & code[index] != '_')
                 {
                     if (willBeInvalid)
                     {
-                        return new InvalidLexeme(Code[startIndex..index], ErrorCode.HexLiteralWithMixedCase, lineNumber, lexemeIndex);
+                        return new InvalidLexeme(code[startIndex..index], ErrorCode.HexLiteralWithMixedCase, lineNumber, lexemeIndex);
                     }
                     else
                     {
-                        return new IntegerLiteralLexeme(Code[startIndex..index], IntegerStyle.Base16, lineNumber, lexemeIndex);
+                        return new IntegerLiteralLexeme(code[startIndex..index], IntegerStyle.Base16, lineNumber, lexemeIndex);
                     }
                 }
             }
 
             if (willBeInvalid)
             {
-                return new InvalidLexeme(Code[startIndex..], ErrorCode.HexLiteralWithMixedCase, lineNumber, lexemeIndex);
+                return new InvalidLexeme(code[startIndex..], ErrorCode.HexLiteralWithMixedCase, lineNumber, lexemeIndex);
             }
             else
             {
-                return new IntegerLiteralLexeme(Code[startIndex..], IntegerStyle.Base16, lineNumber, lexemeIndex);
+                return new IntegerLiteralLexeme(code[startIndex..], IntegerStyle.Base16, lineNumber, lexemeIndex);
             }
         }
 
@@ -193,22 +192,22 @@ namespace Krypton.Analysis.Lexical
 
             string identifier;
 
-            for (; index < Code.Length; index++)
+            for (; index < code.Length; index++)
             {
-                bool temp = char.IsDigit(Code[index]);
-                char tmp = Code[index];
-                if (index == Code.Length
-                    || (!Code[index].IsLetterOrUnderscore()
-                        && !char.IsDigit(Code[index])))
+                bool temp = char.IsDigit(code[index]);
+                char tmp = code[index];
+                if (index == code.Length
+                    || (!code[index].IsLetterOrUnderscore()
+                        && !char.IsDigit(code[index])))
                 {
-                    identifier = Code[startIndex..index];
+                    identifier = code[startIndex..index];
                     goto LeftForLoop;
                 }
             }
 
-            identifier = Code[startIndex..];
+            identifier = code[startIndex..];
 
-            LeftForLoop:
+        LeftForLoop:
             if (identifier == "_")
             {
                 return new SyntaxCharacterLexeme(SyntaxCharacter.Underscore, lineNumber, startIndex);
@@ -239,14 +238,14 @@ namespace Krypton.Analysis.Lexical
             int startIndex = index;
             bool escaped = false;
 
-            for (; index < Code.Length; index++)
+            for (; index < code.Length; index++)
             {
-                if (Code[index] == '"' & !escaped)
+                if (code[index] == '"' & !escaped)
                 {
                     int endIndex = index;
                     index++;
 
-                    string stringCode = Code[startIndex..endIndex];
+                    string stringCode = code[startIndex..endIndex];
 
                     if (StringLiteralParser.TryParse(stringCode, out string value))
                     {
@@ -257,13 +256,13 @@ namespace Krypton.Analysis.Lexical
                         return new InvalidLexeme($"\"{stringCode}\"", ErrorCode.EscapeSequenceError, lineNumber, lexemeIndex);
                     }
                 }
-                else if (Code[index] == '\\')
+                else if (code[index] == '\\')
                 {
                     escaped = !escaped;
                 }
-                else if (Code[index] == '\n')
+                else if (code[index] == '\n')
                 {
-                    return new InvalidLexeme(Code[startIndex..index], ErrorCode.UnclosedStringLiteral, lineNumber, lexemeIndex);
+                    return new InvalidLexeme(code[startIndex..index], ErrorCode.UnclosedStringLiteral, lineNumber, lexemeIndex);
                 }
                 else
                 {
@@ -271,7 +270,7 @@ namespace Krypton.Analysis.Lexical
                 }
             }
 
-            return new InvalidLexeme(Code[startIndex..], ErrorCode.UnclosedStringLiteral, lineNumber, lexemeIndex);
+            return new InvalidLexeme(code[startIndex..], ErrorCode.UnclosedStringLiteral, lineNumber, lexemeIndex);
         }
     }
 }

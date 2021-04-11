@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Framework\Krypton.Framework.csproj" />
+    <ProjectReference Include="..\Krypton.CompilationData\Krypton.CompilationData.csproj" />
     <ProjectReference Include="..\Utilities\Krypton.Utilities.csproj" />
   </ItemGroup>
 

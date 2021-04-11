@@ -1,27 +1,27 @@
-﻿using Krypton.Analysis.Lexical.Lexemes;
-using Krypton.Framework;
+﻿using Krypton.CompilationData.Syntax;
+using Krypton.CompilationData.Syntax.Tokens;
 using Krypton.Utilities;
 
 namespace Krypton.Analysis.Lexical
 {
     partial class Lexer
     {
-        private Lexeme? LexDotOrSingleLineComment()
+        private Token? LexDotOrSingleLineComment()
         {
-            int lexemeIndex = index;
+            int triviaEndingIndex = index - 1;
             index++;
 
-            if (Code.TryGet(index) == '.' && Code.TryGet(index + 1) == '.')
+            if (code.TryGet(index) == '.' && code.TryGet(index + 1) == '.')
             {
                 index += 2;
 
-                for (; index < Code.Length; index++)
+                for (; index < code.Length; index++)
                 {
-                    if (Code[index] == '\n')
+                    if (code[index] == '\n')
                     {
                         lineNumber++;
                         index++;
-                        return NextLexeme();
+                        return NextToken();
                     }
                 }
 
@@ -29,44 +29,47 @@ namespace Krypton.Analysis.Lexical
             }
             else
             {
-                return new SyntaxCharacterLexeme(SyntaxCharacter.Dot, lineNumber, lexemeIndex);
+                Trivia trivia = GetTrivia(triviaEndingIndex);
+                triviaStartingIndex = index;
+                return new SyntaxCharacterToken(SyntaxCharacter.Dot, lineNumber, trivia);
             }
         }
 
-        private Lexeme? LexGreaterThanOrMultilineComment()
+        private Token? LexGreaterThanOrMultilineComment()
         {
+            int triviaEndingIndex = index - 1;
             int lexemeIndex = index;
             index++;
 
-            if (Code.TryGet(index) == '>') // >>
+            if (code.TryGet(index) == '>') // >>
             {
                 index++;
 
-                if (Code.TryGet(index) == '>') // >>>
+                if (code.TryGet(index) == '>') // >>>
                 {
                     int openedComments = 0;
 
-                    for (; index < Code.Length; index++)
+                    for (; index < code.Length; index++)
                     {
-                        if (Code[index - 2] == '<'
-                            && Code[index - 1] == '<'
-                            && Code[index] == '<') // <<<
+                        if (code[index - 2] == '<'
+                            && code[index - 1] == '<'
+                            && code[index] == '<') // <<<
                         {
                             openedComments--;
 
                             if (openedComments == 0)
                             {
                                 index++;
-                                return NextLexeme();
+                                return NextToken();
                             }
                         }
-                        else if (Code[index - 2] == '>'
-                            && Code[index - 1] == '>'
-                            && Code[index] == '>') // >>>
+                        else if (code[index - 2] == '>'
+                            && code[index - 1] == '>'
+                            && code[index] == '>') // >>>
                         {
                             openedComments++;
                         }
-                        else if (Code[index] == '\n')
+                        else if (code[index] == '\n')
                         {
                             lineNumber++;
                         }
@@ -76,17 +79,17 @@ namespace Krypton.Analysis.Lexical
                 }
                 else
                 {
-                    for (; index < Code.Length; index++)
+                    for (; index < code.Length; index++)
                     {
-                        if (Code[index - 2] != '<'
-                            && Code[index - 1] == '<'
-                            && Code[index] == '<'
-                            && Code.TryGet(index + 1) != '<') // <<
+                        if (code[index - 2] != '<'
+                            && code[index - 1] == '<'
+                            && code[index] == '<'
+                            && code.TryGet(index + 1) != '<') // <<
                         {
                             index++;
-                            return NextLexeme();
+                            return NextToken();
                         }
-                        else if (Code[index] == '\n')
+                        else if (code[index] == '\n')
                         {
                             lineNumber++;
                         }
@@ -97,7 +100,9 @@ namespace Krypton.Analysis.Lexical
             }
             else
             {
-                return new CharacterOperatorLexeme(Operator.GreaterThan, lineNumber, lexemeIndex);
+                Trivia trivia = GetTrivia(triviaEndingIndex);
+                triviaStartingIndex = index;
+                return new OperatorToken(CompilationData.Operator.GreaterThan, lineNumber, trivia);
             }
         }
     }

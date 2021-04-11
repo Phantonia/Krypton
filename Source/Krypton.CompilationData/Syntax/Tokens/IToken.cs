@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using System;
 
 namespace Krypton.CompilationData.Syntax.Tokens
 {
@@ -8,6 +8,6 @@ namespace Krypton.CompilationData.Syntax.Tokens
 
         public abstract int LineNumber { get; }
 
-        public abstract string Text { get; }
+        public abstract ReadOnlyMemory<char> Text { get; }
     }
 }

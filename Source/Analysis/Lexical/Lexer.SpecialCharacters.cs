@@ -1,162 +1,204 @@
-﻿using Krypton.Analysis.Errors;
-using Krypton.Analysis.Lexical.Lexemes;
-using Krypton.Framework;
+﻿using Krypton.CompilationData;
+using Krypton.CompilationData.Syntax;
+using Krypton.CompilationData.Syntax.Tokens;
 using Krypton.Utilities;
+using System;
 
 namespace Krypton.Analysis.Lexical
 {
     partial class Lexer
     {
-
-        private Lexeme LexAsteriskOrDoubleAsteriskOrAsteriskEqualsOrDoubleAsteriskEquals() // *
+        private Token LexAsteriskOrDoubleAsteriskOrAsteriskEqualsOrDoubleAsteriskEquals() // *
         {
-            int lexemeIndex = index;
+            int triviaEndingIndex = index - 1;
 
             index++;
 
-            if (Code.TryGet(index) == '*') // **
+            if (code.TryGet(index) == '*') // **
             {
                 index++;
 
-                if (Code.TryGet(index) == '=') // **=
+                if (code.TryGet(index) == '=') // **=
                 {
                     index++;
 
-                    return new CompoundAssignmentEqualsLexeme(Operator.DoubleAsterisk, lineNumber, lexemeIndex);
+                    throw new NotImplementedException();
                 }
                 else // **
                 {
-                    return new CharacterOperatorLexeme(Operator.DoubleAsterisk, lineNumber, lexemeIndex);
+                    Trivia trivia = GetTrivia(triviaEndingIndex);
+                    triviaStartingIndex = index;
+                    return new OperatorToken(Operator.DoubleAsterisk, lineNumber, trivia);
                 }
             }
-            else if (Code.TryGet(index) == '=') // *=
+            else if (code.TryGet(index) == '=') // *=
             {
                 index++;
 
-                return new CompoundAssignmentEqualsLexeme(Operator.Asterisk, lineNumber, lexemeIndex);
+                throw new NotImplementedException();
             }
             else // *
             {
-                return new CharacterOperatorLexeme(Operator.Asterisk, lineNumber, lexemeIndex);
+                Trivia trivia = GetTrivia(triviaEndingIndex);
+                triviaStartingIndex = index;
+                return new OperatorToken(Operator.Asterisk, lineNumber, trivia);
             }
         }
 
-        private Lexeme LexExlamationMark() // !
+        private Token LexExlamationMark() // !
         {
-            int lexemeIndex = index;
+            int triviaEndingIndex = index - 1;
 
             index++;
 
-            if (Code.TryGet(index) == '=') // !=
+            if (code.TryGet(index) == '=') // !=
             {
+                Trivia trivia = GetTrivia(triviaEndingIndex);
                 index++;
-                return new CharacterOperatorLexeme(Operator.ExclamationEquals, lineNumber, lexemeIndex);
+                triviaStartingIndex = index;
+                return new OperatorToken(Operator.ExclamationEquals, lineNumber, trivia);
             }
             else // !
             {
-                return new InvalidLexeme("!", ErrorCode.UnknownLexeme, lineNumber, lexemeIndex);
+                Trivia trivia = GetTrivia(triviaEndingIndex);
+                triviaStartingIndex = index;
+                ReadOnlyMemory<char> text = code.AsMemory(index - 1, 1); // just "!"
+                return new InvalidToken(text, DiagnosticsCode.UnknownLexeme, lineNumber, trivia);
             }
         }
 
-        private Lexeme LexLessThanOrLeftShift() // <
+        private Token LexLessThanOrLeftShift() // <
         {
-            int lexemeIndex = index;
+            int triviaEndingIndex = index - 1;
 
             index++;
 
-            char? nextChar = Code.TryGet(index);
-
-            switch (nextChar)
+            switch (code.TryGet(index))
             {
                 case '-': // <-
-                    index++;
-                    return new CharacterOperatorLexeme(Operator.SingleLeftArrow, lineNumber, lexemeIndex);
+                    {
+                        Trivia trivia = GetTrivia(triviaEndingIndex);
+                        index++;
+                        triviaStartingIndex = index;
+                        return new OperatorToken(Operator.SingleLeftArrow, lineNumber, trivia);
+                    }
                 case '=': // <=
-                    index++;
-                    return new CharacterOperatorLexeme(Operator.LessThanEquals, lineNumber, lexemeIndex);
+                    {
+                        Trivia trivia = GetTrivia(triviaEndingIndex);
+                        index++;
+                        triviaStartingIndex = index;
+                        return new OperatorToken(Operator.LessThanEquals, lineNumber, trivia);
+                    }
                 default: // <
-                    return new CharacterOperatorLexeme(Operator.LessThan, lineNumber, lexemeIndex);
+                    {
+                        Trivia trivia = GetTrivia(triviaEndingIndex);
+                        triviaStartingIndex = index;
+                        return new OperatorToken(Operator.LessThan, lineNumber, trivia);
+                    }
             }
         }
 
-        private Lexeme LexMinusSignOrRightShift() // -
+        private Token LexMinusSignOrRightShift() // -
         {
-            int lexemeIndex = index;
+            int triviaEndingIndex = index - 1;
 
             index++;
 
-            char? nextChar = Code.TryGet(index);
-
-            switch (nextChar)
+            switch (code.TryGet(index))
             {
                 case '>': // ->
-                    index++;
-                    return new CharacterOperatorLexeme(Operator.SingleRightArrow, lineNumber, lexemeIndex);
+                    {
+                        index++;
+                        Trivia trivia = GetTrivia(triviaEndingIndex);
+                        triviaStartingIndex = index;
+                        return new OperatorToken(Operator.SingleRightArrow, lineNumber, trivia);
+                    }
                 case '=': // -=
                     index++;
-                    return new CompoundAssignmentEqualsLexeme(Operator.Minus, lineNumber, lexemeIndex);
+                    throw new NotImplementedException();
                 default: // -
-                    return new CharacterOperatorLexeme(Operator.Minus, lineNumber, lexemeIndex);
+                    {
+                        Trivia trivia = GetTrivia(triviaEndingIndex);
+                        triviaStartingIndex = index;
+                        return new OperatorToken(Operator.Minus, lineNumber, trivia);
+                    }
             }
         }
 
-        private Lexeme LexSpecificLexeme(SyntaxCharacter syntaxCharacter)
+        private Token LexSpecificToken(SyntaxCharacter syntaxCharacter)
         {
+            Trivia trivia = GetTrivia(index - 1);
             index++;
-            return new SyntaxCharacterLexeme(syntaxCharacter, lineNumber, index - 1);
+            triviaStartingIndex = index;
+            return new SyntaxCharacterToken(syntaxCharacter, lineNumber, trivia);
         }
 
-        private Lexeme LexSpecificLexeme(Operator @operator)
+        private Token LexSpecificLexeme(Operator @operator)
         {
+            Trivia trivia = GetTrivia(index - 1);
             index++;
-            return new CharacterOperatorLexeme(@operator, lineNumber, index - 1);
+            triviaStartingIndex = index;
+            return new OperatorToken(@operator, lineNumber, trivia);
         }
 
-        private Lexeme LexWithPossibleEquals(Operator @operator)
+        private Token LexWithPossibleEquals(Operator @operator)
         {
-            int lexemeIndex = index;
+            int triviaEndingIndex = index - 1;
             index++;
 
-            if (Code.TryGet(index) == '=')
+            if (code.TryGet(index) == '=')
             {
+                Trivia trivia = GetTrivia(triviaEndingIndex);
                 index++;
-                return new CompoundAssignmentEqualsLexeme(@operator, lineNumber, lexemeIndex);
+                triviaStartingIndex = index;
+                throw new NotImplementedException();
             }
             else
             {
-                return new CharacterOperatorLexeme(@operator, lineNumber, lexemeIndex);
+                Trivia trivia = GetTrivia(triviaEndingIndex);
+                triviaStartingIndex = index;
+                return new OperatorToken(@operator, lineNumber, trivia);
             }
         }
 
-        private Lexeme LexWithPossibleEquals(Operator withoutEquals, Operator withEquals)
+        private Token LexWithPossibleEquals(Operator withoutEquals, Operator withEquals)
         {
-            int lexemeIndex = index;
+            int triviaEndingIndex = index - 1;
             index++;
 
-            if (Code.TryGet(index) == '=')
+            if (code.TryGet(index) == '=')
             {
+                Trivia trivia = GetTrivia(triviaEndingIndex);
                 index++;
-                return new CharacterOperatorLexeme(withEquals, lineNumber, lexemeIndex);
+                triviaStartingIndex = index;
+                return new OperatorToken(withEquals, lineNumber, trivia);
             }
             else
             {
-                return new CharacterOperatorLexeme(withoutEquals, lineNumber, lexemeIndex);
+                Trivia trivia = GetTrivia(triviaEndingIndex);
+                index++;
+                triviaStartingIndex = index;
+                return new OperatorToken(withoutEquals, lineNumber, trivia);
             }
         }
 
-        private Lexeme LexWithPossibleEquals(SyntaxCharacter withoutEquals, Operator withEquals)
+        private Token LexWithPossibleEquals(SyntaxCharacter withoutEquals, Operator withEquals)
         {
-            int lexemeIndex = index;
+            int triviaEndingIndex = index - 1;
             index++;
 
-            if (Code.TryGet(index) == '=')
+            if (code.TryGet(index) == '=')
             {
+                Trivia trivia = GetTrivia(triviaEndingIndex);
                 index++;
-                return new CharacterOperatorLexeme(withEquals, lineNumber, lexemeIndex);
+                triviaStartingIndex = index;
+                return new OperatorToken(withEquals, lineNumber, trivia);
             }
             else
             {
-                return new SyntaxCharacterLexeme(withoutEquals, lineNumber, lexemeIndex);
+                Trivia trivia = GetTrivia(triviaEndingIndex);
+                triviaStartingIndex = index;
+                return new SyntaxCharacterToken(withoutEquals, lineNumber, trivia);
             }
         }
     }
