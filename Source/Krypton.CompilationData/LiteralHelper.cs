@@ -13,16 +13,9 @@ namespace Krypton.CompilationData
             Debug.Assert(type == typeof(string)
                       || type == typeof(char)
                       || type == typeof(bool)
-                      || type == typeof(long));
-
-            // still needs Complex and Rational...
-        }
-
-        public static string LiteralToText<T>(T value)
-        {
-            AssertTypeIsLiteralType<T>();
-
-            throw new NotImplementedException();
+                      || type == typeof(long)
+                      || type == typeof(Rational)
+                      || type == typeof(RationalComplex));
         }
     }
 }

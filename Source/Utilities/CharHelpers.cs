@@ -1,10 +1,17 @@
-﻿namespace Krypton.Utilities
+﻿using System;
+
+namespace Krypton.Utilities
 {
     public static class CharHelpers
     {
         public static char? TryGet(this string str, int index)
         {
-            return str.Length > index ? str[index] : (char?)null;
+            return str.Length > index ? str[index] : null;
+        }
+
+        public static char? TryGet(this ReadOnlySpan<char> span, int index)
+        {
+            return span.Length > index ? span[index] : null;
         }
 
         public static bool IsHex(this char chr, out bool? isUpper)

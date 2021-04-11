@@ -9,6 +9,7 @@ using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Ast.TypeSpecs;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Syntactical;
+using Krypton.CompilationData;
 using Krypton.Framework.Literals;
 using Krypton.Framework.Symbols;
 using NUnit.Framework;

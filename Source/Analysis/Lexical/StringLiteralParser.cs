@@ -1,11 +1,24 @@
 ﻿using Krypton.Utilities;
+using System;
 using System.Text;
 
 namespace Krypton.Analysis.Lexical
 {
     internal static class StringLiteralParser
     {
-        public static bool TryParse(string input, out string output)
+        public static string Parse(ReadOnlySpan<char> input)
+        {
+            if (TryParse(input, out string output))
+            {
+                return output;
+            }
+            else
+            {
+                throw new FormatException();
+            }
+        }
+
+        public static bool TryParse(ReadOnlySpan<char> input, out string output)
         {
             StringBuilder sb = new(capacity: input.Length);
 
@@ -30,7 +43,7 @@ namespace Krypton.Analysis.Lexical
                         return false;
                     }
 
-                    string numberString = input[i..(i + 4)];
+                    ReadOnlySpan<char> numberString = input[i..(i + 4)];
                     if (numberString.Contains('_'))
                     {
                         output = string.Empty;

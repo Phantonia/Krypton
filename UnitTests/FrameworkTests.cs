@@ -1,5 +1,6 @@
 ﻿using Krypton.Analysis.Ast.Symbols;
 using Krypton.Analysis.Semantical;
+using Krypton.CompilationData;
 using Krypton.Framework;
 using Krypton.Framework.Literals;
 using Krypton.Framework.Symbols;

@@ -1,4 +1,5 @@
-﻿using Krypton.Analysis.Errors;
+﻿using Krypton.CompilationData;
+using Krypton.CompilationData.Syntax;
 using Krypton.CompilationData.Syntax.Tokens;
 using Krypton.Utilities;
 using System;
@@ -7,9 +8,9 @@ namespace Krypton.Analysis.Lexical
 {
     partial class Lexer
     {
-        private Token LexBinaryInteger()
+        private LiteralToken<long> LexBinaryInteger()
         {
-            int lexemeIndex = index;
+            int triviaEndingIndex = index - 1;
 
             index++;
 
@@ -19,16 +20,26 @@ namespace Krypton.Analysis.Lexical
             {
                 if (!code[index].IsBinary() & code[index] != '_')
                 {
-                    return new IntegerLiteralLexeme(code[startIndex..index], IntegerStyle.Base2, lineNumber, lexemeIndex);
+                    return MakeToken(code.AsMemory()[startIndex..index]);
                 }
             }
 
-            return new IntegerLiteralLexeme(code[startIndex..], IntegerStyle.Base2, lineNumber, lexemeIndex);
+            return MakeToken(code.AsMemory()[startIndex..]);
+
+            LiteralToken<long> MakeToken(ReadOnlyMemory<char> text)
+            {
+                Trivia trivia = GetTrivia(triviaEndingIndex);
+                index++;
+
+                long value = NumberLiteralParser.ParseBinary(text.Span);
+
+                return new LiteralToken<long>(value, text, lineNumber, trivia);
+            }
         }
 
-        private Lexeme LexCharLiteralLexeme()
+        private Token LexCharLiteralLexeme()
         {
-            int lexemeIndex = index;
+            int triviaEndingIndex = index - 1;
 
             index++;
 
@@ -47,22 +58,42 @@ namespace Krypton.Analysis.Lexical
 
                     if (code[index] == '\'' & !escaped)
                     {
-                        int endIndex = index;
-                        index++;
-                        return CharLiteralLexeme.Create(code[startIndex..endIndex], lineNumber, lexemeIndex);
+                        return MakeValidToken(code.AsMemory()[startIndex..index]);
                     }
                     else if (code[index] == '\n')
                     {
-                        return new InvalidLexeme(code[startIndex..index], ErrorCode.UnclosedCharLiteral, lineNumber, lexemeIndex);
+                        return MakeInvalidToken(code.AsMemory()[startIndex..index]);
                     }
                 }
             }
 
-            return new InvalidLexeme(code[startIndex..], ErrorCode.UnclosedCharLiteral, lineNumber, lexemeIndex);
+            return MakeInvalidToken(code.AsMemory()[startIndex..]);
+
+            InvalidToken MakeInvalidToken(ReadOnlyMemory<char> text)
+            {
+                Trivia trivia = GetTrivia(triviaEndingIndex);
+                index++;
+
+                return new InvalidToken(text, DiagnosticsCode.UnclosedCharLiteral, lineNumber, trivia);
+            }
+
+            LiteralToken<char> MakeValidToken(ReadOnlyMemory<char> text)
+            {
+                Trivia trivia = GetTrivia(triviaEndingIndex);
+                index++;
+
+                char value = EscapeSequences.Parse(text.Span);
+
+                return new LiteralToken<char>(value, text, lineNumber, trivia);
+            }
         }
 
-        private Lexeme LexDecimalIntegerOrRational()
+        // Used by LexDeciamlIntegerOrRational
+        private delegate T LiteralParser<T>(ReadOnlySpan<char> input);
+
+        private Token LexDecimalIntegerOrRational()
         {
+            int triviaEndingIndex = index - 1;
             int startIndex = index;
             bool alreadyHadDecimalPoint = false;
             int lexemeIndex = index;
@@ -88,18 +119,18 @@ namespace Krypton.Analysis.Lexical
                         }
                         else
                         {
-                            return new RationalLiteralLexeme(code[startIndex..index], lineNumber, lexemeIndex);
+                            return MakeToken(code.AsMemory()[startIndex..index], NumberLiteralParser.ParseRational);
                         }
                     }
                     else
                     {
                         if (!alreadyHadDecimalPoint)
                         {
-                            return new IntegerLiteralLexeme(code[startIndex..index], IntegerStyle.Base10, lineNumber, lexemeIndex);
+                            return MakeToken(code.AsMemory()[startIndex..index], NumberLiteralParser.ParseDecimal);
                         }
                         else
                         {
-                            return new RationalLiteralLexeme(code[startIndex..index], lineNumber, lexemeIndex);
+                            return MakeToken(code.AsMemory()[startIndex..index], NumberLiteralParser.ParseRational);
                         }
                     }
                 }
@@ -108,38 +139,50 @@ namespace Krypton.Analysis.Lexical
                     return Finished();
                 }
 
-                Lexeme Finished()
+                Token Finished()
                 {
                     if (code[index] == 'i')
                     {
                         index++;
 
-                        return new ImaginaryLiteralLexeme(code[startIndex..index], lineNumber, lexemeIndex);
+                        return MakeToken(code.AsMemory()[startIndex..index],
+                                         s => new RationalComplex(0, NumberLiteralParser.ParseRational(s)));
                     }
 
                     if (alreadyHadDecimalPoint)
                     {
-                        return new RationalLiteralLexeme(code[startIndex..index], lineNumber, lexemeIndex);
+                        return MakeToken(code.AsMemory()[startIndex..index], NumberLiteralParser.ParseRational);
                     }
                     else
                     {
-                        return new IntegerLiteralLexeme(code[startIndex..index], IntegerStyle.Base10, lineNumber, lexemeIndex);
+                        return MakeToken(code.AsMemory()[startIndex..index], NumberLiteralParser.ParseDecimal);
                     }
                 }
             }
 
             if (alreadyHadDecimalPoint)
             {
-                return new RationalLiteralLexeme(code[startIndex..], lineNumber, lexemeIndex);
+                return MakeToken(code.AsMemory()[startIndex..], NumberLiteralParser.ParseRational);
             }
             else
             {
-                return new IntegerLiteralLexeme(code[startIndex..], IntegerStyle.Base10, lineNumber, lexemeIndex);
+                return MakeToken(code.AsMemory()[startIndex..], NumberLiteralParser.ParseDecimal);
+            }
+
+            LiteralToken<T> MakeToken<T>(ReadOnlyMemory<char> text, LiteralParser<T> literalParser)
+            {
+                Trivia trivia = GetTrivia(triviaEndingIndex);
+                index++;
+
+                T value = literalParser(text.Span);
+
+                return new LiteralToken<T>(value, text, lineNumber, trivia);
             }
         }
 
-        private Lexeme LexHexadecimalInteger()
+        private Token LexHexadecimalInteger()
         {
+            int triviaEndingIndex = index - 1;
             int lexemeIndex = index;
 
             index++;
@@ -165,32 +208,54 @@ namespace Krypton.Analysis.Lexical
                 {
                     if (willBeInvalid)
                     {
-                        return new InvalidLexeme(code[startIndex..index], ErrorCode.HexLiteralWithMixedCase, lineNumber, lexemeIndex);
+                        return MakeInvalidToken(code.AsMemory()[startIndex..index]);
                     }
                     else
                     {
-                        return new IntegerLiteralLexeme(code[startIndex..index], IntegerStyle.Base16, lineNumber, lexemeIndex);
+                        return MakeValidToken(code.AsMemory()[startIndex..index]);
                     }
                 }
             }
 
             if (willBeInvalid)
             {
-                return new InvalidLexeme(code[startIndex..], ErrorCode.HexLiteralWithMixedCase, lineNumber, lexemeIndex);
+                return MakeInvalidToken(code.AsMemory()[startIndex..]);
             }
             else
             {
-                return new IntegerLiteralLexeme(code[startIndex..], IntegerStyle.Base16, lineNumber, lexemeIndex);
+                return MakeValidToken(code.AsMemory()[startIndex..]);
+            }
+
+            InvalidToken MakeInvalidToken(ReadOnlyMemory<char> text)
+            {
+                Trivia trivia = GetTrivia(triviaEndingIndex);
+                index++;
+
+                return new InvalidToken(text,
+                                        DiagnosticsCode.HexLiteralWithMixedCase,
+                                        lineNumber,
+                                        trivia);
+            }
+
+            LiteralToken<long> MakeValidToken(ReadOnlyMemory<char> text)
+            {
+                Trivia trivia = GetTrivia(triviaEndingIndex);
+                index++;
+
+                long value = NumberLiteralParser.ParseHexadecimal(text.Span);
+
+                return new LiteralToken<long>(value, text, lineNumber, trivia);
             }
         }
 
-        private Lexeme LexIdentifier()
+        private Token LexIdentifier()
         {
+            int triviaEndingIndex = index - 1;
             int startIndex = index;
 
             index++;
 
-            string identifier;
+            ReadOnlyMemory<char> identifierOrKeyword;
 
             for (; index < code.Length; index++)
             {
@@ -200,37 +265,56 @@ namespace Krypton.Analysis.Lexical
                     || (!code[index].IsLetterOrUnderscore()
                         && !char.IsDigit(code[index])))
                 {
-                    identifier = code[startIndex..index];
+                    identifierOrKeyword = code.AsMemory()[startIndex..index];
                     goto LeftForLoop;
                 }
             }
 
-            identifier = code[startIndex..];
+            identifierOrKeyword = code.AsMemory()[startIndex..];
 
         LeftForLoop:
-            if (identifier == "_")
+            if (identifierOrKeyword.Span == "_")
             {
-                return new SyntaxCharacterLexeme(SyntaxCharacter.Underscore, lineNumber, startIndex);
+                Trivia trivia = GetTrivia(triviaEndingIndex);
+                index++;
+
+                return new SyntaxCharacterToken(SyntaxCharacter.Underscore, lineNumber, trivia);
             }
 
-            if (Enum.TryParse(identifier, out ReservedKeyword keyword))
+            if (ReservedKeywords.IsKeyword(identifierOrKeyword.Span, out ReservedKeyword keyword))
             {
-                return KeywordLexeme.Create(keyword, lineNumber, startIndex);
+                Trivia trivia = GetTrivia(triviaEndingIndex);
+
+                if (ReservedKeywords.IsOperatorKeyword(keyword, out Operator @operator))
+                {
+                    return new OperatorToken(@operator, lineNumber, trivia);
+                }
+                else if (ReservedKeywords.IsBooleanLiteralKeyword(keyword, out bool value))
+                {
+                    return new LiteralToken<bool>(value, identifierOrKeyword, lineNumber, trivia);
+                }
+
+                return new ReservedKeywordToken(keyword, lineNumber, trivia);
             }
             else
             {
-                bool isTrue = identifier == "True";
-                if (isTrue || identifier == "False")
+                bool isTrue = identifierOrKeyword.Span == "True";
+                if (isTrue || identifierOrKeyword.Span == "False")
                 {
-                    return new BooleanLiteralLexeme(isTrue, lineNumber, startIndex);
+                    Trivia trivia = GetTrivia(triviaEndingIndex);
+                    return new LiteralToken<bool>(isTrue, identifierOrKeyword, lineNumber, trivia);
                 }
             }
 
-            return new IdentifierLexeme(identifier, lineNumber, startIndex);
+            {
+                Trivia trivia = GetTrivia(triviaEndingIndex);
+                return new IdentifierToken(identifierOrKeyword, lineNumber, trivia);
+            }
         }
 
-        private Lexeme LexStringLiteralLexeme()
+        private Token LexStringLiteralLexeme()
         {
+            int triviaEndingIndex = index - 1;
             int lexemeIndex = index;
 
             index++;
@@ -245,15 +329,17 @@ namespace Krypton.Analysis.Lexical
                     int endIndex = index;
                     index++;
 
-                    string stringCode = code[startIndex..endIndex];
+                    Trivia trivia = GetTrivia(triviaEndingIndex);
 
-                    if (StringLiteralParser.TryParse(stringCode, out string value))
+                    ReadOnlyMemory<char> stringCode = code.AsMemory()[startIndex..endIndex];
+
+                    if (StringLiteralParser.TryParse(stringCode.Span, out string value))
                     {
-                        return new StringLiteralLexeme(value, lineNumber, lexemeIndex);
+                        return new LiteralToken<string>(value, stringCode, lineNumber, trivia);
                     }
                     else
                     {
-                        return new InvalidLexeme($"\"{stringCode}\"", ErrorCode.EscapeSequenceError, lineNumber, lexemeIndex);
+                        return new InvalidToken(stringCode, DiagnosticsCode.EscapeSequenceError, lineNumber, trivia);
                     }
                 }
                 else if (code[index] == '\\')
@@ -262,7 +348,11 @@ namespace Krypton.Analysis.Lexical
                 }
                 else if (code[index] == '\n')
                 {
-                    return new InvalidLexeme(code[startIndex..index], ErrorCode.UnclosedStringLiteral, lineNumber, lexemeIndex);
+                    Trivia trivia = GetTrivia(triviaEndingIndex);
+                    return new InvalidToken(code.AsMemory()[startIndex..index],
+                                            DiagnosticsCode.UnclosedStringLiteral,
+                                            lineNumber,
+                                            trivia);
                 }
                 else
                 {
@@ -270,7 +360,13 @@ namespace Krypton.Analysis.Lexical
                 }
             }
 
-            return new InvalidLexeme(code[startIndex..], ErrorCode.UnclosedStringLiteral, lineNumber, lexemeIndex);
+            {
+                Trivia trivia = GetTrivia(triviaEndingIndex);
+                return new InvalidToken(code.AsMemory()[startIndex..],
+                                        DiagnosticsCode.UnclosedStringLiteral,
+                                        lineNumber,
+                                        trivia);
+            }
         }
     }
 }

@@ -1,8 +1,6 @@
-﻿using Krypton.Analysis.Errors;
-using Krypton.CompilationData;
+﻿using Krypton.CompilationData;
 using Krypton.CompilationData.Syntax;
 using Krypton.CompilationData.Syntax.Tokens;
-using Krypton.Framework;
 using Krypton.Utilities;
 using System;
 using System.Collections.Generic;
@@ -26,7 +24,6 @@ namespace Krypton.Analysis.Lexical
         public ReadOnlyList<Token>? LexAll()
         {
             List<Token> tokens = new();
-            LexemeCollection collection = new();
 
             Token? nextToken = NextToken();
 
@@ -40,10 +37,13 @@ namespace Krypton.Analysis.Lexical
 
                 tokens.Add(nextToken);
 
+                if (nextToken is EndOfFileToken)
+                {
+                    break;
+                }
+
                 nextToken = NextToken();
             }
-
-            collection.Add(new EndOfFileLexeme(lineNumber, code.Length));
 
             return tokens.MakeReadOnly();
         }
@@ -52,7 +52,7 @@ namespace Krypton.Analysis.Lexical
         {
             return code.TryGet(index) switch
             {
-                null => null,
+                null => LexEndOfFile(),
 
                 ';' => LexSpecificToken(SyntaxCharacter.Semicolon),
                 ',' => LexSpecificToken(SyntaxCharacter.Comma),
@@ -85,9 +85,14 @@ namespace Krypton.Analysis.Lexical
             };
         }
 
-        private Lexeme? LexOther()
+        private EndOfFileToken LexEndOfFile()
         {
-            int lexemeIndex = index;
+            return new EndOfFileToken(lineNumber, GetTrivia(code.Length - 1));
+        }
+
+        private Token? LexOther()
+        {
+            int triviaEndingIndex = index - 1;
             char currentChar = code[index];
 
             if (char.IsWhiteSpace(currentChar))
@@ -135,9 +140,10 @@ namespace Krypton.Analysis.Lexical
             }
             else
             {
+                Trivia trivia = GetTrivia(triviaEndingIndex);
                 index++;
 
-                return new InvalidLexeme(currentChar.ToString(), ErrorCode.UnknownLexeme, lineNumber, lexemeIndex);
+                return new InvalidToken(code.AsMemory(index - 1, length: 1), DiagnosticsCode.UnknownLexeme, lineNumber, trivia);
             }
         }
 

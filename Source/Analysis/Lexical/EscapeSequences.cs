@@ -1,6 +1,6 @@
 ﻿using Krypton.Utilities;
+using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 
 namespace Krypton.Analysis.Lexical
 {
@@ -26,7 +26,19 @@ namespace Krypton.Analysis.Lexical
 
         public static ReadOnlyDictionary<char, char> EscapeCharacters { get; }
 
-        public static bool TryParse(string input, out char output)
+        public static char Parse(ReadOnlySpan<char> input)
+        {
+            if (TryParse(input, out char output))
+            {
+                return output;
+            }
+            else
+            {
+                throw new FormatException();
+            }
+        }
+
+        public static bool TryParse(ReadOnlySpan<char> input, out char output)
         {
             if (input.Length == 1)
             {

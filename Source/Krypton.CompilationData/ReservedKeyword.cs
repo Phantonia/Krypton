@@ -1,11 +1,11 @@
-﻿namespace Krypton.CompilationData.Syntax.Tokens
+﻿namespace Krypton.CompilationData
 {
     public enum ReservedKeyword
     {
         NoKeyword = 0, // this is not a Krypton keyword, this is the default value of the type ReservedKeyword
 
         // keywords that represent operators:
-        // the constant here directly maps to the corresponding Krypton.Framework.Operator
+        // the constant here directly maps to the corresponding Krypton.CompilationData.Operator
         And = Operator.AndKeyword,
         Div = Operator.DivKeyword,
         Mod = Operator.ModKeyword,
@@ -13,8 +13,10 @@
         Or = Operator.OrKeyword,
         Xor = Operator.XorKeyword,
 
-        // remaining keywords are counted upwards from 100
-        As = 100,
+        False = ReservedKeywords.OperatorsEnd,
+        True,
+
+        As = ReservedKeywords.ModifiersEnd,
         Block,
         Const,
         Continue,

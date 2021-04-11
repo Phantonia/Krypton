@@ -1,11 +1,11 @@
-﻿using Krypton.Framework.Literals;
+﻿using Krypton.CompilationData;
 using System;
 
 namespace Krypton.Analysis.Lexical
 {
     internal static class NumberLiteralParser
     {
-        public static uint ParseBinary(string input)
+        public static uint ParseBinary(ReadOnlySpan<char> input)
         {
             if (TryParseBinary(input, out uint output))
             {
@@ -17,7 +17,7 @@ namespace Krypton.Analysis.Lexical
             }
         }
 
-        public static bool TryParseBinary(string input, out uint output)
+        public static bool TryParseBinary(ReadOnlySpan<char> input, out uint output)
         {
             checked
             {
@@ -56,7 +56,7 @@ namespace Krypton.Analysis.Lexical
             }
         }
 
-        public static long ParseDecimal(string input)
+        public static long ParseDecimal(ReadOnlySpan<char> input)
         {
             if (TryParseDecimal(input, out long output))
             {
@@ -68,7 +68,7 @@ namespace Krypton.Analysis.Lexical
             }
         }
 
-        public static bool TryParseDecimal(string input, out long output)
+        public static bool TryParseDecimal(ReadOnlySpan<char> input, out long output)
         {
             checked
             {
@@ -104,7 +104,7 @@ namespace Krypton.Analysis.Lexical
             }
         }
 
-        public static long ParseHexadecimal(string input)
+        public static long ParseHexadecimal(ReadOnlySpan<char> input)
         {
             if (TryParseHexadecimal(input, out long output))
             {
@@ -116,7 +116,7 @@ namespace Krypton.Analysis.Lexical
             }
         }
 
-        public static bool TryParseHexadecimal(string input, out long output)
+        public static bool TryParseHexadecimal(ReadOnlySpan<char> input, out long output)
         {
             checked
             {
@@ -168,7 +168,7 @@ namespace Krypton.Analysis.Lexical
             }
         }
 
-        public static Rational ParseRational(string input)
+        public static Rational ParseRational(ReadOnlySpan<char> input)
         {
             if (TryParseRational(input, out Rational output))
             {
@@ -180,7 +180,7 @@ namespace Krypton.Analysis.Lexical
             }
         }
 
-        public static bool TryParseRational(string input, out Rational output)
+        public static bool TryParseRational(ReadOnlySpan<char> input, out Rational output)
         {
             checked
             {

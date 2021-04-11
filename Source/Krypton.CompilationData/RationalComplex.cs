@@ -1,9 +1,9 @@
-﻿namespace Krypton.Framework.Literals
+﻿namespace Krypton.CompilationData
 {
     // When I have time I could add operators etc., but for now that's not necessary
-    public readonly struct Complex
+    public readonly struct RationalComplex
     {
-        public Complex(Rational real, Rational imaginary)
+        public RationalComplex(Rational real, Rational imaginary)
         {
             Real = real;
             Imaginary = imaginary;

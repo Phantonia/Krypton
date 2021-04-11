@@ -1,4 +1,5 @@
-﻿using Krypton.Framework.Literals;
+﻿using Krypton.CompilationData;
+using Krypton.Framework.Literals;
 using System;
 using System.Text;
 

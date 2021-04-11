@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Krypton.Framework.Literals
+namespace Krypton.CompilationData
 {
     // When I have time I could add operators etc., but for now that's not necessary
     public struct Rational
@@ -22,9 +22,10 @@ namespace Krypton.Framework.Literals
             {
                 if (!cancelled)
                 {
-                    long gcd = GCD(unchecked(denominator + 1), numerator);
+                    long gcd = Gcd(unchecked(denominator + 1), numerator);
 
-                    denominator /= gcd;
+                    denominator = unchecked((denominator + 1) / gcd - 1); // ???
+                    //denominator /= gcd;
                     numerator /= gcd;
 
                     cancelled = true;
@@ -40,7 +41,7 @@ namespace Krypton.Framework.Literals
             {
                 if (!cancelled)
                 {
-                    long gcd = GCD(unchecked(denominator + 1), numerator);
+                    long gcd = Gcd(unchecked(denominator + 1), numerator);
 
                     denominator /= gcd;
                     numerator /= gcd;
@@ -59,10 +60,12 @@ namespace Krypton.Framework.Literals
             return $"{Numerator}/{Denominator}";
         }
 
+        public static implicit operator Rational(int i) => new(i, 1);
+
         public static explicit operator double(Rational r) => (double)r.Numerator / r.Denominator;
 
         // "Inspired" by https://www.codeproject.com/tips/161824/fast-integer-algorithms-greatest-common-divisor-an
-        private static long GCD(long x, long y)
+        private static long Gcd(long x, long y)
         {
             x = Math.Abs(x);
             y = Math.Abs(y);
@@ -73,7 +76,7 @@ namespace Krypton.Framework.Literals
             {
                 return x;
             }
-           
+
             if (x > y && x % y == 0)
             {
                 return y;
@@ -95,6 +98,6 @@ namespace Krypton.Framework.Literals
             }
 
             return gcd;
-        } 
+        }
     }
 }
