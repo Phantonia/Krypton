@@ -1,13 +1,11 @@
-﻿using Krypton.Analysis.Ast;
-using Krypton.Analysis.Ast.Declarations;
-using Krypton.Analysis.Ast.Expressions;
-using Krypton.Analysis.Ast.Identifiers;
-using Krypton.Analysis.Ast.Statements;
-using Krypton.Analysis.Ast.TypeSpecs;
-using Krypton.Analysis.Errors;
+﻿using Krypton.Analysis.Errors;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Lexical.Lexemes;
 using Krypton.Analysis.Lexical.Lexemes.WithValue;
+using Krypton.CompilationData.Syntax;
+using Krypton.CompilationData.Syntax.Declarations;
+using Krypton.CompilationData.Syntax.Statements;
+using Krypton.CompilationData.Syntax.Types;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -35,11 +33,9 @@ namespace Krypton.Analysis.Syntactical
 
         public ProgramNode? ParseWholeProgram()
         {
-            List<StatementNode> statements = new();
-            List<FunctionDeclarationNode> functions = new();
-            List<ConstantDeclarationNode> constants = new();
+            List<TopLevelNode> topLevelNodes = new();
 
-            while (TryParseNextNode(out Node? node, out bool error))
+            while (TryParseNextNode(out SyntaxNode? node, out bool error))
             {
                 if (error)
                 {
@@ -49,13 +45,10 @@ namespace Krypton.Analysis.Syntactical
                 switch (node)
                 {
                     case StatementNode statement:
-                        statements.Add(statement);
+                        topLevelNodes.Add(new TopLevelStatementNode(statement));
                         break;
-                    case FunctionDeclarationNode function:
-                        functions.Add(function);
-                        break;
-                    case ConstantDeclarationNode constant:
-                        constants.Add(constant);
+                    case DeclarationNode declaration:
+                        topLevelNodes.Add(new TopLevelDeclarationNode(declaration));
                         break;
                     default:
                         Debug.Fail("Should not have happened");
@@ -63,16 +56,7 @@ namespace Krypton.Analysis.Syntactical
                 }
             }
 
-            StatementCollectionNode topLevelStatements = new(statements);
-
-            foreach (StatementNode statement in statements)
-            {
-                statement.ParentNode = topLevelStatements;
-            }
-
-            ProgramNode program = new ProgramNode(topLevelStatements, constants, functions, lineNumber: 1, index: 0);
-
-            topLevelStatements.ParentNode = program;
+            ProgramNode program = new(topLevelNodes);
 
             return program;
         }
@@ -94,7 +78,7 @@ namespace Krypton.Analysis.Syntactical
 
             index++;
 
-            TypeSpecNode? type = null;
+            TypeNode? type = null;
 
             if (Lexemes[index] is KeywordLexeme { Keyword: ReservedKeyword.As })
             {
@@ -260,7 +244,7 @@ namespace Krypton.Analysis.Syntactical
             }
         }
 
-        private bool TryParseNextNode(out Node? node, out bool error)
+        private bool TryParseNextNode(out SyntaxNode? node, out bool error)
         {
             switch (Lexemes[index])
             {

@@ -5,7 +5,7 @@
         None = 0,
 
         // Lexical errors
-        UnknownLexeme = 1,
+        UnknownToken = 1,
         UnclosedStringLiteral = 2,
         UnclosedCharLiteral = 3,
         EscapeSequenceError = 4,

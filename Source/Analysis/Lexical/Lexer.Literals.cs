@@ -1,277 +1,230 @@
-﻿using Krypton.Analysis.Errors;
-using Krypton.Analysis.Lexical.Lexemes;
-using Krypton.Analysis.Lexical.Lexemes.WithValue;
+﻿using Krypton.CompilationData;
+using Krypton.CompilationData.Syntax.Tokens;
+using Krypton.Framework.Literals;
 using Krypton.Utilities;
-using System;
+using System.Collections.Generic;
 
 namespace Krypton.Analysis.Lexical
 {
     partial class Lexer
     {
-        private Lexeme LexBinaryInteger()
+        private Token LexBinaryIntegerLiteralToken() // 0b
         {
-            int lexemeIndex = index;
+            code.Read();
 
-            index++;
+            List<char> characters = new();
 
-            int startIndex = index;
-
-            for (; index < Code.Length; index++)
+            while (code.Peek() != EndOfCode)
             {
-                if (!Code[index].IsBinary() & Code[index] != '_')
+                if (!((char)code.Peek()).IsBinary() && code.Peek() != '_')
                 {
-                    return new IntegerLiteralLexeme(Code[startIndex..index], IntegerStyle.Base2, lineNumber, lexemeIndex);
+                    return MakeFinalToken();
                 }
             }
 
-            return new IntegerLiteralLexeme(Code[startIndex..], IntegerStyle.Base2, lineNumber, lexemeIndex);
+            return MakeFinalToken();
+
+            Token MakeFinalToken()
+            {
+                string literal = string.Concat(characters);
+                long value = NumberLiteralParser.ParseBinary(literal);
+
+                return new LiteralToken<long>(value, literal, lineNumber, GetTrivia());
+            }
         }
 
-        private Lexeme LexCharLiteralLexeme()
+        private Token LexCharLiteralToken() // '
         {
-            int lexemeIndex = index;
+            code.Read();
 
-            index++;
+            List<char> characters = new();
 
-            int startIndex = index;
             bool escaped = false;
 
-            for (; index < Code.Length; index++)
+            while (code.Peek() != -1)
             {
-                if (Code[index] == '\\')
-                {
-                    escaped = !escaped;
-                }
-                else
-                {
-                    escaped = false;
+                char c = (char)code.Read();
 
-                    if (Code[index] == '\'' & !escaped)
-                    {
-                        int endIndex = index;
-                        index++;
-                        return CharLiteralLexeme.Create(Code[startIndex..endIndex], lineNumber, lexemeIndex);
-                    }
-                    else if (Code[index] == '\n')
-                    {
-                        return new InvalidLexeme(Code[startIndex..index], ErrorCode.UnclosedCharLiteral, lineNumber, lexemeIndex);
-                    }
+                switch (c)
+                {
+                    case '\'' when !escaped:
+                        {
+                            characters.Add(c);
+                            string literal = string.Concat(characters);
+
+                            if (EscapeSequences.TryParse(literal, out char value))
+                            {
+                                return new LiteralToken<char>(value, literal, lineNumber, GetTrivia());
+                            }
+                            else
+                            {
+                                return new InvalidToken(literal, DiagnosticsCode.UnclosedCharLiteral, lineNumber, GetTrivia()); // TODO wrong code
+                            }
+                        }
+                    case '\\':
+                        escaped = !escaped;
+                        break;
+                    case '\n':
+                        {
+                            string literal = string.Concat(characters);
+                            return new InvalidToken(literal, DiagnosticsCode.UnclosedStringLiteral, lineNumber, GetTrivia());
+                        }
+                    default:
+                        escaped = false;
+                        break;
+
                 }
             }
 
-            return new InvalidLexeme(Code[startIndex..], ErrorCode.UnclosedCharLiteral, lineNumber, lexemeIndex);
+            {
+                string literal = string.Concat(characters);
+                return new InvalidToken(literal, DiagnosticsCode.UnclosedStringLiteral, lineNumber, GetTrivia());
+            }
         }
 
-        private Lexeme LexDecimalIntegerOrRational()
+        private Token LexDecimalOrRationalLiteralToken()
         {
-            int startIndex = index;
+            code.Read();
+
             bool alreadyHadDecimalPoint = false;
-            int lexemeIndex = index;
 
-            index++;
+            List<char> characters = new();
 
-            for (; index < Code.Length; index++)
+            while (code.Peek() != EndOfCode)
             {
-                if (Code[index] == '_')
+                if (code.Peek() == '_')
                 {
-                    if (Code[index - 1] == '.' || Code.TryGet(index + 1) == '.')
-                    {
-                        return Finished();
-                    }
-                }
-                else if (Code[index] == '.')
-                {
-                    if (char.IsNumber(Code.TryGet(index + 1) ?? '\0'))
-                    {
-                        if (!alreadyHadDecimalPoint)
-                        {
-                            alreadyHadDecimalPoint = true;
-                        }
-                        else
-                        {
-                            return new RationalLiteralLexeme(Code[startIndex..index], lineNumber, lexemeIndex);
-                        }
-                    }
-                    else
-                    {
-                        if (!alreadyHadDecimalPoint)
-                        {
-                            return new IntegerLiteralLexeme(Code[startIndex..index], IntegerStyle.Base10, lineNumber, lexemeIndex);
-                        }
-                        else
-                        {
-                            return new RationalLiteralLexeme(Code[startIndex..index], lineNumber, lexemeIndex);
-                        }
-                    }
-                }
-                else if (!char.IsDigit(Code[index]))
-                {
-                    return Finished();
-                }
-
-                Lexeme Finished()
-                {
-                    if (Code[index] == 'i')
-                    {
-                        index++;
-
-                        return new ImaginaryLiteralLexeme(Code[startIndex..index], lineNumber, lexemeIndex);
-                    }
-
-                    if (alreadyHadDecimalPoint)
-                    {
-                        return new RationalLiteralLexeme(Code[startIndex..index], lineNumber, lexemeIndex);
-                    }
-                    else
-                    {
-                        return new IntegerLiteralLexeme(Code[startIndex..index], IntegerStyle.Base10, lineNumber, lexemeIndex);
-                    }
+                    if (code.)
                 }
             }
 
-            if (alreadyHadDecimalPoint)
+            Token Finished()
             {
-                return new RationalLiteralLexeme(Code[startIndex..], lineNumber, lexemeIndex);
-            }
-            else
-            {
-                return new IntegerLiteralLexeme(Code[startIndex..], IntegerStyle.Base10, lineNumber, lexemeIndex);
+                string literal = string.Concat(characters);
+
+                if (code.Peek() == 'i')
+                {
+                    code.Read();
+
+                    Complex value;
+
+                    if (NumberLiteralParser.TryParseRational(literal, out Rational rational))
+                    {
+                        value = new Complex(0, rational);
+                    }
+                }
             }
         }
 
-        private Lexeme LexHexadecimalInteger()
+        private Token LexHexadecimalIntegerLiteralToken() // 0x
         {
-            int lexemeIndex = index;
+            code.Read();
 
-            index++;
+            List<char> characters = new();
 
-            int startIndex = index;
-
-            bool? isUpper = null; // null = we don't know
-
+            bool? usesUpperCase = null;
             bool willBeInvalid = false;
 
-            for (; index < Code.Length; index++)
+            while (code.Peek() != -1)
             {
-                bool isHex = Code[index].IsHex(out bool? isUpperTmp);
+                bool isHex = ((char)code.Peek()).IsHex(out bool? charIsUpper);
 
-                isUpper ??= isUpperTmp;
+                usesUpperCase ??= charIsUpper;
 
-                if (isUpperTmp.HasValue & isUpper != isUpperTmp)
+                if (charIsUpper != null && usesUpperCase != charIsUpper)
                 {
                     willBeInvalid = true;
                 }
 
-                if (!isHex & Code[index] != '_')
+                if (!isHex && code.Peek() != '_')
                 {
-                    if (willBeInvalid)
-                    {
-                        return new InvalidLexeme(Code[startIndex..index], ErrorCode.HexLiteralWithMixedCase, lineNumber, lexemeIndex);
-                    }
-                    else
-                    {
-                        return new IntegerLiteralLexeme(Code[startIndex..index], IntegerStyle.Base16, lineNumber, lexemeIndex);
-                    }
+                    return MakeFinalToken();
                 }
+
+                characters.Add((char)code.Read());
             }
 
-            if (willBeInvalid)
+            return MakeFinalToken();
+
+            Token MakeFinalToken()
             {
-                return new InvalidLexeme(Code[startIndex..], ErrorCode.HexLiteralWithMixedCase, lineNumber, lexemeIndex);
-            }
-            else
-            {
-                return new IntegerLiteralLexeme(Code[startIndex..], IntegerStyle.Base16, lineNumber, lexemeIndex);
-            }
-        }
+                string literal = string.Concat(characters);
 
-        private Lexeme LexIdentifier()
-        {
-            int startIndex = index;
-
-            index++;
-
-            string identifier;
-
-            for (; index < Code.Length; index++)
-            {
-                bool temp = char.IsDigit(Code[index]);
-                char tmp = Code[index];
-                if (index == Code.Length
-                    || (!Code[index].IsLetterOrUnderscore()
-                        && !char.IsDigit(Code[index])))
+                if (willBeInvalid)
                 {
-                    identifier = Code[startIndex..index];
-                    goto LeftForLoop;
-                }
-            }
-
-            identifier = Code[startIndex..];
-
-            LeftForLoop:
-            if (identifier == "_")
-            {
-                return new SyntaxCharacterLexeme(SyntaxCharacter.Underscore, lineNumber, startIndex);
-            }
-
-            if (Enum.TryParse(identifier, out ReservedKeyword keyword))
-            {
-                return KeywordLexeme.Create(keyword, lineNumber, startIndex);
-            }
-            else
-            {
-                bool isTrue = identifier == "True";
-                if (isTrue || identifier == "False")
-                {
-                    return new BooleanLiteralLexeme(isTrue, lineNumber, startIndex);
-                }
-            }
-
-            return new IdentifierLexeme(identifier, lineNumber, startIndex);
-        }
-
-        private Lexeme LexStringLiteralLexeme()
-        {
-            int lexemeIndex = index;
-
-            index++;
-
-            int startIndex = index;
-            bool escaped = false;
-
-            for (; index < Code.Length; index++)
-            {
-                if (Code[index] == '"' & !escaped)
-                {
-                    int endIndex = index;
-                    index++;
-
-                    string stringCode = Code[startIndex..endIndex];
-
-                    if (StringLiteralParser.TryParse(stringCode, out string value))
-                    {
-                        return new StringLiteralLexeme(value, lineNumber, lexemeIndex);
-                    }
-                    else
-                    {
-                        return new InvalidLexeme($"\"{stringCode}\"", ErrorCode.EscapeSequenceError, lineNumber, lexemeIndex);
-                    }
-                }
-                else if (Code[index] == '\\')
-                {
-                    escaped = !escaped;
-                }
-                else if (Code[index] == '\n')
-                {
-                    return new InvalidLexeme(Code[startIndex..index], ErrorCode.UnclosedStringLiteral, lineNumber, lexemeIndex);
+                    return new InvalidToken("0x" + literal, DiagnosticsCode.HexLiteralWithMixedCase, lineNumber, GetTrivia());
                 }
                 else
                 {
-                    escaped = false;
+                    long value = NumberLiteralParser.ParseHexadecimal(literal);
+                    return new LiteralToken<long>(value, "0x" + literal, lineNumber, GetTrivia());
+                }
+            }
+        }
+
+        private Token LexNumberLiteralToken(char firstChar)
+        {
+            if (firstChar == '0')
+            {
+                switch (code.Peek())
+                {
+                    case 'x':
+                        code.Read();
+                        return LexHexadecimalIntegerLiteralToken();
+                    case 'b':
+                        code.Read();
+                        return LexBinaryIntegerLiteralToken();
+                }
+            }
+        }
+
+        private Token LexStringLiteralToken() // "
+        {
+            code.Read();
+
+            List<char> characters = new();
+
+            bool escaped = false;
+
+            while (code.Peek() != -1)
+            {
+                char c = (char)code.Read();
+
+                switch (c)
+                {
+                    case '"' when !escaped:
+                        {
+                            characters.Add(c);
+                            string literal = string.Concat(characters);
+
+                            if (StringLiteralParser.TryParse(literal, out string value))
+                            {
+                                return new LiteralToken<string>(value, literal, lineNumber, GetTrivia());
+                            }
+                            else
+                            {
+                                return new InvalidToken(literal, DiagnosticsCode.UnclosedStringLiteral, lineNumber, GetTrivia()); // TODO wrong code
+                            }
+                        }
+                    case '\\':
+                        escaped = !escaped;
+                        break;
+                    case '\n':
+                        {
+                            string literal = string.Concat(characters);
+                            return new InvalidToken(literal, DiagnosticsCode.UnclosedStringLiteral, lineNumber, GetTrivia());
+                        }
+                    default:
+                        escaped = false;
+                        break;
+
                 }
             }
 
-            return new InvalidLexeme(Code[startIndex..], ErrorCode.UnclosedStringLiteral, lineNumber, lexemeIndex);
+            {
+                string literal = string.Concat(characters);
+                return new InvalidToken(literal, DiagnosticsCode.UnclosedStringLiteral, lineNumber, GetTrivia());
+            }
         }
     }
 }

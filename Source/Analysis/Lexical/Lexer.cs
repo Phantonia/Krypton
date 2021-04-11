@@ -1,137 +1,132 @@
-﻿using Krypton.Analysis.Errors;
-using Krypton.Analysis.Lexical.Lexemes;
-using Krypton.Framework;
-using Krypton.Utilities;
-using System.Diagnostics.CodeAnalysis;
+﻿using Krypton.CompilationData;
+using Krypton.CompilationData.Syntax;
+using Krypton.CompilationData.Syntax.Tokens;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 
 namespace Krypton.Analysis.Lexical
 {
     internal sealed partial class Lexer
     {
-        public Lexer(string code)
+        private const int EndOfCode = -1;
+
+        public Lexer(TextReader code, Analyser analyser)
         {
-            Code = code;
+            this.code = code;
+            this.analyser = analyser;
         }
 
-        private int index = 0;
+        private readonly Analyser analyser;
+        private readonly TextReader code;
         private int lineNumber = 1;
+        private List<char> triviaCharacters = new();
 
-        public string Code { get; }
-
-        public LexemeCollection? LexAll()
+        public Collection<Token>? LexAll()
         {
-            LexemeCollection collection = new();
+            Collection<Token> collection = new();
 
-            Lexeme? nextLexeme = NextLexeme();
+            Token nextToken = NextToken();
 
-            while (nextLexeme != null)
+            while (true)
             {
-                if (nextLexeme is InvalidLexeme invalidLexeme)
+                if (nextToken is InvalidToken invalidToken)
                 {
-                    ErrorProvider.ReportError(invalidLexeme.ErrorCode, Code, invalidLexeme);
+                    analyser.ReportDiagnostic(new Diagnostic(invalidToken.DiagnosticsCode, IsError: true, invalidToken));
                     return null;
                 }
 
-                collection.Add(nextLexeme);
+                collection.Add(nextToken);
 
-                nextLexeme = NextLexeme();
+                if (nextToken is EndOfFileToken)
+                {
+                    break;
+                }
+
+                nextToken = NextToken();
             }
-
-            collection.Add(new EndOfFileLexeme(lineNumber, Code.Length));
 
             return collection;
         }
 
-        public Lexeme? NextLexeme()
+        public Token NextToken()
         {
-            return Code.TryGet(index) switch
+            return code.Peek() switch
             {
-                null => null,
+                EndOfCode => new EndOfFileToken(lineNumber, GetTrivia()),
 
-                ';' => LexSpecificLexeme(SyntaxCharacter.Semicolon),
-                ',' => LexSpecificLexeme(SyntaxCharacter.Comma),
-                ':' => LexSpecificLexeme(SyntaxCharacter.Colon),
-                '.' => LexDotOrSingleLineComment(),
-                '(' => LexSpecificLexeme(SyntaxCharacter.ParenthesisOpening),
-                ')' => LexSpecificLexeme(SyntaxCharacter.ParenthesisClosing),
-                '[' => LexSpecificLexeme(SyntaxCharacter.SquareBracketOpening),
-                ']' => LexSpecificLexeme(SyntaxCharacter.SquareBracketClosing),
-                '{' => LexSpecificLexeme(SyntaxCharacter.BraceOpening),
-                '}' => LexSpecificLexeme(SyntaxCharacter.BraceClosing),
+                ';' => LexSpecificToken(SyntaxCharacter.Semicolon),
+                ',' => LexSpecificToken(SyntaxCharacter.Comma),
+                ':' => LexSpecificToken(SyntaxCharacter.Colon),
+                '.' => LexDotOrDoubleDotOrSingleLineComment(),
+                ')' => LexSpecificToken(SyntaxCharacter.ParenthesisClosing),
+                '[' => LexSpecificToken(SyntaxCharacter.SquareBracketOpening),
+                ']' => LexSpecificToken(SyntaxCharacter.SquareBracketClosing),
+                '{' => LexSpecificToken(SyntaxCharacter.BraceOpening),
+                '}' => LexSpecificToken(SyntaxCharacter.BraceClosing),
                 '<' => LexLessThanOrLeftShift(),
-                '>' => LexGreaterThanOrMultilineComment(),
-                '=' => LexWithPossibleEquals(SyntaxCharacter.Equals, Operator.DoubleEquals),
-
+                '>' => LexGreaterThanOrMultiLineComment(),
+                '=' => LexWithPossibleEquals(() => new SyntaxCharacterToken(SyntaxCharacter.Equals, lineNumber, GetTrivia()),
+                                             () => new OperatorToken(Operator.DoubleEquals, lineNumber, GetTrivia())),
+                
                 '+' => LexWithPossibleEquals(Operator.Plus),
-                '-' => LexMinusSignOrRightShift(),
-                '*' => LexAsteriskOrDoubleAsteriskOrAsteriskEqualsOrDoubleAsteriskEquals(),
+                '-' => LexMinusOrRightShift(),
+                '*' => LexAsteriskOrDoubleAsteriskOperatorOrCompoundAssignment(),
                 '/' => LexWithPossibleEquals(Operator.ForeSlash),
                 '&' => LexWithPossibleEquals(Operator.Ampersand),
                 '|' => LexWithPossibleEquals(Operator.Pipe),
                 '^' => LexWithPossibleEquals(Operator.Caret),
-                '!' => LexExlamationMark(),
-                '~' => LexSpecificLexeme(Operator.Tilde),
+                '~' => LexSpecificToken(Operator.Tilde),
+                '!' => LexExclamationMark(),
 
-                '"' => LexStringLiteralLexeme(),
-                '\'' => LexCharLiteralLexeme(),
+                '"' => LexStringLiteralToken(),
+                '\'' => LexCharLiteralToken(),
 
-                _ => LexOther()
+                _ => LexOther(),
             };
         }
 
-        private Lexeme? LexOther()
+        private Trivia GetTrivia()
         {
-            int lexemeIndex = index;
-            char currentChar = Code[index];
+            char[] characters = triviaCharacters.ToArray();
+            ReadOnlyMemory<char> memory = new(characters);
+            triviaCharacters.Clear();
+            return new Trivia(memory);
+        }
+
+        private Token LexOther()
+        {
+            char currentChar = (char)code.Read();
 
             if (char.IsWhiteSpace(currentChar))
             {
-                index++;
-
-                for (; index < Code.Length; index++)
+                PutIntoTrivia(currentChar);
+                
+                while (code.Peek() != EndOfCode && char.IsWhiteSpace((char)code.Peek()))
                 {
-                    if (!char.IsWhiteSpace(Code[index]))
-                    {
-                        return NextLexeme();
-                    }
-                    else if (Code[index] == '\n')
-                    {
-                        lineNumber++;
-                    }
+                    PutIntoTrivia((char)code.Read());
                 }
 
-                return null;
+                return NextToken();
             }
-            else if (char.IsNumber(currentChar))
-            {
-                if (Code.TryGet(index) == '0')
-                {
-                    switch (Code.TryGet(index + 1))
-                    {
-                        case 'x':
-                            index++;
-                            return LexHexadecimalInteger();
-                        case 'b':
-                            index++;
-                            return LexBinaryInteger();
-                        default:
-                            return LexDecimalIntegerOrRational();
-                    }
-                }
-                else
-                {
-                    return LexDecimalIntegerOrRational();
-                }
-            }
-            else if (currentChar.IsLetterOrUnderscore())
-            {
-                return LexIdentifier();
-            }
-            else
-            {
-                index++;
 
-                return new InvalidLexeme(currentChar.ToString(), ErrorCode.UnknownLexeme, lineNumber, lexemeIndex);
+            if (char.IsNumber(currentChar))
+            {
+
+            }
+        }
+
+        private void PutIntoTrivia(char c)
+        {
+            triviaCharacters.Add(c);
+        }
+
+        private void PutIntoTrivia(string str)
+        {
+            foreach (char c in str)
+            {
+                PutIntoTrivia(c);
             }
         }
     }

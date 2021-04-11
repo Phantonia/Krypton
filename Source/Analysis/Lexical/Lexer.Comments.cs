@@ -1,104 +1,145 @@
-﻿using Krypton.Analysis.Lexical.Lexemes;
-using Krypton.Framework;
-using Krypton.Utilities;
+﻿using Krypton.CompilationData;
+using Krypton.CompilationData.Syntax.Tokens;
 
 namespace Krypton.Analysis.Lexical
 {
     partial class Lexer
     {
-        private Lexeme? LexDotOrSingleLineComment()
+        private Token LexDotOrDoubleDotOrSingleLineComment() // .
         {
-            int lexemeIndex = index;
-            index++;
+            code.Read();
 
-            if (Code.TryGet(index) == '.' && Code.TryGet(index + 1) == '.')
+            if (code.Peek() == '.')
             {
-                index += 2;
+                code.Read();
 
-                for (; index < Code.Length; index++)
+                if (code.Peek() == '.')
                 {
-                    if (Code[index] == '\n')
+                    PutIntoTrivia("...");
+
+                    while (code.Peek() is not '\n' and not -1)
                     {
-                        lineNumber++;
-                        index++;
-                        return NextLexeme();
-                    }
-                }
-
-                return null;
-            }
-            else
-            {
-                return new SyntaxCharacterLexeme(SyntaxCharacter.Dot, lineNumber, lexemeIndex);
-            }
-        }
-
-        private Lexeme? LexGreaterThanOrMultilineComment()
-        {
-            int lexemeIndex = index;
-            index++;
-
-            if (Code.TryGet(index) == '>') // >>
-            {
-                index++;
-
-                if (Code.TryGet(index) == '>') // >>>
-                {
-                    int openedComments = 0;
-
-                    for (; index < Code.Length; index++)
-                    {
-                        if (Code[index - 2] == '<'
-                            && Code[index - 1] == '<'
-                            && Code[index] == '<') // <<<
-                        {
-                            openedComments--;
-
-                            if (openedComments == 0)
-                            {
-                                index++;
-                                return NextLexeme();
-                            }
-                        }
-                        else if (Code[index - 2] == '>'
-                            && Code[index - 1] == '>'
-                            && Code[index] == '>') // >>>
-                        {
-                            openedComments++;
-                        }
-                        else if (Code[index] == '\n')
-                        {
-                            lineNumber++;
-                        }
+                        PutIntoTrivia((char)code.Read());
                     }
 
-                    return null;
+                    if (code.Peek() == -1)
+                    {
+                        return new EndOfFileToken(lineNumber, GetTrivia());
+                    }
                 }
                 else
                 {
-                    for (; index < Code.Length; index++)
-                    {
-                        if (Code[index - 2] != '<'
-                            && Code[index - 1] == '<'
-                            && Code[index] == '<'
-                            && Code.TryGet(index + 1) != '<') // <<
-                        {
-                            index++;
-                            return NextLexeme();
-                        }
-                        else if (Code[index] == '\n')
-                        {
-                            lineNumber++;
-                        }
-                    }
-
-                    return null;
+                    code.Read();
+                    return new OperatorToken(Operator.DoubleDot, lineNumber, GetTrivia());
                 }
             }
-            else
+
+            return new SyntaxCharacterToken(SyntaxCharacter.Dot, lineNumber, GetTrivia());
+        }
+
+        private Token LexGreaterThanOrMultiLineComment() // >
+        {
+            code.Read();
+            switch (code.Peek())
             {
-                return new CharacterOperatorLexeme(Operator.GreaterThan, lineNumber, lexemeIndex);
+                case '>': // >>
+                    code.Read();
+                    PutIntoTrivia(">>");
+
+                    if (code.Peek() == '>') // >>>
+                    {
+                        PutIntoTrivia('>');
+                        return LexStrongMultiLineComment();
+                    }
+
+                    return LexWeakMultiLineComment();
+                case '=':
+                    code.Read();
+                    return new OperatorToken(Operator.GreaterThanEquals, lineNumber, GetTrivia());
+                default:
+                    return new OperatorToken(Operator.GreaterThan, lineNumber, GetTrivia());
             }
+        }
+
+        private Token LexStrongMultiLineComment()
+        {
+            int numberOfOpenedComments = 1;
+
+            while (code.Peek() is not -1)
+            {
+                char nextChar = (char)code.Read();
+                PutIntoTrivia(nextChar);
+
+                switch (nextChar)
+                {
+                    case '\n':
+                        lineNumber++;
+                        break;
+                    case '<': // <
+                        if (code.Peek() == '<') // <<
+                        {
+                            PutIntoTrivia('<');
+                            code.Read();
+
+                            if (code.Peek() == '<') // <<<
+                            {
+                                PutIntoTrivia('<');
+                                code.Read();
+
+                                numberOfOpenedComments--;
+                            }
+                        }
+                        break;
+                    case '>':
+                        if (code.Peek() == '>') // <<
+                        {
+                            PutIntoTrivia('>');
+                            code.Read();
+
+                            if (code.Peek() == '>') // <<<
+                            {
+                                PutIntoTrivia('>');
+                                code.Read();
+
+                                numberOfOpenedComments++;
+                            }
+                        }
+                        break;
+                }
+
+                if (numberOfOpenedComments == 0)
+                {
+                    return NextToken();
+                }
+            }
+
+            return new EndOfFileToken(lineNumber, GetTrivia());
+        }
+
+        private Token LexWeakMultiLineComment()
+        {
+            while (code.Peek() is not -1)
+            {
+                char nextChar = (char)code.Read();
+                PutIntoTrivia(nextChar);
+
+                switch (nextChar)
+                {
+                    case '\n':
+                        lineNumber++;
+                        break;
+                    case '<':
+                        if (code.Peek() == '<') // <<
+                        {
+                            PutIntoTrivia('<');
+                            code.Read();
+                            return NextToken();
+                        }
+                        break;
+                }
+            }
+
+            return new EndOfFileToken(lineNumber, GetTrivia());
         }
     }
 }

@@ -44,6 +44,8 @@ namespace Krypton.CompilationData
         AndKeyword = 61, // And
         XorKeyword = 62, // Xor
         OrKeyword = 63, // Or
+
+        DoubleDot = 71,
     }
 
     internal static class OperatorHelper

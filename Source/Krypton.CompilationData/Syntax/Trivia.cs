@@ -5,19 +5,19 @@ namespace Krypton.CompilationData.Syntax
 {
     public readonly struct Trivia : IWritable
     {
-        public Trivia(int startIndex, int endIndex)
+        public Trivia(ReadOnlyMemory<char> text)
         {
-            StartIndex = startIndex;
-            EndIndex = endIndex;
+            Text = text;
         }
 
-        public int EndIndex { get; }
-
-        public int StartIndex { get; }
+        public ReadOnlyMemory<char> Text { get; }
 
         public void WriteCode(TextWriter textWriter)
         {
-            throw new NotImplementedException();
+            foreach (char c in Text.Span)
+            {
+                textWriter.Write(c);
+            }
         }
 
         public static Trivia Null => default;

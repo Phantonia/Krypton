@@ -1,48 +1,47 @@
-﻿using Krypton.Analysis.Ast;
-using Krypton.Analysis.Syntactical;
+﻿using Krypton.Analysis.Syntactical;
 using Krypton.Analysis.Lexical;
 using Krypton.Analysis.Semantical;
 using System.Runtime.CompilerServices;
+using Krypton.CompilationData.Syntax;
+using System.IO;
+using Krypton.CompilationData;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 [assembly: InternalsVisibleTo("UnitTests")]
 namespace Krypton.Analysis
 {
-    public static class Analyser
+    public sealed class Analyser
     {
-        public static Compilation? Analyse(string code)
+        public Analyser(TextReader input)
         {
-            // For unit tests
-            FrameworkIntegration.Reset();
+            this.input = input;
+        }
 
-            Lexer lexer = new(code);
-            LexemeCollection? lexemes = lexer.LexAll();
+        private readonly List<Diagnostic> diagnostics = new();
+        private readonly TextReader input;
 
-            if (lexemes == null)
+        public event DiagnosticEventHandler? Error;
+
+        public event DiagnosticEventHandler? Warning;
+
+        public Compilation Analyse()
+        {
+        }
+
+        internal void ReportDiagnostic(Diagnostic diagnostic)
+        {
+            diagnostics.Add(diagnostic);
+
+            if (diagnostic.IsError)
             {
-                return null;
+                Error?.Invoke(this, new DiagnosticEventArgs(diagnostic));
             }
-
-            ProgramParser parser = new(lexemes, code);
-            ProgramNode? program = parser.ParseWholeProgram();
-
-            if (program == null)
+            else
             {
-                return null;
+                Debug.Assert(diagnostic.IsWarning);
+                Warning?.Invoke(this, new DiagnosticEventArgs(diagnostic));
             }
-
-            Compilation compilation = new(program, code);
-
-            Binder binder = new(compilation);
-            bool success = binder.PerformBinding();
-            //SemanticalAnalyser semanticalAnalyser = new(compilation);
-            //bool success = semanticalAnalyser.PerformSemanticalAnalysis();
-
-            if (!success)
-            {
-                return null;
-            }
-
-            return compilation;
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Krypton.CompilationData.Syntax
 {
     public sealed class TopLevelStatementNode : TopLevelNode
     {
-        public TopLevelStatementNode(StatementNode statement, SyntaxNode? parent)
+        public TopLevelStatementNode(StatementNode statement, SyntaxNode? parent = null)
             : base(parent)
         {
             StatementNode = statement.WithParent(this);
