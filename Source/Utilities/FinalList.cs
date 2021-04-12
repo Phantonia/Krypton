@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Krypton.Utilities
 {
     [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
-    public readonly struct ReadOnlyList<T> : IReadOnlyList<T>, IEnumerable<T>, IIndexedEnumerable<T>
+    public readonly struct FinalList<T> : IReadOnlyList<T>, IEnumerable<T>, IIndexedEnumerable<T>, IEquatable<FinalList<T>>
     {
-        public ReadOnlyList(IList<T>? list)
+        public FinalList(IList<T>? list)
         {
             this.list = list;
         }
@@ -41,7 +42,29 @@ namespace Krypton.Utilities
 
         private string GetDebuggerDisplay()
         {
-            return $"{typeof(T).Name}[]; Count = {Count}";
+            return $"[ {string.Join(", ", this)} ]";
         }
+
+        public override bool Equals(object? obj)
+            => obj is FinalList<T> list && Equals(list);
+
+        public bool Equals(FinalList<T> other)
+            => this.SequenceEqual(other);
+
+        public override int GetHashCode()
+        {
+            HashCode hashCode = new();
+
+            foreach (T item in this)
+            {
+                hashCode.Add(item);
+            }
+
+            return hashCode.ToHashCode();
+        }
+
+        public static bool operator ==(FinalList<T> left, FinalList<T> right) => left.Equals(right);
+
+        public static bool operator !=(FinalList<T> left, FinalList<T> right) => !(left == right);
     }
 }
