@@ -12,16 +12,16 @@ namespace Krypton.CompilationData
                            IEnumerable<Diagnostic> diagnostics)
         {
             ProgramNode = programNode;
-            Symbols = symbols.MakeReadOnly();
-            Diagnostics = diagnostics.MakeReadOnly();
+            Symbols = symbols.Finalize();
+            Diagnostics = diagnostics.Finalize();
         }
 
-        public ReadOnlyList<Diagnostic> Diagnostics { get; }
+        public FinalList<Diagnostic> Diagnostics { get; }
 
         public bool IsValid => Diagnostics.Count == 0;
 
         public ProgramNode ProgramNode { get; }
 
-        public ReadOnlyList<Symbol> Symbols { get; }
+        public FinalList<Symbol> Symbols { get; }
     }
 }

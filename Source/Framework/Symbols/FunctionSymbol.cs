@@ -12,12 +12,12 @@ namespace Krypton.Framework.Symbols
         {
             ReturnType = returnType;
             CodeGenerationInfo = codeGenerationInfo;
-            Parameters = parameters.MakeReadOnly();
+            Parameters = parameters.Finalize();
         }
 
         public CodeGenerationInformation CodeGenerationInfo { get; }
 
-        public ReadOnlyList<ParameterSymbol>? Parameters { get; }
+        public FinalList<ParameterSymbol>? Parameters { get; }
 
         public FrameworkType ReturnType { get; }
     }

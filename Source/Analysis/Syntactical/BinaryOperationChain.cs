@@ -1,7 +1,6 @@
-﻿using Krypton.Analysis.Ast;
-using Krypton.Analysis.Ast.Expressions;
-using Krypton.Analysis.Lexical.Lexemes;
-using Krypton.Framework;
+﻿using Krypton.CompilationData;
+using Krypton.CompilationData.Syntax.Expressions;
+using Krypton.CompilationData.Syntax.Tokens;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -15,14 +14,14 @@ namespace Krypton.Analysis.Syntactical
     // base class's name and only adding words in front.
     // No instance of this class should survive syntactical analysis,
     // else there's a bug.
-    internal sealed class BinaryOperationChain : ExpressionNode
+    internal sealed class BinaryOperationChain
     {
-        internal BinaryOperationChain(int lineNumber, int index) : base(lineNumber, index) { }
+        internal BinaryOperationChain() { }
 
-        private readonly List<IOperatorLexeme> operators = new();
+        private readonly List<OperatorToken> operators = new();
         private readonly List<ExpressionNode> operandNodes = new();
 
-        public void AddOperator(IOperatorLexeme @operator)
+        public void AddOperator(OperatorToken @operator)
         {
             Debug.Assert(operandNodes.Count == operators.Count + 1);
             operators.Add(@operator);
@@ -31,17 +30,7 @@ namespace Krypton.Analysis.Syntactical
         public void AddOperand(ExpressionNode operand)
         {
             Debug.Assert(operandNodes.Count == operators.Count);
-            operand.ParentNode = this;
             operandNodes.Add(operand);
-        }
-
-        public override void PopulateBranches(List<Node> list)
-        {
-            list.Add(this);
-            foreach (ExpressionNode operand in operandNodes)
-            {
-                operand.PopulateBranches(list);
-            }
         }
 
         public ExpressionNode Resolve()
@@ -74,16 +63,16 @@ namespace Krypton.Analysis.Syntactical
                 return -1;
             }
 
-            int index = operators.Select((o, i) => (precedenceGroup: o.PrecedenceGroup, index: i))
+            int index = operators.Select((o, i) => (precedenceGroup: o.Precedence, index: i))
                                  .Aggregate((a, b) => a.precedenceGroup >= b.precedenceGroup ? a : b)
                                  .index;
 
             // Special case for ** operator: right associative
-            if (operators[index] is { PrecedenceGroup: OperatorPrecedenceGroup.Exponantiation })
+            if (operators[index].Operator == Operator.DoubleAsterisk)
             {
                 for (int i = operators.Count - 1; i >= 0; i--)
                 {
-                    if (operators[i] is { PrecedenceGroup: OperatorPrecedenceGroup.Exponantiation })
+                    if (operators[i].Operator == Operator.DoubleAsterisk)
                     {
                         return i;
                     }
@@ -95,28 +84,11 @@ namespace Krypton.Analysis.Syntactical
 
         private ExpressionNode MakeExpressionNodeOfIndex(int index)
         {
-            Debug.Assert(operators[index] is Lexeme);
-            Lexeme operatorLexeme = (Lexeme)operators[index];
-
             ExpressionNode left = operandNodes[index];
             ExpressionNode right = operandNodes[index + 1];
-            int lineNumber = left.LineNumber;
-            int nodeIndex = left.Index;
+            OperatorToken @operator = operators[index];
 
-            Operator @operator = operatorLexeme switch
-            {
-                CharacterOperatorLexeme chrLxm => chrLxm.Operator,
-                KeywordLexeme kwdLxm => (Operator)kwdLxm.Keyword,
-                _ => OnFailure()
-            };
-
-            return new BinaryOperationExpressionNode(left, right, @operator, lineNumber, nodeIndex);
-
-            static Operator OnFailure()
-            {
-                Debug.Fail(message: null);
-                return 0;
-            }
+            return new BinaryOperationExpressionNode(left, @operator, right);
         }
     }
 }

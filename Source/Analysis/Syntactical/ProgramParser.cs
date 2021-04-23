@@ -1,4 +1,13 @@
-﻿using Krypton.Analysis.Errors;
+﻿using Krypton.CompilationData;
+using Krypton.CompilationData.Syntax;
+using Krypton.CompilationData.Syntax.Clauses;
+using Krypton.CompilationData.Syntax.Declarations;
+using Krypton.CompilationData.Syntax.Expressions;
+using Krypton.CompilationData.Syntax.Statements;
+using Krypton.CompilationData.Syntax.Tokens;
+using Krypton.CompilationData.Syntax.Types;
+using Krypton.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -6,31 +15,27 @@ namespace Krypton.Analysis.Syntactical
 {
     internal sealed class ProgramParser
     {
-        public ProgramParser(LexemeCollection lexemes, string code)
+        public ProgramParser(FinalList<Token> tokens, Analyser analyser)
         {
-            Lexemes = lexemes;
-
-            this.code = code;
-            expressionParser = new ExpressionParser(lexemes, code);
-            typeParser = new TypeParser(lexemes, code);
-            statementParser = new StatementParser(lexemes, expressionParser, typeParser, code);
+            this.analyser = analyser;
+            expressionParser = new ExpressionParser(tokens, code);
+            typeParser = new TypeParser(tokens, code);
+            statementParser = new StatementParser(tokens, expressionParser, typeParser, code);
+            this.tokens = tokens;
         }
 
-        private readonly string code;
+        private readonly Analyser analyser;
         private readonly ExpressionParser expressionParser;
         private int index;
         private readonly StatementParser statementParser;
+        private readonly FinalList<Token> tokens;
         private readonly TypeParser typeParser;
-
-        public LexemeCollection Lexemes { get; }
 
         public ProgramNode? ParseWholeProgram()
         {
-            List<StatementNode> statements = new();
-            List<FunctionDeclarationNode> functions = new();
-            List<ConstantDeclarationNode> constants = new();
+            List<TopLevelNode> topLevelNodes = new();
 
-            while (TryParseNextNode(out Node? node, out bool error))
+            while (TryParseNextNode(out SyntaxNode? node, out bool error))
             {
                 if (error)
                 {
@@ -40,13 +45,10 @@ namespace Krypton.Analysis.Syntactical
                 switch (node)
                 {
                     case StatementNode statement:
-                        statements.Add(statement);
+                        topLevelNodes.Add(new TopLevelStatementNode(statement));
                         break;
-                    case FunctionDeclarationNode function:
-                        functions.Add(function);
-                        break;
-                    case ConstantDeclarationNode constant:
-                        constants.Add(constant);
+                    case DeclarationNode declaration:
+                        topLevelNodes.Add(new TopLevelDeclarationNode(declaration));
                         break;
                     default:
                         Debug.Fail("Should not have happened");
@@ -54,57 +56,49 @@ namespace Krypton.Analysis.Syntactical
                 }
             }
 
-            StatementCollectionNode topLevelStatements = new(statements);
-
-            foreach (StatementNode statement in statements)
-            {
-                statement.ParentNode = topLevelStatements;
-            }
-
-            ProgramNode program = new ProgramNode(topLevelStatements, constants, functions, lineNumber: 1, index: 0);
-
-            topLevelStatements.ParentNode = program;
-
-            return program;
+            return new ProgramNode(topLevelNodes);
         }
 
         internal ConstantDeclarationNode? ParseConstantDeclaration()
         {
-            int lineNumber = Lexemes[index].LineNumber;
-            int nodeIndex = Lexemes[index].Index;
+            var constKeyword = (ReservedKeywordToken)tokens[index];
 
             index++;
 
-            if (Lexemes[index] is not IdentifierLexeme identifier)
+            if (tokens[index] is not IdentifierToken identifier)
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier,
-                                          code,
-                                          Lexemes[index]);
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier,
+                //                          code,
+                //                          Lexemes[index]);
+                //return null;
             }
 
             index++;
 
-            TypeSpecNode? type = null;
+            AsClauseNode? asClause = null;
 
-            if (Lexemes[index] is KeywordLexeme { Keyword: ReservedKeyword.As })
+            if (tokens[index] is ReservedKeywordToken { Keyword: ReservedKeyword.As } asKeyword)
             {
                 index++;
 
-                type = typeParser.ParseNextType(ref index);
+                TypeNode? type = typeParser.ParseNextType(ref index);
 
                 if (type == null)
                 {
                     return null;
                 }
+
+                asClause = new AsClauseNode(asKeyword, type);
             }
 
-            if (Lexemes[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
+            if (tokens[index] is not SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.Equals } equals)
             {
-                ErrorProvider.ReportError(ErrorCode.LetVariableAndConstMustBeInitialized,
-                                          code,
-                                          Lexemes[index]);
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.LetVariableAndConstMustBeInitialized,
+                //                          code,
+                //                          Lexemes[index]);
+                //return null;
             }
 
             index++;
@@ -116,150 +110,164 @@ namespace Krypton.Analysis.Syntactical
                 return null;
             }
 
-            if (Lexemes[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
+            if (tokens[index] is not SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.Semicolon } semicolon)
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon,
-                                          code,
-                                          Lexemes[index]);
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon,
+                //                          code,
+                //                          Lexemes[index]);
+                //return null;
             }
 
             index++;
 
-            UnboundIdentifierNode identifierNode = new(identifier.Content, identifier.LineNumber, identifier.Index);
-            return new ConstantDeclarationNode(identifierNode, type, value, lineNumber, nodeIndex);
+            return new ConstantDeclarationNode(constKeyword, identifier, asClause, equals, value, semicolon);
         }
 
         internal FunctionDeclarationNode? ParseFunctionDeclaration()
         {
-            int lineNumber = Lexemes[index].LineNumber;
-            int nodeIndex = Lexemes[index].Index;
+            var funcKeyword = (ReservedKeywordToken)tokens[index];
 
             index++;
 
-            if (Lexemes[index] is not IdentifierLexeme functionIdentifier)
+            if (tokens[index] is not IdentifierToken functionIdentifier)
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier, code, Lexemes[index]);
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier, code, Lexemes[index]);
+                //return null;
             }
 
-            UnboundIdentifierNode functionIdentifierNode = new(functionIdentifier.Content,
-                                                               functionIdentifier.LineNumber,
-                                                               functionIdentifier.Index);
-
             index++;
 
-            if (Lexemes[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisOpening })
+            if (tokens[index] is not SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.ParenthesisOpening } openingParenthesis)
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedOpenParenthesis, code, Lexemes[index]);
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ExpectedOpenParenthesis, code, Lexemes[index]);
+                //return null;
             }
 
             index++;
 
             List<ParameterDeclarationNode>? parameters = null;
+            List<SyntaxCharacterToken>? commas = null;
 
-            if (Lexemes[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing })
+            if (tokens[index] is not SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing } closingParenthesis)
             {
-                parameters = ParseParameterList();
+                (parameters, commas, closingParenthesis) = ParseParameterList();
 
                 if (parameters == null)
                 {
                     return null;
                 }
+
+                Debug.Assert(commas != null);
+                Debug.Assert(closingParenthesis != null);
             }
             else
             {
                 index++;
             }
 
-            TypeSpecNode? returnType = null;
+            AsClauseNode? returnTypeAsClause = null;
 
-            if (Lexemes[index] is KeywordLexeme { Keyword: ReservedKeyword.As })
+            if (tokens[index] is ReservedKeywordToken { Keyword: ReservedKeyword.As } asKeyword)
             {
                 index++;
 
-                returnType = typeParser.ParseNextType(ref index);
+                TypeNode? returnType = typeParser.ParseNextType(ref index);
 
                 if (returnType == null)
                 {
                     return null;
                 }
+
+                returnTypeAsClause = new AsClauseNode(asKeyword, returnType);
             }
 
-            StatementCollectionNode? body = statementParser.ParseStatementBlock(ref index);
+            BodyNode? body = statementParser.ParseStatementBlock(ref index);
 
             if (body == null)
             {
                 return null;
             }
 
-            return new FunctionDeclarationNode(functionIdentifierNode, parameters, returnType, body, lineNumber, nodeIndex);
+            return new FunctionDeclarationNode(funcKeyword,
+                                               functionIdentifier,
+                                               openingParenthesis,
+                                               parameters,
+                                               commas,
+                                               closingParenthesis,
+                                               returnTypeAsClause,
+                                               body);
         }
 
-        private List<ParameterDeclarationNode>? ParseParameterList()
+        private (List<ParameterDeclarationNode>? parameters,
+                 List<SyntaxCharacterToken>? commas,
+                 SyntaxCharacterToken? closingParenthesis) ParseParameterList()
         {
             List<ParameterDeclarationNode> parameters = new();
+            List<SyntaxCharacterToken> commas = new();
 
             while (true)
             {
-                if (Lexemes[index] is not IdentifierLexeme parameterIdentifier)
+                if (tokens[index] is not IdentifierToken parameterIdentifier)
                 {
-                    ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier, code, Lexemes[index]);
-                    return null;
+                    throw new NotImplementedException();
+                    //ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier, code, Lexemes[index]);
+                    //return null;
                 }
 
                 index++;
 
-                if (Lexemes[index] is not KeywordLexeme { Keyword: ReservedKeyword.As })
+                if (tokens[index] is not ReservedKeywordToken { Keyword: ReservedKeyword.As } asKeyword)
                 {
-                    ErrorProvider.ReportError(ErrorCode.ExpectedKeywordAs, code, Lexemes[index]);
-                    return null;
+                    throw new NotImplementedException();
+                    //ErrorProvider.ReportError(ErrorCode.ExpectedKeywordAs, code, Lexemes[index]);
+                    //return null;
                 }
 
                 index++;
 
-                TypeSpecNode? parameterType = typeParser.ParseNextType(ref index);
+                TypeNode? parameterType = typeParser.ParseNextType(ref index);
 
                 if (parameterType == null)
                 {
-                    return null;
+                    return (null, null, null);
                 }
 
-                UnboundIdentifierNode parameterIdentifierNode = new(parameterIdentifier.Content,
-                                                                    parameterIdentifier.LineNumber,
-                                                                    parameterIdentifier.Index);
-                ParameterDeclarationNode parameter = new(parameterIdentifierNode,
-                                                         parameterType,
-                                                         parameterIdentifier.LineNumber,
-                                                         parameterIdentifier.Index);
+                AsClauseNode asClause = new(asKeyword, parameterType);
+
+                ParameterDeclarationNode parameter = new(parameterIdentifier,
+                                                         asClause);
 
                 parameters.Add(parameter);
 
-                switch (Lexemes[index])
+                switch (tokens[index])
                 {
-                    case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Comma }:
+                    case SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.Comma } comma:
+                        commas.Add(comma);
                         index++;
                         break;
-                    case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing }:
+                    case SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing } closingParenthesis:
                         index++;
-                        return parameters;
+                        return (parameters, commas, closingParenthesis);
                     default:
-                        ErrorProvider.ReportError(ErrorCode.ExpectedCommaOrClosingParenthesis, code, Lexemes[index]);
-                        return null;
+                        throw new NotImplementedException();
+                        //ErrorProvider.ReportError(ErrorCode.ExpectedCommaOrClosingParenthesis, code, Lexemes[index]);
+                        //return null;
                 }
             }
         }
 
-        private bool TryParseNextNode(out Node? node, out bool error)
+        private bool TryParseNextNode(out SyntaxNode? node, out bool error)
         {
-            switch (Lexemes[index])
+            switch (tokens[index])
             {
-                case EndOfFileLexeme:
+                case EndOfFileToken:
                     node = null;
                     error = false;
                     return false;
-                case KeywordLexeme { Keyword: ReservedKeyword.Func }:
+                case ReservedKeywordToken { Keyword: ReservedKeyword.Func }:
                     {
                         FunctionDeclarationNode? function = ParseFunctionDeclaration();
 
@@ -274,7 +282,7 @@ namespace Krypton.Analysis.Syntactical
                         error = false;
                         return true;
                     }
-                case KeywordLexeme { Keyword: ReservedKeyword.Const }:
+                case ReservedKeywordToken { Keyword: ReservedKeyword.Const }:
                     {
                         ConstantDeclarationNode? constant = ParseConstantDeclaration();
 

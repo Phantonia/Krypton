@@ -1,32 +1,33 @@
-﻿using Krypton.Analysis.Ast.Expressions;
-using Krypton.Analysis.Ast.Expressions.Literals;
-using Krypton.Analysis.Ast.Identifiers;
-using Krypton.Analysis.Errors;
-using Krypton.Analysis.Lexical;
-using Krypton.Analysis.Lexical.Lexemes;
-using Krypton.Analysis.Lexical.Lexemes.WithValue;
-using Krypton.Framework;
+﻿using Krypton.CompilationData;
+using Krypton.CompilationData.Syntax.Expressions;
+using Krypton.CompilationData.Syntax.Tokens;
 using Krypton.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using ChainNode = Krypton.CompilationData
+                         .Syntax
+                         .Expressions
+                         .UtilityWrapperExpressionNode<Krypton.Analysis
+                                                              .Syntactical
+                                                              .BinaryOperationChain>;
 
 namespace Krypton.Analysis.Syntactical
 {
     internal sealed class ExpressionParser
     {
-        public ExpressionParser(LexemeCollection lexemes, string code)
+        public ExpressionParser(FinalList<Token> tokens, Analyser analyser)
         {
-            Lexemes = lexemes;
-            this.code = code;
+            this.tokens = tokens;
+            this.analyser = analyser;
         }
 
-        private readonly string code;
-
-        public LexemeCollection Lexemes { get; }
+        private readonly Analyser analyser;
+        private readonly FinalList<Token> tokens;
 
         public ExpressionNode? ParseNextExpression(ref int index)
         {
-            Debug.Assert(Lexemes.Count > index & index >= 0);
+            Debug.Assert(tokens.Count > index & index >= 0);
             ExpressionNode? expression = ParseNextExpressionInternal(ref index);
             index++;
             return expression;
@@ -44,9 +45,9 @@ namespace Krypton.Analysis.Syntactical
 
             ParseAfterSubExpression(ref expression, ref index, includeOperations);
 
-            if (expression is BinaryOperationChain chain)
+            if (expression is ChainNode chain)
             {
-                expression = chain.Resolve();
+                expression = chain.Value.Resolve();
             }
 
             return expression;
@@ -58,19 +59,19 @@ namespace Krypton.Analysis.Syntactical
         {
             while (true)
             {
-                switch (Lexemes.TryGet(index + 1))
+                switch (tokens.TryGet(index + 1))
                 {
-                    case IOperatorLexeme operatorLexeme when includeOperations:
+                    case OperatorToken operatorToken when includeOperations:
                         index++;
-                        ParseOperationChain(operatorLexeme, ref expression, ref index);
+                        ParseOperationChain(operatorToken, ref expression, ref index);
                         return;
-                    case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisOpening }:
+                    case SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.ParenthesisOpening } openingParenthesis:
                         index++;
-                        ParseFunctionCall(ref expression, ref index);
+                        ParseFunctionCall(ref expression, ref index, openingParenthesis);
                         continue;
-                    case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Dot }:
+                    case SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.Dot } dot:
                         index++;
-                        ParsePropertyGet(ref expression, ref index);
+                        ParsePropertyGetAccess(ref expression, ref index, dot);
                         continue;
                     default:
                         return;
@@ -78,25 +79,31 @@ namespace Krypton.Analysis.Syntactical
             }
         }
 
-        private void ParseFunctionCall(ref ExpressionNode? expression, ref int index)
+        private void ParseFunctionCall(ref ExpressionNode? expression, ref int index, SyntaxCharacterToken openingParenthesis)
         {
+            Debug.Assert(openingParenthesis.SyntaxCharacter == SyntaxCharacter.ParenthesisOpening);
+
             if (expression == null)
             {
                 return;
             }
 
-            int lineNumber = expression.LineNumber;
-            int nodeIndex = expression.Index;
-
             index++;
 
-            if (Lexemes.TryGet(index) is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing })
             {
-                expression = new FunctionCallExpressionNode(expression, lineNumber, nodeIndex);
-                return;
+                if (tokens.TryGet(index) is SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing } closingParenthesis)
+                {
+                    expression = new InvocationExpressionNode(expression,
+                                                              openingParenthesis,
+                                                              arguments: null,
+                                                              commas: null,
+                                                              closingParenthesis);
+                    return;
+                }
             }
 
             List<ExpressionNode> arguments = new();
+            List<SyntaxCharacterToken> commas = new();
 
             while (true)
             {
@@ -112,17 +119,19 @@ namespace Krypton.Analysis.Syntactical
 
                 index++;
 
-                switch (Lexemes.TryGet(index))
+                switch (tokens.TryGet(index))
                 {
-                    case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Comma }:
+                    case SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.Comma } comma:
+                        commas.Add(comma);
                         break;
-                    case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing }:
-                        expression = new FunctionCallExpressionNode(expression, arguments, lineNumber, nodeIndex);
+                    case SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing } closingParenthesis:
+                        expression = new InvocationExpressionNode(expression, openingParenthesis, arguments, commas, closingParenthesis);
                         return;
-                    case Lexeme lexeme:
-                        ErrorProvider.ReportError(ErrorCode.ExpectedCommaOrClosingParenthesis, code, lexeme);
-                        expression = null;
-                        return;
+                    case Token token:
+                        throw new NotImplementedException();
+                    //ErrorProvider.ReportError(ErrorCode.ExpectedCommaOrClosingParenthesis, code, lexeme);
+                    //expression = null;
+                    //return;
                     case null:
                         Debug.Fail(message: null);
                         return;
@@ -132,20 +141,21 @@ namespace Krypton.Analysis.Syntactical
             }
         }
 
-        private void ParseOperationChain(IOperatorLexeme operatorLexeme, ref ExpressionNode? expression, ref int index)
+        private void ParseOperationChain(OperatorToken operatorToken, ref ExpressionNode? expression, ref int index)
         {
             if (expression == null)
             {
                 return;
             }
 
-            if (expression is not BinaryOperationChain chain)
+            if (expression is not ChainNode chain)
             {
-                chain = new(operatorLexeme.LineNumber, operatorLexeme.Index);
-                chain.AddOperand(expression);
+                BinaryOperationChain operationChain = new();
+                chain = new(operationChain);
+                chain.Value.AddOperand(expression);
             }
 
-            chain.AddOperator(operatorLexeme);
+            chain.Value.AddOperator(operatorToken);
 
             index++;
 
@@ -157,62 +167,56 @@ namespace Krypton.Analysis.Syntactical
                 return;
             }
 
-            chain.AddOperand(nextOperand);
+            chain.Value.AddOperand(nextOperand);
 
             expression = chain;
 
-            if (Lexemes[index + 1] is IOperatorLexeme opl)
+            if (tokens[index + 1] is OperatorToken nextOperatorToken)
             {
                 index++;
-                ParseOperationChain(opl, ref expression, ref index);
+                ParseOperationChain(nextOperatorToken, ref expression, ref index);
             }
         }
 
-        private void ParsePropertyGet(ref ExpressionNode? expression, ref int index)
+        private void ParsePropertyGetAccess(ref ExpressionNode? expression, ref int index, SyntaxCharacterToken dot)
         {
             if (expression == null)
             {
                 return;
             }
 
-            int lineNumber = Lexemes[index].LineNumber;
-            int nodeIndex = Lexemes[index].Index;
-
             index++;
 
-            if (Lexemes[index] is not IdentifierLexeme identifierLexeme)
+            if (tokens[index] is not IdentifierToken identifierToken)
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier, code, Lexemes[index]);
-                expression = null;
-                return;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier, code, tokens[index]);
+                //expression = null;
+                //return;
             }
 
-            UnboundIdentifierNode identifierNode = new(identifierLexeme.Content,
-                                                       identifierLexeme.LineNumber,
-                                                       identifierLexeme.Index);
-
-            expression = new PropertyGetExpressionNode(expression, identifierNode, lineNumber, nodeIndex);
+            expression = new PropertyGetAccessExpressionNode(expression, dot, identifierToken);
         }
 
         private ExpressionNode? ParseSubExpression(ref int index)
         {
-            switch (Lexemes[index])
+            switch (tokens[index])
             {
-                case BooleanLiteralLexeme booleanLiteral:
-                    return new BooleanLiteralExpressionNode(booleanLiteral.Value, booleanLiteral.LineNumber, booleanLiteral.Index);
-                case IntegerLiteralLexeme integerLiteral:
-                    return new IntegerLiteralExpressionNode(integerLiteral.Value, integerLiteral.LineNumber, integerLiteral.Index);
-                case StringLiteralLexeme stringLiteral:
-                    return new StringLiteralExpressionNode(stringLiteral.Value, stringLiteral.LineNumber, stringLiteral.Index);
-                case CharLiteralLexeme charLiteral:
-                    return new CharLiteralExpressionNode(charLiteral.Value, charLiteral.LineNumber, charLiteral.Index);
-                case ImaginaryLiteralLexeme imaginaryLiteral:
-                    return new ImaginaryLiteralExpressionNode(imaginaryLiteral.Value, imaginaryLiteral.LineNumber, imaginaryLiteral.Index);
-                case RationalLiteralLexeme rationalLiteral:
-                    return new RationalLiteralExpressionNode(rationalLiteral.Value, rationalLiteral.LineNumber, rationalLiteral.Index);
-                case IdentifierLexeme identifierLexeme:
-                    return new IdentifierExpressionNode(identifierLexeme.Content, identifierLexeme.LineNumber, identifierLexeme.Index);
-                case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisOpening }:
+                case LiteralToken<bool> booleanLiteral:
+                    return new LiteralExpressionNode<bool>(booleanLiteral);
+                case LiteralToken<long> integerLiteral:
+                    return new LiteralExpressionNode<long>(integerLiteral);
+                case LiteralToken<string> stringLiteral:
+                    return new LiteralExpressionNode<string>(stringLiteral);
+                case LiteralToken<char> charLiteral:
+                    return new LiteralExpressionNode<char>(charLiteral);
+                case LiteralToken<RationalComplex> imaginaryLiteral:
+                    return new LiteralExpressionNode<RationalComplex>(imaginaryLiteral);
+                case LiteralToken<Rational> rationalLiteral:
+                    return new LiteralExpressionNode<Rational>(rationalLiteral);
+                case IdentifierToken identifierToken:
+                    return new IdentifierExpressionNode(identifierToken);
+                case SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.ParenthesisOpening }:
                     {
                         index++;
 
@@ -225,40 +229,40 @@ namespace Krypton.Analysis.Syntactical
 
                         index++;
 
-                        Lexeme? nextLexeme = Lexemes.TryGet(index);
+                        Token? nextLexeme = tokens.TryGet(index);
 
-                        if (nextLexeme is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing })
+                        if (nextLexeme is not SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing })
                         {
                             if (nextLexeme == null)
                             {
-                                nextLexeme = Lexemes[^1];
+                                nextLexeme = tokens[^1];
                             }
-                            ErrorProvider.ReportError(ErrorCode.ExpectedClosingParenthesis, code, nextLexeme);
-                            return null;
+                            throw new NotImplementedException();
+                            //ErrorProvider.ReportError(ErrorCode.ExpectedClosingParenthesis, code, nextLexeme);
+                            //return null;
                         }
 
                         return expression;
                     }
-                case CharacterOperatorLexeme { Operator: Operator.Tilde }:
-                    return ParseUnaryOperation(ref index, Operator.Tilde);
-                case CharacterOperatorLexeme { Operator: Operator.Minus }:
-                    return ParseUnaryOperation(ref index, Operator.Minus);
-                case KeywordLexeme { Keyword: ReservedKeyword.Not }:
-                    return ParseUnaryOperation(ref index, Operator.NotKeyword);
-                case EndOfFileLexeme endOfFileLexeme:
-                    ErrorProvider.ReportError(ErrorCode.ExpectedExpressionTerm, code, endOfFileLexeme);
-                    return null;
+                case OperatorToken { Operator: Operator.Tilde } tildeOperator:
+                    return ParseUnaryOperation(ref index, tildeOperator);
+                case OperatorToken { Operator: Operator.Minus } minusOperator:
+                    return ParseUnaryOperation(ref index, minusOperator);
+                case OperatorToken { Operator: Operator.NotKeyword } notOperator:
+                    return ParseUnaryOperation(ref index, notOperator);
+                case EndOfFileToken endOfFileLexeme:
+                    throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ExpectedExpressionTerm, code, endOfFileLexeme);
+                //return null;
                 case var lexeme:
-                    ErrorProvider.ReportError(ErrorCode.UnexpectedExpressionTerm, code, lexeme);
-                    return null;
+                    throw new NotImplementedException();
+                    //ErrorProvider.ReportError(ErrorCode.UnexpectedExpressionTerm, code, lexeme);
+                    //return null;
             }
         }
 
-        private UnaryOperationExpressionNode? ParseUnaryOperation(ref int index, Operator @operator)
+        private UnaryOperationExpressionNode? ParseUnaryOperation(ref int index, OperatorToken @operator)
         {
-            int lineNumber = Lexemes[index].LineNumber;
-            int nodeIndex = Lexemes[index].Index;
-
             index++;
 
             ExpressionNode? operand = ParseSubExpression(ref index);
@@ -275,7 +279,7 @@ namespace Krypton.Analysis.Syntactical
                 return null;
             }
 
-            return new UnaryOperationExpressionNode(operand, @operator, lineNumber, nodeIndex);
+            return new UnaryOperationExpressionNode(@operator, operand);
         }
     }
 }

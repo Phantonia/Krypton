@@ -5,7 +5,8 @@ namespace Krypton.CompilationData.Syntax
 {
     public sealed class TopLevelDeclarationNode : TopLevelNode
     {
-        public TopLevelDeclarationNode(DeclarationNode declaration, SyntaxNode? parent)
+        public TopLevelDeclarationNode(DeclarationNode declaration,
+                                       SyntaxNode? parent = null)
             : base(parent)
         {
             DeclarationNode = declaration;

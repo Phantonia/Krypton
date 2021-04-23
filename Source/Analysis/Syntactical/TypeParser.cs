@@ -1,35 +1,34 @@
-﻿using Krypton.Analysis.Ast.TypeSpecs;
-using Krypton.Analysis.Errors;
-using Krypton.Analysis.Lexical;
-using Krypton.Analysis.Lexical.Lexemes.WithValue;
+﻿using Krypton.CompilationData.Syntax.Tokens;
+using Krypton.CompilationData.Syntax.Types;
 using Krypton.Utilities;
+using System;
 
 namespace Krypton.Analysis.Syntactical
 {
     internal sealed class TypeParser
     {
-        public TypeParser(LexemeCollection lexemes, string code)
+        public TypeParser(FinalList<Token> tokens, Analyser analyser)
         {
-            Lexemes = lexemes;
-            this.code = code;
+            this.tokens = tokens;
+            this.analyser = analyser;
         }
 
-        private readonly string code;
+        private readonly Analyser analyser;
+        private readonly FinalList<Token> tokens;
 
-        public LexemeCollection Lexemes { get; }
-
-        public TypeSpecNode? ParseNextType(ref int index)
+        public TypeNode? ParseNextType(ref int index)
         {
-            if (Lexemes.TryGet(index) is not IdentifierLexeme identifierLexeme)
+            if (tokens.TryGet(index) is not IdentifierToken identifier)
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier,
-                                          code,
-                                          Lexemes[index]);
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier,
+                //                          code,
+                //                          tokens[index]);
+                //return null;
             }
 
             index++;
-            return new IdentifierTypeSpecNode(identifierLexeme.Content, identifierLexeme.LineNumber, identifierLexeme.Index);
+            return new IdentifierTypeNode(identifier);
         }
     }
 }

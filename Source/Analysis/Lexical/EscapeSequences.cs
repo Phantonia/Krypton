@@ -21,10 +21,10 @@ namespace Krypton.Analysis.Lexical
                 { '"', '"' },
                 { '\\', '\\' }
             };
-            EscapeCharacters = dict.MakeReadOnly();
+            EscapeCharacters = dict.Finalize();
         }
 
-        public static ReadOnlyDictionary<char, char> EscapeCharacters { get; }
+        public static FinalDictionary<char, char> EscapeCharacters { get; }
 
         public static char Parse(ReadOnlySpan<char> input)
         {

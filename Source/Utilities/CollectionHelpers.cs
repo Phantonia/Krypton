@@ -6,6 +6,36 @@ namespace Krypton.Utilities
 {
     public static class CollectionHelpers
     {
+        public static IEnumerable<T> AddItem<T>(this IEnumerable<T> source, T item)
+        {
+            foreach (T i in source)
+            {
+                yield return i;
+            }
+
+            yield return item;
+        }
+
+        public static IEnumerable<T> TakeAllButLast<T>(this IEnumerable<T> source)
+        {
+            using IEnumerator<T> enumerator = source.GetEnumerator();
+
+            if (!enumerator.MoveNext())
+            {
+                yield break;
+            }
+
+            while (true)
+            {
+                T item = enumerator.Current;
+
+                if (enumerator.MoveNext())
+                {
+                    yield return item;
+                }
+            }
+        }
+
         public static bool IsSingle<T>(this IEnumerable<T> source, [NotNullWhen(true)] out T? single)
             where T : notnull
         {
@@ -36,7 +66,7 @@ namespace Krypton.Utilities
             return false;
         }
 
-        public static ReadOnlyList<T> MakeReadOnly<T>(this IEnumerable<T>? enumerable)
+        public static FinalList<T> Finalize<T>(this IEnumerable<T>? enumerable)
             where T : class
         {
             if (enumerable == null)
@@ -44,19 +74,19 @@ namespace Krypton.Utilities
                 return default;
             }
 
-            if (enumerable is ReadOnlyList<T> readOnlyList)
+            if (enumerable is FinalList<T> readOnlyList)
             {
                 return readOnlyList;
             }
 
             IList<T> list = (enumerable as IList<T>) ?? enumerable.ToList();
-            return new ReadOnlyList<T>(list);
+            return new FinalList<T>(list);
         }
 
-        public static ReadOnlyDictionary<TKey, TValue> MakeReadOnly<TKey, TValue>(this IDictionary<TKey, TValue>? dict)
+        public static FinalDictionary<TKey, TValue> Finalize<TKey, TValue>(this IDictionary<TKey, TValue>? dict)
             where TKey : notnull
         {
-            return new ReadOnlyDictionary<TKey, TValue>(dict);
+            return new FinalDictionary<TKey, TValue>(dict);
         }
 
         public static T? TryGet<T>(this IList<T> list, int index)
@@ -65,7 +95,7 @@ namespace Krypton.Utilities
             return list.Count > index & index >= 0 ? list[index] : null;
         }
 
-        public static ReadOnlyList<T> With<T>(this ReadOnlyList<T> original, params IndexWither<T>[]? withers)
+        public static FinalList<T> With<T>(this FinalList<T> original, params IndexWither<T>[]? withers)
             where T : class
         {
             if ((withers?.Length ?? 0) == 0)
@@ -90,7 +120,7 @@ namespace Krypton.Utilities
                 }
             }
 
-            return list.MakeReadOnly();
+            return list.Finalize();
         }
     }
 }

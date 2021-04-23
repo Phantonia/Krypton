@@ -198,7 +198,7 @@ namespace Krypton.Analysis.Semantical
                                                                    out ImplicitConversionSymbolNode? choseImplicitConversionLeft,
                                                                    out ImplicitConversionSymbolNode? choseImplicitConversionRight)
         {
-            ReadOnlyList<BinaryOperationSymbolNode> allOperations = FrameworkIntegration.GetBinaryOperations();
+            FinalList<BinaryOperationSymbolNode> allOperations = FrameworkIntegration.GetBinaryOperations();
 
             var candidates = from op in allOperations
                              where op.Operator == @operator
@@ -234,7 +234,7 @@ namespace Krypton.Analysis.Semantical
                                                                  TypeSymbolNode operandType,
                                                                  out ImplicitConversionSymbolNode? implicitConversion)
         {
-            ReadOnlyList<UnaryOperationSymbolNode> allOperations = FrameworkIntegration.GetUnaryOperations();
+            FinalList<UnaryOperationSymbolNode> allOperations = FrameworkIntegration.GetUnaryOperations();
 
             var candidates = from op in allOperations
                              where op.Operator == @operator

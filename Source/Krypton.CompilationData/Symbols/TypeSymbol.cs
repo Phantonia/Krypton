@@ -5,16 +5,16 @@ namespace Krypton.CompilationData.Symbols
     public sealed class TypeSymbol : Symbol
     {
         public TypeSymbol(string name,
-                          ReadOnlyList<ImplicitConversionSymbol> implicitConversionSymbols,
-                          ReadOnlyList<PropertySymbol> propertySymbols)
+                          FinalList<ImplicitConversionSymbol> implicitConversionSymbols,
+                          FinalList<PropertySymbol> propertySymbols)
             : base(name)
         {
             ImplicitConversionSymbols = implicitConversionSymbols;
             PropertySymbols = propertySymbols;
         }
 
-        public ReadOnlyList<ImplicitConversionSymbol> ImplicitConversionSymbols { get; }
+        public FinalList<ImplicitConversionSymbol> ImplicitConversionSymbols { get; }
 
-        public ReadOnlyList<PropertySymbol> PropertySymbols { get; }
+        public FinalList<PropertySymbol> PropertySymbols { get; }
     }
 }

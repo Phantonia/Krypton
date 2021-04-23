@@ -63,6 +63,11 @@ namespace Krypton.Utilities
             return hashCode.ToHashCode();
         }
 
+        public T? TryGet(int index)
+            => index < Count && index >= 0
+            ? this[index]
+            : default;
+
         public static bool operator ==(FinalList<T> left, FinalList<T> right) => left.Equals(right);
 
         public static bool operator !=(FinalList<T> left, FinalList<T> right) => !(left == right);

@@ -21,7 +21,7 @@ namespace Krypton.Analysis.Errors
         {
             ErrorCode = errorCode;
             Message = message;
-            Details = details.MakeReadOnly();
+            Details = details.Finalize();
             OffendingLine = offendingLine;
             EntireCode = entireCode;
             LineNumber = lineNumber;
@@ -33,7 +33,7 @@ namespace Krypton.Analysis.Errors
 
         public int Column { get; }
 
-        public ReadOnlyList<string> Details { get; }
+        public FinalList<string> Details { get; }
 
         public ErrorCode ErrorCode { get; }
 

@@ -20,18 +20,18 @@ namespace Krypton.CompilationData.Syntax.Expressions
         {
             InvokeeNode = invokee;
             OpeningParenthesisToken = openingParenthesis;
-            ArgumentNodes = arguments?.Select(n => n.WithParent(this)).MakeReadOnly() ?? default;
-            CommaTokens = commas.MakeReadOnly();
+            ArgumentNodes = arguments?.Select(n => n.WithParent(this)).Finalize() ?? default;
+            CommaTokens = commas.Finalize();
             ClosingParenthesisToken = closingParenthesis;
 
             Debug.Assert(CommaTokens.Count == ArgumentNodes.Count - 1);
         }
 
-        public ReadOnlyList<ExpressionNode> ArgumentNodes { get; }
+        public FinalList<ExpressionNode> ArgumentNodes { get; }
 
         public SyntaxCharacterToken ClosingParenthesisToken { get; }
 
-        public ReadOnlyList<SyntaxCharacterToken> CommaTokens { get; }
+        public FinalList<SyntaxCharacterToken> CommaTokens { get; }
 
         public ExpressionNode InvokeeNode { get; }
 

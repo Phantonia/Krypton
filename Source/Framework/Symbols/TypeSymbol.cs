@@ -11,14 +11,14 @@ namespace Krypton.Framework.Symbols
                             IList<PropertySymbol>? properties = null) : base(name)
         {
             FrameworkType = frameworkType;
-            ImplicitConversions = implicitConversions.MakeReadOnly();
-            Properties = properties.MakeReadOnly();
+            ImplicitConversions = implicitConversions.Finalize();
+            Properties = properties.Finalize();
         }
 
         public FrameworkType FrameworkType { get; }
 
-        public ReadOnlyList<ImplicitConversionSymbol> ImplicitConversions { get; }
+        public FinalList<ImplicitConversionSymbol> ImplicitConversions { get; }
 
-        public ReadOnlyList<PropertySymbol> Properties { get; }
+        public FinalList<PropertySymbol> Properties { get; }
     }
 }

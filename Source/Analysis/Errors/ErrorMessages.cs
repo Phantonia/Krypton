@@ -77,6 +77,6 @@ namespace Krypton.Analysis.Errors
             [ErrorCode.OperatorNotAvailableForTypes] = "This operator cannot be applied to two operands of those type",
         };
 
-        public static ReadOnlyDictionary<ErrorCode, string> Messages => messages.MakeReadOnly();
+        public static FinalDictionary<ErrorCode, string> Messages => messages.Finalize();
     }
 }

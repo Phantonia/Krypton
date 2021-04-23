@@ -10,11 +10,11 @@ namespace Krypton.CompilationData.Symbols
                               TypeSymbol returnType)
             : base(name)
         {
-            ParameterSymbols = parameters.MakeReadOnly();
+            ParameterSymbols = parameters.Finalize();
             ReturnTypeSymbol = returnType;
         }
 
-        public ReadOnlyList<ParameterSymbol> ParameterSymbols { get; }
+        public FinalList<ParameterSymbol> ParameterSymbols { get; }
 
         public TypeSymbol ReturnTypeSymbol { get; }
     }

@@ -21,7 +21,7 @@ namespace Krypton.Analysis.Lexical
         private int lineNumber = 1;
         private int triviaStartingIndex;
 
-        public ReadOnlyList<Token>? LexAll()
+        public FinalList<Token> LexAll()
         {
             List<Token> tokens = new();
 
@@ -45,7 +45,7 @@ namespace Krypton.Analysis.Lexical
                 nextToken = NextToken();
             }
 
-            return tokens.MakeReadOnly();
+            return tokens.Finalize();
         }
 
         public Token? NextToken()

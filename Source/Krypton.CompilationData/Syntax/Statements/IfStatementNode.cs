@@ -20,7 +20,7 @@ namespace Krypton.CompilationData.Syntax.Statements
         {
             IfKeywordToken = ifKeyword;
             ConditionNode = condition.WithParent(this);
-            ElseIfPartNodes = elseIfParts?.Select(p => p.WithParent(this)).MakeReadOnly() ?? default;
+            ElseIfPartNodes = elseIfParts?.Select(p => p.WithParent(this)).Finalize() ?? default;
             ElsePartNode = elsePart?.WithParent(this);
 
             Debug.Assert(IfKeywordToken.Keyword == ReservedKeyword.If);
@@ -28,7 +28,7 @@ namespace Krypton.CompilationData.Syntax.Statements
 
         public ExpressionNode ConditionNode { get; }
 
-        public ReadOnlyList<ElseIfPartNode> ElseIfPartNodes { get; }
+        public FinalList<ElseIfPartNode> ElseIfPartNodes { get; }
 
         public ElsePartNode? ElsePartNode { get; }
 

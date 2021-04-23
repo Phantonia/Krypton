@@ -14,7 +14,7 @@ namespace Krypton.CompilationData.Syntax.Expressions
             if (this is TypedExpressionNode typedExpression)
             {
                 type = typedExpression.TypeSymbol;
-                return true;
+                //return true;
             }
 
             type = null;

@@ -14,23 +14,23 @@ namespace Krypton.Framework
                                   IList<UnaryOperationSymbol>? unaryOperations)
         {
             MinimalLanguageVersion = minimalLanguageVersion;
-            Types = types.MakeReadOnly();
-            Functions = functions.MakeReadOnly();
-            Constants = constants.MakeReadOnly();
-            BinaryOperations = binaryOperations.MakeReadOnly();
-            UnaryOperations = unaryOperations.MakeReadOnly();
+            Types = types.Finalize();
+            Functions = functions.Finalize();
+            Constants = constants.Finalize();
+            BinaryOperations = binaryOperations.Finalize();
+            UnaryOperations = unaryOperations.Finalize();
         }
 
-        public ReadOnlyList<BinaryOperationSymbol> BinaryOperations { get; }
+        public FinalList<BinaryOperationSymbol> BinaryOperations { get; }
 
-        public ReadOnlyList<ConstantSymbol> Constants { get; }
+        public FinalList<ConstantSymbol> Constants { get; }
 
-        public ReadOnlyList<FunctionSymbol> Functions { get; }
+        public FinalList<FunctionSymbol> Functions { get; }
 
-        public ReadOnlyList<UnaryOperationSymbol> UnaryOperations { get; }
+        public FinalList<UnaryOperationSymbol> UnaryOperations { get; }
 
         public int MinimalLanguageVersion { get; }
 
-        public ReadOnlyDictionary<FrameworkType, TypeSymbol> Types { get; }
+        public FinalDictionary<FrameworkType, TypeSymbol> Types { get; }
     }
 }

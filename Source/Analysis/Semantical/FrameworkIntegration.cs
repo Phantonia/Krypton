@@ -13,12 +13,12 @@ namespace Krypton.Analysis.Semantical
 {
     internal static class FrameworkIntegration
     {
-        private static ReadOnlyList<BinaryOperationSymbolNode>? binaryOperations = null;
+        private static FinalList<BinaryOperationSymbolNode>? binaryOperations = null;
         private static FrameworkVersion? frameworkVersion = null;
         private static TypeIdentifierMap? typeIdentifierMap = null;
-        private static ReadOnlyList<UnaryOperationSymbolNode>? unaryOperations = null;
+        private static FinalList<UnaryOperationSymbolNode>? unaryOperations = null;
 
-        public static ReadOnlyList<BinaryOperationSymbolNode> GetBinaryOperations()
+        public static FinalList<BinaryOperationSymbolNode> GetBinaryOperations()
         {
             Debug.Assert(frameworkVersion != null);
             Debug.Assert(typeIdentifierMap != null);
@@ -27,12 +27,12 @@ namespace Krypton.Analysis.Semantical
                                                  .Select(op => CreateBinaryOperationSymbolNode(op,
                                                                                                typeIdentifierMap,
                                                                                                frameworkVersion))
-                                                 .MakeReadOnly();
+                                                 .Finalize();
 
             return binaryOperations.GetValueOrDefault();
         }
 
-        public static ReadOnlyList<UnaryOperationSymbolNode> GetUnaryOperations()
+        public static FinalList<UnaryOperationSymbolNode> GetUnaryOperations()
         {
             Debug.Assert(frameworkVersion != null);
             Debug.Assert(typeIdentifierMap != null);
@@ -41,7 +41,7 @@ namespace Krypton.Analysis.Semantical
                                                 .Select(op => CreateUnaryOperationSymbolNode(op,
                                                                                              typeIdentifierMap,
                                                                                              frameworkVersion))
-                                                .MakeReadOnly();
+                                                .Finalize();
 
             return unaryOperations.GetValueOrDefault();
         }

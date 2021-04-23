@@ -12,11 +12,11 @@ namespace Krypton.CompilationData.Syntax
                            SyntaxNode? parent = null)
             : base(parent)
         {
-            TopLevelNodes = topLevelNodes.Select(t => t.WithParent(this)).MakeReadOnly();
+            TopLevelNodes = topLevelNodes.Select(t => t.WithParent(this)).Finalize();
             TopLevelStatementNodes = new(openingBraceToken: null,
                                          TopLevelNodes.OfType<TopLevelStatementNode>()
                                                       .Select(t => t.StatementNode)
-                                                      .MakeReadOnly(),
+                                                      .Finalize(),
                                          closingBraceToken: null,
                                          parent: this);
         }
@@ -25,7 +25,7 @@ namespace Krypton.CompilationData.Syntax
 
         public override bool IsLeaf => false;
 
-        public ReadOnlyList<TopLevelNode> TopLevelNodes { get; }
+        public FinalList<TopLevelNode> TopLevelNodes { get; }
 
         public override ProgramNode WithParent(SyntaxNode newParent)
             => new(TopLevelNodes, newParent);

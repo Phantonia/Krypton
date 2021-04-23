@@ -17,7 +17,7 @@ namespace Krypton.CompilationData.Syntax
             : base(parent)
         {
             OpeningBraceToken = openingBraceToken;
-            StatementNodes = statementNodes.Select(s => s.WithParent(this)).MakeReadOnly();
+            StatementNodes = statementNodes.Select(s => s.WithParent(this)).Finalize();
             ClosingBraceToken = closingBraceToken;
 
             Debug.Assert(OpeningBraceToken == null || OpeningBraceToken.SyntaxCharacter == SyntaxCharacter.BraceOpening);
@@ -28,7 +28,7 @@ namespace Krypton.CompilationData.Syntax
 
         public override bool IsLeaf => StatementNodes.Count == 0; // { } is a leaf
 
-        public ReadOnlyList<StatementNode> StatementNodes { get; }
+        public FinalList<StatementNode> StatementNodes { get; }
 
         public SyntaxCharacterToken? OpeningBraceToken { get; }
 

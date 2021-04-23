@@ -30,8 +30,8 @@ namespace Krypton.CompilationData.Syntax.Declarations
 
             FuncKeywordToken = funcKeyword;
             OpeningParenthesisToken = openingParenthesis;
-            ParameterNodes = parameters?.Select(p => p.WithParent(this)).MakeReadOnly() ?? default;
-            CommaTokens = commas.MakeReadOnly();
+            ParameterNodes = parameters?.Select(p => p.WithParent(this)).Finalize() ?? default;
+            CommaTokens = commas.Finalize();
             ClosingParenthesisToken = closingParenthesis;
             ReturnTypeClauseNode = returnTypeClause?.WithParent(this);
             BodyNode = body;
@@ -46,7 +46,7 @@ namespace Krypton.CompilationData.Syntax.Declarations
 
         public SyntaxCharacterToken ClosingParenthesisToken { get; }
 
-        public ReadOnlyList<SyntaxCharacterToken> CommaTokens { get; }
+        public FinalList<SyntaxCharacterToken> CommaTokens { get; }
 
         public ReservedKeywordToken FuncKeywordToken { get; }
 
@@ -54,7 +54,7 @@ namespace Krypton.CompilationData.Syntax.Declarations
 
         public SyntaxCharacterToken OpeningParenthesisToken { get; }
 
-        public ReadOnlyList<ParameterDeclarationNode> ParameterNodes { get; }
+        public FinalList<ParameterDeclarationNode> ParameterNodes { get; }
 
         public override BoundDeclarationNode<FunctionDeclarationNode> Bind(Symbol symbol)
             => new(this, symbol);
