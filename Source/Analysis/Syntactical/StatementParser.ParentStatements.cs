@@ -1,12 +1,11 @@
-﻿using Krypton.Analysis.Ast;
-using Krypton.Analysis.Ast.Expressions;
-using Krypton.Analysis.Ast.Expressions.Literals;
-using Krypton.Analysis.Ast.Identifiers;
-using Krypton.Analysis.Ast.Statements;
-using Krypton.Analysis.Errors;
-using Krypton.Analysis.Lexical.Lexemes;
-using Krypton.Analysis.Lexical.Lexemes.WithValue;
+﻿using Krypton.Analysis.Errors;
+using Krypton.CompilationData;
+using Krypton.CompilationData.Syntax;
+using Krypton.CompilationData.Syntax.Expressions;
+using Krypton.CompilationData.Syntax.Statements;
+using Krypton.CompilationData.Syntax.Tokens;
 using Krypton.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -15,27 +14,22 @@ namespace Krypton.Analysis.Syntactical
 {
     partial class StatementParser
     {
-        private BlockStatementNode? ParseBlockStatement(ref int index, int lineNumber)
+        private BlockStatementNode? ParseBlockStatement(ref int index, ReservedKeywordToken blockKeyword)
         {
-            int nodeIndex = lexemes[index].Index;
-
             index++;
 
-            StatementCollectionNode? statements = ParseStatementBlock(ref index);
+            BodyNode? body = ParseStatementBlock(ref index);
 
-            if (statements == null)
+            if (body == null)
             {
                 return null;
             }
 
-            return new BlockStatementNode(statements, lineNumber, nodeIndex);
+            return new BlockStatementNode(blockKeyword, body);
         }
 
-        private ForStatementNode? ParseForStatement(ref int index)
+        private ForStatementNode? ParseForStatement(ref int index, ReservedKeywordToken forKeyword)
         {
-            int lineNumber = lexemes[index].LineNumber;
-            int nodeIndex = lexemes[index].Index;
-
             index++;
 
             if (!ParseForVariableSpecification(ref index,
@@ -48,7 +42,7 @@ namespace Krypton.Analysis.Syntactical
 
             ExpressionNode? condition = null;
 
-            if (lexemes.TryGet(index) is KeywordLexeme { Keyword: ReservedKeyword.While })
+            if (tokens.TryGet(index) is ReservedKeywordToken { Keyword: ReservedKeyword.While })
             {
                 condition = ParseForCondition(ref index, identifier);
 
@@ -60,7 +54,7 @@ namespace Krypton.Analysis.Syntactical
 
             ExpressionNode? withExpression = null;
 
-            if (lexemes.TryGet(index) is KeywordLexeme { Keyword: ReservedKeyword.With })
+            if (tokens.TryGet(index) is ReservedKeywordToken { Keyword: ReservedKeyword.With })
             {
                 withExpression = ParseForWithExpression(ref index, identifier);
 
@@ -79,7 +73,7 @@ namespace Krypton.Analysis.Syntactical
                 return null;
             }
 
-            StatementCollectionNode? statements = ParseStatementBlock(ref index);
+            BodyNode? statements = ParseStatementBlock(ref index);
 
             if (statements == null)
             {
@@ -96,30 +90,30 @@ namespace Krypton.Analysis.Syntactical
                                         nodeIndex);
         }
 
-        private ExpressionNode? ParseForCondition(ref int index, IdentifierNode identifier)
+        private ExpressionNode? ParseForCondition(ref int index, IdentifierToken identifier)
         {
             index++;
 
-            switch (lexemes.TryGet(index))
+            switch (tokens.TryGet(index))
             {
-                case BooleanLiteralLexeme { Value: true } booleanLiteral:
+                case LiteralToken<bool> { Value: true } booleanLiteral:
                     index++;
-                    return new BooleanLiteralExpressionNode(true, booleanLiteral.LineNumber, booleanLiteral.Index);
-                case IdentifierLexeme
-                {
-                    LineNumber: int lineNumber,
-                    Index: int nodeIndex
-                } conditionIdentifier when conditionIdentifier.Content == identifier.Identifier:
+                    return new LiteralExpressionNode<bool>(booleanLiteral);
+                case IdentifierToken conditionIdentifier when conditionIdentifier.Text.Span.SequenceEqual(identifier.Text.Span):
                     {
                         index++;
 
-                        if (lexemes.TryGet(index) is not CharacterOperatorLexeme
-                            { PrecedenceGroup: OperatorPrecedenceGroup.Comparison, Operator: var @operator })
+                        if (tokens[index] is not OperatorToken { Operator: Operator.LessThan
+                                                                        or Operator.LessThanEquals
+                                                                        or Operator.GreaterThan
+                                                                        or Operator.GreaterThanEquals
+                                                               } @operator)
                         {
-                            ErrorProvider.ReportError(ErrorCode.ForConditionHasToBeTrueOrComparisonWithIterationVariable,
-                                                      code,
-                                                      lexemes.TryGet(index) ?? lexemes[^1]);
-                            return null;
+                            throw new NotImplementedException();
+                            //ErrorProvider.ReportError(ErrorCode.ForConditionHasToBeTrueOrComparisonWithIterationVariable,
+                            //                          code,
+                            //                          tokens.TryGet(index) ?? tokens[^1]);
+                            //return null;
                         }
 
                         index++;
@@ -131,22 +125,16 @@ namespace Krypton.Analysis.Syntactical
                             return null;
                         }
 
-                        IdentifierExpressionNode conditionIdentifierExpression =
-                            new IdentifierExpressionNode(identifier.Identifier,
-                                                         conditionIdentifier.LineNumber,
-                                                         conditionIdentifier.Index);
+                        IdentifierExpressionNode conditionIdentifierExpression = new(conditionIdentifier);
 
-                        return new BinaryOperationExpressionNode(conditionIdentifierExpression,
-                                                                 otherSide,
-                                                                 @operator,
-                                                                 lineNumber,
-                                                                 nodeIndex);
+                        return new BinaryOperationExpressionNode(conditionIdentifierExpression, @operator, otherSide);
                     }
                 case var lexeme:
-                    ErrorProvider.ReportError(ErrorCode.ForConditionHasToBeTrueOrComparisonWithIterationVariable,
-                                              code,
-                                              lexeme ?? lexemes[^1]);
-                    return null;
+                    throw new NotImplementedException();
+                    //ErrorProvider.ReportError(ErrorCode.ForConditionHasToBeTrueOrComparisonWithIterationVariable,
+                    //                          code,
+                    //                          lexeme ?? tokens[^1]);
+                    //return null;
             }
         }
 
@@ -157,30 +145,31 @@ namespace Krypton.Analysis.Syntactical
         {
             declaresNew = false;
 
-            if (lexemes.TryGet(index) is KeywordLexeme { Keyword: ReservedKeyword.Var })
+            if (tokens.TryGet(index) is ReservedKeywordToken { Keyword: ReservedKeyword.Var })
             {
                 declaresNew = true;
 
                 index++;
             }
 
-            if (lexemes.TryGet(index) is not IdentifierLexeme identifierLexeme)
+            if (tokens.TryGet(index) is not IdentifierToken identifierToken)
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier, code, lexemes.TryGet(index) ?? lexemes[^1]);
-                variable = null;
-                initialValue = null;
-                return false;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier, code, tokens.TryGet(index) ?? tokens[^1]);
+                //variable = null;
+                //initialValue = null;
+                //return false;
             }
 
-            variable = new UnboundIdentifierNode(identifierLexeme.Content,
-                                                 identifierLexeme.LineNumber,
-                                                 identifierLexeme.Index);
+            variable = new UnboundIdentifierNode(identifierToken.Content,
+                                                 identifierToken.LineNumber,
+                                                 identifierToken.Index);
 
             index++;
 
             initialValue = null;
 
-            if (lexemes.TryGet(index) is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
+            if (tokens.TryGet(index) is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
             {
                 index++;
 
@@ -198,7 +187,7 @@ namespace Krypton.Analysis.Syntactical
                     ErrorProvider.ReportError(ErrorCode.NewVariableInForWithoutDefaultValue,
                                               code,
                                               variable,
-                                              $"Variable: {identifierLexeme.Content}");
+                                              $"Variable: {identifierToken.Content}");
                     return false;
                 }
             }
@@ -210,24 +199,24 @@ namespace Krypton.Analysis.Syntactical
         {
             index++;
 
-            if (lexemes.TryGet(index) is not IdentifierLexeme withIdentifierLexeme
+            if (tokens.TryGet(index) is not IdentifierLexeme withIdentifierLexeme
                 || withIdentifierLexeme.Content != identifier.Identifier)
             {
                 ErrorProvider.ReportError(ErrorCode.ForWithPartHasToAssignIterationVariable,
                                           code,
-                                          lexemes.TryGet(index) ?? lexemes[^1],
+                                          tokens.TryGet(index) ?? tokens[^1],
                                           $"Iteration variable: {identifier.Identifier}");
                 return null;
             }
 
             index++;
 
-            if (lexemes.TryGet(index) is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
+            if (tokens.TryGet(index) is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
             {
-                Debug.Assert(index - 1 >= 0 & index - 1 < lexemes.Count);
+                Debug.Assert(index - 1 >= 0 & index - 1 < tokens.Count);
                 ErrorProvider.ReportError(ErrorCode.ForWithPartHasToAssignIterationVariable,
                                           code,
-                                          lexemes[index - 1],
+                                          tokens[index - 1],
                                           $"Iteration variable: {identifier.Identifier}");
                 return null;
             }
@@ -239,8 +228,8 @@ namespace Krypton.Analysis.Syntactical
 
         private IfStatementNode? ParseIfStatement(ref int index)
         {
-            int lineNumber = lexemes[index].LineNumber;
-            int nodeIndex = lexemes[index].Index;
+            int lineNumber = tokens[index].LineNumber;
+            int nodeIndex = tokens[index].Index;
 
             index++;
 
@@ -262,7 +251,7 @@ namespace Krypton.Analysis.Syntactical
 
             while (true)
             {
-                if (lexemes.TryGet(index) is not KeywordLexeme { Keyword: ReservedKeyword.Else })
+                if (tokens.TryGet(index) is not KeywordLexeme { Keyword: ReservedKeyword.Else })
                 {
                     return new IfStatementNode(condition,
                                                statements,
@@ -272,12 +261,12 @@ namespace Krypton.Analysis.Syntactical
                                                nodeIndex);
                 }
 
-                int elseLineNumber = lexemes[index].LineNumber;
-                int elseIndex = lexemes[index].Index;
+                int elseLineNumber = tokens[index].LineNumber;
+                int elseIndex = tokens[index].Index;
 
                 index++;
 
-                switch (lexemes.TryGet(index))
+                switch (tokens.TryGet(index))
                 {
                     case KeywordLexeme { Keyword: ReservedKeyword.If }:
                         {
@@ -325,8 +314,8 @@ namespace Krypton.Analysis.Syntactical
 
         private WhileStatementNode? ParseWhileStatement(ref int index)
         {
-            int lineNumber = lexemes[index].LineNumber;
-            int nodeIndex = lexemes[index].Index;
+            int lineNumber = tokens[index].LineNumber;
+            int nodeIndex = tokens[index].Index;
 
             index++;
 

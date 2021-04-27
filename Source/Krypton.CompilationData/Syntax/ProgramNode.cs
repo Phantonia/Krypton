@@ -13,11 +13,11 @@ namespace Krypton.CompilationData.Syntax
             : base(parent)
         {
             TopLevelNodes = topLevelNodes.Select(t => t.WithParent(this)).Finalize();
-            TopLevelStatementNodes = new(openingBraceToken: null,
+            TopLevelStatementNodes = new(openingBrace: null,
                                          TopLevelNodes.OfType<TopLevelStatementNode>()
                                                       .Select(t => t.StatementNode)
                                                       .Finalize(),
-                                         closingBraceToken: null,
+                                         closingBrace: null,
                                          parent: this);
         }
 

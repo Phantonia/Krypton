@@ -36,26 +36,26 @@ namespace Krypton.Analysis.Syntactical
 
         private FunctionCallStatementNode? ParseFunctionCallStatement(FunctionCallExpressionNode expression, ref int index)
         {
-            if (lexemes[index] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
+            if (tokens[index] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
             {
                 index++;
                 return new FunctionCallStatementNode(expression, expression.LineNumber, expression.Index);
             }
             else
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, lexemes[index]);
+                ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, tokens[index]);
                 return null;
             }
         }
 
         private LoopControlStatementNode? ParseLoopControlStatement(ref int index, LoopControlStatementKind kind)
         {
-            int lineNumber = lexemes[index].LineNumber;
-            int nodeIndex = lexemes[index].Index;
+            int lineNumber = tokens[index].LineNumber;
+            int nodeIndex = tokens[index].Index;
 
             index++;
 
-            if (lexemes[index] is not IntegerLiteralLexeme { Value: > 0 and < 50 and long level })
+            if (tokens[index] is not IntegerLiteralLexeme { Value: > 0 and < 50 and long level })
             {
                 level = 1;
             }
@@ -64,9 +64,9 @@ namespace Krypton.Analysis.Syntactical
                 index++;
             }
 
-            if (lexemes[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
+            if (tokens[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, lexemes[index]);
+                ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, tokens[index]);
                 return null;
             }
 
@@ -77,12 +77,12 @@ namespace Krypton.Analysis.Syntactical
 
         private ReturnStatementNode? ParseReturnStatement(ref int index)
         {
-            int lineNumber = lexemes[index].LineNumber;
-            int nodeIndex = lexemes[index].Index;
+            int lineNumber = tokens[index].LineNumber;
+            int nodeIndex = tokens[index].Index;
 
             index++;
 
-            if (lexemes[index] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
+            if (tokens[index] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
             {
                 index++;
 
@@ -96,9 +96,9 @@ namespace Krypton.Analysis.Syntactical
                 return null;
             }
 
-            if (lexemes[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
+            if (tokens[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, lexemes[index]);
+                ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, tokens[index]);
                 return null;
             }
 
@@ -109,7 +109,7 @@ namespace Krypton.Analysis.Syntactical
 
         private VariableAssignmentStatementNode? ParseVariableAssignmentStatement(ref int index, IdentifierNode identifier, ExpressionNode expression)
         {
-            if (lexemes[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
+            if (tokens[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
             {
                 ErrorProvider.ReportError(ErrorCode.OnlyFunctionCallExpressionCanBeStatement, code, expression);
                 return null;
@@ -124,9 +124,9 @@ namespace Krypton.Analysis.Syntactical
                 return null;
             }
 
-            if (lexemes[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
+            if (tokens[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, lexemes[index]);
+                ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, tokens[index]);
                 return null;
             }
 
@@ -136,21 +136,21 @@ namespace Krypton.Analysis.Syntactical
 
         private VariableDeclarationStatementNode? ParseVariableDeclarationStatement(ref int index, bool isReadOnly)
         {
-            int lineNumber = lexemes[index].LineNumber;
-            int nodeIndex = lexemes[index].Index;
+            int lineNumber = tokens[index].LineNumber;
+            int nodeIndex = tokens[index].Index;
 
             index++;
 
-            Lexeme? current = lexemes.TryGet(index);
+            Lexeme? current = tokens.TryGet(index);
 
             if (current is not IdentifierLexeme identifierLexeme)
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier, code, current ?? lexemes[^1]);
+                ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier, code, current ?? tokens[^1]);
                 return null;
             }
 
             index++;
-            current = lexemes.TryGet(index);
+            current = tokens.TryGet(index);
 
             string identifier = identifierLexeme.Content;
             int identifierLineNumber = identifierLexeme.LineNumber;
@@ -165,13 +165,13 @@ namespace Krypton.Analysis.Syntactical
             {
                 ErrorProvider.ReportError(ErrorCode.LetVariableAndConstMustBeInitialized,
                                           code,
-                                          current ?? lexemes[^1]);
+                                          current ?? tokens[^1]);
                 return null;
             }
 
             if (current is not KeywordLexeme { Keyword: ReservedKeyword.As })
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedAsOrEquals, code, current ?? lexemes[^1]);
+                ErrorProvider.ReportError(ErrorCode.ExpectedAsOrEquals, code, current ?? tokens[^1]);
                 return null;
             }
 
@@ -184,7 +184,7 @@ namespace Krypton.Analysis.Syntactical
                 return null;
             }
 
-            current = lexemes.TryGet(index);
+            current = tokens.TryGet(index);
 
             if (current is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
             {
@@ -193,7 +193,7 @@ namespace Krypton.Analysis.Syntactical
 
             if (current is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedEqualsOrSemicolon, code, current ?? lexemes[^1]);
+                ErrorProvider.ReportError(ErrorCode.ExpectedEqualsOrSemicolon, code, current ?? tokens[^1]);
                 return null;
             }
 
@@ -216,11 +216,11 @@ namespace Krypton.Analysis.Syntactical
                     return null;
                 }
 
-                current = lexemes.TryGet(index);
+                current = tokens.TryGet(index);
 
                 if (current is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
                 {
-                    ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, current ?? lexemes[^1]);
+                    ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, current ?? tokens[^1]);
                     return null;
                 }
 

@@ -1,21 +1,21 @@
-﻿using Krypton.Analysis.Ast;
-using Krypton.Analysis.Ast.Statements;
-using Krypton.Analysis.Errors;
-using Krypton.Analysis.Lexical;
-using Krypton.Analysis.Lexical.Lexemes;
+﻿using Krypton.CompilationData;
+using Krypton.CompilationData.Syntax;
+using Krypton.CompilationData.Syntax.Statements;
+using Krypton.CompilationData.Syntax.Tokens;
 using Krypton.Utilities;
+using System;
 using System.Collections.Generic;
 
 namespace Krypton.Analysis.Syntactical
 {
     internal sealed partial class StatementParser
     {
-        public StatementParser(LexemeCollection lexemes,
+        public StatementParser(FinalList<Token> tokens,
                                ExpressionParser expressionParser,
                                TypeParser typeParser,
                                string code)
         {
-            this.lexemes = lexemes;
+            this.tokens = tokens;
             this.expressionParser = expressionParser;
             this.typeParser = typeParser;
             this.code = code;
@@ -23,32 +23,33 @@ namespace Krypton.Analysis.Syntactical
 
         private readonly string code;
         private readonly ExpressionParser expressionParser;
-        private readonly LexemeCollection lexemes;
+        private readonly FinalList<Token> tokens;
         private readonly TypeParser typeParser;
 
         public StatementNode? ParseNextStatement(ref int index)
         {
-            return lexemes[index] switch
+            return tokens[index] switch
             {
-                KeywordLexeme { Keyword: ReservedKeyword.Block } => ParseBlockStatement(ref index, lexemes[index].LineNumber),
-                KeywordLexeme { Keyword: ReservedKeyword.Var } => ParseVariableDeclarationStatement(ref index, isReadOnly: false),
-                KeywordLexeme { Keyword: ReservedKeyword.Let } => ParseVariableDeclarationStatement(ref index, isReadOnly: true),
-                KeywordLexeme { Keyword: ReservedKeyword.While } => ParseWhileStatement(ref index),
-                KeywordLexeme { Keyword: ReservedKeyword.If } => ParseIfStatement(ref index),
-                KeywordLexeme { Keyword: ReservedKeyword.For } => ParseForStatement(ref index),
-                KeywordLexeme { Keyword: ReservedKeyword.Return } => ParseReturnStatement(ref index),
-                KeywordLexeme { Keyword: ReservedKeyword.Continue } => ParseLoopControlStatement(ref index, LoopControlStatementKind.Continue),
-                KeywordLexeme { Keyword: ReservedKeyword.Leave } => ParseLoopControlStatement(ref index, LoopControlStatementKind.Leave),
+                ReservedKeywordToken { Keyword: ReservedKeyword.Block } => ParseBlockStatement(ref index, tokens[index].LineNumber),
+                ReservedKeywordToken { Keyword: ReservedKeyword.Var } => ParseVariableDeclarationStatement(ref index, isReadOnly: false),
+                ReservedKeywordToken { Keyword: ReservedKeyword.Let } => ParseVariableDeclarationStatement(ref index, isReadOnly: true),
+                ReservedKeywordToken { Keyword: ReservedKeyword.While } => ParseWhileStatement(ref index),
+                ReservedKeywordToken { Keyword: ReservedKeyword.If } => ParseIfStatement(ref index),
+                ReservedKeywordToken { Keyword: ReservedKeyword.For } => ParseForStatement(ref index),
+                ReservedKeywordToken { Keyword: ReservedKeyword.Return } => ParseReturnStatement(ref index),
+                ReservedKeywordToken { Keyword: ReservedKeyword.Continue } => ParseLoopControlStatement(ref index, LoopControlStatementKind.Continue),
+                ReservedKeywordToken { Keyword: ReservedKeyword.Leave } => ParseLoopControlStatement(ref index, LoopControlStatementKind.Leave),
                 _ => ParseExpressionStatement(ref index),
             };
         }
 
-        public StatementCollectionNode? ParseStatementBlock(ref int index)
+        public BodyNode? ParseStatementBlock(ref int index)
         {
-            if (lexemes[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.BraceOpening })
+            if (tokens[index] is not SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.BraceOpening } openingBrace)
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedOpeningBrace, code, lexemes[index]);
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ExpectedOpeningBrace, code, tokens[index]);
+                //return null;
             }
 
             index++;
@@ -57,14 +58,15 @@ namespace Krypton.Analysis.Syntactical
 
             while (true)
             {
-                switch (lexemes.TryGet(index))
+                switch (tokens.TryGet(index))
                 {
-                    case SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.BraceClosing }:
+                    case SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.BraceClosing } closingBrace:
                         index++;
-                        return new StatementCollectionNode(statements);
+                        return new BodyNode(openingBrace, statements, closingBrace);
                     case null:
-                        ErrorProvider.ReportError(ErrorCode.ExpectedClosingBrace, code, lexemes[^1]);
-                        return null;
+                        throw new NotImplementedException();
+                        //ErrorProvider.ReportError(ErrorCode.ExpectedClosingBrace, code, tokens[^1]);
+                        //return null;
                 }
 
                 StatementNode? nextStatement = ParseNextStatement(ref index);

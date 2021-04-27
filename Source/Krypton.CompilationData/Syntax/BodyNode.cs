@@ -10,15 +10,15 @@ namespace Krypton.CompilationData.Syntax
 {
     public sealed class BodyNode : SyntaxNode
     {
-        public BodyNode(SyntaxCharacterToken? openingBraceToken,
-                        IEnumerable<StatementNode> statementNodes,
-                        SyntaxCharacterToken? closingBraceToken,
+        public BodyNode(SyntaxCharacterToken? openingBrace,
+                        IEnumerable<StatementNode> statements,
+                        SyntaxCharacterToken? closingBrace,
                         SyntaxNode? parent = null)
             : base(parent)
         {
-            OpeningBraceToken = openingBraceToken;
-            StatementNodes = statementNodes.Select(s => s.WithParent(this)).Finalize();
-            ClosingBraceToken = closingBraceToken;
+            OpeningBraceToken = openingBrace;
+            StatementNodes = statements.Select(s => s.WithParent(this)).Finalize();
+            ClosingBraceToken = closingBrace;
 
             Debug.Assert(OpeningBraceToken == null || OpeningBraceToken.SyntaxCharacter == SyntaxCharacter.BraceOpening);
             Debug.Assert(ClosingBraceToken == null || ClosingBraceToken.SyntaxCharacter == SyntaxCharacter.BraceClosing);
