@@ -1,17 +1,14 @@
 ﻿namespace Krypton.CompilationData.Syntax.Statements
 {
-    public abstract class BodiedStatementNode : StatementNode
+    public abstract record BodiedStatementNode : StatementNode
     {
-        private protected BodiedStatementNode(BodyNode body, SyntaxNode? parent)
-            : base(parent)
+        private protected BodiedStatementNode(BodyNode body)
         {
-            BodyNode = body.WithParent(this);
+            BodyNode = body;
         }
 
-        public BodyNode BodyNode { get; }
+        public BodyNode BodyNode { get; init; }
 
         protected override string GetDebuggerDisplay() => $"{base.GetDebuggerDisplay()}; Number of statements: {BodyNode.StatementNodes.Count}";
-
-        public abstract override BodiedStatementNode WithParent(SyntaxNode newParent);
     }
 }

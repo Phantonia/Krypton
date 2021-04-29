@@ -5,25 +5,21 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Declarations
 {
-    public sealed class ParameterDeclarationNode : NamedDeclarationNode
+    public sealed record ParameterDeclarationNode : NamedDeclarationNode
     {
         public ParameterDeclarationNode(IdentifierToken name,
-                                        AsClauseNode asClause,
-                                        SyntaxNode? parent = null)
-            : base(name, parent)
+                                        AsClauseNode asClause)
+            : base(name)
         {
-            AsClauseNode = asClause.WithParent(this);
+            AsClauseNode = asClause;
         }
 
         public AsClauseNode AsClauseNode { get; }
 
         public override bool IsLeaf => false;
 
-        public override BoundDeclarationNode<ParameterDeclarationNode> Bind(Symbol symbol)
+        public override BoundDeclarationNode Bind(Symbol symbol)
             => new(this, symbol);
-
-        public override ParameterDeclarationNode WithParent(SyntaxNode newParent)
-            => new(NameToken, AsClauseNode, newParent);
 
         public override void WriteCode(TextWriter output)
         {

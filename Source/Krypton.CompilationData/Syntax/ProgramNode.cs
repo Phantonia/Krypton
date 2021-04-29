@@ -6,29 +6,26 @@ using System.Linq;
 
 namespace Krypton.CompilationData.Syntax
 {
-    public sealed class ProgramNode : SyntaxNode, IExecutableNode
+    public sealed record ProgramNode : SyntaxNode, IExecutableNode
     {
-        public ProgramNode(IEnumerable<TopLevelNode> topLevelNodes,
-                           SyntaxNode? parent = null)
-            : base(parent)
+        public ProgramNode(IEnumerable<TopLevelNode> topLevelNodes)
         {
             TopLevelNodes = topLevelNodes.Select(t => t.WithParent(this)).Finalize();
-            TopLevelStatementNodes = new(openingBrace: null,
-                                         TopLevelNodes.OfType<TopLevelStatementNode>()
-                                                      .Select(t => t.StatementNode)
-                                                      .Finalize(),
-                                         closingBrace: null,
-                                         parent: this);
+            TopLevelStatementNodes = new BodyNode(openingBrace: null,
+                                                  TopLevelNodes.OfType<TopLevelStatementNode>()
+                                                               .Select(t => t.StatementNode)
+                                                               .Finalize(),
+                                                  closingBrace: null) with
+                                                  {
+                                                      ParentNode = this
+                                                  };
         }
 
         public BodyNode TopLevelStatementNodes { get; } // do not write
 
         public override bool IsLeaf => false;
 
-        public FinalList<TopLevelNode> TopLevelNodes { get; }
-
-        public override ProgramNode WithParent(SyntaxNode newParent)
-            => new(TopLevelNodes, newParent);
+        public FinalList<TopLevelNode> TopLevelNodes { get; init; }
 
         public override void WriteCode(TextWriter output)
         {

@@ -1,56 +1,38 @@
 ﻿using Krypton.CompilationData.Syntax.Expressions;
 using Krypton.CompilationData.Syntax.Tokens;
-using Krypton.Utilities;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 
 namespace Krypton.CompilationData.Syntax.Statements
 {
-    public sealed class IfStatementNode : BodiedStatementNode
+    public sealed record IfStatementNode : BodiedStatementNode
     {
         public IfStatementNode(ReservedKeywordToken ifKeyword,
                                ExpressionNode condition,
                                BodyNode body,
                                IEnumerable<ElseIfPartNode>? elseIfParts,
-                               ElsePartNode? elsePart,
-                               SyntaxNode? parent = null)
-            : base(body, parent)
+                               ElsePartNode? elsePart)
+            : base(body)
         {
             IfKeywordToken = ifKeyword;
-            ConditionNode = condition.WithParent(this);
-            ElseIfPartNodes = elseIfParts?.Select(p => p.WithParent(this)).Finalize() ?? default;
-            ElsePartNode = elsePart?.WithParent(this);
+            ConditionNode = condition;
+            ElseIfPartNodes = elseIfParts?.ToImmutableList() ?? ImmutableList<ElseIfPartNode>.Empty;
+            ElsePartNode = elsePart;
 
             Debug.Assert(IfKeywordToken.Keyword == ReservedKeyword.If);
         }
 
-        public ExpressionNode ConditionNode { get; }
+        public ExpressionNode ConditionNode { get; init; }
 
-        public FinalList<ElseIfPartNode> ElseIfPartNodes { get; }
+        public ImmutableList<ElseIfPartNode> ElseIfPartNodes { get; init; }
 
-        public ElsePartNode? ElsePartNode { get; }
+        public ElsePartNode? ElsePartNode { get; init; }
 
-        public ReservedKeywordToken IfKeywordToken { get; }
+        public ReservedKeywordToken IfKeywordToken { get; init; }
 
         public override bool IsLeaf => false;
-
-        public IfStatementNode WithChildren(ReservedKeywordToken? ifKeyword = null,
-                                            ExpressionNode? condition = null,
-                                            BodyNode? body = null,
-                                            IEnumerable<ElseIfPartNode>? elseIfParts = null,
-                                            bool overwriteElseIfParts = false,
-                                            ElsePartNode? elsePart = null,
-                                            bool overwriteElsePart = false)
-            => new(ifKeyword ?? IfKeywordToken,
-                   condition ?? ConditionNode,
-                   body ?? BodyNode,
-                   elseIfParts ?? (overwriteElseIfParts ? null : ElseIfPartNodes),
-                   elsePart ?? (overwriteElsePart ? null : ElsePartNode));
-
-        public override IfStatementNode WithParent(SyntaxNode newParent)
-            => new(IfKeywordToken, ConditionNode, BodyNode, ElseIfPartNodes, ElsePartNode, newParent);
 
         public override void WriteCode(TextWriter output)
         {

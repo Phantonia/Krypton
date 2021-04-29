@@ -3,48 +3,24 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Expressions
 {
-    public abstract class TypedExpressionNode : ExpressionNode
+    public sealed record TypedExpressionNode : ExpressionNode
     {
-        private protected TypedExpressionNode(TypeSymbol typeSymbol,
-                                              SyntaxNode? parent)
-            : base(parent)
+        internal TypedExpressionNode(ExpressionNode expression, TypeSymbol typeSymbol)
         {
+            ExpressionNode = expression;
             TypeSymbol = typeSymbol;
         }
 
-        public abstract ExpressionNode ExpressionNode { get; }
-
-        public TypeSymbol TypeSymbol { get; }
-
-        public abstract override TypedExpressionNode WithParent(SyntaxNode newParent);
-    }
-
-    public sealed class TypedExpressionNode<TExpression> : TypedExpressionNode
-        where TExpression : ExpressionNode
-    {
-        public TypedExpressionNode(TExpression expression,
-                                   TypeSymbol typeSymbol,
-                                   SyntaxNode? parent = null)
-            : base(typeSymbol, parent)
-        {
-            ExpressionNode = (TExpression)expression.WithParent(this);
-        }
-
-        public override TExpression ExpressionNode { get; }
+        public ExpressionNode ExpressionNode { get; init; }
 
         public override bool IsLeaf => false;
 
-        public override TypedExpressionNode<TExpression> Type(TypeSymbol type)
-            => type == TypeSymbol ? this : new(ExpressionNode, type);
+        public TypeSymbol TypeSymbol { get; init; }
 
-        public TypedExpressionNode<TExpression> WithChildren(TExpression? expression = null,
-                                                             TypeSymbol? typeSymbol = null)
-            => new(expression ?? ExpressionNode,
-                   typeSymbol ?? TypeSymbol);
+        public override TypedExpressionNode Type(TypeSymbol type)
+            => type == TypeSymbol ? this : new TypedExpressionNode(ExpressionNode, type);
 
-        public override TypedExpressionNode<TExpression> WithParent(SyntaxNode newParent)
-            => new(ExpressionNode, TypeSymbol, newParent);
-
-        public override void WriteCode(TextWriter output) => ExpressionNode.WriteCode(output);
+        public override void WriteCode(TextWriter output)
+            => ExpressionNode.WriteCode(output);
     }
 }

@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Statements
 {
-    public sealed class VariableDeclarationStatementNode : SingleStatementNode
+    public sealed record VariableDeclarationStatementNode : SingleStatementNode
     {
         public VariableDeclarationStatementNode(ReservedKeywordToken declaratorKeyword,
                                                 IdentifierToken identifier,
@@ -14,17 +14,17 @@ namespace Krypton.CompilationData.Syntax.Statements
                                                 TypeNode? type,
                                                 SyntaxCharacterToken? equals,
                                                 ExpressionNode? initialValue,
-                                                SyntaxCharacterToken semicolon,
-                                                SyntaxNode? parent = null)
-            : base(semicolon, parent)
+                                                SyntaxCharacterToken semicolon)
+            : base(semicolon)
         {
             DeclaratorKeywordToken = declaratorKeyword;
             IdentifierToken = identifier;
             AsKeywordToken = asKeyword;
-            TypeNode = type?.WithParent(this);
+            TypeNode = type;
             EqualsToken = equals;
-            InitialValueNode = initialValue?.WithParent(this);
+            InitialValueNode = initialValue;
 
+            Debug.Assert(DeclaratorKeywordToken.Keyword is ReservedKeyword.Var or ReservedKeyword.Let);
             Debug.Assert(TypeNode != null ? AsKeywordToken != null : AsKeywordToken == null);
             Debug.Assert(InitialValueNode != null ? EqualsToken != null : EqualsToken == null);
             Debug.Assert(TypeNode != null || InitialValueNode != null);
@@ -46,35 +46,14 @@ namespace Krypton.CompilationData.Syntax.Statements
 
         public TypeNode? TypeNode { get; }
 
-        public VariableDeclarationStatementNode WithChildren(ReservedKeywordToken? declaratorKeyword = null,
-                                                             IdentifierToken? identifier = null,
-                                                             ReservedKeywordToken? asKeyword = null,
-                                                             bool overwriteAsKeyword = false,
-                                                             TypeNode? type = null,
-                                                             bool overwriteType = false,
-                                                             SyntaxCharacterToken? equals = null,
-                                                             bool overwriteEquals = false,
-                                                             ExpressionNode? initialValue = null,
-                                                             bool overwriteInitialValue = false,
-                                                             SyntaxCharacterToken? semicolon = null)
-            => new(declaratorKeyword ?? DeclaratorKeywordToken,
-                   identifier ?? IdentifierToken,
-                   asKeyword ?? (overwriteAsKeyword ? null : AsKeywordToken),
-                   type ?? (overwriteType ? null : TypeNode),
-                   equals ?? (overwriteEquals ? null : EqualsToken),
-                   initialValue ?? (overwriteInitialValue ? null : InitialValueNode),
-                   semicolon ?? SemicolonToken);
-
-        public override VariableDeclarationStatementNode WithParent(SyntaxNode newParent)
-            => new(DeclaratorKeywordToken,
-                   IdentifierToken,
-                   AsKeywordToken,
-                   TypeNode,
-                   EqualsToken,
-                   InitialValueNode,
-                   SemicolonToken,
-                   newParent);
-
-        public override void WriteCode(TextWriter output) => throw new System.NotImplementedException();
+        public override void WriteCode(TextWriter output)
+        {
+            DeclaratorKeywordToken.WriteCode(output);
+            IdentifierToken.WriteCode(output);
+            AsKeywordToken?.WriteCode(output);
+            TypeNode?.WriteCode(output);
+            EqualsToken?.WriteCode(output);
+            InitialValueNode?.WriteCode(output);
+        }
     }
 }

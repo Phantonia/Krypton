@@ -3,26 +3,22 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Statements
 {
-    public sealed class BoundReturnStatementNode : StatementNode
+    public sealed record BoundReturnStatementNode : StatementNode
     {
         public BoundReturnStatementNode(ReturnStatementNode returnStatement,
-                                        FunctionSymbol function,
-                                        SyntaxNode? parent = null)
-            : base(parent)
+                                        FunctionSymbol function)
         {
-            ReturnStatementNode = returnStatement.WithParent(this);
+            ReturnStatementNode = returnStatement;
             FunctionSymbol = function;
         }
 
-        public FunctionSymbol FunctionSymbol { get; }
+        public FunctionSymbol FunctionSymbol { get; init; }
 
-        public ReturnStatementNode ReturnStatementNode { get; }
+        public ReturnStatementNode ReturnStatementNode { get; init; }
 
         public override bool IsLeaf => false;
 
-        public override BoundReturnStatementNode WithParent(SyntaxNode newParent)
-            => new(ReturnStatementNode, FunctionSymbol, newParent);
-
-        public override void WriteCode(TextWriter output) => ReturnStatementNode.WriteCode(output);
+        public override void WriteCode(TextWriter output)
+            => ReturnStatementNode.WriteCode(output);
     }
 }

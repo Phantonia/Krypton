@@ -3,27 +3,18 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Statements
 {
-    public sealed class BlockStatementNode : BodiedStatementNode
+    public sealed record BlockStatementNode : BodiedStatementNode
     {
         public BlockStatementNode(ReservedKeywordToken blockKeyword,
-                                  BodyNode body,
-                                  SyntaxNode? parent = null)
-            : base(body, parent)
+                                  BodyNode body)
+            : base(body)
         {
             BlockKeywordToken = blockKeyword;
         }
 
-        public ReservedKeywordToken BlockKeywordToken { get; }
+        public ReservedKeywordToken BlockKeywordToken { get; init; }
 
         public override bool IsLeaf => false;
-
-        public BlockStatementNode WithChildren(ReservedKeywordToken? blockKeyword = null,
-                                               BodyNode? body = null)
-            => new(blockKeyword ?? BlockKeywordToken,
-                   body ?? BodyNode);
-
-        public override BlockStatementNode WithParent(SyntaxNode newParent)
-            => new(BlockKeywordToken, BodyNode, newParent);
 
         public override void WriteCode(TextWriter output)
         {

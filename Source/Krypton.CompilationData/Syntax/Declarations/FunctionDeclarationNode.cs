@@ -4,13 +4,14 @@ using Krypton.CompilationData.Syntax.Tokens;
 using Krypton.CompilationData.Syntax.Types;
 using Krypton.Utilities;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
 namespace Krypton.CompilationData.Syntax.Declarations
 {
-    public sealed class FunctionDeclarationNode : NamedDeclarationNode, IExecutableNode
+    public sealed record FunctionDeclarationNode : NamedDeclarationNode, IExecutableNode
     {
         public FunctionDeclarationNode(ReservedKeywordToken funcKeyword,
                                        IdentifierToken name,
@@ -19,9 +20,8 @@ namespace Krypton.CompilationData.Syntax.Declarations
                                        IEnumerable<SyntaxCharacterToken>? commas,
                                        SyntaxCharacterToken closingParenthesis,
                                        AsClauseNode? returnTypeClause,
-                                       BodyNode body,
-                                       SyntaxNode? parent = null)
-            : base(name, parent)
+                                       BodyNode body)
+            : base(name)
         {
             Debug.Assert(funcKeyword.Keyword == ReservedKeyword.Func);
             Debug.Assert(openingParenthesis.SyntaxCharacter == SyntaxCharacter.ParenthesisOpening);
@@ -30,58 +30,34 @@ namespace Krypton.CompilationData.Syntax.Declarations
 
             FuncKeywordToken = funcKeyword;
             OpeningParenthesisToken = openingParenthesis;
-            ParameterNodes = parameters?.Select(p => p.WithParent(this)).Finalize() ?? default;
-            CommaTokens = commas.Finalize();
+            ParameterNodes = parameters?.ToImmutableList() ?? ImmutableList<ParameterDeclarationNode>.Empty;
+            CommaTokens = commas?.ToImmutableList() ?? ImmutableList<SyntaxCharacterToken>.Empty;
             ClosingParenthesisToken = closingParenthesis;
-            ReturnTypeClauseNode = returnTypeClause?.WithParent(this);
+            ReturnTypeClauseNode = returnTypeClause;
             BodyNode = body;
 
             Debug.Assert(CommaTokens.Count == ParameterNodes.Count
                      || (CommaTokens.Count == 0 && ParameterNodes.Count == 0));
         }
 
-        public AsClauseNode? ReturnTypeClauseNode { get; }
+        public AsClauseNode? ReturnTypeClauseNode { get; init; }
 
-        public BodyNode BodyNode { get; }
+        public BodyNode BodyNode { get; init; }
 
-        public SyntaxCharacterToken ClosingParenthesisToken { get; }
+        public SyntaxCharacterToken ClosingParenthesisToken { get; init; }
 
-        public FinalList<SyntaxCharacterToken> CommaTokens { get; }
+        public ImmutableList<SyntaxCharacterToken> CommaTokens { get; init; }
 
-        public ReservedKeywordToken FuncKeywordToken { get; }
+        public ReservedKeywordToken FuncKeywordToken { get; init; }
 
         public override bool IsLeaf => false;
 
-        public SyntaxCharacterToken OpeningParenthesisToken { get; }
+        public SyntaxCharacterToken OpeningParenthesisToken { get; init; }
 
-        public FinalList<ParameterDeclarationNode> ParameterNodes { get; }
+        public ImmutableList<ParameterDeclarationNode> ParameterNodes { get; init; }
 
-        public override BoundDeclarationNode<FunctionDeclarationNode> Bind(Symbol symbol)
+        public override BoundDeclarationNode Bind(Symbol symbol)
             => new(this, symbol);
-
-        public FunctionDeclarationNode WithChildren(ReservedKeywordToken? funcKeyword = null,
-                                                    IdentifierToken? name = null,
-                                                    SyntaxCharacterToken? openingParenthesis = null,
-                                                    IEnumerable<ParameterDeclarationNode>? parameters = null,
-                                                    IndexWither<ParameterDeclarationNode>[]? parameterWithers = null,
-                                                    IEnumerable<SyntaxCharacterToken>? commas = null,
-                                                    IndexWither<SyntaxCharacterToken>[]? commaWithers = null,
-                                                    SyntaxCharacterToken? closingParenthesis = null,
-                                                    AsClauseNode? returnTypeClause = null,
-                                                    bool overwriteReturnTypeClause = false,
-                                                    BodyNode? body = null)
-            => new(funcKeyword ?? FuncKeywordToken,
-                   name ?? NameToken,
-                   openingParenthesis ?? OpeningParenthesisToken,
-                   parameters ?? ParameterNodes.With(parameterWithers),
-                   commas ?? CommaTokens.With(commaWithers),
-                   closingParenthesis ?? ClosingParenthesisToken,
-                   returnTypeClause ?? (overwriteReturnTypeClause ? null : ReturnTypeClauseNode),
-                   body ?? BodyNode);
-
-        public override FunctionDeclarationNode WithParent(SyntaxNode newParent)
-            => new(FuncKeywordToken, NameToken, OpeningParenthesisToken, ParameterNodes,
-                   CommaTokens, ClosingParenthesisToken, ReturnTypeClauseNode, BodyNode, newParent);
 
         public override void WriteCode(TextWriter output)
         {

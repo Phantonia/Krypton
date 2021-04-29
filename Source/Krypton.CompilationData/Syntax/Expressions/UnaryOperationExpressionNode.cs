@@ -5,17 +5,15 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Expressions
 {
-    public sealed class UnaryOperationExpressionNode : ExpressionNode
+    public sealed record UnaryOperationExpressionNode : ExpressionNode
     {
         public UnaryOperationExpressionNode(OperatorToken @operator,
-                                            ExpressionNode operand,
-                                            SyntaxNode? parent = null)
-            : base(parent)
+                                            ExpressionNode operand)
         {
             Debug.Assert(@operator.IsUnary);
 
             OperatorToken = @operator;
-            OperandNode = operand.WithParent(this);
+            OperandNode = operand;
         }
 
         public override bool IsLeaf => false;
@@ -24,16 +22,8 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public OperatorToken OperatorToken { get; }
 
-        public override TypedExpressionNode<UnaryOperationExpressionNode> Type(TypeSymbol type)
+        public override TypedExpressionNode Type(TypeSymbol type)
             => new(this, type);
-
-        public UnaryOperationExpressionNode WithChildren(OperatorToken? @operator = null,
-                                                         ExpressionNode? operand = null)
-            => new(@operator ?? OperatorToken,
-                   operand ?? OperandNode);
-
-        public override UnaryOperationExpressionNode WithParent(SyntaxNode newParent)
-            => new(OperatorToken, OperandNode, newParent);
 
         public override void WriteCode(TextWriter output)
         {

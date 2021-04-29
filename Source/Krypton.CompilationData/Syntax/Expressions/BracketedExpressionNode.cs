@@ -5,35 +5,30 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Expressions
 {
-    public sealed class BracketedExpressionNode : ExpressionNode
+    public sealed record BracketedExpressionNode : ExpressionNode
     {
         public BracketedExpressionNode(SyntaxCharacterToken openingParenthesis,
                                        ExpressionNode expression,
-                                       SyntaxCharacterToken closingParenthesis,
-                                       SyntaxNode? parent = null)
-            : base(parent)
+                                       SyntaxCharacterToken closingParenthesis)
         {
             Debug.Assert(openingParenthesis.SyntaxCharacter == SyntaxCharacter.ParenthesisOpening);
             Debug.Assert(closingParenthesis.SyntaxCharacter == SyntaxCharacter.ParenthesisClosing);
 
             OpeningParenthesisToken = openingParenthesis;
-            ExpressionNode = expression.WithParent(this);
+            ExpressionNode = expression;
             ClosingParenthesisToken = closingParenthesis;
         }
 
-        public SyntaxCharacterToken ClosingParenthesisToken { get; }
+        public SyntaxCharacterToken ClosingParenthesisToken { get; init; }
 
-        public ExpressionNode ExpressionNode { get; }
+        public ExpressionNode ExpressionNode { get; init; }
 
         public override bool IsLeaf => false;
 
-        public SyntaxCharacterToken OpeningParenthesisToken { get; }
+        public SyntaxCharacterToken OpeningParenthesisToken { get; init; }
 
-        public override TypedExpressionNode<BracketedExpressionNode> Type(TypeSymbol type)
+        public override TypedExpressionNode Type(TypeSymbol type)
             => new(this, type);
-
-        public override BracketedExpressionNode WithParent(SyntaxNode newParent)
-            => new(OpeningParenthesisToken, ExpressionNode, ClosingParenthesisToken, newParent);
 
         public override void WriteCode(TextWriter output)
         {

@@ -2,26 +2,22 @@
 
 namespace Krypton.CompilationData.Syntax.Statements
 {
-    public sealed class BoundLoopControlStatementNode : StatementNode
+    public sealed record BoundLoopControlStatementNode : StatementNode
     {
         public BoundLoopControlStatementNode(LoopControlStatementNode loopControlStatement,
-                                             LoopStatementNode loop,
-                                             SyntaxNode? parent = null)
-            : base(parent)
+                                             LoopStatementNode loop)
         {
-            LoopControlStatementNode = loopControlStatement.WithParent(this);
-            LoopNode = loop; // not a child, only a reference. So DON'T WithParent it
+            LoopControlStatementNode = loopControlStatement;
+            LoopNode = loop;
         }
 
         public override bool IsLeaf => false;
 
-        public LoopControlStatementNode LoopControlStatementNode { get; }
+        public LoopControlStatementNode LoopControlStatementNode { get; init; }
 
-        public LoopStatementNode LoopNode { get; }
+        public LoopStatementNode LoopNode { get; init; }
 
-        public override BoundLoopControlStatementNode WithParent(SyntaxNode newParent)
-            => new(LoopControlStatementNode, LoopNode);
-
-        public override void WriteCode(TextWriter output) => LoopControlStatementNode.WriteCode(output);
+        public override void WriteCode(TextWriter output)
+            => LoopControlStatementNode.WriteCode(output);
     }
 }

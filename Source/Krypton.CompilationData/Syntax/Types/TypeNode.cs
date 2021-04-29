@@ -2,12 +2,10 @@
 
 namespace Krypton.CompilationData.Syntax.Types
 {
-    public abstract class TypeNode : SyntaxNode
+    public abstract record TypeNode : SyntaxNode
     {
-        private protected TypeNode(SyntaxNode? parent) : base(parent) { }
+        private protected TypeNode() { }
 
         public abstract BoundTypeNode Bind(TypeSymbol typeSymbol);
-
-        public abstract override TypeNode WithParent(SyntaxNode newParent);
     }
 }

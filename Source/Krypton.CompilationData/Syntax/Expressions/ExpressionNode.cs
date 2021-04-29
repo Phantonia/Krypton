@@ -3,9 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Krypton.CompilationData.Syntax.Expressions
 {
-    public abstract class ExpressionNode : SyntaxNode
+    public abstract record ExpressionNode : SyntaxNode
     {
-        private protected ExpressionNode(SyntaxNode? parent) : base(parent) { }
+        private protected ExpressionNode() { }
 
         public bool IsTyped => this is TypedExpressionNode;
 
@@ -14,7 +14,7 @@ namespace Krypton.CompilationData.Syntax.Expressions
             if (this is TypedExpressionNode typedExpression)
             {
                 type = typedExpression.TypeSymbol;
-                //return true;
+                return true;
             }
 
             type = null;
@@ -22,7 +22,5 @@ namespace Krypton.CompilationData.Syntax.Expressions
         }
 
         public abstract TypedExpressionNode Type(TypeSymbol type);
-
-        public abstract override ExpressionNode WithParent(SyntaxNode newParent);
     }
 }

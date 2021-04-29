@@ -4,27 +4,18 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Statements
 {
-    public sealed class ExpressionStatementNode : SingleStatementNode
+    public sealed record ExpressionStatementNode : SingleStatementNode
     {
         public ExpressionStatementNode(ExpressionNode expression,
-                                       SyntaxCharacterToken semicolon,
-                                       SyntaxNode? parent = null)
-            : base(semicolon, parent)
+                                       SyntaxCharacterToken semicolon)
+            : base(semicolon)
         {
-            ExpressionNode = expression.WithParent(this);
+            ExpressionNode = expression;
         }
 
-        public ExpressionNode ExpressionNode { get; }
+        public ExpressionNode ExpressionNode { get; init; }
 
         public override bool IsLeaf => false;
-
-        public ExpressionStatementNode WithChildren(ExpressionNode? expression = null,
-                                                    SyntaxCharacterToken? semicolon = null)
-            => new(expression ?? ExpressionNode,
-                   semicolon ?? SemicolonToken);
-
-        public override ExpressionStatementNode WithParent(SyntaxNode newParent)
-            => new(ExpressionNode, SemicolonToken, newParent);
 
         public override void WriteCode(TextWriter output)
         {

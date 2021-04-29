@@ -3,22 +3,18 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax
 {
-    public sealed class TopLevelStatementNode : TopLevelNode
+    public sealed record TopLevelStatementNode : TopLevelNode
     {
-        public TopLevelStatementNode(StatementNode statement,
-                                     SyntaxNode? parent = null)
-            : base(parent)
+        public TopLevelStatementNode(StatementNode statement)
         {
-            StatementNode = statement.WithParent(this);
+            StatementNode = statement;
         }
 
         public override bool IsLeaf => false;
 
-        public StatementNode StatementNode { get; }
+        public StatementNode StatementNode { get; init; }
 
-        public override TopLevelStatementNode WithParent(SyntaxNode newParent)
-            => new(StatementNode, newParent);
-
-        public override void WriteCode(TextWriter output) => StatementNode.WriteCode(output);
+        public override void WriteCode(TextWriter output)
+            => StatementNode.WriteCode(output);
     }
 }

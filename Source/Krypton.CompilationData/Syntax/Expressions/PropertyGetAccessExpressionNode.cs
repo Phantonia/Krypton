@@ -5,17 +5,15 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Expressions
 {
-    public sealed class PropertyGetAccessExpressionNode : ExpressionNode
+    public sealed record PropertyGetAccessExpressionNode : ExpressionNode
     {
         public PropertyGetAccessExpressionNode(ExpressionNode source,
                                                SyntaxCharacterToken dot,
-                                               IdentifierToken property,
-                                               SyntaxNode? parent = null)
-            : base(parent)
+                                               IdentifierToken property)
         {
             Debug.Assert(dot.SyntaxCharacter == SyntaxCharacter.Dot);
 
-            SourceNode = source.WithParent(this);
+            SourceNode = source;
             DotToken = dot;
             PropertyToken = property;
         }
@@ -28,11 +26,8 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public ExpressionNode SourceNode { get; }
 
-        public override TypedExpressionNode<PropertyGetAccessExpressionNode> Type(TypeSymbol type)
+        public override TypedExpressionNode Type(TypeSymbol type)
             => new(this, type);
-
-        public override PropertyGetAccessExpressionNode WithParent(SyntaxNode newParent)
-            => new(SourceNode, DotToken, PropertyToken, newParent);
 
         public override void WriteCode(TextWriter output)
         {

@@ -3,19 +3,15 @@ using System.Diagnostics;
 
 namespace Krypton.CompilationData.Syntax.Statements
 {
-    public abstract class SingleStatementNode : StatementNode
+    public abstract record SingleStatementNode : StatementNode
     {
-        private protected SingleStatementNode(SyntaxCharacterToken semicolon,
-                                              SyntaxNode? parent)
-            : base(parent)
+        private protected SingleStatementNode(SyntaxCharacterToken semicolon)
         {
             SemicolonToken = semicolon;
 
             Debug.Assert(SemicolonToken.SyntaxCharacter == SyntaxCharacter.Semicolon);
         }
 
-        public SyntaxCharacterToken SemicolonToken { get; }
-
-        public abstract override SingleStatementNode WithParent(SyntaxNode newParent);
+        public SyntaxCharacterToken SemicolonToken { get; init; }
     }
 }

@@ -1,9 +1,7 @@
 ﻿namespace Krypton.CompilationData.Syntax.Statements
 {
-    public abstract class StatementNode : SyntaxNode
+    public abstract record StatementNode : SyntaxNode
     {
-        private protected StatementNode(SyntaxNode? parent) : base(parent) { }
-
-        public abstract override StatementNode WithParent(SyntaxNode newParent);
+        private protected StatementNode() { }
     }
 }

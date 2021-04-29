@@ -5,41 +5,29 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Expressions
 {
-    public sealed class BinaryOperationExpressionNode : ExpressionNode
+    public sealed record BinaryOperationExpressionNode : ExpressionNode
     {
         public BinaryOperationExpressionNode(ExpressionNode leftOperand,
                                              OperatorToken @operator,
-                                             ExpressionNode rightOperand,
-                                             SyntaxNode? parent = null)
-            : base(parent)
+                                             ExpressionNode rightOperand)
         {
             Debug.Assert(@operator.IsBinary);
 
-            LeftOperandNode = leftOperand.WithParent(this);
+            LeftOperandNode = leftOperand;
             OperatorToken = @operator;
-            RightOperandNode = rightOperand.WithParent(this);
+            RightOperandNode = rightOperand;
         }
 
         public override bool IsLeaf => false;
 
-        public ExpressionNode LeftOperandNode { get; }
+        public ExpressionNode LeftOperandNode { get; init; }
 
-        public OperatorToken OperatorToken { get; }
+        public OperatorToken OperatorToken { get; init; }
 
-        public ExpressionNode RightOperandNode { get; }
+        public ExpressionNode RightOperandNode { get; init; }
 
-        public override TypedExpressionNode<BinaryOperationExpressionNode> Type(TypeSymbol type)
+        public override TypedExpressionNode Type(TypeSymbol type)
             => new(this, type);
-
-        public BinaryOperationExpressionNode WithChildren(ExpressionNode? leftOperand = null,
-                                                          OperatorToken? @operator = null,
-                                                          ExpressionNode? rightOperand = null)
-            => new(leftOperand ?? LeftOperandNode,
-                   @operator ?? OperatorToken,
-                   rightOperand ?? RightOperandNode);
-
-        public override BinaryOperationExpressionNode WithParent(SyntaxNode newParent)
-            => new(LeftOperandNode, OperatorToken, RightOperandNode, newParent);
 
         public override void WriteCode(TextWriter output)
         {

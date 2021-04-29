@@ -1,69 +1,46 @@
 ﻿using Krypton.CompilationData.Symbols;
 using Krypton.CompilationData.Syntax.Tokens;
-using Krypton.Utilities;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
 namespace Krypton.CompilationData.Syntax.Expressions
 {
-    public sealed class InvocationExpressionNode : ExpressionNode
+    public sealed record InvocationExpressionNode : ExpressionNode
     {
         public InvocationExpressionNode(ExpressionNode invokee,
                                         SyntaxCharacterToken openingParenthesis,
                                         IEnumerable<ExpressionNode>? arguments,
                                         IEnumerable<SyntaxCharacterToken>? commas,
-                                        SyntaxCharacterToken closingParenthesis,
-                                        SyntaxNode? parent = null)
-            : base(parent)
+                                        SyntaxCharacterToken closingParenthesis)
         {
             InvokeeNode = invokee;
             OpeningParenthesisToken = openingParenthesis;
-            ArgumentNodes = arguments?.Select(n => n.WithParent(this)).Finalize() ?? default;
-            CommaTokens = commas.Finalize();
+            ArgumentNodes = arguments?.ToImmutableList() ?? ImmutableList<ExpressionNode>.Empty;
+            CommaTokens = commas?.ToImmutableList() ?? ImmutableList<SyntaxCharacterToken>.Empty;
             ClosingParenthesisToken = closingParenthesis;
 
             Debug.Assert(CommaTokens.Count == ArgumentNodes.Count - 1);
         }
 
-        public FinalList<ExpressionNode> ArgumentNodes { get; }
+        public ImmutableList<ExpressionNode> ArgumentNodes { get; init; }
 
-        public SyntaxCharacterToken ClosingParenthesisToken { get; }
+        public SyntaxCharacterToken ClosingParenthesisToken { get; init; }
 
-        public FinalList<SyntaxCharacterToken> CommaTokens { get; }
+        public ImmutableList<SyntaxCharacterToken> CommaTokens { get; init; }
 
-        public ExpressionNode InvokeeNode { get; }
+        public ExpressionNode InvokeeNode { get; init; }
 
         public override bool IsLeaf => false;
 
-        public SyntaxCharacterToken OpeningParenthesisToken { get; }
+        public SyntaxCharacterToken OpeningParenthesisToken { get; init; }
 
         protected override string GetDebuggerDisplay() => $"{base.GetDebuggerDisplay()}; Number of arguments: {ArgumentNodes.Count}";
 
-        public override TypedExpressionNode<InvocationExpressionNode> Type(TypeSymbol type)
+        public override TypedExpressionNode Type(TypeSymbol type)
             => new(this, type);
-
-        public InvocationExpressionNode WithChildren(ExpressionNode? invokee = null,
-                                                     SyntaxCharacterToken? openingParenthesis = null,
-                                                     IEnumerable<ExpressionNode>? arguments = null,
-                                                     IndexWither<ExpressionNode>[]? argumentWithers = null,
-                                                     IEnumerable<SyntaxCharacterToken>? commas = null,
-                                                     IndexWither<SyntaxCharacterToken>[]? commaWithers = null,
-                                                     SyntaxCharacterToken? closingParenthesis = null)
-            => new(invokee ?? InvokeeNode,
-                   openingParenthesis ?? OpeningParenthesisToken,
-                   arguments ?? ArgumentNodes.With(argumentWithers),
-                   commas ?? CommaTokens.With(commaWithers),
-                   closingParenthesis ?? ClosingParenthesisToken);
-
-        public override InvocationExpressionNode WithParent(SyntaxNode newParent)
-            => new(InvokeeNode,
-                   OpeningParenthesisToken,
-                   ArgumentNodes,
-                   CommaTokens,
-                   ClosingParenthesisToken,
-                   newParent);
 
         public override void WriteCode(TextWriter output)
         {

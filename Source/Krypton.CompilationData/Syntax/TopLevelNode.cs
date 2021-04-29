@@ -1,10 +1,7 @@
 ﻿namespace Krypton.CompilationData.Syntax
 {
-    public abstract class TopLevelNode : SyntaxNode
+    public abstract record TopLevelNode : SyntaxNode
     {
-        private protected TopLevelNode(SyntaxNode? parent)
-            : base(parent) { }
-
-        public abstract override TopLevelNode WithParent(SyntaxNode newParent);
+        private protected TopLevelNode() { }
     }
 }

@@ -1,31 +1,28 @@
 ﻿using Krypton.CompilationData.Symbols;
 using Krypton.CompilationData.Syntax.Tokens;
+using System;
 using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Types
 {
-    public sealed class IdentifierTypeNode : TypeNode
+    public sealed record IdentifierTypeNode : TypeNode
     {
-        public IdentifierTypeNode(IdentifierToken identifier,
-                                  SyntaxNode? parent = null)
-            : base(parent)
+        public IdentifierTypeNode(IdentifierToken identifier)
         {
             IdentifierToken = identifier;
         }
 
-        public string Identifier => IdentifierToken.Text;
+        public ReadOnlyMemory<char> Identifier => IdentifierToken.Text;
 
-        public IdentifierToken IdentifierToken { get; }
+        public IdentifierToken IdentifierToken { get; init; }
 
         public override bool IsLeaf => true;
 
-        public override BoundTypeNode<IdentifierTypeNode> Bind(TypeSymbol typeSymbol)
+        public override BoundTypeNode Bind(TypeSymbol typeSymbol)
             => new(this, typeSymbol);
 
-        protected override string GetDebuggerDisplay() => $"{base.GetDebuggerDisplay()}; Identifier = {Identifier}";
-
-        public override IdentifierTypeNode WithParent(SyntaxNode newParent)
-            => new(IdentifierToken, newParent);
+        protected override string GetDebuggerDisplay()
+            => $"{base.GetDebuggerDisplay()}; Identifier = {Identifier}";
 
         public override void WriteCode(TextWriter output)
         {

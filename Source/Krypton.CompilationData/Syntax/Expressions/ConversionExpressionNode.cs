@@ -6,41 +6,29 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Expressions
 {
-    public sealed class ConversionExpressionNode : ExpressionNode
+    public sealed record ConversionExpressionNode : ExpressionNode
     {
         public ConversionExpressionNode(ExpressionNode operand,
                                         ReservedKeywordToken operatorKeyword,
-                                        TypeNode type,
-                                        SyntaxNode? parent = null)
-            : base(parent)
+                                        TypeNode type)
         {
             Debug.Assert(operatorKeyword.Keyword is ReservedKeyword.As or ReservedKeyword.To);
 
-            OperandNode = operand.WithParent(this);
+            OperandNode = operand;
             OperatorKeywordToken = operatorKeyword;
             TypeNode = type.WithParent(this);
         }
 
         public override bool IsLeaf => false;
 
-        public ExpressionNode OperandNode { get; }
+        public ExpressionNode OperandNode { get; init; }
 
-        public ReservedKeywordToken OperatorKeywordToken { get; }
+        public ReservedKeywordToken OperatorKeywordToken { get; init; }
 
-        public TypeNode TypeNode { get; }
+        public TypeNode TypeNode { get; init; }
 
-        public override TypedExpressionNode<ConversionExpressionNode> Type(TypeSymbol type)
+        public override TypedExpressionNode Type(TypeSymbol type)
             => new(this, type);
-
-        public ConversionExpressionNode WithChildren(ExpressionNode? operand = null,
-                                                     ReservedKeywordToken? operatorKeyword = null,
-                                                     TypeNode? type = null)
-            => new(operand ?? OperandNode,
-                   operatorKeyword ?? OperatorKeywordToken,
-                   type ?? TypeNode);
-
-        public override ConversionExpressionNode WithParent(SyntaxNode newParent)
-            => new(OperandNode, OperatorKeywordToken, TypeNode, newParent);
 
         public override void WriteCode(TextWriter output)
         {

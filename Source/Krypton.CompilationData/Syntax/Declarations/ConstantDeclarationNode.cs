@@ -7,59 +7,41 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Declarations
 {
-    public sealed class ConstantDeclarationNode : NamedDeclarationNode
+    public sealed record ConstantDeclarationNode : NamedDeclarationNode
     {
         public ConstantDeclarationNode(ReservedKeywordToken constKeyword,
                                        IdentifierToken name,
                                        AsClauseNode? asClause,
                                        SyntaxCharacterToken equals,
                                        ExpressionNode value,
-                                       SyntaxCharacterToken semicolon,
-                                       SyntaxNode? parent = null)
-            : base(name, parent)
+                                       SyntaxCharacterToken semicolon)
+            : base(name)
         {
             Debug.Assert(constKeyword.Keyword == ReservedKeyword.Const);
             Debug.Assert(equals.SyntaxCharacter == SyntaxCharacter.Equals);
             Debug.Assert(semicolon.SyntaxCharacter == SyntaxCharacter.Semicolon);
 
             ConstKeywordToken = constKeyword;
-            AsClauseNode = asClause?.WithParent(this);
+            AsClauseNode = asClause;
             EqualsToken = equals;
-            ValueNode = value.WithParent(this);
+            ValueNode = value;
             SemicolonToken = semicolon;
         }
 
-        public AsClauseNode? AsClauseNode { get; }
+        public AsClauseNode? AsClauseNode { get; init; }
 
-        public ReservedKeywordToken ConstKeywordToken { get; }
+        public ReservedKeywordToken ConstKeywordToken { get; init; }
 
-        public SyntaxCharacterToken EqualsToken { get; }
+        public SyntaxCharacterToken EqualsToken { get; init; }
 
         public override bool IsLeaf => false;
 
-        public SyntaxCharacterToken SemicolonToken { get; }
+        public SyntaxCharacterToken SemicolonToken { get; init; }
 
-        public ExpressionNode ValueNode { get; }
+        public ExpressionNode ValueNode { get; init; }
 
-        public override BoundDeclarationNode<ConstantDeclarationNode> Bind(Symbol symbol)
+        public override BoundDeclarationNode Bind(Symbol symbol)
             => new(this, symbol);
-
-        public ConstantDeclarationNode WithChildren(ReservedKeywordToken? constKeyword = null,
-                                                    IdentifierToken? name = null,
-                                                    AsClauseNode? asClause = null,
-                                                    bool overwriteAsClause = false,
-                                                    SyntaxCharacterToken? equals = null,
-                                                    ExpressionNode? value = null,
-                                                    SyntaxCharacterToken? semicolon = null)
-            => new(constKeyword ?? ConstKeywordToken,
-                   name ?? NameToken,
-                   asClause ?? (overwriteAsClause ? null : AsClauseNode),
-                   equals ?? EqualsToken,
-                   value ?? ValueNode,
-                   semicolon ?? SemicolonToken);
-
-        public override ConstantDeclarationNode WithParent(SyntaxNode newParent)
-            => new(ConstKeywordToken, NameToken, AsClauseNode, EqualsToken, ValueNode, SemicolonToken, newParent);
 
         public override void WriteCode(TextWriter output)
         {

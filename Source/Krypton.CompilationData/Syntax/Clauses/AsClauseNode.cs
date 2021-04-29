@@ -5,32 +5,22 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Clauses
 {
-    public sealed class AsClauseNode : ClauseNode
+    public sealed record AsClauseNode : ClauseNode
     {
         public AsClauseNode(ReservedKeywordToken asKeyword,
-                            TypeNode type,
-                            SyntaxNode? parent = null)
-            : base(parent)
+                            TypeNode type)
         {
             Debug.Assert(asKeyword.Keyword == ReservedKeyword.As);
 
             AsKeywordToken = asKeyword;
-            TypeNode = type.WithParent(this);
+            TypeNode = type;
         }
 
-        public ReservedKeywordToken AsKeywordToken { get; }
+        public ReservedKeywordToken AsKeywordToken { get; init; }
 
         public override bool IsLeaf => false;
 
-        public TypeNode TypeNode { get; }
-
-        public AsClauseNode WithChildren(ReservedKeywordToken? asKeyword = null,
-                                         TypeNode? type = null)
-            => new(asKeyword ?? AsKeywordToken,
-                   type ?? TypeNode);
-
-        public override AsClauseNode WithParent(SyntaxNode newParent)
-            => new(AsKeywordToken, TypeNode, newParent);
+        public TypeNode TypeNode { get; init; }
 
         public override void WriteCode(TextWriter output)
         {

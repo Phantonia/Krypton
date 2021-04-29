@@ -4,11 +4,9 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Expressions
 {
-    public sealed class LiteralExpressionNode<TLiteral> : ExpressionNode
+    public sealed record LiteralExpressionNode<TLiteral> : ExpressionNode
     {
-        public LiteralExpressionNode(LiteralToken<TLiteral> literalToken,
-                                     SyntaxNode? parent = null)
-            : base(parent)
+        public LiteralExpressionNode(LiteralToken<TLiteral> literalToken)
         {
             LiteralHelper.AssertTypeIsLiteralType<TLiteral>();
             LiteralToken = literalToken;
@@ -16,15 +14,12 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public override bool IsLeaf => true;
 
-        public LiteralToken<TLiteral> LiteralToken { get; }
+        public LiteralToken<TLiteral> LiteralToken { get; init; }
 
         protected override string GetDebuggerDisplay() => $"{base.GetDebuggerDisplay()}; Value = {LiteralToken.Value}";
 
-        public override TypedExpressionNode<LiteralExpressionNode<TLiteral>> Type(TypeSymbol type)
+        public override TypedExpressionNode Type(TypeSymbol type)
             => new(this, type);
-
-        public override LiteralExpressionNode<TLiteral> WithParent(SyntaxNode newParent)
-            => new(LiteralToken, newParent);
 
         public override void WriteCode(TextWriter output)
         {

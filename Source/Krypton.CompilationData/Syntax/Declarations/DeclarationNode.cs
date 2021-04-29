@@ -3,9 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Krypton.CompilationData.Syntax.Declarations
 {
-    public abstract class DeclarationNode : SyntaxNode
+    public abstract record DeclarationNode : SyntaxNode
     {
-        private protected DeclarationNode(SyntaxNode? parent) : base(parent) { }
+        private protected DeclarationNode() { }
 
         public bool IsBound => this is BoundDeclarationNode;
 
@@ -22,7 +22,5 @@ namespace Krypton.CompilationData.Syntax.Declarations
             symbol = null;
             return false;
         }
-
-        public abstract override DeclarationNode WithParent(SyntaxNode newParent);
     }
 }

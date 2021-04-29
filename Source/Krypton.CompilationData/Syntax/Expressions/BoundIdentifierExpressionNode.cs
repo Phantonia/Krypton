@@ -3,27 +3,23 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Expressions
 {
-    public sealed class BoundIdentifierExpressionNode : ExpressionNode
+    public sealed record BoundIdentifierExpressionNode : ExpressionNode
     {
         public BoundIdentifierExpressionNode(IdentifierExpressionNode identifierExpression,
-                                             Symbol symbol,
-                                             SyntaxNode? parent = null) : base(parent)
+                                             Symbol symbol)
         {
             Symbol = symbol;
-            IdentifierExpressionNode = identifierExpression.WithParent(this);
+            IdentifierExpressionNode = identifierExpression;
         }
 
-        public IdentifierExpressionNode IdentifierExpressionNode { get; }
+        public IdentifierExpressionNode IdentifierExpressionNode { get; init; }
 
         public override bool IsLeaf => false;
 
-        public Symbol Symbol { get; }
+        public Symbol Symbol { get; init; }
 
-        public override TypedExpressionNode<BoundIdentifierExpressionNode> Type(TypeSymbol type)
+        public override TypedExpressionNode Type(TypeSymbol type)
             => new(this, type);
-
-        public override BoundIdentifierExpressionNode WithParent(SyntaxNode newParent)
-            => new(IdentifierExpressionNode, Symbol, newParent);
 
         public override void WriteCode(TextWriter output) => IdentifierExpressionNode.WriteCode(output);
     }

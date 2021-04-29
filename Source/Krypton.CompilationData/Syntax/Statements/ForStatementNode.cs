@@ -10,7 +10,7 @@ namespace Krypton.CompilationData.Syntax.Statements
     [0] [1] [2] [ 3  ]  [4] [5] [ 6 ] [ 7  ] [8 ] [9] [10] [11 ]
     For Var  i  As Int   =   0  While i < 10 With  i   =   i + 2
      */
-    public sealed class ForStatementNode : LoopStatementNode
+    public sealed record ForStatementNode : LoopStatementNode
     {
         public ForStatementNode(ReservedKeywordToken forKeyword,
                                 ReservedKeywordToken? varKeyword,
@@ -24,9 +24,8 @@ namespace Krypton.CompilationData.Syntax.Statements
                                 IdentifierToken? iterationVariableWithIdentifier,
                                 SyntaxCharacterToken? withEquals,
                                 ExpressionNode? withNewValue,
-                                BodyNode body,
-                                SyntaxNode? parent = null)
-            : base(body, parent)
+                                BodyNode body)
+            : base(body)
         {
             // Assert that all keywords and syntax chars are correct
             Debug.Assert(forKeyword.Keyword == ReservedKeyword.For);
@@ -48,86 +47,42 @@ namespace Krypton.CompilationData.Syntax.Statements
             ForKeywordToken = forKeyword;
             VarKeywordToken = varKeyword;
             IterationVariableDeclarationIdentifierToken = iterationVariableDeclarationIdentifier;
-            IterationVariableAsClauseNode = iterationVariableAsClause?.WithParent(this);
+            IterationVariableAsClauseNode = iterationVariableAsClause;
             AssignmentEqualsToken = assignmentEquals;
-            InitialValueNode = initialValue?.WithParent(this);
+            InitialValueNode = initialValue;
             WhileKeywordToken = whileKeyword;
-            ConditionNode = condition?.WithParent(this);
+            ConditionNode = condition;
             WithKeywordToken = withKeyword;
             IterationVariableWithIdentifierToken = iterationVariableWithIdentifier;
             WithEqualsToken = withEquals;
-            WithNewValueNode = withNewValue?.WithParent(this);
+            WithNewValueNode = withNewValue;
         }
 
-        public SyntaxCharacterToken? AssignmentEqualsToken { get; } // [4]
+        public ReservedKeywordToken ForKeywordToken { get; init; } // [0]
 
-        public ExpressionNode? ConditionNode { get; } // [7]
+        public ReservedKeywordToken? VarKeywordToken { get; init; } // [1]
 
-        public ReservedKeywordToken ForKeywordToken { get; } // [0]
+        public IdentifierToken IterationVariableDeclarationIdentifierToken { get; init; } // [2]
 
-        public ExpressionNode? InitialValueNode { get; } // [5]
+        public AsClauseNode? IterationVariableAsClauseNode { get; init; } // [3]
+
+        public SyntaxCharacterToken? AssignmentEqualsToken { get; init; } // [4]
+
+        public ExpressionNode? InitialValueNode { get; init; } // [5]
+
+        public ReservedKeywordToken? WhileKeywordToken { get; init; } // [6]
+
+        public ExpressionNode? ConditionNode { get; init; } // [7]
+
+        public ReservedKeywordToken? WithKeywordToken { get; init; } // [8]
+
+        public IdentifierToken? IterationVariableWithIdentifierToken { get; init; } // [9]
+
+        public SyntaxCharacterToken? WithEqualsToken { get; init; } // [10]
+
+        public ExpressionNode? WithNewValueNode { get; init; } // [11]
 
         public override bool IsLeaf => false;
-
-        public AsClauseNode? IterationVariableAsClauseNode { get; } // [3]
-
-        public IdentifierToken IterationVariableDeclarationIdentifierToken { get; } // [2]
-
-        public IdentifierToken? IterationVariableWithIdentifierToken { get; } // [9]
-
-        public ReservedKeywordToken? VarKeywordToken { get; } // [1]
-
-        public ReservedKeywordToken? WhileKeywordToken { get; } // [6]
-
-        public SyntaxCharacterToken? WithEqualsToken { get; } // [10]
-
-        public ReservedKeywordToken? WithKeywordToken { get; } // [8]
-
-        public ExpressionNode? WithNewValueNode { get; } // [11]
-
-        // Heavenly god...
-        public ForStatementNode WithChildren(ReservedKeywordToken? forKeyword = null,
-                                             ReservedKeywordToken? varKeyword = null,
-                                             bool overwriteVarKeyword = false,
-                                             IdentifierToken? iterationVariableDeclarationIdentifier = null,
-                                             AsClauseNode? iterationVariableAsClause = null,
-                                             bool overwriteIterationVariableAsClauseNode = false,
-                                             SyntaxCharacterToken? assignmentEquals = null,
-                                             bool overwriteAssignmentEquals = false,
-                                             ExpressionNode? initialValue = null,
-                                             bool overwriteInitialValue = false,
-                                             ReservedKeywordToken? whileKeyword = null,
-                                             bool overwriteWhileKeyword = false,
-                                             ExpressionNode? condition = null,
-                                             bool overwriteCondition = false,
-                                             ReservedKeywordToken? withKeyword = null,
-                                             bool overwriteWithKeyword = false,
-                                             IdentifierToken? iterationVariableWithIdentifier = null,
-                                             bool overwriteIterationVariableWithIdentifier = false,
-                                             SyntaxCharacterToken? withEquals = null,
-                                             bool overwriteWithEquals = false,
-                                             ExpressionNode? withNewValue = null,
-                                             bool overwriteWithNewValue = false,
-                                             BodyNode? body = null)
-            => new ForStatementNode(forKeyword ?? ForKeywordToken,
-                                    varKeyword ?? (overwriteVarKeyword ? null : VarKeywordToken),
-                                    iterationVariableDeclarationIdentifier ?? IterationVariableDeclarationIdentifierToken,
-                                    iterationVariableAsClause ?? (overwriteIterationVariableAsClauseNode ? null : IterationVariableAsClauseNode),
-                                    assignmentEquals ?? (overwriteAssignmentEquals ? null : AssignmentEqualsToken),
-                                    initialValue ?? (overwriteInitialValue ? null : InitialValueNode),
-                                    whileKeyword ?? (overwriteWhileKeyword ? null : WhileKeywordToken),
-                                    condition ?? (overwriteCondition ? null : ConditionNode),
-                                    withKeyword ?? (overwriteWithKeyword ? null : WithKeywordToken),
-                                    iterationVariableWithIdentifier ?? (overwriteIterationVariableWithIdentifier ? null : IterationVariableWithIdentifierToken),
-                                    withEquals ?? (overwriteWithEquals ? null : WithEqualsToken),
-                                    withNewValue ?? (overwriteWithNewValue ? null : WithNewValueNode),
-                                    body ?? BodyNode);
-
-        public override ForStatementNode WithParent(SyntaxNode newParent)
-            => new(ForKeywordToken, VarKeywordToken, IterationVariableDeclarationIdentifierToken,
-                   IterationVariableAsClauseNode, AssignmentEqualsToken, InitialValueNode,
-                   WhileKeywordToken, ConditionNode, WithKeywordToken, IterationVariableWithIdentifierToken,
-                   WithEqualsToken, WithNewValueNode, BodyNode, newParent);
 
         public override void WriteCode(TextWriter output)
         {

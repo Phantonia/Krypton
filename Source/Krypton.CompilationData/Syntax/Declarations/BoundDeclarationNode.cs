@@ -3,43 +3,24 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Declarations
 {
-    public abstract class BoundDeclarationNode : DeclarationNode
+    public sealed record BoundDeclarationNode : DeclarationNode
     {
-        private protected BoundDeclarationNode(Symbol symbol,
-                                               SyntaxNode? parent)
-            : base(parent)
+        public BoundDeclarationNode(DeclarationNode declaration, Symbol symbol)
         {
+            DeclarationNode = declaration;
             Symbol = symbol;
         }
 
-        public abstract DeclarationNode DeclarationNode { get; }
-
-        public Symbol Symbol { get; }
-
-        public abstract override BoundDeclarationNode WithParent(SyntaxNode newParent);
-    }
-
-    public sealed class BoundDeclarationNode<TDeclaration> : BoundDeclarationNode
-        where TDeclaration : DeclarationNode
-    {
-        public BoundDeclarationNode(TDeclaration declaration,
-                                    Symbol symbol,
-                                    SyntaxNode? parent = null)
-            : base(symbol, parent)
-        {
-            DeclarationNode = (TDeclaration)declaration.WithParent(this);
-        }
-
-        public override TDeclaration DeclarationNode { get; }
+        public DeclarationNode DeclarationNode { get; init; }
 
         public override bool IsLeaf => false;
 
-        public override BoundDeclarationNode<TDeclaration> Bind(Symbol symbol)
-            => symbol == Symbol ? this : new(DeclarationNode, symbol);
+        public Symbol Symbol { get; init; }
 
-        public override BoundDeclarationNode<TDeclaration> WithParent(SyntaxNode newParent)
-            => new(DeclarationNode, Symbol, newParent);
+        public override BoundDeclarationNode Bind(Symbol symbol)
+            => symbol == Symbol ? this : new BoundDeclarationNode(DeclarationNode, symbol);
 
-        public override void WriteCode(TextWriter output) => DeclarationNode.WriteCode(output);
+        public override void WriteCode(TextWriter output)
+            => DeclarationNode.WriteCode(output);
     }
 }

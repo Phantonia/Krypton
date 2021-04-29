@@ -4,32 +4,22 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Statements
 {
-    public sealed class ElsePartNode : SyntaxNode
+    public sealed record ElsePartNode : SyntaxNode
     {
         public ElsePartNode(ReservedKeywordToken elseKeyword,
-                            BodyNode body,
-                            SyntaxNode? parent = null)
-            : base(parent)
+                            BodyNode body)
         {
             ElseKeywordToken = elseKeyword;
-            BodyNode = body.WithParent(this);
+            BodyNode = body;
 
             Debug.Assert(ElseKeywordToken.Keyword == ReservedKeyword.Else);
         }
 
-        public BodyNode BodyNode { get; }
+        public BodyNode BodyNode { get; init; }
 
-        public ReservedKeywordToken ElseKeywordToken { get; }
+        public ReservedKeywordToken ElseKeywordToken { get; init; }
 
         public override bool IsLeaf => false;
-
-        public ElsePartNode WithChildren(ReservedKeywordToken? elseKeyword = null,
-                                         BodyNode? body = null)
-            => new(elseKeyword ?? ElseKeywordToken,
-                   body ?? BodyNode);
-
-        public override ElsePartNode WithParent(SyntaxNode newParent)
-            => new(ElseKeywordToken, BodyNode, newParent);
 
         public override void WriteCode(TextWriter output)
         {
