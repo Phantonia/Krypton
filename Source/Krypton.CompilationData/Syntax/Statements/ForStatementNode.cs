@@ -1,5 +1,4 @@
-﻿using Krypton.CompilationData.Syntax.Clauses;
-using Krypton.CompilationData.Syntax.Expressions;
+﻿using Krypton.CompilationData.Syntax.Expressions;
 using Krypton.CompilationData.Syntax.Tokens;
 using System.Diagnostics;
 using System.IO;
@@ -7,15 +6,14 @@ using System.IO;
 namespace Krypton.CompilationData.Syntax.Statements
 {
     /* This is the full form of the For statement fml
-    [0] [1] [2] [ 3  ]  [4] [5] [ 6 ] [ 7  ] [8 ] [9] [10] [11 ]
-    For Var  i  As Int   =   0  While i < 10 With  i   =   i + 2
+    [0] [1] [2] [3] [4] [ 5 ] [ 6  ] [7 ] [8] [9] [10 ]
+    For Var  i   =   0  While i < 10 With  i   =  i + 2
      */
     public sealed record ForStatementNode : LoopStatementNode
     {
         public ForStatementNode(ReservedKeywordToken forKeyword,
                                 ReservedKeywordToken? varKeyword,
                                 IdentifierToken iterationVariableDeclarationIdentifier,
-                                AsClauseNode? iterationVariableAsClause,
                                 SyntaxCharacterToken? assignmentEquals,
                                 ExpressionNode? initialValue,
                                 ReservedKeywordToken? whileKeyword,
@@ -47,7 +45,6 @@ namespace Krypton.CompilationData.Syntax.Statements
             ForKeywordToken = forKeyword;
             VarKeywordToken = varKeyword;
             IterationVariableDeclarationIdentifierToken = iterationVariableDeclarationIdentifier;
-            IterationVariableAsClauseNode = iterationVariableAsClause;
             AssignmentEqualsToken = assignmentEquals;
             InitialValueNode = initialValue;
             WhileKeywordToken = whileKeyword;
@@ -64,23 +61,21 @@ namespace Krypton.CompilationData.Syntax.Statements
 
         public IdentifierToken IterationVariableDeclarationIdentifierToken { get; init; } // [2]
 
-        public AsClauseNode? IterationVariableAsClauseNode { get; init; } // [3]
+        public SyntaxCharacterToken? AssignmentEqualsToken { get; init; } // [3]
 
-        public SyntaxCharacterToken? AssignmentEqualsToken { get; init; } // [4]
+        public ExpressionNode? InitialValueNode { get; init; } // [4]
 
-        public ExpressionNode? InitialValueNode { get; init; } // [5]
+        public ReservedKeywordToken? WhileKeywordToken { get; init; } // [5]
 
-        public ReservedKeywordToken? WhileKeywordToken { get; init; } // [6]
+        public ExpressionNode? ConditionNode { get; init; } // [6]
 
-        public ExpressionNode? ConditionNode { get; init; } // [7]
+        public ReservedKeywordToken? WithKeywordToken { get; init; } // [7]
 
-        public ReservedKeywordToken? WithKeywordToken { get; init; } // [8]
+        public IdentifierToken? IterationVariableWithIdentifierToken { get; init; } // [8]
 
-        public IdentifierToken? IterationVariableWithIdentifierToken { get; init; } // [9]
+        public SyntaxCharacterToken? WithEqualsToken { get; init; } // [9]
 
-        public SyntaxCharacterToken? WithEqualsToken { get; init; } // [10]
-
-        public ExpressionNode? WithNewValueNode { get; init; } // [11]
+        public ExpressionNode? WithNewValueNode { get; init; } // [10]
 
         public override bool IsLeaf => false;
 
@@ -89,7 +84,6 @@ namespace Krypton.CompilationData.Syntax.Statements
             ForKeywordToken.WriteCode(output);
             VarKeywordToken?.WriteCode(output);
             IterationVariableDeclarationIdentifierToken.WriteCode(output);
-            IterationVariableAsClauseNode?.WriteCode(output);
             AssignmentEqualsToken?.WriteCode(output);
             InitialValueNode?.WriteCode(output);
             WhileKeywordToken?.WriteCode(output);

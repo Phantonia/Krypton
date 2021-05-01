@@ -1,17 +1,17 @@
-﻿using Krypton.Analysis.Ast.Expressions;
-using Krypton.Analysis.Ast.Identifiers;
-using Krypton.Analysis.Ast.Statements;
-using Krypton.Analysis.Ast.TypeSpecs;
-using Krypton.Analysis.Errors;
-using Krypton.Analysis.Lexical.Lexemes;
-using Krypton.Analysis.Lexical.Lexemes.WithValue;
-using Krypton.Utilities;
+﻿using Krypton.CompilationData;
+using Krypton.CompilationData.Syntax.Clauses;
+using Krypton.CompilationData.Syntax.Expressions;
+using Krypton.CompilationData.Syntax.Statements;
+using Krypton.CompilationData.Syntax.Tokens;
+using Krypton.CompilationData.Syntax.Types;
+using System;
+using System.Diagnostics;
 
 namespace Krypton.Analysis.Syntactical
 {
     partial class StatementParser
     {
-        private StatementNode? ParseExpressionStatement(ref int index)
+        private ExpressionStatementNode? ParseExpressionStatement(ref int index)
         {
             ExpressionNode? expression = expressionParser.ParseNextExpression(ref index);
 
@@ -22,71 +22,71 @@ namespace Krypton.Analysis.Syntactical
 
             return expression switch
             {
-                FunctionCallExpressionNode functionCall => ParseFunctionCallStatement(functionCall, ref index),
+                InvocationExpressionNode invocation => ParseFunctionCallStatement(invocation, ref index),
                 IdentifierExpressionNode identifierExpression => ParseVariableAssignmentStatement(ref index, identifierExpression.IdentifierNode, expression),
                 _ => Error(),
             };
 
             StatementNode? Error()
             {
-                ErrorProvider.ReportError(ErrorCode.OnlyFunctionCallExpressionCanBeStatement, code, expression);
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.OnlyFunctionCallExpressionCanBeStatement, code, expression);
+                //return null;
             }
         }
 
-        private FunctionCallStatementNode? ParseFunctionCallStatement(FunctionCallExpressionNode expression, ref int index)
+        private ExpressionStatementNode? ParseFunctionCallStatement(InvocationExpressionNode expression, ref int index)
         {
-            if (tokens[index] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
+            if (tokens[index] is SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.Semicolon } semicolon)
             {
                 index++;
-                return new FunctionCallStatementNode(expression, expression.LineNumber, expression.Index);
+                return new ExpressionStatementNode(expression, semicolon);
             }
             else
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, tokens[index]);
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, tokens[index]);
+                //return null;
             }
         }
 
-        private LoopControlStatementNode? ParseLoopControlStatement(ref int index, LoopControlStatementKind kind)
+        private LoopControlStatementNode? ParseLoopControlStatement(ref int index, ReservedKeywordToken leaveOrContinue)
         {
-            int lineNumber = tokens[index].LineNumber;
-            int nodeIndex = tokens[index].Index;
+            Debug.Assert(leaveOrContinue.Keyword is ReservedKeyword.Leave or ReservedKeyword.Continue);
 
             index++;
 
-            if (tokens[index] is not IntegerLiteralLexeme { Value: > 0 and < 50 and long level })
+            LiteralToken<long>? level = null;
+
+            if (tokens[index] is LiteralToken<long> { Value: > 0 and < 50 } levelToken)
             {
-                level = 1;
-            }
-            else
-            {
+                level = levelToken;
                 index++;
             }
 
-            if (tokens[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
+            if (tokens[index] is not SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.Semicolon } semicolon)
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, tokens[index]);
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, tokens[index]);
+                //return null;
             }
 
             index++;
 
-            return new LoopControlStatementNode((ushort)level, kind, lineNumber, nodeIndex);
+            return new LoopControlStatementNode(leaveOrContinue, level, semicolon);
         }
 
-        private ReturnStatementNode? ParseReturnStatement(ref int index)
+        private ReturnStatementNode? ParseReturnStatement(ref int index, ReservedKeywordToken returnKeyword)
         {
-            int lineNumber = tokens[index].LineNumber;
-            int nodeIndex = tokens[index].Index;
+            Debug.Assert(returnKeyword.Keyword == ReservedKeyword.Return);
 
             index++;
 
-            if (tokens[index] is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
+            if (tokens[index] is SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.Semicolon } semicolon0)
             {
                 index++;
 
-                return new ReturnStatementNode(lineNumber, nodeIndex);
+                return new ReturnStatementNode(returnKeyword, returnedExpression: null, semicolon0);
             }
 
             ExpressionNode? returnExpression = expressionParser.ParseNextExpression(ref index);
@@ -96,116 +96,115 @@ namespace Krypton.Analysis.Syntactical
                 return null;
             }
 
-            if (tokens[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
+            if (tokens[index] is not SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.Semicolon } semicolon1)
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, tokens[index]);
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, tokens[index]);
+                //return null;
             }
 
             index++;
 
-            return new ReturnStatementNode(returnExpression, lineNumber, nodeIndex);
+            return new ReturnStatementNode(returnKeyword, returnExpression, semicolon1);
         }
 
-        private VariableAssignmentStatementNode? ParseVariableAssignmentStatement(ref int index, IdentifierNode identifier, ExpressionNode expression)
+        private AssignmentStatementNode? ParseVariableAssignmentStatement(ref int index, IdentifierToken identifier, ExpressionNode expression)
         {
-            if (tokens[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
+            IdentifierExpressionNode assignedExpression = new(identifier);
+
+            if (tokens[index] is not SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.Equals } equals)
             {
-                ErrorProvider.ReportError(ErrorCode.OnlyFunctionCallExpressionCanBeStatement, code, expression);
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.OnlyFunctionCallExpressionCanBeStatement, code, expression);
+                //return null;
             }
 
             index++;
 
-            ExpressionNode? assignedValue = expressionParser.ParseNextExpression(ref index);
+            ExpressionNode? newValue = expressionParser.ParseNextExpression(ref index);
 
-            if (assignedValue == null)
+            if (newValue == null)
             {
                 return null;
             }
 
-            if (tokens[index] is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
+            if (tokens[index] is not SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.Semicolon } semicolon)
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, tokens[index]);
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, tokens[index]);
+                //return null;
             }
 
             index++;
-            return new VariableAssignmentStatementNode(identifier, assignedValue, identifier.LineNumber, identifier.Index);
+            return new AssignmentStatementNode(assignedExpression, equals, newValue, semicolon);
         }
 
-        private VariableDeclarationStatementNode? ParseVariableDeclarationStatement(ref int index, bool isReadOnly)
+        private VariableDeclarationStatementNode? ParseVariableDeclarationStatement(ref int index, ReservedKeywordToken declarator)
         {
-            int lineNumber = tokens[index].LineNumber;
-            int nodeIndex = tokens[index].Index;
+            Debug.Assert(declarator.Keyword is ReservedKeyword.Var or ReservedKeyword.Let);
+            bool isReadOnly = declarator.Keyword == ReservedKeyword.Let;
 
             index++;
 
-            Lexeme? current = tokens.TryGet(index);
-
-            if (current is not IdentifierLexeme identifierLexeme)
+            if (tokens[index] is not IdentifierToken identifier)
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier, code, current ?? tokens[^1]);
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier, code, current ?? tokens[^1]);
+                //return null;
             }
 
             index++;
-            current = tokens.TryGet(index);
 
-            string identifier = identifierLexeme.Content;
-            int identifierLineNumber = identifierLexeme.LineNumber;
-            int identifierIndex = identifierLexeme.Index;
-
-            if (current is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
+            if (tokens[index] is SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.Equals } equals)
             {
-                return HandleAssignedValue(type: null, ref index);
+                return HandleInitialValue(asClause: null, ref index);
             }
 
+            // there is no value, but the variable is readonly which is not allowed
             if (isReadOnly)
             {
-                ErrorProvider.ReportError(ErrorCode.LetVariableAndConstMustBeInitialized,
-                                          code,
-                                          current ?? tokens[^1]);
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.LetVariableAndConstMustBeInitialized,
+                //                          code,
+                //                          current ?? tokens[^1]);
+                //return null;
             }
 
-            if (current is not KeywordLexeme { Keyword: ReservedKeyword.As })
+            if (tokens[index] is not ReservedKeywordToken { Keyword: ReservedKeyword.As } asKeyword)
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedAsOrEquals, code, current ?? tokens[^1]);
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ExpectedAsOrEquals, code, current ?? tokens[^1]);
+                //return null;
             }
 
             index++;
 
-            TypeSpecNode? type = typeParser.ParseNextType(ref index);
+            TypeNode? type = typeParser.ParseNextType(ref index);
 
             if (type == null)
             {
                 return null;
             }
 
-            current = tokens.TryGet(index);
+            AsClauseNode asClause = new(asKeyword, type);
 
-            if (current is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
+            if (tokens[index] is SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.Equals } equals1)
             {
-                return HandleAssignedValue(type, ref index);
+                equals = equals1;
+                return HandleInitialValue(asClause, ref index);
             }
 
-            if (current is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
+            if (tokens[index] is not SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.Semicolon } semicolon)
             {
-                ErrorProvider.ReportError(ErrorCode.ExpectedEqualsOrSemicolon, code, current ?? tokens[^1]);
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ExpectedEqualsOrSemicolon, code, current ?? tokens[^1]);
+                //return null;
             }
 
             index++;
-            return new VariableDeclarationStatementNode(new UnboundIdentifierNode(identifier, identifierLineNumber, identifierIndex),
-                                                        type,
-                                                        value: null,
-                                                        isReadOnly,
-                                                        lineNumber,
-                                                        nodeIndex);
+            return new VariableDeclarationStatementNode(declarator, identifier, asClause, equals: null, initialValue: null, semicolon);
 
-            VariableDeclarationStatementNode? HandleAssignedValue(TypeSpecNode? type, ref int index)
+            VariableDeclarationStatementNode? HandleInitialValue(AsClauseNode? asClause, ref int index)
             {
                 index++;
 
@@ -216,21 +215,20 @@ namespace Krypton.Analysis.Syntactical
                     return null;
                 }
 
-                current = tokens.TryGet(index);
-
-                if (current is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Semicolon })
+                if (tokens[index] is not SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.Semicolon } semicolon)
                 {
-                    ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, current ?? tokens[^1]);
-                    return null;
+                    throw new NotImplementedException();
+                    //ErrorProvider.ReportError(ErrorCode.ExpectedSemicolon, code, current ?? tokens[^1]);
+                    //return null;
                 }
 
                 index++;
-                return new VariableDeclarationStatementNode(new UnboundIdentifierNode(identifier, identifierLineNumber, identifierIndex),
-                                                            type,
+                return new VariableDeclarationStatementNode(declarator,
+                                                            identifier,
+                                                            asClause,
+                                                            equals,
                                                             assignedValue,
-                                                            isReadOnly,
-                                                            lineNumber,
-                                                            nodeIndex);
+                                                            semicolon);
             }
         }
     }

@@ -1,10 +1,8 @@
-﻿using Krypton.Analysis.Errors;
-using Krypton.CompilationData;
+﻿using Krypton.CompilationData;
 using Krypton.CompilationData.Syntax;
 using Krypton.CompilationData.Syntax.Expressions;
 using Krypton.CompilationData.Syntax.Statements;
 using Krypton.CompilationData.Syntax.Tokens;
-using Krypton.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -33,18 +31,21 @@ namespace Krypton.Analysis.Syntactical
             index++;
 
             if (!ParseForVariableSpecification(ref index,
-                                               out IdentifierNode? identifier,
-                                               out ExpressionNode? initialValue,
-                                               out bool declaresNew))
+                                               out ReservedKeywordToken? varKeyword,
+                                               out IdentifierToken? variable,
+                                               out SyntaxCharacterToken? equals,
+                                               out ExpressionNode? initialValue))
             {
                 return null;
             }
 
+            ReservedKeywordToken? whileKeyword = null;
             ExpressionNode? condition = null;
 
-            if (tokens.TryGet(index) is ReservedKeywordToken { Keyword: ReservedKeyword.While })
+            if (tokens[index] is ReservedKeywordToken { Keyword: ReservedKeyword.While } whileKeywordTmp)
             {
-                condition = ParseForCondition(ref index, identifier);
+                whileKeyword = whileKeywordTmp;
+                condition = ParseForCondition(ref index, variable);
 
                 if (condition == null)
                 {
@@ -52,11 +53,15 @@ namespace Krypton.Analysis.Syntactical
                 }
             }
 
+            ReservedKeywordToken? withKeyword = null;
+            IdentifierToken? withIdentifier = null;
+            SyntaxCharacterToken? withEquals = null;
             ExpressionNode? withExpression = null;
 
-            if (tokens.TryGet(index) is ReservedKeywordToken { Keyword: ReservedKeyword.With })
+            if (tokens[index] is ReservedKeywordToken { Keyword: ReservedKeyword.With } withKeywordTmp)
             {
-                withExpression = ParseForWithExpression(ref index, identifier);
+                withKeyword = withKeywordTmp;
+                (withIdentifier, withEquals, withExpression) = ParseForWithExpression(ref index, variable);
 
                 if (withExpression == null)
                 {
@@ -66,28 +71,33 @@ namespace Krypton.Analysis.Syntactical
 
             if (condition == null && withExpression == null)
             {
-                ErrorProvider.ReportError(ErrorCode.ForNeitherWhileNorWith,
-                                          code,
-                                          lineNumber,
-                                          nodeIndex);
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ForNeitherWhileNorWith,
+                //                          code,
+                //                          lineNumber,
+                //                          nodeIndex);
+                //return null;
             }
 
-            BodyNode? statements = ParseStatementBlock(ref index);
+            BodyNode? body = ParseStatementBlock(ref index);
 
-            if (statements == null)
+            if (body == null)
             {
                 return null;
             }
 
-            return new ForStatementNode(identifier,
-                                        declaresNew,
+            return new ForStatementNode(forKeyword,
+                                        varKeyword,
+                                        variable,
+                                        equals,
                                         initialValue,
+                                        whileKeyword,
                                         condition,
+                                        withKeyword,
+                                        withIdentifier,
+                                        withEquals,
                                         withExpression,
-                                        statements,
-                                        lineNumber,
-                                        nodeIndex);
+                                        body);
         }
 
         private ExpressionNode? ParseForCondition(ref int index, IdentifierToken identifier)
@@ -103,11 +113,13 @@ namespace Krypton.Analysis.Syntactical
                     {
                         index++;
 
-                        if (tokens[index] is not OperatorToken { Operator: Operator.LessThan
+                        if (tokens[index] is not OperatorToken
+                            {
+                                Operator: Operator.LessThan
                                                                         or Operator.LessThanEquals
                                                                         or Operator.GreaterThan
                                                                         or Operator.GreaterThanEquals
-                                                               } @operator)
+                            } @operator)
                         {
                             throw new NotImplementedException();
                             //ErrorProvider.ReportError(ErrorCode.ForConditionHasToBeTrueOrComparisonWithIterationVariable,
@@ -139,20 +151,23 @@ namespace Krypton.Analysis.Syntactical
         }
 
         private bool ParseForVariableSpecification(ref int index,
-                               [NotNullWhen(true)] out IdentifierNode? variable,
-                                                   out ExpressionNode? initialValue,
-                                                   out bool declaresNew)
+                                                   out ReservedKeywordToken? varKeyword,
+                               [NotNullWhen(true)] out IdentifierToken? variable,
+                                                   out SyntaxCharacterToken? equals,
+                                                   out ExpressionNode? initialValue)
         {
-            declaresNew = false;
-
-            if (tokens.TryGet(index) is ReservedKeywordToken { Keyword: ReservedKeyword.Var })
+            if (tokens[index] is ReservedKeywordToken { Keyword: ReservedKeyword.Var } varKeywordTmp)
             {
-                declaresNew = true;
+                varKeyword = varKeywordTmp;
 
                 index++;
             }
+            else
+            {
+                varKeyword = null;
+            }
 
-            if (tokens.TryGet(index) is not IdentifierToken identifierToken)
+            if (tokens[index] is not IdentifierToken variableTmp)
             {
                 throw new NotImplementedException();
                 //ErrorProvider.ReportError(ErrorCode.ExpectedIdentifier, code, tokens.TryGet(index) ?? tokens[^1]);
@@ -161,16 +176,16 @@ namespace Krypton.Analysis.Syntactical
                 //return false;
             }
 
-            variable = new UnboundIdentifierNode(identifierToken.Content,
-                                                 identifierToken.LineNumber,
-                                                 identifierToken.Index);
+            variable = variableTmp;
 
             index++;
 
             initialValue = null;
 
-            if (tokens.TryGet(index) is SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
+            if (tokens[index] is SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.Equals } equalsTmp)
             {
+                equals = equalsTmp;
+
                 index++;
 
                 initialValue = expressionParser.ParseNextExpression(ref index);
@@ -182,54 +197,63 @@ namespace Krypton.Analysis.Syntactical
             }
             else // no initial value
             {
-                if (declaresNew)
+                if (varKeyword != null) // new variable is declared
                 {
-                    ErrorProvider.ReportError(ErrorCode.NewVariableInForWithoutDefaultValue,
-                                              code,
-                                              variable,
-                                              $"Variable: {identifierToken.Content}");
-                    return false;
+                    throw new NotImplementedException();
+                    //ErrorProvider.ReportError(ErrorCode.NewVariableInForWithoutDefaultValue,
+                    //                          code,
+                    //                          variable,
+                    //                          $"Variable: {variableTmp.Content}");
+                    //return false;
+                }
+                else
+                {
+                    equals = null;
+                    initialValue = null;
                 }
             }
 
             return true;
         }
 
-        private ExpressionNode? ParseForWithExpression(ref int index, IdentifierNode identifier)
+        private (IdentifierToken? iterationVariable, SyntaxCharacterToken? equals, ExpressionNode? expression) ParseForWithExpression(ref int index, IdentifierToken iterationVariable)
         {
             index++;
 
-            if (tokens.TryGet(index) is not IdentifierLexeme withIdentifierLexeme
-                || withIdentifierLexeme.Content != identifier.Identifier)
+            if (tokens[index] is not IdentifierToken withIdentifier
+                || !withIdentifier.Text.Span.SequenceEqual(iterationVariable.Text.Span))
             {
-                ErrorProvider.ReportError(ErrorCode.ForWithPartHasToAssignIterationVariable,
-                                          code,
-                                          tokens.TryGet(index) ?? tokens[^1],
-                                          $"Iteration variable: {identifier.Identifier}");
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ForWithPartHasToAssignIterationVariable,
+                //                          code,
+                //                          tokens.TryGet(index) ?? tokens[^1],
+                //                          $"Iteration variable: {iterationVariable.Identifier}");
+                //return null;
             }
 
             index++;
 
-            if (tokens.TryGet(index) is not SyntaxCharacterLexeme { SyntaxCharacter: SyntaxCharacter.Equals })
+            if (tokens[index] is not SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.Equals } equals)
             {
                 Debug.Assert(index - 1 >= 0 & index - 1 < tokens.Count);
-                ErrorProvider.ReportError(ErrorCode.ForWithPartHasToAssignIterationVariable,
-                                          code,
-                                          tokens[index - 1],
-                                          $"Iteration variable: {identifier.Identifier}");
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.ForWithPartHasToAssignIterationVariable,
+                //                          code,
+                //                          tokens[index - 1],
+                //                          $"Iteration variable: {iterationVariable.Identifier}");
+                //return null;
             }
 
             index++;
 
-            return expressionParser.ParseNextExpression(ref index);
+            ExpressionNode? expression = expressionParser.ParseNextExpression(ref index);
+
+            return (withIdentifier, equals, expression);
         }
 
-        private IfStatementNode? ParseIfStatement(ref int index)
+        private IfStatementNode? ParseIfStatement(ref int index, ReservedKeywordToken ifKeyword)
         {
-            int lineNumber = tokens[index].LineNumber;
-            int nodeIndex = tokens[index].Index;
+            Debug.Assert(ifKeyword.Keyword is ReservedKeyword.If);
 
             index++;
 
@@ -240,9 +264,9 @@ namespace Krypton.Analysis.Syntactical
                 return null;
             }
 
-            StatementCollectionNode? statements = ParseStatementBlock(ref index);
+            BodyNode? ifBody = ParseStatementBlock(ref index);
 
-            if (statements == null)
+            if (ifBody == null)
             {
                 return null;
             }
@@ -251,24 +275,16 @@ namespace Krypton.Analysis.Syntactical
 
             while (true)
             {
-                if (tokens.TryGet(index) is not KeywordLexeme { Keyword: ReservedKeyword.Else })
+                if (tokens.TryGet(index) is not ReservedKeywordToken { Keyword: ReservedKeyword.Else } elseKeyword)
                 {
-                    return new IfStatementNode(condition,
-                                               statements,
-                                               elseIfParts: elseIfParts,
-                                               elsePart: null,
-                                               lineNumber,
-                                               nodeIndex);
+                    return new IfStatementNode(ifKeyword, condition, ifBody, elseIfParts, elsePart: null);
                 }
-
-                int elseLineNumber = tokens[index].LineNumber;
-                int elseIndex = tokens[index].Index;
 
                 index++;
 
                 switch (tokens.TryGet(index))
                 {
-                    case KeywordLexeme { Keyword: ReservedKeyword.If }:
+                    case ReservedKeywordToken { Keyword: ReservedKeyword.If } ifKeywordElse:
                         {
                             index++;
 
@@ -280,43 +296,37 @@ namespace Krypton.Analysis.Syntactical
                                 return null;
                             }
 
-                            StatementCollectionNode? elseIfStatements
+                            BodyNode? elseIfBody
                                 = ParseStatementBlock(ref index);
 
-                            if (elseIfStatements == null)
+                            if (elseIfBody == null)
                             {
                                 return null;
                             }
 
                             elseIfParts ??= new List<ElseIfPartNode>();
-                            elseIfParts.Add(new ElseIfPartNode(elseIfCondition, elseIfStatements, elseLineNumber, elseIndex));
+                            elseIfParts.Add(new ElseIfPartNode(elseKeyword, ifKeywordElse, condition, elseIfBody));
                         }
                         break;
                     default:
                         {
-                            StatementCollectionNode? elseStatements = ParseStatementBlock(ref index);
+                            BodyNode? elseBody = ParseStatementBlock(ref index);
 
-                            if (elseStatements == null)
+                            if (elseBody == null)
                             {
                                 return null;
                             }
 
-                            return new IfStatementNode(condition,
-                                                       statements,
-                                                       elseIfParts,
-                                                       new ElsePartNode(elseStatements, elseLineNumber, elseIndex),
-                                                       lineNumber,
-                                                       nodeIndex);
+                            ElsePartNode elsePart = new(elseKeyword, elseBody);
+
+                            return new IfStatementNode(ifKeyword, condition, ifBody, elseIfParts, elsePart);
                         }
                 }
             }
         }
 
-        private WhileStatementNode? ParseWhileStatement(ref int index)
+        private WhileStatementNode? ParseWhileStatement(ref int index, ReservedKeywordToken whileKeyword)
         {
-            int lineNumber = tokens[index].LineNumber;
-            int nodeIndex = tokens[index].Index;
-
             index++;
 
             ExpressionNode? condition = expressionParser.ParseNextExpression(ref index);
@@ -326,14 +336,14 @@ namespace Krypton.Analysis.Syntactical
                 return null;
             }
 
-            StatementCollectionNode? statements = ParseStatementBlock(ref index);
+            BodyNode? body = ParseStatementBlock(ref index);
 
-            if (statements == null)
+            if (body == null)
             {
                 return null;
             }
 
-            return new WhileStatementNode(condition, statements, lineNumber, nodeIndex);
+            return new WhileStatementNode(whileKeyword, condition, body);
         }
     }
 }

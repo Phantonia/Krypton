@@ -30,15 +30,15 @@ namespace Krypton.Analysis.Syntactical
         {
             return tokens[index] switch
             {
-                ReservedKeywordToken { Keyword: ReservedKeyword.Block } => ParseBlockStatement(ref index, tokens[index].LineNumber),
-                ReservedKeywordToken { Keyword: ReservedKeyword.Var } => ParseVariableDeclarationStatement(ref index, isReadOnly: false),
-                ReservedKeywordToken { Keyword: ReservedKeyword.Let } => ParseVariableDeclarationStatement(ref index, isReadOnly: true),
-                ReservedKeywordToken { Keyword: ReservedKeyword.While } => ParseWhileStatement(ref index),
-                ReservedKeywordToken { Keyword: ReservedKeyword.If } => ParseIfStatement(ref index),
-                ReservedKeywordToken { Keyword: ReservedKeyword.For } => ParseForStatement(ref index),
-                ReservedKeywordToken { Keyword: ReservedKeyword.Return } => ParseReturnStatement(ref index),
-                ReservedKeywordToken { Keyword: ReservedKeyword.Continue } => ParseLoopControlStatement(ref index, LoopControlStatementKind.Continue),
-                ReservedKeywordToken { Keyword: ReservedKeyword.Leave } => ParseLoopControlStatement(ref index, LoopControlStatementKind.Leave),
+                ReservedKeywordToken { Keyword: ReservedKeyword.Block } blockKeyword => ParseBlockStatement(ref index, blockKeyword),
+                ReservedKeywordToken { Keyword: ReservedKeyword.Var } varKeyword => ParseVariableDeclarationStatement(ref index, varKeyword),
+                ReservedKeywordToken { Keyword: ReservedKeyword.Let } letKeyword => ParseVariableDeclarationStatement(ref index, letKeyword),
+                ReservedKeywordToken { Keyword: ReservedKeyword.While } whileKeyword => ParseWhileStatement(ref index, whileKeyword),
+                ReservedKeywordToken { Keyword: ReservedKeyword.If } ifKeyword => ParseIfStatement(ref index, ifKeyword),
+                ReservedKeywordToken { Keyword: ReservedKeyword.For } forKeyword => ParseForStatement(ref index, forKeyword),
+                ReservedKeywordToken { Keyword: ReservedKeyword.Return } returnKeyword => ParseReturnStatement(ref index, returnKeyword),
+                ReservedKeywordToken { Keyword: ReservedKeyword.Continue } continueKeyword => ParseLoopControlStatement(ref index, continueKeyword),
+                ReservedKeywordToken { Keyword: ReservedKeyword.Leave } leaveKeyword => ParseLoopControlStatement(ref index, leaveKeyword),
                 _ => ParseExpressionStatement(ref index),
             };
         }

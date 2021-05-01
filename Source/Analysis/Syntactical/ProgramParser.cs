@@ -18,9 +18,9 @@ namespace Krypton.Analysis.Syntactical
         public ProgramParser(FinalList<Token> tokens, Analyser analyser)
         {
             this.analyser = analyser;
-            expressionParser = new ExpressionParser(tokens, code);
-            typeParser = new TypeParser(tokens, code);
-            statementParser = new StatementParser(tokens, expressionParser, typeParser, code);
+            expressionParser = new ExpressionParser(tokens, analyser);
+            typeParser = new TypeParser(tokens, analyser);
+            statementParser = new StatementParser(tokens, expressionParser, typeParser, analyser);
             this.tokens = tokens;
         }
 
@@ -151,7 +151,9 @@ namespace Krypton.Analysis.Syntactical
             List<ParameterDeclarationNode>? parameters = null;
             List<SyntaxCharacterToken>? commas = null;
 
-            if (tokens[index] is not SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing } closingParenthesis)
+            SyntaxCharacterToken? closingParenthesis;
+
+            if (tokens[index] is not SyntaxCharacterToken { SyntaxCharacter: SyntaxCharacter.ParenthesisClosing } closingParenthesisTmp)
             {
                 (parameters, commas, closingParenthesis) = ParseParameterList();
 
@@ -166,6 +168,7 @@ namespace Krypton.Analysis.Syntactical
             else
             {
                 index++;
+                closingParenthesis = closingParenthesisTmp;
             }
 
             AsClauseNode? returnTypeAsClause = null;
