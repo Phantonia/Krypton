@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Krypton.Compiler": {
-      "commandName": "Project",
-      "commandLineArgs": "E:\\Documents\\Projects\\Software\\Krypton\\KryptonV5\\SamplePrograms\\PythagoreanTriple.krpt"
-    }
-  }
-}
