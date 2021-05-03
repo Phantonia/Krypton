@@ -1,0 +1,19 @@
+>> From Project Euler:
+
+If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
+
+Find the sum of all the multiples of 3 or 5 below 1000.
+
+(Source: https://projecteuler.net/problem=1) <<
+
+Var sum = 1;
+
+For Var i = 1 While i < 1000
+{
+	If i Mod 3 == 0 Or i Mod 5 == 0
+	{
+		sum = sum + i;
+	}
+}
+
+Output("The sum is " + sum);

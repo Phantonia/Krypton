@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Krypton.CompilationData\Krypton.CompilationData.csproj" />
+    <ProjectReference Include="..\Krypton.Core\Krypton.Core.csproj" />
+  </ItemGroup>
+
+</Project>
