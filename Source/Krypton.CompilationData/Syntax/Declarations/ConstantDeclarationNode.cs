@@ -2,6 +2,7 @@
 using Krypton.CompilationData.Syntax.Clauses;
 using Krypton.CompilationData.Syntax.Expressions;
 using Krypton.CompilationData.Syntax.Tokens;
+using Krypton.CompilationData.Syntax.Types;
 using System.Diagnostics;
 using System.IO;
 
@@ -37,6 +38,8 @@ namespace Krypton.CompilationData.Syntax.Declarations
         public override bool IsLeaf => false;
 
         public SyntaxCharacterToken SemicolonToken { get; init; }
+
+        public TypeNode? TypeNode => AsClauseNode?.TypeNode;
 
         public ExpressionNode ValueNode { get; init; }
 

@@ -18,12 +18,14 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public override bool IsLeaf => false;
 
-        public ExpressionNode OperandNode { get; }
+        public ExpressionNode OperandNode { get; init; }
 
-        public OperatorToken OperatorToken { get; }
+        public Operator Operator => OperatorToken.Operator;
 
-        public override TypedExpressionNode Type(TypeSymbol type)
-            => new(this, type);
+        public OperatorToken OperatorToken { get; init; }
+
+        public BoundExpressionNode<UnaryOperationExpressionNode, UnaryOperationSymbol> Bind(UnaryOperationSymbol operation)
+            => new(this, operation);
 
         public override void WriteCode(TextWriter output)
         {

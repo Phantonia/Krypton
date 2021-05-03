@@ -1,264 +1,249 @@
-﻿using Krypton.Analysis.Ast.Expressions;
-using Krypton.Analysis.Ast.Symbols;
-using Krypton.Analysis.Errors;
-using Krypton.Framework;
+﻿using Krypton.CompilationData;
+using Krypton.CompilationData.Symbols;
+using Krypton.CompilationData.Syntax.Expressions;
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 
 namespace Krypton.Analysis.Semantical
 {
     partial class Binder
     {
-        private TypeSymbolNode? BindInExpression(ExpressionNode expression,
-                                                 VariableIdentifierMap variableIdentifierMap)
+        private TypedExpressionNode? BindExpression(ExpressionNode expression, VariableIdentifierMap variableIdentifierMap)
         {
             switch (expression)
             {
                 case BinaryOperationExpressionNode binaryOperation:
-                    return BindInBinaryOperation(binaryOperation, variableIdentifierMap);
-                case FunctionCallExpressionNode functionCall:
-                    {
-                        (TypeSymbolNode? type, bool success) = BindInFunctionCall(functionCall,
-                                                                                  variableIdentifierMap,
-                                                                                  expressionContext: true);
-
-                        if (!success)
-                        {
-                            return null;
-                        }
-
-                        Debug.Assert(type != null);
-                        return type;
-                    }
+                    return BindBinaryOperation(binaryOperation, variableIdentifierMap);
+                //case InvocationExpressionNode:
                 case IdentifierExpressionNode identifierExpression:
                     return BindIdentifierExpression(identifierExpression, variableIdentifierMap);
                 case LiteralExpressionNode literal:
-                    return typeManager[literal.AssociatedType];
-                case PropertyGetExpressionNode propertyGet:
-                    return BindInPropertyGet(propertyGet, variableIdentifierMap);
+                    return BindLiteral(literal);
+                case PropertyGetAccessExpressionNode propertyGetAccess:
+                    return BindPropertyGetAccess(propertyGetAccess, variableIdentifierMap);
                 case UnaryOperationExpressionNode unaryOperation:
-                    return BindInUnaryOperation(unaryOperation, variableIdentifierMap);
-                default:
-                    Debug.Fail(message: "A type was forgotten...");
-                    return null;
+                    return BindUnaryOperation(unaryOperation, variableIdentifierMap);
             }
         }
 
-        private TypeSymbolNode? BindInBinaryOperation(BinaryOperationExpressionNode binaryOperation,
-                                                      VariableIdentifierMap variableIdentifierMap)
+        private TypedExpressionNode? BindBinaryOperation(BinaryOperationExpressionNode binaryOperation, VariableIdentifierMap variableIdentifierMap)
         {
-            TypeSymbolNode? leftType = BindInExpression(binaryOperation.LeftOperandNode, variableIdentifierMap);
+            TypedExpressionNode? typedLeftOperand = BindExpression(binaryOperation.LeftOperandNode, variableIdentifierMap);
 
-            if (leftType == null)
+            if (typedLeftOperand == null)
             {
                 return null;
             }
 
-            TypeSymbolNode? rightType = BindInExpression(binaryOperation.RightOperandNode, variableIdentifierMap);
+            TypedExpressionNode? typedRightOperand = BindExpression(binaryOperation.RightOperandNode, variableIdentifierMap);
 
-            if (rightType == null)
+            if (typedRightOperand == null)
             {
                 return null;
             }
 
             Operator @operator = binaryOperation.Operator;
 
-            BinaryOperationSymbolNode? operationSymbol = FindBestBinaryOperation(@operator,
-                                                                                 leftType,
-                                                                                 rightType,
-                                                                                 out ImplicitConversionSymbolNode? implicitConversionLeft,
-                                                                                 out ImplicitConversionSymbolNode? implicitConversionRight);
-
-            if (implicitConversionLeft != null)
-            {
-                binaryOperation.LeftOperandNode.SpecifyImplicitConversion(implicitConversionLeft);
-            }
-
-            if (implicitConversionRight != null)
-            {
-                binaryOperation.RightOperandNode.SpecifyImplicitConversion(implicitConversionRight);
-            }
+            BinaryOperationSymbol? operationSymbol = FindBestBinaryOperation(@operator, ref typedLeftOperand, ref typedRightOperand);
 
             if (operationSymbol == null)
             {
-                ErrorProvider.ReportError(ErrorCode.OperatorNotAvailableForTypes,
-                                          Compilation,
-                                          binaryOperation,
-                                          $"Left type: {leftType.Identifier}",
-                                          $"Right type: {rightType.Identifier}");
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.OperatorNotAvailableForTypes,
+                //                          Compilation,
+                //                          binaryOperation,
+                //                          $"Left type: {leftType.Identifier}",
+                //                          $"Right type: {rightType.Identifier}");
+                //return null;
             }
 
-            binaryOperation.Bind(operationSymbol);
-
-            return operationSymbol.ReturnTypeNode;
+            return (binaryOperation with
+            {
+                LeftOperandNode = typedLeftOperand,
+                RightOperandNode = typedRightOperand
+            }).Bind(operationSymbol)
+              .Type(operationSymbol.ReturnTypeSymbol);
         }
 
-        private (TypeSymbolNode?, bool) BindInFunctionCall(FunctionCallExpressionNode functionCall,
-                                                           VariableIdentifierMap variableIdentifierMap,
-                                                           bool expressionContext)
+        private TypedExpressionNode? BindIdentifierExpression(IdentifierExpressionNode identifierExpression,
+                                                              VariableIdentifierMap variableIdentifierMap)
         {
-            if (functionCall.FunctionExpressionNode is not IdentifierExpressionNode identifierExpression)
-            {
-                ErrorProvider.ReportError(ErrorCode.CanOnlyCallFunctions, Compilation, functionCall);
-                return (null, false);
-            }
-
-            SymbolNode? symbol = GetExpressionSymbol(identifierExpression.Identifier,
-                                                     variableIdentifierMap);
+            Symbol? symbol = GetExpressionSymbol(identifierExpression.IdentifierToken, variableIdentifierMap);
 
             if (symbol == null)
             {
-                ErrorProvider.ReportError(ErrorCode.CantFindIdentifierInScope,
-                                          Compilation,
-                                          identifierExpression);
-                return (null, false);
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.CantFindIdentifierInScope,
+                //                          Compilation,
+                //                          identifierExpression);
+                //return null;
             }
 
-            if (symbol is not FunctionSymbolNode functionSymbol)
-            {
-                ErrorProvider.ReportError(ErrorCode.CanOnlyCallFunctions, Compilation, functionCall);
-                return (null, false);
-            }
+            BoundIdentifierExpressionNode boundIdentifierExpression = identifierExpression.Bind(symbol);
 
-            identifierExpression.Bind(symbol);
-
-            if (expressionContext && functionSymbol.ReturnTypeNode == null)
-            {
-                ErrorProvider.ReportError(ErrorCode.OnlyFunctionWithReturnTypeCanBeExpression, Compilation, functionCall);
-                return (null, false);
-            }
-
-            if (functionSymbol.ParameterNodes.Count != functionCall.ArgumentNodes.Count)
-            {
-                ErrorProvider.ReportError(ErrorCode.WrongNumberOfArguments,
-                                          Compilation,
-                                          functionCall,
-                                          $"Expected number of arguments: {functionSymbol.ParameterNodes.Count}",
-                                          $"Provided number of arguments: {functionCall.ArgumentNodes.Count}");
-                return (null, false);
-            }
-
-            for (int i = 0; i < functionSymbol.ParameterNodes.Count; i++)
-            {
-                TypeSymbolNode? argumentType = BindInExpression(functionCall.ArgumentNodes[i], variableIdentifierMap);
-
-                if (argumentType == null)
-                {
-                    return (null, false);
-                }
-
-                if (!TypeIsCompatibleWith(argumentType,
-                                          functionSymbol.ParameterNodes[i].TypeNode,
-                                          functionCall.ArgumentNodes[i],
-                                          out ImplicitConversionSymbolNode? conversion))
-                {
-                    return (null, false);
-                }
-
-                if (conversion != null)
-                {
-                    functionCall.ArgumentNodes[i].SpecifyImplicitConversion(conversion);
-                }
-            }
-
-            functionCall.Bind(functionSymbol);
-
-            return (functionSymbol.ReturnTypeNode, true);
-        }
-
-        private TypeSymbolNode? BindIdentifierExpression(IdentifierExpressionNode identifierExpression,
-                                                         VariableIdentifierMap variableIdentifierMap)
-        {
-            SymbolNode? symbol = GetExpressionSymbol(identifierExpression.Identifier, variableIdentifierMap);
-
-            if (symbol == null)
-            {
-                ErrorProvider.ReportError(ErrorCode.CantFindIdentifierInScope,
-                                          Compilation,
-                                          identifierExpression);
-                return null;
-            }
-
-            identifierExpression.Bind(symbol);
+            TypeSymbol identifierType;
 
             switch (symbol)
             {
-                case VariableSymbolNode variable:
+                case VariableSymbol variable:
+                    identifierType = variable.TypeSymbol;
+                    break;
+                case ConstantSymbol constant:
+                    identifierType = constant.TypeSymbol;
+                    break;
+                case FunctionSymbol function:
                     {
-                        TypeSymbolNode? variableType = variable.TypeNode;
-                        Debug.Assert(variableType != null);
-                        return variableType;
+                        throw new NotImplementedException();
+                        //ErrorProvider.ReportError(ErrorCode.FunctionNotValidInContext,
+                        //                      Compilation,
+                        //                      identifierExpression);
+                        //return null;
                     }
-                case ConstantSymbolNode constant:
-                    return constant.Type;
-                case FunctionSymbolNode:
-                    ErrorProvider.ReportError(ErrorCode.FunctionNotValidInContext,
-                                              Compilation,
-                                              identifierExpression);
-                    return null;
                 default:
-                    Debug.Fail(message: "A type was forgotten...");
+                    Debug.Fail(message: null);
                     return null;
             }
+
+            return boundIdentifierExpression.Type(identifierType);
         }
 
-        private TypeSymbolNode? BindInPropertyGet(PropertyGetExpressionNode propertyGet,
-                                                  VariableIdentifierMap variableIdentifierMap)
+        private TypedExpressionNode? BindInvocation(InvocationExpressionNode invocation,
+                                                    VariableIdentifierMap variableIdentifierMap,
+                                                    bool expressionContext)
         {
-            TypeSymbolNode? expressionType = BindInExpression(propertyGet.ExpressionNode, variableIdentifierMap);
+            if (invocation.InvokeeNode is not IdentifierExpressionNode identifierExpression)
+            {
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.CanOnlyCallFunctions, Compilation, functionCall);
+                //return (null, false);
+            }
 
-            if (expressionType == null)
+            Symbol? symbol = GetExpressionSymbol(identifierExpression.IdentifierToken, variableIdentifierMap);
+
+            if (symbol == null)
+            {
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.CantFindIdentifierInScope,
+                //                          Compilation,
+                //                          identifierExpression);
+                //return (null, false);
+            }
+
+            if (symbol is not FunctionSymbol functionSymbol)
+            {
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.CanOnlyCallFunctions, Compilation, functionCall);
+                //return (null, false);
+            }
+
+            ExpressionNode boundIdentifierExpression = identifierExpression.Bind(symbol);
+
+            if (expressionContext && functionSymbol.ReturnTypeSymbol == TypeSymbol.VoidType)
+            {
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.OnlyFunctionWithReturnTypeCanBeExpression, Compilation, functionCall);
+                //return (null, false);
+            }
+
+            if (functionSymbol.ParameterSymbols.Count != invocation.ArgumentNodes.Count)
+            {
+                //ErrorProvider.ReportError(ErrorCode.WrongNumberOfArguments,
+                //                          Compilation,
+                //                          functionCall,
+                //                          $"Expected number of arguments: {functionSymbol.ParameterNodes.Count}",
+                //                          $"Provided number of arguments: {functionCall.ArgumentNodes.Count}");
+                //return (null, false);
+            }
+
+            List<ExpressionNode> boundArguments = new(capacity: invocation.ArgumentNodes.Count);
+
+            for (int i = 0; i < functionSymbol.ParameterSymbols.Count; i++)
+            {
+                TypedExpressionNode? typedArgument = BindExpression(invocation.ArgumentNodes[i], variableIdentifierMap);
+
+                if (typedArgument == null)
+                {
+                    return null;
+                }
+
+                if (!ErrorOnIncompatibleType(ref typedArgument, functionSymbol.ParameterSymbols[i].TypeSymbol))
+                {
+                    return null;
+                }
+
+                boundArguments.Add(typedArgument);
+            }
+
+            return (invocation with
+            {
+                ArgumentNodes = boundArguments.ToImmutableList(),
+            }).Bind(functionSymbol)
+              .Type(functionSymbol.ReturnTypeSymbol);
+        }
+
+        private TypedExpressionNode? BindLiteral(LiteralExpressionNode literalExpression)
+        {
+            TypeSymbol symbol = typeManager[literalExpression.AssociatedType];
+            return literalExpression.Type(symbol);
+        }
+
+        private TypedExpressionNode? BindPropertyGetAccess(PropertyGetAccessExpressionNode propertyGetAccess,
+                                                           VariableIdentifierMap variableIdentifierMap)
+        {
+            TypedExpressionNode? typedSource = BindExpression(propertyGetAccess.SourceNode, variableIdentifierMap);
+
+            if (typedSource == null)
             {
                 return null;
             }
 
-            if (!expressionType.PropertyNodes.TryGetValue(propertyGet.PropertyIdentifier, out PropertySymbolNode? property))
+            TypeSymbol sourceType = typedSource.TypeSymbol;
+
+            if (!sourceType.PropertySymbols.TryGetValue(propertyGetAccess.PropertyToken.TextToString(),
+                                                        out PropertySymbol? propertySymbol))
             {
-                ErrorProvider.ReportError(ErrorCode.PropertyDoesNotExistInType,
-                                          Compilation,
-                                          propertyGet.PropertyIdentifierNode,
-                                          $"Type: {expressionType.Identifier}");
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.PropertyDoesNotExistInType,
+                //                          Compilation,
+                //                          propertyGet.PropertyIdentifierNode,
+                //                          $"Type: {expressionType.Identifier}");
+                //return null;
             }
 
-            propertyGet.Bind(property);
-
-            return property.TypeNode;
+            return (propertyGetAccess with { SourceNode = typedSource }).Bind(propertySymbol)
+                                                                        .Type(propertySymbol.ReturnTypeSymbol);
         }
 
-        private TypeSymbolNode? BindInUnaryOperation(UnaryOperationExpressionNode unaryOperation,
-                                                     VariableIdentifierMap variableIdentifierMap)
+        private TypedExpressionNode? BindUnaryOperation(UnaryOperationExpressionNode unaryOperation, VariableIdentifierMap variableIdentifierMap)
         {
-            TypeSymbolNode? operandType = BindInExpression(unaryOperation.OperandNode, variableIdentifierMap);
+            TypedExpressionNode? typedOperand = BindExpression(unaryOperation.OperandNode, variableIdentifierMap);
 
-            if (operandType == null)
+            if (typedOperand == null)
             {
                 return null;
             }
 
             Operator @operator = unaryOperation.Operator;
 
-            UnaryOperationSymbolNode? operationSymbol = FindBestUnaryOperation(@operator,
-                                                                               operandType,
-                                                                               out ImplicitConversionSymbolNode? conversion);
+            UnaryOperationSymbol? operationSymbol = FindBestUnaryOperation(@operator, ref typedOperand);
 
             if (operationSymbol == null)
             {
-                ErrorProvider.ReportError(ErrorCode.OperatorNotAvailableForTypes,
-                                          Compilation,
-                                          unaryOperation,
-                                          $"Operand type: {operandType.Identifier}");
-                return null;
+                throw new NotImplementedException();
+                //ErrorProvider.ReportError(ErrorCode.OperatorNotAvailableForTypes,
+                //                          Compilation,
+                //                          unaryOperation,
+                //                          $"Operand type: {operandType.Identifier}");
+                //return null;
             }
 
-            if (conversion != null)
+            return (unaryOperation with
             {
-                unaryOperation.OperandNode.SpecifyImplicitConversion(conversion);
-            }
-
-            unaryOperation.Bind(operationSymbol);
-
-            return operationSymbol.ReturnTypeNode;
+                OperandNode = typedOperand
+            }).Bind(operationSymbol)
+              .Type(operationSymbol.OperandTypeSymbol);
         }
     }
 }

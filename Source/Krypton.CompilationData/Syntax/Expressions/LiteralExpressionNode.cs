@@ -1,10 +1,23 @@
 ﻿using Krypton.CompilationData.Symbols;
 using Krypton.CompilationData.Syntax.Tokens;
+using Krypton.Framework;
 using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Expressions
 {
-    public sealed record LiteralExpressionNode<TLiteral> : ExpressionNode
+    public abstract record LiteralExpressionNode : ExpressionNode
+    {
+        private protected LiteralExpressionNode() { }
+
+        public FrameworkType AssociatedType => NonGenericLiteralToken.AssociatedType;
+
+        public abstract LiteralToken NonGenericLiteralToken { get; }
+
+        public object ObjectValue => NonGenericLiteralToken.ObjectValue;
+    }
+
+    public sealed record LiteralExpressionNode<TLiteral> : LiteralExpressionNode
+        where TLiteral : notnull
     {
         public LiteralExpressionNode(LiteralToken<TLiteral> literalToken)
         {
@@ -16,10 +29,11 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public LiteralToken<TLiteral> LiteralToken { get; init; }
 
-        protected override string GetDebuggerDisplay() => $"{base.GetDebuggerDisplay()}; Value = {LiteralToken.Value}";
+        public override LiteralToken NonGenericLiteralToken => LiteralToken;
 
-        public override TypedExpressionNode Type(TypeSymbol type)
-            => new(this, type);
+        public TLiteral Value => LiteralToken.Value;
+
+        protected override string GetDebuggerDisplay() => $"{base.GetDebuggerDisplay()}; Value = {LiteralToken.Value}";
 
         public override void WriteCode(TextWriter output)
         {

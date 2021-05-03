@@ -3,22 +3,38 @@ using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Expressions
 {
-    public sealed record TypedExpressionNode : ExpressionNode
+    public record TypedExpressionNode : ExpressionNode
     {
-        internal TypedExpressionNode(ExpressionNode expression, TypeSymbol typeSymbol)
+        internal TypedExpressionNode(ExpressionNode expression, TypeSymbol type)
         {
             ExpressionNode = expression;
-            TypeSymbol = typeSymbol;
+            typeSymbol = type;
         }
+
+        internal TypedExpressionNode(ExpressionNode expression, ImplicitConversionSymbol conversion)
+        {
+            ExpressionNode = expression;
+            ImplicitConversionSymbol = conversion;
+            typeSymbol = conversion.TargetTypeSymbol;
+        }
+
+        private readonly TypeSymbol typeSymbol;
 
         public ExpressionNode ExpressionNode { get; init; }
 
+        public ImplicitConversionSymbol? ImplicitConversionSymbol { get; init; }
+
         public override bool IsLeaf => false;
 
-        public TypeSymbol TypeSymbol { get; init; }
-
-        public override TypedExpressionNode Type(TypeSymbol type)
-            => type == TypeSymbol ? this : new TypedExpressionNode(ExpressionNode, type);
+        public virtual TypeSymbol TypeSymbol
+        {
+            get => ImplicitConversionSymbol?.TargetTypeSymbol ?? typeSymbol;
+            init
+            {
+                ImplicitConversionSymbol = null;
+                typeSymbol = value;
+            }
+        }
 
         public override void WriteCode(TextWriter output)
             => ExpressionNode.WriteCode(output);

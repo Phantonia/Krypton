@@ -21,6 +21,7 @@ namespace Krypton.CompilationData.Syntax.Expressions
             return false;
         }
 
-        public abstract TypedExpressionNode Type(TypeSymbol type);
+        public TypedExpressionNode Type(TypeSymbol type)
+            => new(this, type);
     }
 }

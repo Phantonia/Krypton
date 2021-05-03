@@ -27,9 +27,6 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public SyntaxCharacterToken OpeningParenthesisToken { get; init; }
 
-        public override TypedExpressionNode Type(TypeSymbol type)
-            => new(this, type);
-
         public override void WriteCode(TextWriter output)
         {
             ClosingParenthesisToken.WriteCode(output);

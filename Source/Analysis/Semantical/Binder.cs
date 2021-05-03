@@ -1,15 +1,15 @@
-﻿using Krypton.Analysis.Ast.Declarations;
-using Krypton.Analysis.Ast.Symbols;
-using Krypton.Analysis.Errors;
+﻿using Krypton.CompilationData.Syntax;
+using Krypton.CompilationData.Syntax.Statements;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace Krypton.Analysis.Semantical
 {
     internal sealed partial class Binder
     {
-        public Binder(Compilation compilation)
+        public Binder(ProgramNode program)
         {
-            Compilation = compilation;
+            this.program = program;
         }
 
 #nullable disable // these are assigned by the only method that calls others, PerformBinding()
@@ -17,12 +17,12 @@ namespace Krypton.Analysis.Semantical
         private TypeManager typeManager;
 #nullable restore
 
-        public Compilation Compilation { get; }
-        
+        private ProgramNode program;
+
         public bool PerformBinding()
         {
             TypeIdentifierMap typeIdentifierMap = GatherGlobalTypes();
-            typeManager = new TypeManager(Compilation, typeIdentifierMap);
+            typeManager = new TypeManager(program, typeIdentifierMap);
 
             HoistedIdentifierMap? globalIdentifierMap = GatherGlobalSymbols();
 
@@ -34,7 +34,7 @@ namespace Krypton.Analysis.Semantical
             this.globalIdentifierMap = globalIdentifierMap;
 
             {
-                bool success = BindInTopLevelStatements();
+                bool success = BindTopLevelStatements();
 
                 if (!success)
                 {
@@ -42,61 +42,38 @@ namespace Krypton.Analysis.Semantical
                 }
             }
 
-            foreach (FunctionDeclarationNode function in Compilation.Program.Functions)
+            // ...
+        }
+
+        private bool BindTopLevelStatements()
+        {
+            VariableIdentifierMap variableIdentifierMap = new();
+
+            ImmutableList<TopLevelNode> unboundTopLevelNodes = program.TopLevelNodes;
+            ImmutableList<TopLevelNode> boundTopLevelNodes = unboundTopLevelNodes;
+
+            for (int i = 0; i < unboundTopLevelNodes.Count; i++)
             {
-                bool success = BindInFunction(function);
+                if (unboundTopLevelNodes[i] is not TopLevelStatementNode unboundTopLevelStatement)
+                {
+                    continue;
+                }
 
-                if (!success)
+                StatementNode? boundStatement = BindStatement(unboundTopLevelStatement.StatementNode, variableIdentifierMap);
+
+                if (boundStatement == null)
                 {
                     return false;
                 }
+
+                TopLevelStatementNode boundTopLevelStatement = unboundTopLevelStatement with { StatementNode = boundStatement };
+
+                boundTopLevelNodes = boundTopLevelNodes.SetItem(i, boundTopLevelStatement);
             }
+
+            program = program with { TopLevelNodes = boundTopLevelNodes };
 
             return true;
-        }
-
-        private bool BindInFunction(FunctionDeclarationNode function)
-        {
-            VariableIdentifierMap variableIdentifierMap = new();
-
-            HashSet<string> parameters = function.ParameterNodes.Count > 0 ? new() : null!;
-
-            foreach (ParameterDeclarationNode parameter in function.ParameterNodes)
-            {
-                if (!parameters.Add(parameter.Identifier))
-                {
-                    ErrorProvider.ReportError(ErrorCode.DuplicateParameter, Compilation, parameter);
-                    return false;
-                }
-
-                TypeSymbolNode? typeSymbol = GetTypeSymbol(parameter.TypeNode);
-
-                if (typeSymbol == null)
-                {
-                    return false;
-                }
-
-                VariableSymbolNode parameterVariable = new(parameter.Identifier,
-                                                           typeSymbol,
-                                                           isReadOnly: false,
-                                                           parameter.LineNumber,
-                                                           parameter.Index);
-
-                variableIdentifierMap.AddSymbol(parameter.Identifier, parameterVariable);
-            }
-
-            bool success = BindInStatementBlock(function.BodyNode, variableIdentifierMap);
-            return success;
-        }
-
-        private bool BindInTopLevelStatements()
-        {
-            VariableIdentifierMap variableIdentifierMap = new();
-
-            bool success = BindInStatementBlock(Compilation.Program.TopLevelStatementNodes,
-                                                variableIdentifierMap);
-
-            return success;
         }
     }
 }

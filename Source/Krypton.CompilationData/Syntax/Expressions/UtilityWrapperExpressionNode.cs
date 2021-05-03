@@ -1,5 +1,4 @@
-﻿using Krypton.CompilationData.Symbols;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.IO;
 
@@ -28,11 +27,6 @@ namespace Krypton.CompilationData.Syntax.Expressions
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete(message: "Will always throw NotSupportedException", error: true)]
         public override bool IsLeaf
-            => throw new NotSupportedException(DiagnosticsMessage);
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete(message: "Will always throw NotSupportedException", error: true)]
-        public override TypedExpressionNode Type(TypeSymbol type)
             => throw new NotSupportedException(DiagnosticsMessage);
 
         [EditorBrowsable(EditorBrowsableState.Never)]

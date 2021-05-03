@@ -1,4 +1,4 @@
-﻿using Krypton.Analysis.Ast.Symbols;
+﻿using Krypton.CompilationData.Symbols;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -10,16 +10,16 @@ namespace Krypton.Analysis.Semantical
     {
         public HoistedIdentifierMap() { }
 
-        private readonly Dictionary<string, SymbolNode> symbolNodes = new();
+        private readonly Dictionary<string, Symbol> symbolNodes = new();
 
-        public SymbolNode this[string identifier] => symbolNodes[identifier];
+        public Symbol this[string identifier] => symbolNodes[identifier];
 
-        public bool AddSymbol(string identifier, SymbolNode symbol)
+        public bool AddSymbol(string identifier, Symbol symbol)
         {
             return symbolNodes.TryAdd(identifier, symbol);
         }
 
-        public bool TryGet(string identifier, [NotNullWhen(true)] out SymbolNode? symbol)
+        public bool TryGet(string identifier, [NotNullWhen(true)] out Symbol? symbol)
         {
             return symbolNodes.TryGetValue(identifier, out symbol);
         }

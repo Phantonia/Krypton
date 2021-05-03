@@ -22,12 +22,14 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public ExpressionNode LeftOperandNode { get; init; }
 
+        public Operator Operator => OperatorToken.Operator;
+
         public OperatorToken OperatorToken { get; init; }
 
         public ExpressionNode RightOperandNode { get; init; }
 
-        public override TypedExpressionNode Type(TypeSymbol type)
-            => new(this, type);
+        public BoundExpressionNode<BinaryOperationExpressionNode, BinaryOperationSymbol> Bind(BinaryOperationSymbol operationSymbol)
+            => new(this, operationSymbol);
 
         public override void WriteCode(TextWriter output)
         {

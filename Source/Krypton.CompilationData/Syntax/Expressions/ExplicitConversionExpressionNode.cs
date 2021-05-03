@@ -1,14 +1,13 @@
-﻿using Krypton.CompilationData.Symbols;
-using Krypton.CompilationData.Syntax.Tokens;
+﻿using Krypton.CompilationData.Syntax.Tokens;
 using Krypton.CompilationData.Syntax.Types;
 using System.Diagnostics;
 using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Expressions
 {
-    public sealed record ConversionExpressionNode : ExpressionNode
+    public sealed record ExplicitConversionExpressionNode : ExpressionNode
     {
-        public ConversionExpressionNode(ExpressionNode operand,
+        public ExplicitConversionExpressionNode(ExpressionNode operand,
                                         ReservedKeywordToken operatorKeyword,
                                         TypeNode type)
         {
@@ -16,7 +15,7 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
             OperandNode = operand;
             OperatorKeywordToken = operatorKeyword;
-            TypeNode = type.WithParent(this);
+            TypeNode = type;
         }
 
         public override bool IsLeaf => false;
@@ -26,9 +25,6 @@ namespace Krypton.CompilationData.Syntax.Expressions
         public ReservedKeywordToken OperatorKeywordToken { get; init; }
 
         public TypeNode TypeNode { get; init; }
-
-        public override TypedExpressionNode Type(TypeSymbol type)
-            => new(this, type);
 
         public override void WriteCode(TextWriter output)
         {

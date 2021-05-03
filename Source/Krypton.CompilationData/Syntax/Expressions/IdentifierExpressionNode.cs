@@ -18,11 +18,8 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public override bool IsLeaf => true;
 
-        public BoundIdentifierExpressionNode Bind(Symbol symbol)
+        public BoundExpressionNode<IdentifierExpressionNode, Symbol> Bind(Symbol symbol)
             => new(this, symbol);
-
-        public override TypedExpressionNode Type(TypeSymbol type)
-            => new(this, type);
 
         public override void WriteCode(TextWriter output)
         {

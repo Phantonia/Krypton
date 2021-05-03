@@ -23,8 +23,11 @@ namespace Krypton.CompilationData.Syntax.Tokens
 
         protected virtual string GetDebuggerDisplay() => $"{GetType().Name}: \"{Text}\"";
 
-        public sealed override string ToString()
+        public string TextToString()
             => new(Text.Span);
+
+        public sealed override string ToString()
+            => TextToString();
 
         public void WriteCode(TextWriter textWriter)
         {

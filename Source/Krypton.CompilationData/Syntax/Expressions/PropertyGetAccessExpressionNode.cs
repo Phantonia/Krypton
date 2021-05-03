@@ -18,16 +18,16 @@ namespace Krypton.CompilationData.Syntax.Expressions
             PropertyToken = property;
         }
 
-        public SyntaxCharacterToken DotToken { get; }
+        public SyntaxCharacterToken DotToken { get; init; }
 
         public override bool IsLeaf => false;
 
-        public IdentifierToken PropertyToken { get; }
+        public IdentifierToken PropertyToken { get; init; }
 
-        public ExpressionNode SourceNode { get; }
+        public ExpressionNode SourceNode { get; init; }
 
-        public override TypedExpressionNode Type(TypeSymbol type)
-            => new(this, type);
+        public BoundExpressionNode<PropertyGetAccessExpressionNode, PropertySymbol> Bind(PropertySymbol symbol)
+            => new(this, symbol);
 
         public override void WriteCode(TextWriter output)
         {

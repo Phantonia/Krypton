@@ -1,11 +1,17 @@
-﻿namespace Krypton.CompilationData.Syntax.Tokens
+﻿using System;
+
+namespace Krypton.CompilationData.Syntax.Tokens
 {
     public sealed class OperatorToken : Token
     {
-        public OperatorToken(Operator @operator, int lineNumber, Trivia leadingTrivia)
+        public OperatorToken(Operator @operator,
+                             ReadOnlyMemory<char> text,
+                             int lineNumber,
+                             Trivia leadingTrivia)
             : base(lineNumber, leadingTrivia)
         {
             Operator = @operator;
+            Text = text;
         }
 
         public bool IsBinary => Operator == Operator.Minus | !IsUnary;
@@ -16,6 +22,6 @@
 
         public int Precedence => Operator.GetPrecedence();
 
-        public override string Text => Operator.ToText();
+        public override ReadOnlyMemory<char> Text { get; }
     }
 }

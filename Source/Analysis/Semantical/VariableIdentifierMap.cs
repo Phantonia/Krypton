@@ -1,4 +1,4 @@
-﻿using Krypton.Analysis.Ast.Symbols;
+﻿using Krypton.CompilationData.Symbols;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -13,9 +13,9 @@ namespace Krypton.Analysis.Semantical
         private int level = 0;
         private readonly Dictionary<string, Variable> variables = new();
 
-        public VariableSymbolNode this[string identifier] => variables[identifier].variable;
+        public VariableSymbol this[string identifier] => variables[identifier].variable;
 
-        public bool AddSymbol(string identifier, VariableSymbolNode variable)
+        public bool AddSymbol(string identifier, VariableSymbol variable)
         {
             return variables.TryAdd(identifier, new Variable(variable, level));
         }
@@ -25,14 +25,14 @@ namespace Krypton.Analysis.Semantical
             level++;
         }
 
-        public bool TryGet(string identifier, [NotNullWhen(true)] out SymbolNode? variable)
+        public bool TryGet(string identifier, [NotNullWhen(true)] out Symbol? variable)
         {
-            bool ret = TryGet(identifier, out VariableSymbolNode? var);
+            bool ret = TryGet(identifier, out VariableSymbol? var);
             variable = var;
             return ret;
         }
 
-        public bool TryGet(string identifier, [NotNullWhen(true)] out VariableSymbolNode? variable)
+        public bool TryGet(string identifier, [NotNullWhen(true)] out VariableSymbol? variable)
         {
             if (variables.TryGetValue(identifier, out Variable var))
             {
@@ -61,14 +61,14 @@ namespace Krypton.Analysis.Semantical
 
         private readonly struct Variable
         {
-            public Variable(VariableSymbolNode variable, int level)
+            public Variable(VariableSymbol variable, int level)
             {
                 this.variable = variable;
                 this.level = level;
             }
 
             public readonly int level;
-            public readonly VariableSymbolNode variable;
+            public readonly VariableSymbol variable;
         }
 
         private string GetDebuggerDisplay()

@@ -1,4 +1,4 @@
-﻿using Krypton.Analysis.Ast.Symbols;
+﻿using Krypton.CompilationData.Symbols;
 using Krypton.Framework;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,29 +13,29 @@ namespace Krypton.Analysis.Semantical
 
         private readonly Dictionary<FrameworkType, string> frameworkTypes = new(capacity: 6);
 
-        private readonly Dictionary<string, TypeSymbolNode> typeNodes = new();
+        private readonly Dictionary<string, TypeSymbol> typeNodes = new();
 
-        public TypeSymbolNode this[string identifier] => typeNodes[identifier];
+        public TypeSymbol this[string identifier] => typeNodes[identifier];
 
-        public TypeSymbolNode this[FrameworkType frameworkType] => typeNodes[frameworkTypes[frameworkType]];
+        public TypeSymbol this[FrameworkType frameworkType] => typeNodes[frameworkTypes[frameworkType]];
 
-        public bool AddSymbol(string identifier, TypeSymbolNode type)
+        public bool AddSymbol(string identifier, TypeSymbol type)
         {
             return typeNodes.TryAdd(identifier, type);
         }
 
-        public bool AddSymbol(string identifier, FrameworkType frameworkType, TypeSymbolNode typeNode)
+        public bool AddSymbol(string identifier, FrameworkType frameworkType, TypeSymbol typeNode)
         {
             frameworkTypes[frameworkType] = identifier;
             return AddSymbol(identifier, typeNode);
         }
 
-        public bool TryGet(string identifier, [NotNullWhen(true)] out TypeSymbolNode? type)
+        public bool TryGet(string identifier, [NotNullWhen(true)] out TypeSymbol? type)
         {
             return typeNodes.TryGetValue(identifier, out type);
         }
 
-        public bool TryGet(FrameworkType frameworkType, [NotNullWhen(true)] out TypeSymbolNode? type)
+        public bool TryGet(FrameworkType frameworkType, [NotNullWhen(true)] out TypeSymbol? type)
         {
             type = null;
             return frameworkTypes.TryGetValue(frameworkType, out string? key) && typeNodes.TryGetValue(key, out type);

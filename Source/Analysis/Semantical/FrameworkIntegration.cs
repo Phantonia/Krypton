@@ -1,8 +1,7 @@
-﻿using Krypton.Analysis.Ast.Symbols;
-using Krypton.CompilationData;
+﻿using Krypton.CompilationData;
+using Krypton.CompilationData.Symbols;
 using Krypton.Framework;
-using Krypton.Framework.Literals;
-using Krypton.Framework.Symbols;
+//using Krypton.Framework.Symbols;
 using Krypton.Utilities;
 using System;
 using System.Collections.Generic;
@@ -13,12 +12,12 @@ namespace Krypton.Analysis.Semantical
 {
     internal static class FrameworkIntegration
     {
-        private static FinalList<BinaryOperationSymbolNode>? binaryOperations = null;
+        private static FinalList<BinaryOperationSymbol>? binaryOperations = null;
         private static FrameworkVersion? frameworkVersion = null;
         private static TypeIdentifierMap? typeIdentifierMap = null;
-        private static FinalList<UnaryOperationSymbolNode>? unaryOperations = null;
+        private static FinalList<UnaryOperationSymbol>? unaryOperations = null;
 
-        public static FinalList<BinaryOperationSymbolNode> GetBinaryOperations()
+        public static FinalList<BinaryOperationSymbol> GetBinaryOperations()
         {
             Debug.Assert(frameworkVersion != null);
             Debug.Assert(typeIdentifierMap != null);
@@ -32,7 +31,7 @@ namespace Krypton.Analysis.Semantical
             return binaryOperations.GetValueOrDefault();
         }
 
-        public static FinalList<UnaryOperationSymbolNode> GetUnaryOperations()
+        public static FinalList<UnaryOperationSymbol> GetUnaryOperations()
         {
             Debug.Assert(frameworkVersion != null);
             Debug.Assert(typeIdentifierMap != null);

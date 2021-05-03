@@ -2,15 +2,21 @@
 {
     public abstract class ConstantSymbol : Symbol
     {
-        private protected ConstantSymbol(string name) : base(name) { }
+        private protected ConstantSymbol(string name, TypeSymbol type) : base(name)
+        {
+            TypeSymbol = type;
+        }
 
-        public abstract object ValueAsObject { get; }
+        public abstract object ObjectValue { get; }
+
+        public TypeSymbol TypeSymbol { get; }
     }
 
     public sealed class ConstantSymbol<TValue> : ConstantSymbol
         where TValue : notnull
     {
-        public ConstantSymbol(string name, TValue value) : base(name)
+        public ConstantSymbol(string name, TypeSymbol type, TValue value)
+            : base(name, type)
         {
             LiteralHelper.AssertTypeIsLiteralType<TValue>();
             Value = value;
@@ -18,6 +24,6 @@
 
         public TValue Value { get; }
 
-        public override object ValueAsObject => Value;
+        public override object ObjectValue => Value;
     }
 }

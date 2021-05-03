@@ -37,10 +37,8 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public SyntaxCharacterToken OpeningParenthesisToken { get; init; }
 
-        protected override string GetDebuggerDisplay() => $"{base.GetDebuggerDisplay()}; Number of arguments: {ArgumentNodes.Count}";
-
-        public override TypedExpressionNode Type(TypeSymbol type)
-            => new(this, type);
+        public BoundExpressionNode<InvocationExpressionNode, FunctionSymbol> Bind(FunctionSymbol functionSymbol)
+            => new(this, functionSymbol);
 
         public override void WriteCode(TextWriter output)
         {
@@ -56,5 +54,8 @@ namespace Krypton.CompilationData.Syntax.Expressions
             ArgumentNodes[^1].WriteCode(output);
             ClosingParenthesisToken.WriteCode(output);
         }
+
+        protected override string GetDebuggerDisplay()
+            => $"{base.GetDebuggerDisplay()}; Number of arguments: {ArgumentNodes.Count}";
     }
 }
