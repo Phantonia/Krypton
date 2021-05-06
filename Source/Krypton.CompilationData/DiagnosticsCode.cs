@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-
-namespace Krypton.CompilationData
+﻿namespace Krypton.CompilationData
 {
     public enum DiagnosticsCode
     {

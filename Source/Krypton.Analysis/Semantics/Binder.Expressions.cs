@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 
-namespace Krypton.Analysis.Semantical
+namespace Krypton.Analysis.Semantics
 {
     partial class Binder
     {

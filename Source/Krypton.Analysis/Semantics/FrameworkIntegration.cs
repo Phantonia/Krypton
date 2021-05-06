@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Krypton.Analysis.Semantical
+namespace Krypton.Analysis.Semantics
 {
     internal static class FrameworkIntegration
     {

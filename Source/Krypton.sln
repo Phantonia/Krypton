@@ -3,23 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krypton.Analysis", "Krypton.Analysis\Krypton.Analysis.csproj", "{6C0D7581-0B46-4719-9331-B06077D155D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Krypton.Analysis", "Krypton.Analysis\Krypton.Analysis.csproj", "{6C0D7581-0B46-4719-9331-B06077D155D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krypton.CompilationData", "Krypton.CompilationData\Krypton.CompilationData.csproj", "{C421DBA4-B4BC-4D5C-90E6-2A62E9BBC681}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Krypton.CompilationData", "Krypton.CompilationData\Krypton.CompilationData.csproj", "{C421DBA4-B4BC-4D5C-90E6-2A62E9BBC681}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krypton.CodeGen", "Krypton.CodeGen\Krypton.CodeGen.csproj", "{A77B82B3-A32D-43D6-88D6-DF28FE433109}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Krypton.CodeGen", "Krypton.CodeGen\Krypton.CodeGen.csproj", "{A77B82B3-A32D-43D6-88D6-DF28FE433109}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krypton.Core", "Krypton.Core\Krypton.Core.csproj", "{E82E4521-CA0C-498D-B997-E5FEB9ABB48B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Krypton.Core", "Krypton.Core\Krypton.Core.csproj", "{E82E4521-CA0C-498D-B997-E5FEB9ABB48B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krypton.Transformation", "Krypton.Transformation\Krypton.Transformation.csproj", "{A8DE87E5-A052-4177-ADCF-B04DD6B84170}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Krypton.Transformation", "Krypton.Transformation\Krypton.Transformation.csproj", "{A8DE87E5-A052-4177-ADCF-B04DD6B84170}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krypton.Commands", "Krypton.Commands\Krypton.Commands.csproj", "{EF36E66A-F6B3-40ED-B73C-49ACD330CE33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Krypton.Commands", "Krypton.Commands\Krypton.Commands.csproj", "{EF36E66A-F6B3-40ED-B73C-49ACD330CE33}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krypton.Tests", "Krypton.Tests\Krypton.Tests.csproj", "{351932F5-6B78-495D-BEFB-BCA369A31844}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Krypton.Tests", "Krypton.Tests\Krypton.Tests.csproj", "{351932F5-6B78-495D-BEFB-BCA369A31844}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krypton.Tests.Analysis", "Krypton.Tests.Analysis\Krypton.Tests.Analysis.csproj", "{ED11E0B6-FF2D-4186-AD20-9CEFEBF698D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Krypton.Tests.Analysis", "Krypton.Tests.Analysis\Krypton.Tests.Analysis.csproj", "{ED11E0B6-FF2D-4186-AD20-9CEFEBF698D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krypton.Tests.CompilationData", "Krypton.Tests.CompilationData\Krypton.Tests.CompilationData.csproj", "{94DE6D3F-A639-437C-8DD7-3B0F6B1AF9ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Krypton.Tests.CompilationData", "Krypton.Tests.CompilationData\Krypton.Tests.CompilationData.csproj", "{94DE6D3F-A639-437C-8DD7-3B0F6B1AF9ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krypton.Utilities", "Krypton.Utilities\Krypton.Utilities.csproj", "{F87F79E6-076C-4CCF-AC10-FFD67C01F12F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{94DE6D3F-A639-437C-8DD7-3B0F6B1AF9ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94DE6D3F-A639-437C-8DD7-3B0F6B1AF9ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94DE6D3F-A639-437C-8DD7-3B0F6B1AF9ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F87F79E6-076C-4CCF-AC10-FFD67C01F12F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F87F79E6-076C-4CCF-AC10-FFD67C01F12F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F87F79E6-076C-4CCF-AC10-FFD67C01F12F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F87F79E6-076C-4CCF-AC10-FFD67C01F12F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

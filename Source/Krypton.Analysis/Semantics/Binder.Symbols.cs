@@ -13,7 +13,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Krypton.Analysis.Semantical
+namespace Krypton.Analysis.Semantics
 {
     partial class Binder
     {

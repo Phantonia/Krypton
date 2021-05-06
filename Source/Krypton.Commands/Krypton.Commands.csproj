@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -12,6 +12,7 @@
     <ProjectReference Include="..\Krypton.CompilationData\Krypton.CompilationData.csproj" />
     <ProjectReference Include="..\Krypton.Core\Krypton.Core.csproj" />
     <ProjectReference Include="..\Krypton.Transformation\Krypton.Transformation.csproj" />
+    <ProjectReference Include="..\Krypton.Utilities\Krypton.Utilities.csproj" />
   </ItemGroup>
 
 </Project>

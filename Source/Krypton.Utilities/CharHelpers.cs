@@ -1,0 +1,53 @@
+﻿using System;
+
+namespace Krypton.Utilities
+{
+    public static class CharHelpers
+    {
+        public static char? TryGet(this string str, int index)
+        {
+            return str.Length > index ? str[index] : null;
+        }
+
+        public static char? TryGet(this ReadOnlySpan<char> span, int index)
+        {
+            return span.Length > index ? span[index] : null;
+        }
+
+        public static bool IsHex(this char chr, out bool? isUpper)
+        {
+            if (chr >= '0' & chr <= '9')
+            {
+                isUpper = null;
+                return true;
+            }
+
+            if (chr >= 'a' & chr <= 'f')
+            {
+                isUpper = false;
+                return true;
+            }
+
+            if (chr >= 'A' & chr <= 'F')
+            {
+                isUpper = true;
+                return true;
+            }
+
+            isUpper = null;
+            return false;
+        }
+
+        public static bool IsBinary(this char chr)
+        {
+            return chr == '0' | chr == '1';
+        }
+
+        public static bool IsLetterOrUnderscore(this char chr)
+        {
+            return chr >= 'a' & chr <= 'z'
+                 | chr >= 'A' & chr <= 'Z'
+                 | chr == '_';
+        }
+    }
+}

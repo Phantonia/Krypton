@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Krypton.CompilationData\Krypton.CompilationData.csproj" />
     <ProjectReference Include="..\Krypton.Core\Krypton.Core.csproj" />
+    <ProjectReference Include="..\Krypton.Utilities\Krypton.Utilities.csproj" />
   </ItemGroup>
 
 </Project>

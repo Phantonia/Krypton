@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Krypton.Analysis.Semantical
+namespace Krypton.Analysis.Semantics
 {
     [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     internal sealed class VariableIdentifierMap

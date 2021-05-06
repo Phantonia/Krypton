@@ -1,25 +1,26 @@
 ﻿using Krypton.CompilationData.Syntax;
 using Krypton.CompilationData.Syntax.Statements;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 
-namespace Krypton.Analysis.Semantical
+namespace Krypton.Analysis.Semantics
 {
     internal sealed partial class Binder
     {
-        public Binder(ProgramNode program)
+        public Binder(ProgramNode program, Analyser analyser)
         {
+            this.analyser = analyser;
             this.program = program;
         }
+
+        private readonly Analyser analyser;
+        private ProgramNode program;
 
 #nullable disable // these are assigned by the only method that calls others, PerformBinding()
         private HoistedIdentifierMap globalIdentifierMap;
         private TypeManager typeManager;
 #nullable restore
 
-        private ProgramNode program;
-
-        public bool PerformBinding()
+        public BindingResult? PerformBinding()
         {
             TypeIdentifierMap typeIdentifierMap = GatherGlobalTypes();
             typeManager = new TypeManager(program, typeIdentifierMap);
@@ -28,7 +29,7 @@ namespace Krypton.Analysis.Semantical
 
             if (globalIdentifierMap == null)
             {
-                return false;
+                return null;
             }
 
             this.globalIdentifierMap = globalIdentifierMap;
@@ -38,7 +39,7 @@ namespace Krypton.Analysis.Semantical
 
                 if (!success)
                 {
-                    return false;
+                    return null;
                 }
             }
 

@@ -21,7 +21,7 @@ namespace Krypton.Analysis.Lexical
         private int lineNumber = 1;
         private int triviaStartingIndex;
 
-        public FinalList<Token> LexAll()
+        public FinalList<Token>? LexAll()
         {
             List<Token> tokens = new();
 
@@ -31,8 +31,9 @@ namespace Krypton.Analysis.Lexical
             {
                 if (nextToken is InvalidToken invalidToken)
                 {
-                    analyser.ReportDiagnostic(new Diagnostic(invalidToken.DiagnosticsCode, IsError: true, invalidToken));
-                    return null;
+                    throw new NotImplementedException();
+                    //analyser.ReportDiagnostic(new Diagnostic(invalidToken.DiagnosticsCode, IsError: true, invalidToken));
+                    //return null;
                 }
 
                 tokens.Add(nextToken);

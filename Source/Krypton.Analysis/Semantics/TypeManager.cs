@@ -5,7 +5,7 @@ using Krypton.Framework;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Krypton.Analysis.Semantical
+namespace Krypton.Analysis.Semantics
 {
     internal sealed class TypeManager
     {

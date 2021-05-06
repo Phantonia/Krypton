@@ -2,7 +2,7 @@
 using Krypton.CompilationData.Syntax.Statements;
 using System.Collections.Immutable;
 
-namespace Krypton.Analysis.Semantical
+namespace Krypton.Analysis.Semantics
 {
     partial class Binder
     {
