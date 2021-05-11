@@ -1,23 +1,19 @@
-﻿using Krypton.Framework;
-using System;
+﻿using System;
 
 namespace Krypton.CompilationData.Syntax.Tokens
 {
     public abstract class LiteralToken : Token
     {
         private protected LiteralToken(ReadOnlyMemory<char> text,
-                                       FrameworkType associatedType,
+                                       Type associatedType,
                                        int lineNumber,
                                        Trivia leadingTrivia)
-            : base(lineNumber, leadingTrivia)
+            : base(text, lineNumber, leadingTrivia)
         {
-            Text = text;
             AssociatedType = associatedType;
         }
 
-        public FrameworkType AssociatedType { get; }
-
-        public sealed override ReadOnlyMemory<char> Text { get; }
+        public Type AssociatedType { get; }
 
         public abstract object ObjectValue { get; }
     }
@@ -27,7 +23,7 @@ namespace Krypton.CompilationData.Syntax.Tokens
     {
         public LiteralToken(TLiteral value,
                             ReadOnlyMemory<char> text,
-                            FrameworkType associatedType,
+                            Type associatedType,
                             int lineNumber,
                             Trivia leadingTrivia)
             : base(text, associatedType, lineNumber, leadingTrivia)

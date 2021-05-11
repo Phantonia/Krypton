@@ -8,10 +8,9 @@ namespace Krypton.CompilationData.Syntax.Tokens
                              ReadOnlyMemory<char> text,
                              int lineNumber,
                              Trivia leadingTrivia)
-            : base(lineNumber, leadingTrivia)
+            : base(text, lineNumber, leadingTrivia)
         {
             Operator = @operator;
-            Text = text;
         }
 
         public bool IsBinary => Operator == Operator.Minus | !IsUnary;
@@ -21,7 +20,5 @@ namespace Krypton.CompilationData.Syntax.Tokens
         public Operator Operator { get; }
 
         public int Precedence => Operator.GetPrecedence();
-
-        public override ReadOnlyMemory<char> Text { get; }
     }
 }

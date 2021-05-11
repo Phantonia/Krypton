@@ -1,15 +1,18 @@
-﻿namespace Krypton.CompilationData.Syntax.Tokens
+﻿using System;
+
+namespace Krypton.CompilationData.Syntax.Tokens
 {
     public sealed class SyntaxCharacterToken : Token
     {
-        public SyntaxCharacterToken(SyntaxCharacter syntaxCharacter, int lineNumber, Trivia leadingTrivia)
-            : base(lineNumber, leadingTrivia)
+        public SyntaxCharacterToken(SyntaxCharacter syntaxCharacter,
+                                    ReadOnlyMemory<char> text,
+                                    int lineNumber,
+                                    Trivia leadingTrivia)
+            : base(text, lineNumber, leadingTrivia)
         {
             SyntaxCharacter = syntaxCharacter;
         }
 
         public SyntaxCharacter SyntaxCharacter { get; }
-
-        public override string Text => SyntaxCharacter.ToText();
     }
 }

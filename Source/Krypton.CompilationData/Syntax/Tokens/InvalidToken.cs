@@ -8,14 +8,11 @@ namespace Krypton.CompilationData.Syntax.Tokens
                             DiagnosticsCode diagnosticsCode,
                             int lineNumber,
                             Trivia leadingTrivia)
-            : base(lineNumber, leadingTrivia)
+            : base(text, lineNumber, leadingTrivia)
         {
-            Text = text;
             DiagnosticsCode = diagnosticsCode;
         }
 
         public DiagnosticsCode DiagnosticsCode { get; }
-
-        public override ReadOnlyMemory<char> Text { get; }
     }
 }

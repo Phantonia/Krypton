@@ -1,5 +1,9 @@
-﻿using Krypton.CompilationData.Syntax;
+﻿using Krypton.CompilationData;
+using Krypton.CompilationData.Syntax;
+using Krypton.CompilationData.Syntax.Declarations;
 using Krypton.CompilationData.Syntax.Statements;
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 
 namespace Krypton.Analysis.Semantics
@@ -16,37 +20,32 @@ namespace Krypton.Analysis.Semantics
         private ProgramNode program;
 
 #nullable disable // these are assigned by the only method that calls others, PerformBinding()
-        private HoistedIdentifierMap globalIdentifierMap;
+        private SymbolTable symbolTable;
         private TypeManager typeManager;
 #nullable restore
 
         public BindingResult? PerformBinding()
         {
-            TypeIdentifierMap typeIdentifierMap = GatherGlobalTypes();
-            typeManager = new TypeManager(program, typeIdentifierMap);
+            Loader loader = new(program);
+            symbolTable = loader.GatherSymbols();
+            typeManager = new TypeManager(program, symbolTable);
 
-            HoistedIdentifierMap? globalIdentifierMap = GatherGlobalSymbols();
+            ProgramNode? program = BindTopLevelStatements();
 
-            if (globalIdentifierMap == null)
+            if (program == null)
             {
                 return null;
             }
 
-            this.globalIdentifierMap = globalIdentifierMap;
-
+            foreach (FunctionDeclarationNode functionDeclaration in program.GetFunctionDeclarations())
             {
-                bool success = BindTopLevelStatements();
 
-                if (!success)
-                {
-                    return null;
-                }
             }
 
-            // ...
+            return new BindingResult(program, symbolTable);
         }
 
-        private bool BindTopLevelStatements()
+        private ProgramNode? BindTopLevelStatements()
         {
             VariableIdentifierMap variableIdentifierMap = new();
 
@@ -64,7 +63,7 @@ namespace Krypton.Analysis.Semantics
 
                 if (boundStatement == null)
                 {
-                    return false;
+                    return null;
                 }
 
                 TopLevelStatementNode boundTopLevelStatement = unboundTopLevelStatement with { StatementNode = boundStatement };
@@ -72,9 +71,7 @@ namespace Krypton.Analysis.Semantics
                 boundTopLevelNodes = boundTopLevelNodes.SetItem(i, boundTopLevelStatement);
             }
 
-            program = program with { TopLevelNodes = boundTopLevelNodes };
-
-            return true;
+            return program with { TopLevelNodes = boundTopLevelNodes };
         }
     }
 }

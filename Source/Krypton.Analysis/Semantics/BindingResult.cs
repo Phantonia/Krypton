@@ -1,6 +1,7 @@
-﻿using Krypton.CompilationData.Syntax;
+﻿using Krypton.CompilationData;
+using Krypton.CompilationData.Syntax;
 
 namespace Krypton.Analysis.Semantics
 {
-    internal sealed record BindingResult(ProgramNode BoundProgramNode);
+    public sealed record BindingResult(ProgramNode BoundProgramNode, SymbolTable GlobalSymbolTable);
 }

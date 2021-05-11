@@ -4,9 +4,10 @@ namespace Krypton.CompilationData.Syntax.Tokens
 {
     public sealed class EndOfFileToken : Token
     {
-        public EndOfFileToken(int lineNumber, Trivia leadingTrivia) : base(lineNumber, leadingTrivia) { }
-
-        public override ReadOnlyMemory<char> Text => ReadOnlyMemory<char>.Empty;
+        public EndOfFileToken(int lineNumber,
+                              Trivia leadingTrivia) : base(text: ReadOnlyMemory<char>.Empty,
+                                                           lineNumber,
+                                                           leadingTrivia) { }
 
         protected override string GetDebuggerDisplay() => nameof(EndOfFileToken);
     }

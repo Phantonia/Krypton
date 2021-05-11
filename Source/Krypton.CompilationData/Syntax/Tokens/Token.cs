@@ -9,8 +9,9 @@ namespace Krypton.CompilationData.Syntax.Tokens
     {
         // New members have to be added to the interface as well!
 
-        private protected Token(int lineNumber, Trivia leadingTrivia)
+        private protected Token(ReadOnlyMemory<char> text, int lineNumber, Trivia leadingTrivia)
         {
+            Text = text;
             LineNumber = lineNumber;
             LeadingTrivia = leadingTrivia;
         }
@@ -19,7 +20,7 @@ namespace Krypton.CompilationData.Syntax.Tokens
 
         public int LineNumber { get; }
 
-        public abstract ReadOnlyMemory<char> Text { get; }
+        public ReadOnlyMemory<char> Text { get; }
 
         protected virtual string GetDebuggerDisplay() => $"{GetType().Name}: \"{Text}\"";
 

@@ -1,13 +1,10 @@
 ﻿namespace Krypton.CompilationData.Symbols
 {
-    public sealed class ImplicitConversionSymbol : Symbol
+    public abstract class ImplicitConversionSymbol : Symbol
     {
-        public ImplicitConversionSymbol(string name, TypeSymbol targetType)
-            : base(name)
-        {
-            TargetTypeSymbol = targetType;
-        }
+        private protected ImplicitConversionSymbol(string name)
+            : base(name) { }
 
-        public TypeSymbol TargetTypeSymbol { get; }
+        public abstract TypeSymbol TargetTypeSymbol { get; }
     }
 }

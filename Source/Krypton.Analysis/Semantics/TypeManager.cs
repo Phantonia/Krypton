@@ -1,7 +1,7 @@
-﻿using Krypton.CompilationData.Symbols;
+﻿using Krypton.CompilationData;
+using Krypton.CompilationData.Symbols;
 using Krypton.CompilationData.Syntax;
 using Krypton.CompilationData.Syntax.Types;
-using Krypton.Framework;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
@@ -9,28 +9,26 @@ namespace Krypton.Analysis.Semantics
 {
     internal sealed class TypeManager
     {
-        public TypeManager(ProgramNode program, TypeIdentifierMap typeIdentifierMap)
+        public TypeManager(ProgramNode program, SymbolTable symbolTable)
         {
             this.program = program;
-            this.typeIdentifierMap = typeIdentifierMap;
+            this.symbolTable = symbolTable;
         }
 
         private readonly ProgramNode program;
-        private readonly TypeIdentifierMap typeIdentifierMap;
-
-        public TypeSymbol this[FrameworkType frameworkType] => typeIdentifierMap[frameworkType];
+        private readonly SymbolTable symbolTable;
 
         public bool TryGetTypeSymbol(TypeNode? typeNode, out TypeSymbol typeSymbol)
         {
             if (typeNode == null)
             {
-                typeSymbol = TypeSymbol.VoidType;
+                typeSymbol = TypeSymbol.VoidType; // TODO
                 return true;
             }
 
             if (typeNode is IdentifierTypeNode identifierTypeSpecNode)
             {
-                if (typeIdentifierMap.TryGet(identifierTypeSpecNode.IdentifierToken.TextToString(), out typeSymbol!))
+                if (symbolTable.TryGetSymbol(identifierTypeSpecNode.IdentifierToken.TextToString(), out typeSymbol!))
                 {
                     identifierTypeSpecNode.Bind(typeSymbol);
                     return true;
@@ -44,11 +42,6 @@ namespace Krypton.Analysis.Semantics
                 typeSymbol = null;
                 return false;
             }
-        }
-
-        public bool TryGetTypeSymbol(FrameworkType frameworkType, [NotNullWhen(true)] out TypeSymbol? typeSymbol)
-        {
-            return typeIdentifierMap.TryGet(frameworkType, out typeSymbol);
         }
     }
 }

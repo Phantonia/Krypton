@@ -1,6 +1,6 @@
 ﻿namespace Krypton.CompilationData.Symbols
 {
-    public abstract class Symbol
+    public abstract class Symbol : ISymbol
     {
         private protected Symbol(string name)
         {

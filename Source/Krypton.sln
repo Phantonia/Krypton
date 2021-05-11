@@ -21,7 +21,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Krypton.Tests.Analysis", "K
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Krypton.Tests.CompilationData", "Krypton.Tests.CompilationData\Krypton.Tests.CompilationData.csproj", "{94DE6D3F-A639-437C-8DD7-3B0F6B1AF9ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krypton.Utilities", "Krypton.Utilities\Krypton.Utilities.csproj", "{F87F79E6-076C-4CCF-AC10-FFD67C01F12F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Krypton.Utilities", "Krypton.Utilities\Krypton.Utilities.csproj", "{F87F79E6-076C-4CCF-AC10-FFD67C01F12F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6CAAA189-149D-4942-BA23-079553954CC1}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

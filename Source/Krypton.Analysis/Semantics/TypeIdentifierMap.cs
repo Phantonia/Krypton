@@ -1,5 +1,4 @@
 ﻿using Krypton.CompilationData.Symbols;
-using Krypton.Framework;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;

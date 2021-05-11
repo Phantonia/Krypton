@@ -2,24 +2,20 @@
 
 namespace Krypton.CompilationData.Symbols
 {
-    public sealed class UnaryOperationSymbol : Symbol
+    public abstract class UnaryOperationSymbol : Symbol
     {
-        public UnaryOperationSymbol(string name,
-                                    Operator @operator,
-                                    TypeSymbol operandTypeSymbol,
-                                    TypeSymbol returnTypeNode)
+        private protected UnaryOperationSymbol(string name,
+                                               Operator @operator)
             : base(name)
         {
             Debug.Assert(@operator.IsUnary());
             Operator = @operator;
-            OperandTypeSymbol = operandTypeSymbol;
-            ReturnTypeNode = returnTypeNode;
         }
 
-        public TypeSymbol OperandTypeSymbol { get; }
+        public abstract TypeSymbol OperandTypeSymbol { get; }
 
         public Operator Operator { get; }
 
-        public TypeSymbol ReturnTypeNode { get; }
+        public abstract TypeSymbol ReturnTypeSymbol { get; }
     }
 }

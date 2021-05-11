@@ -3,19 +3,17 @@ using System.Collections.Generic;
 
 namespace Krypton.CompilationData.Symbols
 {
-    public sealed class FunctionSymbol : Symbol
+    public abstract class FunctionSymbol : Symbol
     {
-        public FunctionSymbol(string name,
-                              IEnumerable<ParameterSymbol>? parameters,
-                              TypeSymbol returnType)
+        private protected FunctionSymbol(string name,
+                                         IEnumerable<ParameterSymbol>? parameters)
             : base(name)
         {
             ParameterSymbols = parameters.Finalize();
-            ReturnTypeSymbol = returnType;
         }
 
         public FinalList<ParameterSymbol> ParameterSymbols { get; }
 
-        public TypeSymbol ReturnTypeSymbol { get; }
+        public abstract TypeSymbol ReturnTypeSymbol { get; }
     }
 }

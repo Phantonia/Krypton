@@ -308,7 +308,7 @@ namespace Krypton.Analysis.Semantics
 
             var candidates = from operation in allOperations
                              where operation.Operator == @operator
-                             let result = CheckTypeWithoutUpdating(operandCopy.TypeSymbol, operation.ReturnTypeNode)
+                             let result = CheckTypeWithoutUpdating(operandCopy.TypeSymbol, operation.ReturnTypeSymbol)
                              where result.works
                              select (operation, result.conversion);
 
@@ -327,85 +327,78 @@ namespace Krypton.Analysis.Semantics
             return operationSymbol;
         }
 
-        private HoistedIdentifierMap? GatherGlobalSymbols()
-        {
-            HoistedIdentifierMap globalIdentifierMap = new();
+        //private HoistedIdentifierMap? GatherGlobalSymbols()
+        //{
+        //    HoistedIdentifierMap globalIdentifierMap = new();
 
-            FrameworkIntegration.PopulateWithFrameworkSymbols(globalIdentifierMap);
+        //    FrameworkIntegration.PopulateWithFrameworkSymbols(globalIdentifierMap);
 
-            HashSet<ReadOnlyMemory<char>> declaredSymbols = (program.GetFunctionDeclarations().Count() + program.GetConstantDeclarations().Count() > 0) ? new() : null!;
+        //    HashSet<ReadOnlyMemory<char>> declaredSymbols = (program.GetFunctionDeclarations().Count() + program.GetConstantDeclarations().Count() > 0) ? new() : null!;
 
-            ImmutableList<TopLevelNode> unboundTopLevelNodes = program.TopLevelNodes;
+        //    ImmutableList<TopLevelNode> unboundTopLevelNodes = program.TopLevelNodes;
 
-            ImmutableList<TopLevelNode> boundTopLevelNodes = unboundTopLevelNodes;
+        //    ImmutableList<TopLevelNode> boundTopLevelNodes = unboundTopLevelNodes;
 
-            for (int i = 0; i < unboundTopLevelNodes.Count; i++)
-            {
-                switch (unboundTopLevelNodes[i])
-                {
-                    case TopLevelDeclarationNode { DeclarationNode: FunctionDeclarationNode functionDeclaration } topLevelFunctionDeclaration:
-                        {
-                            bool success = HandleDeclaration(functionDeclaration, topLevelFunctionDeclaration, CreateFunctionSymbol);
+        //    for (int i = 0; i < unboundTopLevelNodes.Count; i++)
+        //    {
+        //        switch (unboundTopLevelNodes[i])
+        //        {
+        //            case TopLevelDeclarationNode { DeclarationNode: FunctionDeclarationNode functionDeclaration } topLevelFunctionDeclaration:
+        //                {
+        //                    bool success = HandleDeclaration(functionDeclaration, topLevelFunctionDeclaration, CreateFunctionSymbol);
 
-                            if (!success)
-                            {
-                                return null;
-                            }
-                        }
-                        break;
-                    case TopLevelDeclarationNode { DeclarationNode: ConstantDeclarationNode constantDeclaration } topLevelConstantDeclaration:
-                        {
-                            bool success = HandleDeclaration(constantDeclaration, topLevelConstantDeclaration, CreateConstantSymbol);
+        //                    if (!success)
+        //                    {
+        //                        return null;
+        //                    }
+        //                }
+        //                break;
+        //            case TopLevelDeclarationNode { DeclarationNode: ConstantDeclarationNode constantDeclaration } topLevelConstantDeclaration:
+        //                {
+        //                    bool success = HandleDeclaration(constantDeclaration, topLevelConstantDeclaration, CreateConstantSymbol);
 
-                            if (!success)
-                            {
-                                return null;
-                            }
-                        }
-                        break;
-                }
+        //                    if (!success)
+        //                    {
+        //                        return null;
+        //                    }
+        //                }
+        //                break;
+        //        }
 
-                bool HandleDeclaration<TDeclaration, TSymbol>(TDeclaration declaration,
-                                                              TopLevelDeclarationNode topLevelDeclaration,
-                                                              Func<TDeclaration, TSymbol> creator)
-                    where TDeclaration : NamedDeclarationNode
-                    where TSymbol : Symbol?
-                {
-                    if (!declaredSymbols.Add(declaration.Name))
-                    {
-                        throw new NotImplementedException();
-                        //ErrorProvider.ReportError(ErrorCode.CantRedeclareGlobalSymbol, Compilation, constantDeclaration);
-                        //return null;
-                    }
+        //        bool HandleDeclaration<TDeclaration, TSymbol>(TDeclaration declaration,
+        //                                                      TopLevelDeclarationNode topLevelDeclaration,
+        //                                                      Func<TDeclaration, TSymbol> creator)
+        //            where TDeclaration : NamedDeclarationNode
+        //            where TSymbol : Symbol?
+        //        {
+        //            if (!declaredSymbols.Add(declaration.Name))
+        //            {
+        //                throw new NotImplementedException();
+        //                //ErrorProvider.ReportError(ErrorCode.CantRedeclareGlobalSymbol, Compilation, constantDeclaration);
+        //                //return null;
+        //            }
 
-                    TSymbol symbol = creator(declaration);
+        //            TSymbol symbol = creator(declaration);
 
-                    if (symbol == null)
-                    {
-                        return false;
-                    }
+        //            if (symbol == null)
+        //            {
+        //                return false;
+        //            }
 
-                    globalIdentifierMap.AddSymbol(new string(declaration.Name.Span), symbol);
+        //            globalIdentifierMap.AddSymbol(new string(declaration.Name.Span), symbol);
 
-                    BoundDeclarationNode boundDeclaration = declaration.Bind(symbol);
-                    TopLevelNode boundTopLevelNode = topLevelDeclaration with { DeclarationNode = boundDeclaration };
-                    boundTopLevelNodes = boundTopLevelNodes.SetItem(i, boundTopLevelNode);
+        //            BoundDeclarationNode boundDeclaration = declaration.Bind(symbol);
+        //            TopLevelNode boundTopLevelNode = topLevelDeclaration with { DeclarationNode = boundDeclaration };
+        //            boundTopLevelNodes = boundTopLevelNodes.SetItem(i, boundTopLevelNode);
 
-                    return true;
-                }
-            }
+        //            return true;
+        //        }
+        //    }
 
-            program = program with { TopLevelNodes = boundTopLevelNodes };
+        //    program = program with { TopLevelNodes = boundTopLevelNodes };
 
-            return globalIdentifierMap;
-        }
-
-        private TypeIdentifierMap GatherGlobalTypes()
-        {
-            TypeIdentifierMap typeIdentifierMap = new();
-            FrameworkIntegration.PopulateWithFrameworkTypes(typeIdentifierMap);
-            return typeIdentifierMap;
-        }
+        //    return globalIdentifierMap;
+        //}
 
         private Symbol? GetExpressionSymbol(IdentifierToken identifier, VariableIdentifierMap variableIdentifierMap)
         {
