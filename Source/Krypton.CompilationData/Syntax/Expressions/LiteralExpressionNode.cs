@@ -1,5 +1,4 @@
 ﻿using Krypton.CompilationData.Syntax.Tokens;
-using System;
 using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Expressions
@@ -7,8 +6,6 @@ namespace Krypton.CompilationData.Syntax.Expressions
     public abstract record LiteralExpressionNode : ExpressionNode
     {
         private protected LiteralExpressionNode() { }
-
-        public Type AssociatedType => NonGenericLiteralToken.AssociatedType;
 
         public abstract LiteralToken NonGenericLiteralToken { get; }
 

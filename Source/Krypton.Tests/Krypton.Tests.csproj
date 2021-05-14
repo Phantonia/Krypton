@@ -14,7 +14,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Krypton.Analysis\Krypton.Analysis.csproj" />
+    <ProjectReference Include="..\Krypton.CodeGen\Krypton.CodeGen.csproj" />
+    <ProjectReference Include="..\Krypton.Commands\Krypton.Commands.csproj" />
+    <ProjectReference Include="..\Krypton.CompilationData\Krypton.CompilationData.csproj" />
     <ProjectReference Include="..\Krypton.Core\Krypton.Core.csproj" />
+    <ProjectReference Include="..\Krypton.Transformation\Krypton.Transformation.csproj" />
+    <ProjectReference Include="..\Krypton.Utilities\Krypton.Utilities.csproj" />
   </ItemGroup>
 
 </Project>

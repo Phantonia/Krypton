@@ -12,8 +12,11 @@ namespace Krypton.CompilationData.Syntax
 
         public ReadOnlyMemory<char> Text { get; }
 
-        public override string ToString()
+        public string TextToString()
             => new(Text.Span);
+
+        public override string ToString()
+            => TextToString();
 
         public void WriteCode(TextWriter textWriter)
         {

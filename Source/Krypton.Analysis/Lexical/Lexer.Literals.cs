@@ -20,6 +20,12 @@ namespace Krypton.Analysis.Lexical
             {
                 if (!code[index].IsBinary() & code[index] != '_')
                 {
+                    if (char.IsDigit(code[index]))
+                    {
+                        // error: digits other than 0 and 1
+                        throw new NotImplementedException();
+                    }
+
                     return MakeToken(code.AsMemory()[startIndex..index]);
                 }
             }
@@ -170,6 +176,7 @@ namespace Krypton.Analysis.Lexical
             }
 
             LiteralToken<T> MakeToken<T>(ReadOnlyMemory<char> text, LiteralParser<T> literalParser)
+                where T : notnull
             {
                 Trivia trivia = GetTrivia(triviaEndingIndex);
                 index++;
@@ -273,12 +280,12 @@ namespace Krypton.Analysis.Lexical
             identifierOrKeyword = code.AsMemory()[startIndex..];
 
         LeftForLoop:
-            if (identifierOrKeyword.Span == "_")
+            if (identifierOrKeyword.Span.Length == 1 && identifierOrKeyword.Span[0] == '_')
             {
                 Trivia trivia = GetTrivia(triviaEndingIndex);
                 index++;
 
-                return new SyntaxCharacterToken(SyntaxCharacter.Underscore, lineNumber, trivia);
+                return new SyntaxCharacterToken(SyntaxCharacter.Underscore, identifierOrKeyword, lineNumber, trivia);
             }
 
             if (ReservedKeywords.IsKeyword(identifierOrKeyword.Span, out ReservedKeyword keyword))
@@ -287,14 +294,14 @@ namespace Krypton.Analysis.Lexical
 
                 if (ReservedKeywords.IsOperatorKeyword(keyword, out Operator @operator))
                 {
-                    return new OperatorToken(@operator, lineNumber, trivia);
+                    return new OperatorToken(@operator, identifierOrKeyword, lineNumber, trivia);
                 }
                 else if (ReservedKeywords.IsBooleanLiteralKeyword(keyword, out bool value))
                 {
                     return new LiteralToken<bool>(value, identifierOrKeyword, lineNumber, trivia);
                 }
 
-                return new ReservedKeywordToken(keyword, lineNumber, trivia);
+                return new ReservedKeywordToken(keyword, identifierOrKeyword, lineNumber, trivia);
             }
             else
             {

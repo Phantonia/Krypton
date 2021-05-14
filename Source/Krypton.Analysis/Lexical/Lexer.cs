@@ -9,13 +9,13 @@ namespace Krypton.Analysis.Lexical
 {
     internal sealed partial class Lexer
     {
-        public Lexer(string code, Analyser analyser)
+        public Lexer(string code)//, Analyser analyser)
         {
-            this.analyser = analyser;
+            //this.analyser = analyser;
             this.code = code;
         }
 
-        private readonly Analyser analyser;
+        //private readonly Analyser analyser;
         private readonly string code;
         private int index = 0;
         private int lineNumber = 1;
@@ -150,8 +150,13 @@ namespace Krypton.Analysis.Lexical
 
         private Trivia GetTrivia(int triviaEndingIndex)
         {
+            if (triviaEndingIndex < triviaStartingIndex)
+            {
+                return new Trivia(ReadOnlyMemory<char>.Empty);
+            }
+
             ReadOnlyMemory<char> text = code.AsMemory(triviaStartingIndex,
-                                                      triviaEndingIndex - triviaStartingIndex);
+                                                      triviaEndingIndex - triviaStartingIndex + 1);
             return new Trivia(text);
         }
     }

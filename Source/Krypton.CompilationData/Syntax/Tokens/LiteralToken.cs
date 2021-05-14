@@ -5,15 +5,9 @@ namespace Krypton.CompilationData.Syntax.Tokens
     public abstract class LiteralToken : Token
     {
         private protected LiteralToken(ReadOnlyMemory<char> text,
-                                       Type associatedType,
                                        int lineNumber,
                                        Trivia leadingTrivia)
-            : base(text, lineNumber, leadingTrivia)
-        {
-            AssociatedType = associatedType;
-        }
-
-        public Type AssociatedType { get; }
+            : base(text, lineNumber, leadingTrivia) { }
 
         public abstract object ObjectValue { get; }
     }
@@ -23,10 +17,9 @@ namespace Krypton.CompilationData.Syntax.Tokens
     {
         public LiteralToken(TLiteral value,
                             ReadOnlyMemory<char> text,
-                            Type associatedType,
                             int lineNumber,
                             Trivia leadingTrivia)
-            : base(text, associatedType, lineNumber, leadingTrivia)
+            : base(text, lineNumber, leadingTrivia)
         {
             LiteralHelper.AssertTypeIsLiteralType<TLiteral>();
             Value = value;

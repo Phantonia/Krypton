@@ -1,6 +1,8 @@
-﻿using Krypton.CompilationData.Syntax;
+﻿using Krypton.CompilationData;
+using Krypton.CompilationData.Syntax;
 using Krypton.CompilationData.Syntax.Tokens;
 using Krypton.Utilities;
+using Text = System.ReadOnlyMemory<char>;
 
 namespace Krypton.Analysis.Lexical
 {
@@ -29,16 +31,16 @@ namespace Krypton.Analysis.Lexical
             }
             else
             {
+                Text text = GetLastCharacter();
                 Trivia trivia = GetTrivia(triviaEndingIndex);
                 triviaStartingIndex = index;
-                return new SyntaxCharacterToken(SyntaxCharacter.Dot, lineNumber, trivia);
+                return new SyntaxCharacterToken(SyntaxCharacter.Dot, text, lineNumber, trivia);
             }
         }
 
         private Token? LexGreaterThanOrMultilineComment()
         {
             int triviaEndingIndex = index - 1;
-            int lexemeIndex = index;
             index++;
 
             if (code.TryGet(index) == '>') // >>
@@ -98,11 +100,21 @@ namespace Krypton.Analysis.Lexical
                     return null;
                 }
             }
-            else
+            else if (code.TryGet(index) == '=')
             {
+                index++;
+
+                Text text = GetLastNCharacters(2);
                 Trivia trivia = GetTrivia(triviaEndingIndex);
                 triviaStartingIndex = index;
-                return new OperatorToken(CompilationData.Operator.GreaterThan, lineNumber, trivia);
+                return new OperatorToken(Operator.GreaterThanEquals, text, lineNumber, trivia);
+            }
+            else
+            {
+                Text text = GetLastCharacter();
+                Trivia trivia = GetTrivia(triviaEndingIndex);
+                triviaStartingIndex = index;
+                return new OperatorToken(Operator.GreaterThan, text, lineNumber, trivia);
             }
         }
     }
