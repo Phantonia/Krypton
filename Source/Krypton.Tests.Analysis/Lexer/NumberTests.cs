@@ -36,6 +36,12 @@ namespace Krypton.Tests.Analysis.Lexer
             TestLiteral("0b1111", 0b1111);
         }
 
+        [TestMethod]
+        public void TestHexValueWithMixedCase()
+        {
+
+        }
+
         private static void TestLiteral(string code, int value)
         {
             var tokens = AnalysisAssert.LexesSuccessfully(code);

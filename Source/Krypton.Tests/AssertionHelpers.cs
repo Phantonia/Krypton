@@ -5,6 +5,7 @@ namespace Krypton.Tests
 {
     public static class AssertionHelpers
     {
+        // Add new overloads whenever it is needed
         public static void AssertIsType<T0>(this object item)
         {
             var o0 = item;

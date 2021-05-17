@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 
 namespace Krypton.Analysis
@@ -17,7 +18,16 @@ namespace Krypton.Analysis
             static Dictionary<DiagnosticsCode, string> InitLazy()
             {
                 byte[] bytes = Properties.Resources.DiagnosticsMessages;
-                string json = BitConverter.ToString(bytes);
+
+                Decoder decoder = Encoding.UTF8.GetDecoder();
+                int count = decoder.GetCharCount(bytes, flush: false);
+                char[] chars = new char[count];
+                decoder.Convert(bytes, chars, flush: true, out _, out _, out bool completed);
+                Debug.Assert(completed);
+
+                string json = new(chars);
+
+                Debug.Assert(json[0] == '{');
 
                 var dictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
 

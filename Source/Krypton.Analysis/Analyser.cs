@@ -1,76 +1,91 @@
-﻿//using Krypton.Analysis.Lexical;
-//using Krypton.Analysis.Semantics;
-//using Krypton.Analysis.Syntax;
-//using Krypton.CompilationData;
-//using Krypton.CompilationData.Syntax;
-//using Krypton.CompilationData.Syntax.Tokens;
-//using Krypton.Utilities;
-//using System;
-//using System.Collections.Generic;
-//using System.Collections.Immutable;
+﻿#pragma warning disable IDE0005 // Using directive is unnecessary.
+using Krypton.Analysis.Lexical;
+using Krypton.Analysis.Semantics;
+using Krypton.Analysis.Syntax;
+using Krypton.CompilationData;
+using Krypton.CompilationData.Syntax;
+using Krypton.CompilationData.Syntax.Tokens;
+using Krypton.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
+#pragma warning restore IDE0005 // Using directive is unnecessary.
 
 [assembly: InternalsVisibleTo("Krypton.Tests")]
 [assembly: InternalsVisibleTo("Krypton.Tests.Analysis")]
-//namespace Krypton.Analysis
-//{
-//    public sealed class Analyser
-//    {
-//        public Analyser(string code)
-//        {
-//            this.code = code;
-//        }
+namespace Krypton.Analysis
+{
+    public sealed class Analyser
+    {
+        public Analyser(string code)
+        {
+            this.code = code;
+            Diagnostics = new ReadOnlyCollection<Diagnostic>(diagnostics);
+        }
 
-//        private readonly string code;
-//        private readonly List<Diagnostic> diagnostics = new();
-//        private readonly DiagnosticsMessageProvider messageProvider = new();
+        private readonly string code;
+        private readonly List<Diagnostic> diagnostics = new();
+        private readonly DiagnosticsMessageProvider messageProvider = new();
 
-//        public event DiagnosticsEventHandler? DiagnosticReported;
+        internal ReadOnlyCollection<Diagnostic> Diagnostics { get; }
 
-//        public Compilation? Analyse()
-//        {
-//            Lexer lexer = new(code, this);
-//            FinalList<Token>? tokens = lexer.LexAll();
+        public event DiagnosticsEventHandler? DiagnosticReported;
 
-//            if (tokens is not { } nonNullTokens)
-//            {
-//                return null;
-//            }
+        //public Compilation? Analyse()
+        //{
+        //    Lexer lexer = new(code, this);
+        //    FinalList<Token>? tokens = lexer.LexAll();
 
-//            ProgramParser parser = new(nonNullTokens, this);
-//            ProgramNode? program = parser.ParseWholeProgram();
+        //    if (tokens is not { } nonNullTokens)
+        //    {
+        //        return null;
+        //    }
 
-//            if (program == null)
-//            {
-//                return null;
-//            }
+        //    ProgramParser parser = new(nonNullTokens, this);
+        //    ProgramNode? program = parser.ParseWholeProgram();
 
-//            Binder binder = new(program, this);
-//            BindingResult? result = binder.PerformBinding();
+        //    if (program == null)
+        //    {
+        //        return null;
+        //    }
 
-//            if (result == null)
-//            {
-//                return null;
-//            }
+        //    Binder binder = new(program, this);
+        //    BindingResult? result = binder.PerformBinding();
 
-//            return new Compilation(program, symbols: null, diagnostics);
-//        }
+        //    if (result == null)
+        //    {
+        //        return null;
+        //    }
 
-//        internal void ReportDiagnostic(Diagnostic diagnostic)
-//        {
-//            DiagnosticsEventArgs e = new(diagnostic);
-//            DiagnosticReported?.Invoke(this, e);
-//            diagnostics.Add(diagnostic);
-//        }
+        //    return new Compilation(program, symbols: null, diagnostics);
+        //}
 
-//        internal void ReportError(DiagnosticsCode errorCode, Token offendingToken, SyntaxNode offendingNode, params string[] details)
-//        {
-//            string messageString = messageProvider[errorCode];
-//            DiagnosticsMessage message = new(messageString, details.ToImmutableArray());
+        internal void ReportDiagnostic(Diagnostic diagnostic)
+        {
+            DiagnosticsEventArgs e = new(diagnostic);
+            DiagnosticReported?.Invoke(this, e);
+            diagnostics.Add(diagnostic);
+        }
 
-//            Diagnostic error = new(errorCode, message, IsError: true, offendingToken, offendingNode);
+        internal void ReportError(DiagnosticsCode errorCode, Token offendingToken, params string[] details)
+            => ReportError(errorCode, offendingToken, offendingNode: null, details);
 
-//            ReportDiagnostic(error);
-//        }
-//    }
-//}
+        internal void ReportError(DiagnosticsCode errorCode, Token offendingToken, SyntaxNode? offendingNode, params string[] details)
+        {
+            string messageString = messageProvider[errorCode];
+
+            Diagnostic error = new(errorCode,
+                                   messageString,
+                                   details.ToImmutableArray(),
+                                   CodeLine: string.Empty,
+                                   LineIndex: 0,
+                                   IsError: true,
+                                   offendingToken,
+                                   offendingNode);
+
+            ReportDiagnostic(error);
+        }
+    }
+}

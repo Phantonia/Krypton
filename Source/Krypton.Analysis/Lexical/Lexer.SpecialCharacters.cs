@@ -25,13 +25,13 @@ namespace Krypton.Analysis.Lexical
             {
                 index++;
 
-                if (code.TryGet(index) == '=') // **=
-                {
-                    index++;
+                //if (code.TryGet(index) == '=') // **=
+                //{
+                //    index++;
 
-                    throw new NotImplementedException();
-                }
-                else // **
+                //    throw new NotImplementedException();
+                //}
+                //else // **
                 {
                     Text text = GetLastNCharacters(2);
                     Trivia trivia = GetTrivia(triviaEndingIndex);
@@ -39,12 +39,12 @@ namespace Krypton.Analysis.Lexical
                     return new OperatorToken(Operator.DoubleAsterisk, text, lineNumber, trivia);
                 }
             }
-            else if (code.TryGet(index) == '=') // *=
-            {
-                index++;
+            //else if (code.TryGet(index) == '=') // *=
+            //{
+            //    index++;
 
-                throw new NotImplementedException();
-            }
+            //    throw new NotImplementedException();
+            //}
             else // *
             {
                 Text text = GetLastCharacter();
@@ -131,9 +131,9 @@ namespace Krypton.Analysis.Lexical
                         triviaStartingIndex = index;
                         return new OperatorToken(Operator.SingleRightArrow, text, lineNumber, trivia);
                     }
-                case '=': // -=
-                    index++;
-                    throw new NotImplementedException();
+                //case '=': // -=
+                //    index++;
+                //    throw new NotImplementedException();
                 default: // -
                     {
                         Text text = GetLastCharacter();
@@ -167,14 +167,14 @@ namespace Krypton.Analysis.Lexical
             int triviaEndingIndex = index - 1;
             index++;
 
-            if (code.TryGet(index) == '=')
-            {
-                Trivia trivia = GetTrivia(triviaEndingIndex);
-                index++;
-                triviaStartingIndex = index;
-                throw new NotImplementedException();
-            }
-            else
+            //if (code.TryGet(index) == '=')
+            //{
+            //    Trivia trivia = GetTrivia(triviaEndingIndex);
+            //    index++;
+            //    triviaStartingIndex = index;
+            //    throw new NotImplementedException();
+            //}
+            //else
             {
                 Text text = GetLastCharacter();
                 Trivia trivia = GetTrivia(triviaEndingIndex);

@@ -9,13 +9,13 @@ namespace Krypton.Analysis.Lexical
 {
     internal sealed partial class Lexer
     {
-        public Lexer(string code)//, Analyser analyser)
+        public Lexer(string code, Analyser analyser)
         {
-            //this.analyser = analyser;
+            this.analyser = analyser;
             this.code = code;
         }
 
-        //private readonly Analyser analyser;
+        private readonly Analyser analyser;
         private readonly string code;
         private int index = 0;
         private int lineNumber = 1;
@@ -31,9 +31,8 @@ namespace Krypton.Analysis.Lexical
             {
                 if (nextToken is InvalidToken invalidToken)
                 {
-                    throw new NotImplementedException();
-                    //analyser.ReportDiagnostic(new Diagnostic(invalidToken.DiagnosticsCode, IsError: true, invalidToken));
-                    //return null;
+                    analyser.ReportError(invalidToken.DiagnosticsCode, invalidToken);
+                    return null;
                 }
 
                 tokens.Add(nextToken);
@@ -112,7 +111,10 @@ namespace Krypton.Analysis.Lexical
                     }
                 }
 
-                return null;
+                {
+                    Trivia trivia = GetTrivia(triviaEndingIndex);
+                    return new EndOfFileToken(lineNumber, trivia);
+                }
             }
             else if (char.IsNumber(currentChar))
             {
