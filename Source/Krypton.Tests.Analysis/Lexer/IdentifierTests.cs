@@ -1,5 +1,8 @@
 ﻿using Krypton.CompilationData.Syntax.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Rk = Krypton.CompilationData.Syntax.Tokens.ReservedKeywordToken;
+using Op = Krypton.CompilationData.Syntax.Tokens.OperatorToken;
+using Id = Krypton.CompilationData.Syntax.Tokens.IdentifierToken;
 
 namespace Krypton.Tests.Analysis.Lexer
 {
@@ -24,7 +27,7 @@ namespace Krypton.Tests.Analysis.Lexer
 
                 Assert.AreEqual(2, tokens.Count);
 
-                Assert.IsInstanceOfType(tokens[0], typeof(IdentifierToken));
+                Assert.IsInstanceOfType(tokens[0], typeof(Id));
                 Assert.IsInstanceOfType(tokens[1], typeof(EndOfFileToken));
 
                 Assert.AreEqual(code, tokens[0].TextToString());
@@ -34,21 +37,21 @@ namespace Krypton.Tests.Analysis.Lexer
         [TestMethod]
         public void TestKeywords()
         {
-            TestToken<ReservedKeywordToken>("As");
-            TestToken<ReservedKeywordToken>("Block");
-            TestToken<ReservedKeywordToken>("Const");
-            TestToken<ReservedKeywordToken>("Continue");
-            TestToken<ReservedKeywordToken>("Else");
-            TestToken<ReservedKeywordToken>("For");
-            TestToken<ReservedKeywordToken>("Func");
-            TestToken<ReservedKeywordToken>("If");
-            TestToken<ReservedKeywordToken>("Leave");
-            TestToken<ReservedKeywordToken>("Let");
-            TestToken<ReservedKeywordToken>("Return");
-            TestToken<ReservedKeywordToken>("To");
-            TestToken<ReservedKeywordToken>("Var");
-            TestToken<ReservedKeywordToken>("While");
-            TestToken<ReservedKeywordToken>("With");
+            TestToken<Rk>("As");
+            TestToken<Rk>("Block");
+            TestToken<Rk>("Const");
+            TestToken<Rk>("Continue");
+            TestToken<Rk>("Else");
+            TestToken<Rk>("For");
+            TestToken<Rk>("Func");
+            TestToken<Rk>("If");
+            TestToken<Rk>("Leave");
+            TestToken<Rk>("Let");
+            TestToken<Rk>("Return");
+            TestToken<Rk>("To");
+            TestToken<Rk>("Var");
+            TestToken<Rk>("While");
+            TestToken<Rk>("With");
 
             var trueLiteral = TestToken<LiteralToken<bool>>("True");
             var falseLiteral = TestToken<LiteralToken<bool>>("False");
@@ -56,16 +59,16 @@ namespace Krypton.Tests.Analysis.Lexer
             Assert.AreEqual(true, trueLiteral.Value);
             Assert.AreEqual(false, falseLiteral.Value);
 
-            TestToken<OperatorToken>("And");
-            TestToken<OperatorToken>("Div");
-            TestToken<OperatorToken>("Mod");
-            TestToken<OperatorToken>("Not");
-            TestToken<OperatorToken>("Or");
-            TestToken<OperatorToken>("Xor");
+            TestToken<Op>("And");
+            TestToken<Op>("Div");
+            TestToken<Op>("Mod");
+            TestToken<Op>("Not");
+            TestToken<Op>("Or");
+            TestToken<Op>("Xor");
 
-            TestToken<IdentifierToken>("var");
-            TestToken<IdentifierToken>("true");
-            TestToken<IdentifierToken>("xor");
+            TestToken<Id>("var");
+            TestToken<Id>("true");
+            TestToken<Id>("xor");
 
             static T TestToken<T>(string code)
                 where T : Token

@@ -13,6 +13,7 @@ namespace Krypton.Tests.Analysis.Lexer
             TestLiteral("0", 0);
             TestLiteral("256", 256);
             TestLiteral("6", 6);
+            TestLiteral("007", 7);
         }
 
         [TestMethod]
@@ -25,6 +26,7 @@ namespace Krypton.Tests.Analysis.Lexer
             TestLiteral("0xabc", 0xABC);
             TestLiteral("0xa1b2", 0xA1B2);
             TestLiteral("0x123fff", 0x123FFF);
+            TestLiteral("0x00AB", 0xAB);
         }
 
         [TestMethod]
@@ -34,12 +36,7 @@ namespace Krypton.Tests.Analysis.Lexer
             TestLiteral("0b1", 0b1);
             TestLiteral("0b10101010", 0b10101010);
             TestLiteral("0b1111", 0b1111);
-        }
-
-        [TestMethod]
-        public void TestHexValueWithMixedCase()
-        {
-
+            TestLiteral("0b00101", 0b101);
         }
 
         private static void TestLiteral(string code, int value)

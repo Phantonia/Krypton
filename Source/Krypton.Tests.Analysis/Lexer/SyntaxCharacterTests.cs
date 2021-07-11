@@ -2,6 +2,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
+using Sc = Krypton.CompilationData.Syntax.Tokens.SyntaxCharacterToken;
+using Op = Krypton.CompilationData.Syntax.Tokens.OperatorToken;
 
 namespace Krypton.Tests.Analysis.Lexer
 {
@@ -15,34 +17,34 @@ namespace Krypton.Tests.Analysis.Lexer
 
             Type[] expectedTypes =
             {
-                typeof(SyntaxCharacterToken), // ;
-                typeof(SyntaxCharacterToken), // ,
-                typeof(SyntaxCharacterToken), // :
-                typeof(SyntaxCharacterToken), // .
-                typeof(SyntaxCharacterToken), // (
-                typeof(SyntaxCharacterToken), // )
-                typeof(SyntaxCharacterToken), // [
-                typeof(SyntaxCharacterToken), // ]
-                typeof(SyntaxCharacterToken), // {
-                typeof(SyntaxCharacterToken), // }
-                typeof(OperatorToken), // <
-                typeof(OperatorToken), // >
-                typeof(SyntaxCharacterToken), // =
-                typeof(OperatorToken), // +
-                typeof(OperatorToken), // -
-                typeof(OperatorToken), // *
-                typeof(OperatorToken), // /
-                typeof(OperatorToken), // &
-                typeof(OperatorToken), // |
-                typeof(OperatorToken), // ^
-                typeof(OperatorToken), // ~
-                typeof(OperatorToken), // ==
-                typeof(OperatorToken), // **
-                typeof(OperatorToken), // !=
-                typeof(OperatorToken), // <=
-                typeof(OperatorToken), // >=
-                typeof(OperatorToken), // ->
-                typeof(OperatorToken), // <-
+                typeof(Sc), // ;
+                typeof(Sc), // ,
+                typeof(Sc), // :
+                typeof(Sc), // .
+                typeof(Sc), // (
+                typeof(Sc), // )
+                typeof(Sc), // [
+                typeof(Sc), // ]
+                typeof(Sc), // {
+                typeof(Sc), // }
+                typeof(Op), // <
+                typeof(Op), // >
+                typeof(Sc), // =
+                typeof(Op), // +
+                typeof(Op), // -
+                typeof(Op), // *
+                typeof(Op), // /
+                typeof(Op), // &
+                typeof(Op), // |
+                typeof(Op), // ^
+                typeof(Op), // ~
+                typeof(Op), // ==
+                typeof(Op), // **
+                typeof(Op), // !=
+                typeof(Op), // <=
+                typeof(Op), // >=
+                typeof(Op), // ->
+                typeof(Op), // <-
                 typeof(EndOfFileToken),
             };
 
