@@ -7,13 +7,6 @@ using System.Linq;
 
 namespace Krypton.Analysis.Syntax
 {
-    // This class in some sense cheats the node hierarchie.
-    // Krypton.Analysis.Ast.* types should only save state and no logic.
-    // This node however has logic, which is why it is in this namespace
-    // instead. I also purposefully violated the policy to keep the
-    // base class's name and only adding words in front.
-    // No instance of this class should survive syntactical analysis,
-    // else there's a bug.
     internal sealed class BinaryOperationChain
     {
         internal BinaryOperationChain() { }
