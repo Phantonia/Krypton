@@ -54,7 +54,7 @@ namespace Krypton.CompilationData
         }
 
         public static bool IsBinary(this Operator @operator)
-            => !@operator.IsUnary();
+            => @operator == Operator.Minus || !@operator.IsUnary();
 
         public static bool IsUnary(this Operator @operator)
             => @operator.GetPrecedence() == 0 || @operator == Operator.Minus;
