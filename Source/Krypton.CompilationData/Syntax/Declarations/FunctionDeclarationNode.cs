@@ -2,7 +2,6 @@
 using Krypton.CompilationData.Syntax.Clauses;
 using Krypton.CompilationData.Syntax.Tokens;
 using Krypton.CompilationData.Syntax.Types;
-using Krypton.Utilities;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -51,6 +50,8 @@ namespace Krypton.CompilationData.Syntax.Declarations
         public ReservedKeywordToken FuncKeywordToken { get; init; }
 
         public override bool IsLeaf => false;
+
+        public override Token LexicallyFirstToken => FuncKeywordToken;
 
         public SyntaxCharacterToken OpeningParenthesisToken { get; init; }
 

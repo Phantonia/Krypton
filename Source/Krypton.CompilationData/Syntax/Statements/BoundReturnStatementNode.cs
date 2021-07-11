@@ -1,4 +1,5 @@
 ﻿using Krypton.CompilationData.Symbols;
+using Krypton.CompilationData.Syntax.Tokens;
 using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Statements
@@ -14,9 +15,11 @@ namespace Krypton.CompilationData.Syntax.Statements
 
         public FunctionSymbol FunctionSymbol { get; init; }
 
-        public ReturnStatementNode ReturnStatementNode { get; init; }
-
         public override bool IsLeaf => false;
+
+        public override Token LexicallyFirstToken => ReturnStatementNode.LexicallyFirstToken;
+
+        public ReturnStatementNode ReturnStatementNode { get; init; }
 
         public override void WriteCode(TextWriter output)
             => ReturnStatementNode.WriteCode(output);

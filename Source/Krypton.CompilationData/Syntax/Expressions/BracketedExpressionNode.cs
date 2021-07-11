@@ -1,5 +1,4 @@
-﻿using Krypton.CompilationData.Symbols;
-using Krypton.CompilationData.Syntax.Tokens;
+﻿using Krypton.CompilationData.Syntax.Tokens;
 using System.Diagnostics;
 using System.IO;
 
@@ -24,6 +23,8 @@ namespace Krypton.CompilationData.Syntax.Expressions
         public ExpressionNode ExpressionNode { get; init; }
 
         public override bool IsLeaf => false;
+
+        public override Token LexicallyFirstToken => OpeningParenthesisToken;
 
         public SyntaxCharacterToken OpeningParenthesisToken { get; init; }
 

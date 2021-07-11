@@ -18,6 +18,8 @@ namespace Krypton.CompilationData.Syntax.Types
 
         public override bool IsLeaf => true;
 
+        public override Token LexicallyFirstToken => IdentifierToken;
+
         public override BoundTypeNode Bind(TypeSymbol typeSymbol)
             => new(this, typeSymbol);
 

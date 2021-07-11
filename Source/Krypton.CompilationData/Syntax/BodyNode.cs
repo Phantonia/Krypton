@@ -25,6 +25,8 @@ namespace Krypton.CompilationData.Syntax
 
         public override bool IsLeaf => StatementNodes.Count == 0; // { } is a leaf
 
+        public override Token LexicallyFirstToken => OpeningBraceToken ?? StatementNodes[0].LexicallyFirstToken;
+
         public ImmutableList<StatementNode> StatementNodes { get; init; }
 
         public SyntaxCharacterToken? OpeningBraceToken { get; init; }

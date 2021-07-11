@@ -17,6 +17,8 @@ namespace Krypton.CompilationData.Syntax.Statements
 
         public override bool IsLeaf => ReturnedExpressionNode == null;
 
+        public override Token LexicallyFirstToken => ReturnKeywordToken;
+
         public ExpressionNode? ReturnedExpressionNode { get; init; }
 
         public ReservedKeywordToken ReturnKeywordToken { get; init; }

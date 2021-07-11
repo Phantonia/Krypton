@@ -35,6 +35,8 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public override bool IsLeaf => false;
 
+        public override Token LexicallyFirstToken => InvokeeNode.LexicallyFirstToken;
+
         public SyntaxCharacterToken OpeningParenthesisToken { get; init; }
 
         public BoundExpressionNode<InvocationExpressionNode, FunctionSymbol> Bind(FunctionSymbol functionSymbol)

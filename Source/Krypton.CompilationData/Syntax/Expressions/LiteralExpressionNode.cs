@@ -23,6 +23,8 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public override bool IsLeaf => true;
 
+        public override Token LexicallyFirstToken => LiteralToken;
+
         public LiteralToken<TLiteral> LiteralToken { get; init; }
 
         public override LiteralToken NonGenericLiteralToken => LiteralToken;

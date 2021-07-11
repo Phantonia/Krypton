@@ -37,6 +37,8 @@ namespace Krypton.CompilationData.Syntax.Declarations
 
         public override bool IsLeaf => false;
 
+        public override Token LexicallyFirstToken => ConstKeywordToken;
+
         public SyntaxCharacterToken SemicolonToken { get; init; }
 
         public TypeNode? TypeNode => AsClauseNode?.TypeNode;

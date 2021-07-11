@@ -1,4 +1,5 @@
 ﻿using Krypton.CompilationData.Syntax.Declarations;
+using Krypton.CompilationData.Syntax.Tokens;
 using Krypton.CompilationData.Syntax.Types;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -10,11 +11,9 @@ namespace Krypton.CompilationData.Syntax
     public sealed record ProgramNode : SyntaxNode, IExecutableNode
     {
         // Bug in compiler? Field topLevelNodes is not null when exiting the constructor...
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public ProgramNode(IEnumerable<TopLevelNode> topLevelNodes)
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
-            topLevelNodes = topLevelNodes.ToImmutableList();
+            this.topLevelNodes = topLevelNodes.ToImmutableList();
             topLevelStatementNodes = MakeTopLevelStatementsBody(topLevelNodes);
         }
 
@@ -22,6 +21,8 @@ namespace Krypton.CompilationData.Syntax
         private readonly BodyNode topLevelStatementNodes;
 
         public override bool IsLeaf => false;
+
+        public override Token LexicallyFirstToken => TopLevelNodes[0].LexicallyFirstToken;
 
         public ImmutableList<TopLevelNode> TopLevelNodes
         {

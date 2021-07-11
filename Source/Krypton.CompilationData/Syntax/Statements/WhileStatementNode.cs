@@ -19,6 +19,8 @@ namespace Krypton.CompilationData.Syntax.Statements
 
         public override bool IsLeaf => false;
 
+        public override Token LexicallyFirstToken => WhileKeywordToken;
+
         public ReservedKeywordToken WhileKeywordToken { get; init; }
 
         public override void WriteCode(TextWriter output)

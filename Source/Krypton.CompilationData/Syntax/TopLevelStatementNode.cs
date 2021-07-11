@@ -1,4 +1,5 @@
 ﻿using Krypton.CompilationData.Syntax.Statements;
+using Krypton.CompilationData.Syntax.Tokens;
 using System.IO;
 
 namespace Krypton.CompilationData.Syntax
@@ -11,6 +12,8 @@ namespace Krypton.CompilationData.Syntax
         }
 
         public override bool IsLeaf => false;
+
+        public override Token LexicallyFirstToken => StatementNode.LexicallyFirstToken;
 
         public StatementNode StatementNode { get; init; }
 

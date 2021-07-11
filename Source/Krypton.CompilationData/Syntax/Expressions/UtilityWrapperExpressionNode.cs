@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Krypton.CompilationData.Syntax.Tokens;
+using System;
 using System.ComponentModel;
 using System.IO;
 
@@ -27,6 +28,11 @@ namespace Krypton.CompilationData.Syntax.Expressions
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete(message: "Will always throw NotSupportedException", error: true)]
         public override bool IsLeaf
+            => throw new NotSupportedException(DiagnosticsMessage);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [Obsolete(message: "Will always throw NotSupportedException", error: true)]
+        public override Token LexicallyFirstToken
             => throw new NotSupportedException(DiagnosticsMessage);
 
         [EditorBrowsable(EditorBrowsableState.Never)]

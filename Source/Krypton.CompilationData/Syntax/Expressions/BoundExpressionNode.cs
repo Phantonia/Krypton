@@ -1,4 +1,5 @@
 ﻿using Krypton.CompilationData.Symbols;
+using Krypton.CompilationData.Syntax.Tokens;
 using System.IO;
 
 namespace Krypton.CompilationData.Syntax.Expressions
@@ -16,6 +17,8 @@ namespace Krypton.CompilationData.Syntax.Expressions
         public TExpressionNode ExpressionNode { get; init; }
 
         public override bool IsLeaf => false;
+
+        public override Token LexicallyFirstToken => ExpressionNode.LexicallyFirstToken;
 
         public TSymbol Symbol { get; init; }
 

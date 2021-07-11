@@ -20,6 +20,8 @@ namespace Krypton.CompilationData.Syntax.Clauses
 
         public override bool IsLeaf => false;
 
+        public override Token LexicallyFirstToken => AsKeywordToken;
+
         public TypeNode TypeNode { get; init; }
 
         public override void WriteCode(TextWriter output)

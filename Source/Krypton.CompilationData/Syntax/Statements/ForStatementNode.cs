@@ -79,6 +79,8 @@ namespace Krypton.CompilationData.Syntax.Statements
 
         public override bool IsLeaf => false;
 
+        public override Token LexicallyFirstToken => ForKeywordToken;
+
         public override void WriteCode(TextWriter output)
         {
             ForKeywordToken.WriteCode(output);

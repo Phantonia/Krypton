@@ -20,6 +20,8 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public override bool IsLeaf => false;
 
+        public override Token LexicallyFirstToken => OperandNode.LexicallyFirstToken;
+
         public ExpressionNode OperandNode { get; init; }
 
         public ReservedKeywordToken OperatorKeywordToken { get; init; }

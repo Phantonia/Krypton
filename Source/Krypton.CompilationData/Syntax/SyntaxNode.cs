@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using Krypton.CompilationData.Syntax.Tokens;
+using System.Diagnostics;
 using System.IO;
 
 namespace Krypton.CompilationData.Syntax
@@ -11,6 +12,8 @@ namespace Krypton.CompilationData.Syntax
         private protected SyntaxNode() { }
 
         public abstract bool IsLeaf { get; }
+
+        public abstract Token LexicallyFirstToken { get; }
 
         protected virtual string GetDebuggerDisplay() => GetType().Name;
 

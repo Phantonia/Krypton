@@ -17,6 +17,8 @@ namespace Krypton.CompilationData.Syntax.Statements
 
         public override bool IsLeaf => false;
 
+        public override Token LexicallyFirstToken => ExpressionNode.LexicallyFirstToken;
+
         public override void WriteCode(TextWriter output)
         {
             ExpressionNode.WriteCode(output);

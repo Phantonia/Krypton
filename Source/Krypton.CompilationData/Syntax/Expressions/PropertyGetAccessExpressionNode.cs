@@ -22,6 +22,8 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public override bool IsLeaf => false;
 
+        public override Token LexicallyFirstToken => SourceNode.LexicallyFirstToken;
+
         public IdentifierToken PropertyToken { get; init; }
 
         public ExpressionNode SourceNode { get; init; }

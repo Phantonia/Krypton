@@ -30,6 +30,8 @@ namespace Krypton.CompilationData.Syntax.Statements
 
         public LiteralToken<long>? LevelToken { get; init; }
 
+        public override Token LexicallyFirstToken => KeywordToken;
+
         protected override string GetDebuggerDisplay()
             => $"{base.GetDebuggerDisplay()}; Level: {Level}";
 

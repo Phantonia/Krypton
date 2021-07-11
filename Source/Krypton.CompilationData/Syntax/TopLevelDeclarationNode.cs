@@ -1,4 +1,5 @@
 ﻿using Krypton.CompilationData.Syntax.Declarations;
+using Krypton.CompilationData.Syntax.Tokens;
 using System.IO;
 
 namespace Krypton.CompilationData.Syntax
@@ -10,9 +11,11 @@ namespace Krypton.CompilationData.Syntax
             DeclarationNode = declaration;
         }
 
+        public DeclarationNode DeclarationNode { get; init; }
+
         public override bool IsLeaf => false;
 
-        public DeclarationNode DeclarationNode { get; init; }
+        public override Token LexicallyFirstToken => DeclarationNode.LexicallyFirstToken;
 
         public override void WriteCode(TextWriter output)
             => DeclarationNode.WriteCode(output);

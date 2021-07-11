@@ -22,6 +22,8 @@ namespace Krypton.CompilationData.Syntax.Expressions
 
         public ExpressionNode LeftOperandNode { get; init; }
 
+        public override Token LexicallyFirstToken => LeftOperandNode.LexicallyFirstToken;
+
         public Operator Operator => OperatorToken.Operator;
 
         public OperatorToken OperatorToken { get; init; }

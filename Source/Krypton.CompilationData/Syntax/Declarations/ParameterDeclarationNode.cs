@@ -18,6 +18,8 @@ namespace Krypton.CompilationData.Syntax.Declarations
 
         public override bool IsLeaf => false;
 
+        public override Token LexicallyFirstToken => NameToken;
+
         public override BoundDeclarationNode Bind(Symbol symbol)
             => new(this, symbol);
 
