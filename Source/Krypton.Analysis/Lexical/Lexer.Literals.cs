@@ -1,6 +1,7 @@
 ﻿using Krypton.CompilationData;
 using Krypton.CompilationData.Syntax;
 using Krypton.CompilationData.Syntax.Tokens;
+using Krypton.Core;
 using Krypton.Utilities;
 using System;
 
@@ -152,7 +153,7 @@ namespace Krypton.Analysis.Lexical
                         index++;
 
                         return MakeToken(code.AsMemory()[startIndex..index],
-                                         s => new RationalComplex(0, NumberLiteralParser.ParseRational(s)));
+                                         s => new RationalComplex(0, NumberLiteralParser.ParseRational(s[..^1]))); // s[..^1] -> strip away the i suffix
                     }
 
                     if (alreadyHadDecimalPoint)

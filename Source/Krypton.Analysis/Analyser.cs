@@ -72,6 +72,9 @@ namespace Krypton.Analysis
         internal void ReportError(DiagnosticsCode errorCode, Token offendingToken, params string[] details)
             => ReportError(errorCode, offendingToken, offendingNode: null, details);
 
+        internal void ReportError(DiagnosticsCode errorCode, SyntaxNode offendingNode, params string[] details)
+            => ReportError(errorCode, offendingNode.LexicallyFirstToken, offendingNode, details);
+
         internal void ReportError(DiagnosticsCode errorCode, Token offendingToken, SyntaxNode? offendingNode, params string[] details)
         {
             string messageString = messageProvider[errorCode];

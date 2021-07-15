@@ -1,4 +1,4 @@
-﻿using Krypton.CompilationData;
+﻿using Krypton.Core;
 using System;
 
 namespace Krypton.Analysis.Lexical
@@ -182,6 +182,12 @@ namespace Krypton.Analysis.Lexical
 
         public static bool TryParseRational(ReadOnlySpan<char> input, out Rational output)
         {
+            if (TryParseDecimal(input, out long integer))
+            {
+                output = integer;
+                return true;
+            }
+
             checked
             {
                 uint count = 0;
