@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Krypton.Core;
+using System;
 using System.Diagnostics;
 
 namespace Krypton.CompilationData
